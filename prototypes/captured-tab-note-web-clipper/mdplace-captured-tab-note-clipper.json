@@ -1,0 +1,106 @@
+{
+	"schemaVersion": "0.1.0",
+	"name": "mdplace Captured Tab Note (prototype)",
+	"behavior": "create",
+	"noteNameFormat": "{{date|date:\"YYYYMMDD-HHmmss\"}}--{{domain|safe_name}}--{{title|truncate:80|safe_name ?? \"Untitled\"}}",
+	"path": "Inbox",
+	"noteContentFormat": "# {{title ?? \"Untitled\"}}\n\n> [!info] Source\n> [{{domain ?? \"source\"}}]({{url}}){% if author %} — {{author}}{% endif %}\n\n## Article\n\n{% if selection %}> [!warning] Invalid live-selection workflow\n> Promote the current selection to a Web Clipper highlight, clear the browser selection, and recapture. The selection and saved highlights are preserved below for recovery, but this file is not yet a valid Captured Tab Note.{% elseif content %}<!-- mdplace:article:start -->\n{{content}}\n<!-- mdplace:article:end -->{% else %}> [!warning] Extraction failed\n> Web Clipper returned no readable article. Recapture this page; mdplace must not recognize this file as a valid Captured Tab Note.{% endif %}{% if selection %}\n\n## Unexpected live selection\n\n<!-- mdplace:selection:start -->\n{{selection}}\n<!-- mdplace:selection:end -->{% endif %}{% if highlights %}\n\n## Saved highlights\n\n<!-- mdplace:highlights:start -->\n{{highlights}}\n<!-- mdplace:highlights:end -->{% endif %}\n",
+	"properties": [
+		{
+			"name": "capture_contract",
+			"value": "mdplace.captured-tab-note/v1-prototype",
+			"type": "text"
+		},
+		{
+			"name": "capture_adapter",
+			"value": "obsidian-web-clipper",
+			"type": "text"
+		},
+		{
+			"name": "capture_template_version",
+			"value": "1",
+			"type": "number"
+		},
+		{
+			"name": "captured_at",
+			"value": "{{date}}",
+			"type": "datetime"
+		},
+		{
+			"name": "capture_workflow_status",
+			"value": "{% if selection %}invalid_live_selection{% else %}valid{% endif %}",
+			"type": "text"
+		},
+		{
+			"name": "capture_article_status",
+			"value": "{% if selection %}unavailable_active_selection{% elseif content %}captured{% else %}extraction_failed{% endif %}",
+			"type": "text"
+		},
+		{
+			"name": "capture_selection_status",
+			"value": "{% if selection %}captured{% else %}absent{% endif %}",
+			"type": "text"
+		},
+		{
+			"name": "capture_highlights_status",
+			"value": "{% if highlights %}captured{% else %}absent{% endif %}",
+			"type": "text"
+		},
+		{
+			"name": "capture_image_policy",
+			"value": "remote_url",
+			"type": "text"
+		},
+		{
+			"name": "source_url",
+			"value": "{{url}}",
+			"type": "text"
+		},
+		{
+			"name": "source_title",
+			"value": "{{title}}",
+			"type": "text"
+		},
+		{
+			"name": "source_author",
+			"value": "{{author}}",
+			"type": "text"
+		},
+		{
+			"name": "source_published_at",
+			"value": "{{published}}",
+			"type": "text"
+		},
+		{
+			"name": "source_site",
+			"value": "{{site}}",
+			"type": "text"
+		},
+		{
+			"name": "source_domain",
+			"value": "{{domain}}",
+			"type": "text"
+		},
+		{
+			"name": "source_language",
+			"value": "{{language}}",
+			"type": "text"
+		},
+		{
+			"name": "source_description",
+			"value": "{{description}}",
+			"type": "text"
+		},
+		{
+			"name": "source_image_url",
+			"value": "{{image}}",
+			"type": "text"
+		},
+		{
+			"name": "source_word_count",
+			"value": "{{words}}",
+			"type": "number"
+		}
+	],
+	"triggers": []
+}
