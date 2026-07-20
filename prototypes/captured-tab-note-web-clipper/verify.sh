@@ -154,6 +154,25 @@ if [[ "$ACTUAL_UPSTREAM_SHA" != "$EXPECTED_UPSTREAM_SHA" ]]; then
 	exit 1
 fi
 
+if ATTACHED_UPSTREAM_REF="$(git -C "$WEB_CLIPPER_DIR" symbolic-ref -q HEAD 2>/dev/null)"; then
+	if [[ -n "${MDPLACE_EVIDENCE_DIR:-}" ]]; then
+		mkdir -p -- "$MDPLACE_EVIDENCE_DIR"
+		EVIDENCE_FILE="$MDPLACE_EVIDENCE_DIR/task-2-attached-upstream.txt"
+		: > "$EVIDENCE_FILE"
+	fi
+	log "SCENARIO: attached upstream checkout fails before build or render"
+	log "COMMAND: git -C <WEB_CLIPPER_DIR> symbolic-ref -q HEAD"
+	log "ATTACHED_UPSTREAM_REF: $ATTACHED_UPSTREAM_REF"
+	log "BUILD_ATTEMPTED: false"
+	log "RENDER_ATTEMPTED: false"
+	log "EXPECTED: nonzero before checking dist or invoking the engine"
+	log "ACTUAL: attached checkout rejected before dist or render"
+	log "EXIT_CODE: 1"
+	log "VERDICT: PASS"
+	printf 'ERROR: WEB_CLIPPER_DIR is an attached checkout at %s; a detached checkout is required\n' "$ATTACHED_UPSTREAM_REF" >&2
+	exit 1
+fi
+
 if [[ ! -f "$WEB_CLIPPER_DIR/dist/cli.cjs" ]]; then
 	printf 'Pinned Web Clipper CLI is missing; run npm run build:cli in the disposable checkout\n' >&2
 	exit 66
