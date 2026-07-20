@@ -118,8 +118,305 @@ check_command() {
 	fi
 }
 
+run_shell_mode() {
+	local prototype_path="$SCRIPT_DIR/prototype.sh"
+	local expected_sequence='filename|YAML/frontmatter safety|selection provenance|metadata-only extraction artifact|template/content compiler|URL persistence policy|missing word count|deterministic hash shape|import/activation mechanics|Captured Tab Note conformance'
+	local expected_outcomes='SUPPORTED|UNSUPPORTED|UNSUPPORTED|UNSUPPORTED|SUPPORTED|UNSUPPORTED|UNSUPPORTED|TARGET CONTRACT|SUPPORTED|UNSUPPORTED'
+	local sequence_stdout="$TMP_ROOT/sequence.stdout"
+	local sequence_stderr="$TMP_ROOT/sequence.stderr"
+	local eof_stdout="$TMP_ROOT/eof.stdout"
+	local eof_stderr="$TMP_ROOT/eof.stderr"
+	local unknown_stdout="$TMP_ROOT/unknown.stdout"
+	local unknown_stderr="$TMP_ROOT/unknown.stderr"
+	local repeated_stdout="$TMP_ROOT/repeated.stdout"
+	local repeated_stderr="$TMP_ROOT/repeated.stderr"
+	local blanks_stdout="$TMP_ROOT/blanks.stdout"
+	local blanks_stderr="$TMP_ROOT/blanks.stderr"
+	local q_stdout="$TMP_ROOT/q.stdout"
+	local q_stderr="$TMP_ROOT/q.stderr"
+	local cwd_root="$TMP_ROOT/prototype-cwd"
+	local cwd_before="$TMP_ROOT/cwd-before.txt"
+	local cwd_after="$TMP_ROOT/cwd-after.txt"
+	local tracked_diff_before
+	local tracked_diff_after
+	local staged_diff_before
+	local staged_diff_after
+	local sequence_status
+	local unknown_status
+	local repeated_status
+	local blanks_status
+	local q_status
+	local max_output_bytes=131072
+
+	if [[ ! -f "$prototype_path" ]]; then
+		fail "prototype script exists"
+		return 1
+	fi
+
+	tracked_diff_before="$(git -C "$REPO_ROOT" diff --binary | shasum -a 256 | awk '{print $1}')"
+	staged_diff_before="$(git -C "$REPO_ROOT" diff --cached --binary | shasum -a 256 | awk '{print $1}')"
+
+	log "SCENARIO: terminal prototype capability report and EOF behavior"
+	log "COMMAND: MDPLACE_EVIDENCE_DIR=<evidence-dir> bash prototypes/captured-tab-note-web-clipper/verify.sh shell"
+	log "MDPLACE_HEAD: $(git -C "$REPO_ROOT" rev-parse HEAD)"
+	log "BASH_VERSION: $BASH_VERSION"
+	log "PYTHON_VERSION: $(python3 --version 2>&1)"
+	log "PROTOTYPE_SHA256: $(sha256_file "$prototype_path")"
+	log "MAX_OUTPUT_BYTES: $max_output_bytes"
+
+	if bash -n "$prototype_path" && bash -n "$SCRIPT_DIR/verify.sh"; then
+		pass "both shell scripts pass bash -n"
+	else
+		fail "both shell scripts pass bash -n"
+	fi
+
+	log "Q_COMMAND: printf q | bash $prototype_path"
+	if printf 'q' | bash "$prototype_path" > "$q_stdout" 2> "$q_stderr"; then
+		q_status=0
+		pass "q-only input exits successfully"
+	else
+		q_status=$?
+		fail "q-only input exits successfully (exit $q_status)"
+	fi
+	log "Q_EXIT_CODE: $q_status"
+	log "Q_STDOUT_BYTES: $(wc -c < "$q_stdout" | tr -d ' ')"
+	log "Q_STDERR_BYTES: $(wc -c < "$q_stderr" | tr -d ' ')"
+
+	log "SEQUENCE_COMMAND: printf fshicpmbaeq | bash $prototype_path"
+	if printf 'fshicpmbaeq' | bash "$prototype_path" > "$sequence_stdout" 2> "$sequence_stderr"; then
+		sequence_status=0
+		pass "complete ten-case key sequence exits successfully"
+	else
+		sequence_status=$?
+		fail "complete ten-case key sequence exits successfully (exit $sequence_status)"
+	fi
+	log "SEQUENCE_EXIT_CODE: $sequence_status"
+	log "SEQUENCE_STDOUT_SHA256: $(sha256_file "$sequence_stdout")"
+	log "SEQUENCE_STDOUT_BYTES: $(wc -c < "$sequence_stdout" | tr -d ' ')"
+	log "SEQUENCE_STDERR_BYTES: $(wc -c < "$sequence_stderr" | tr -d ' ')"
+	if python3 - "$sequence_stdout" "$expected_sequence" "$expected_outcomes" "$max_output_bytes" <<'PY'
+import re
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+expected_headings = sys.argv[2].split('|')
+expected_outcomes = sys.argv[3].split('|')
+max_output = int(sys.argv[4])
+raw = path.read_bytes()
+text = re.sub(r'\x1b\[[0-9;?]*[A-Za-z]', '', raw.decode('utf-8', 'replace'))
+headings = re.findall(r'^Case: (.+)$', text, re.MULTILINE)
+outcomes = re.findall(r'^Outcome: (.+)$', text, re.MULTILINE)
+if len(raw) >= max_output:
+    raise SystemExit(f'output is not bounded: {len(raw)} bytes')
+if headings != expected_headings:
+    raise SystemExit(f'headings differ: {headings!r}')
+if outcomes != expected_outcomes:
+    raise SystemExit(f'outcomes differ: {outcomes!r}')
+if any(text.count(f'Case: {heading}') != 1 for heading in expected_headings):
+    raise SystemExit('one or more case headings are not emitted exactly once')
+if len(outcomes) != len(expected_outcomes):
+    raise SystemExit('outcome lines are not emitted once per case')
+for forbidden in ('Inbox/', 'Captured note', 'Captured artifact', 'source_url:', 'mdplace:article:start', 'mdplace:selection:start', 'mdplace:highlights:start'):
+    if forbidden in text:
+        raise SystemExit(f'fictional or canonical note output found: {forbidden!r}')
+PY
+	then
+		pass "ten exact capability headings and outcomes appear once with no fictional note output"
+	else
+		fail "ten exact capability headings and outcomes appear once with no fictional note output"
+	fi
+
+	if [[ ! -s "$sequence_stderr" && ! -s "$q_stderr" ]]; then
+		pass "complete and q-only runs emit no stderr"
+	else
+		fail "complete and q-only runs emit no stderr"
+	fi
+
+	log "UNKNOWN_COMMAND: printf xq | bash $prototype_path"
+	if printf 'xq' | bash "$prototype_path" > "$unknown_stdout" 2> "$unknown_stderr"; then
+		unknown_status=0
+		pass "unknown key followed by q exits successfully"
+	else
+		unknown_status=$?
+		fail "unknown key followed by q exits successfully (exit $unknown_status)"
+	fi
+	log "UNKNOWN_EXIT_CODE: $unknown_status"
+	if python3 - "$unknown_stdout" "$max_output_bytes" <<'PY'
+import re
+import sys
+from pathlib import Path
+
+raw = Path(sys.argv[1]).read_bytes()
+text = re.sub(r'\x1b\[[0-9;?]*[A-Za-z]', '', raw.decode('utf-8', 'replace'))
+if len(raw) >= int(sys.argv[2]):
+    raise SystemExit('unknown-key output is not bounded')
+if 'Case: ' in text or 'Outcome: ' in text:
+    raise SystemExit('unknown key emitted a capability case')
+if text.count('[f] filename') != 2:
+    raise SystemExit('unknown key did not leave the menu bounded and redisplayed once')
+PY
+	then
+		pass "unknown key is ignored without a false capability case"
+	else
+		fail "unknown key is ignored without a false capability case"
+	fi
+
+	log "REPEATED_COMMAND: printf ffq | bash $prototype_path"
+	if printf 'ffq' | bash "$prototype_path" > "$repeated_stdout" 2> "$repeated_stderr"; then
+		repeated_status=0
+		pass "repeated key input exits successfully"
+	else
+		repeated_status=$?
+		fail "repeated key input exits successfully (exit $repeated_status)"
+	fi
+	log "REPEATED_EXIT_CODE: $repeated_status"
+	if python3 - "$repeated_stdout" "$max_output_bytes" <<'PY'
+import re
+import sys
+from pathlib import Path
+
+raw = Path(sys.argv[1]).read_bytes()
+text = re.sub(r'\x1b\[[0-9;?]*[A-Za-z]', '', raw.decode('utf-8', 'replace'))
+if len(raw) >= int(sys.argv[2]):
+    raise SystemExit('repeated-key output is not bounded')
+if text.count('Case: filename') != 2 or text.count('Outcome: SUPPORTED') != 2:
+    raise SystemExit('repeated filename key did not render exactly twice')
+PY
+	then
+		pass "repeated key renders exactly its repeated case and remains bounded"
+	else
+		fail "repeated key renders exactly its repeated case and remains bounded"
+	fi
+
+	log "BLANKS_COMMAND: printf '\\n\\nq' | bash $prototype_path"
+	if printf '\n\nq' | bash "$prototype_path" > "$blanks_stdout" 2> "$blanks_stderr"; then
+		blanks_status=0
+		pass "blank-line input exits successfully"
+	else
+		blanks_status=$?
+		fail "blank-line input exits successfully (exit $blanks_status)"
+	fi
+	log "BLANKS_EXIT_CODE: $blanks_status"
+	if python3 - "$blanks_stdout" "$max_output_bytes" <<'PY'
+import re
+import sys
+from pathlib import Path
+
+raw = Path(sys.argv[1]).read_bytes()
+text = re.sub(r'\x1b\[[0-9;?]*[A-Za-z]', '', raw.decode('utf-8', 'replace'))
+if len(raw) >= int(sys.argv[2]):
+    raise SystemExit('blank-line output is not bounded')
+if 'Case: ' in text or 'Outcome: ' in text:
+    raise SystemExit('blank lines emitted a capability case')
+PY
+	then
+		pass "blank lines are ignored without a false capability case"
+	else
+		fail "blank lines are ignored without a false capability case"
+	fi
+
+	log "EOF_COMMAND: python3 subprocess.run(['bash', prototype], input=b'', timeout=2, capture_output=True)"
+	if python3 - "$prototype_path" "$eof_stdout" "$eof_stderr" "$max_output_bytes" <<'PY'
+import subprocess
+import sys
+from pathlib import Path
+
+prototype, stdout_path, stderr_path, max_output = sys.argv[1:]
+limit = int(max_output)
+try:
+    completed = subprocess.run(['bash', prototype], input=b'', timeout=2, capture_output=True)
+except subprocess.TimeoutExpired as exc:
+    Path(stdout_path).write_bytes((exc.output or b'')[:limit])
+    Path(stderr_path).write_bytes((exc.stderr or b'')[:limit])
+    raise SystemExit('EOF did not terminate within two seconds')
+Path(stdout_path).write_bytes(completed.stdout[:limit])
+Path(stderr_path).write_bytes(completed.stderr[:limit])
+if completed.returncode != 0:
+    raise SystemExit(f'EOF exited {completed.returncode}, expected 0')
+if len(completed.stdout) >= limit:
+    raise SystemExit(f'EOF output was {len(completed.stdout)} bytes, expected < {limit}')
+if completed.stderr:
+    raise SystemExit('EOF emitted stderr')
+PY
+	then
+		pass "closed stdin exits 0 within two seconds and emits less than 128 KiB"
+	else
+		fail "closed stdin exits 0 within two seconds and emits less than 128 KiB"
+	fi
+	log "EOF_STDOUT_BYTES: $(wc -c < "$eof_stdout" | tr -d ' ')"
+	log "EOF_STDERR_BYTES: $(wc -c < "$eof_stderr" | tr -d ' ')"
+	if [[ ! -s "$unknown_stderr" && ! -s "$repeated_stderr" && ! -s "$blanks_stderr" && ! -s "$eof_stderr" ]]; then
+		pass "unknown, repeated, blank-line, and EOF runs emit no stderr"
+	else
+		fail "unknown, repeated, blank-line, and EOF runs emit no stderr"
+	fi
+
+	log "NO_WRITE_COMMAND: (cd <mktemp-empty-cwd> && printf q | bash $prototype_path); compare find snapshots"
+	mkdir -p -- "$cwd_root"
+	find "$cwd_root" -mindepth 1 -print | sort > "$cwd_before"
+	if (cd -- "$cwd_root" && printf 'q' | bash "$prototype_path" > "$TMP_ROOT/cwd.stdout" 2> "$TMP_ROOT/cwd.stderr"); then
+		pass "prototype exits successfully from an empty working directory"
+	else
+		fail "prototype exits successfully from an empty working directory"
+	fi
+	find "$cwd_root" -mindepth 1 -print | sort > "$cwd_after"
+	if cmp -s "$cwd_before" "$cwd_after"; then
+		pass "prototype performs no filesystem write"
+	else
+		fail "prototype performs no filesystem write"
+	fi
+
+	tracked_diff_after="$(git -C "$REPO_ROOT" diff --binary | shasum -a 256 | awk '{print $1}')"
+	staged_diff_after="$(git -C "$REPO_ROOT" diff --cached --binary | shasum -a 256 | awk '{print $1}')"
+	if [[ "$tracked_diff_before" == "$tracked_diff_after" ]]; then
+		pass "shell verifier preserves the pre-existing tracked diff"
+	else
+		fail "shell verifier changed the tracked diff"
+	fi
+	if [[ "$staged_diff_before" == "$staged_diff_after" ]]; then
+		pass "shell verifier preserves the pre-existing staged diff"
+	else
+		fail "shell verifier changed the staged diff"
+	fi
+
+	log "ADVERSARIAL_malformed_input: unknown, blank, repeated, and mixed keys asserted"
+	log "ADVERSARIAL_stale_state: live prototype headings/outcomes parsed from current output"
+	log "ADVERSARIAL_dirty_worktree: tracked and staged diff digests compared before/after"
+	log "ADVERSARIAL_hung_or_long_commands: EOF subprocess bounded at two seconds and 128 KiB"
+	log "ADVERSARIAL_flaky_tests: complete, repeated, blank, unknown, q, and EOF runs executed"
+	log "ADVERSARIAL_misleading_success_output: exact content assertions reject false PASS text and note artifacts"
+	log "ADVERSARIAL_prompt_injection: not applicable; menu input is one-byte local key data"
+	log "ADVERSARIAL_cancel_resume: not applicable; prototype has no resumable state"
+	log "ADVERSARIAL_repeated_interruptions: not applicable; prototype has no interrupt-sensitive persistent state"
+	log "EXPECTED: ten exact headings/outcomes, clean EOF, bounded output, no stderr, and no filesystem write"
+	log "ACTUAL: passes=$PASSES failures=$FAILURES"
+
+	if [[ "$FAILURES" -eq 0 ]]; then
+		log "EXIT_CODE: 0"
+		log "VERDICT: PASS"
+		return 0
+	fi
+	log "EXIT_CODE: 1"
+	log "VERDICT: FAIL"
+	return 1
+}
+
+if [[ "$MODE" == "shell" ]]; then
+	TMP_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/mdplace-clipper-shell.XXXXXX")"
+	if [[ -n "${MDPLACE_EVIDENCE_DIR:-}" ]]; then
+		mkdir -p -- "$MDPLACE_EVIDENCE_DIR"
+		EVIDENCE_FILE="$MDPLACE_EVIDENCE_DIR/task-3-shell-green.txt"
+		: > "$EVIDENCE_FILE"
+	else
+		EVIDENCE_FILE="$TMP_ROOT/shell-evidence.txt"
+	fi
+	run_shell_mode
+	exit $?
+fi
+
 if [[ "$MODE" != "template" ]]; then
-	printf 'Usage: WEB_CLIPPER_DIR=/path/to/pinned/checkout %s template\n' "$0" >&2
+	printf 'Usage: WEB_CLIPPER_DIR=/path/to/pinned/checkout %s template | %s shell\n' "$0" "$0" >&2
 	exit 64
 fi
 
