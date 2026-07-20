@@ -6,7 +6,7 @@ Audit date: 2026-07-19
 
 This audit asks a narrow question: what do first-party sources from Pinterest, eBay, Airbnb, Shopify, Google Merchant Center, Walmart, Amazon, Alibaba, and Lazada actually establish about taxonomy or classification architecture, and where does the mdplace analogy go beyond the evidence?
 
-The repository inventory was produced by searching the Markdown notes for every platform name. “Exact repository reference” below means that the source or platform claim already appears in the repository. “Additional relevant source” means that it does not currently appear in the repository and is included only as a bounded comparison.
+The pre-audit claim inventory below records which platforms had already appeared in the local working notes used as research inputs. Those working notes are not part of this branch, so the inventory deliberately omits unavailable file-and-line references; the adjacent first-party citations are the authoritative evidence. “Prior working-note precedent” means that the platform or source claim appeared in those research inputs. “Additional relevant source” means that it did not and is included only as a bounded comparison.
 
 Accepted primary evidence:
 
@@ -17,25 +17,25 @@ Accepted primary evidence:
 
 An API document proves its public contract, not its hidden implementation. An engineering post or paper proves what the authors reported at publication time, not a permanent current architecture. No platform metric is treated as transferable to mdplace.
 
-## Exact repository-reference inventory
+## Pre-audit claim inventory
 
-| Platform | Exact repository location | Exact source or claim already present |
+| Platform | Present in prior working notes? | Claim carried into this audit |
 | --- | --- | --- |
-| Pinterest | `mdplace-low-level-implementation-exploration-6-v1.md:202,390`; `mdplace-low-level-implementation-exploration-7-v1.md:24,47,68,827-830`; `mdplace-low-level-implementation-exploration-8-v1.md:247-253,714` | Interest Taxonomy, Pin2Interest, dynamic μ-topics/pincepts, and OmniSearchSage |
-| eBay | `mdplace-low-level-implementation-exploration-6-v1.md:204,391` | Taxonomy API; wrong-category warning |
-| Airbnb | `mdplace-low-level-implementation-exploration-6-v1.md:65,206,380` | Knowledge graph over an in-house relational store; inventory categorization and travel context |
-| Shopify | No match | Additional comparison only |
-| Google Merchant Center | No match | Additional comparison only |
-| Walmart | No match | Additional comparison only |
-| Amazon | No match | Additional comparison only |
-| Alibaba | No match | Additional comparison only |
-| Lazada | No match | Additional comparison only |
+| Pinterest | Yes | Interest Taxonomy, Pin2Interest, dynamic μ-topics/pincepts, and OmniSearchSage |
+| eBay | Yes | Taxonomy API; wrong-category warning |
+| Airbnb | Yes | Knowledge graph over an in-house relational store; inventory categorization and travel context |
+| Shopify | No | Additional comparison only |
+| Google Merchant Center | No | Additional comparison only |
+| Walmart | No | Additional comparison only |
+| Amazon | No | Additional comparison only |
+| Alibaba | No | Additional comparison only |
+| Lazada | No | Additional comparison only |
 
-Therefore, Pinterest, eBay, and Airbnb are the only platforms that can be described as repo-mentioned precedents. Treating the other six as if earlier mdplace notes had cited them would be inaccurate.
+Therefore, Pinterest, eBay, and Airbnb are the only prior working-note precedents. Treating the other six as if the earlier research inputs had cited them would be inaccurate.
 
 ## Pinterest
 
-Status: exact repository references.
+Status: prior working-note precedent.
 
 ### Source P1 — Interest Taxonomy
 
@@ -51,7 +51,7 @@ What it supports:
 
 What it does not support:
 
-- It does not specify mdplace-style evidence records, note frontmatter patches, confidence thresholds, or an `unable_to_categorize` state.
+- It does not specify mdplace-style evidence records, note frontmatter patches, confidence thresholds, or an Unresolved Placement state.
 - It does not show that RDF or WebProtégé is required; Pinterest explicitly produced relational tables for downstream use.
 - It does not justify the claim that every classification should be explainable to an end user.
 
@@ -67,7 +67,7 @@ What it supports:
 - Its pipeline separated relatively cheap, high-recall candidate generation from ranking. The post reports at most 200 candidates, averaging 70, before binary-classifier ranking.
 - Candidate and ranking features included lexical expansion, co-occurrence, embeddings, text features, hierarchy features, engagement, and context.
 - The system was designed to accept new interests without retraining the ranking model, because features could be computed for new interest nodes.
-- This supports the repo’s “retrieve plausible taxonomy nodes, then rank” analogy.
+- This supports mdplace’s proposed “retrieve plausible taxonomy nodes, then rank” analogy.
 
 What it does not support:
 
@@ -98,7 +98,7 @@ Applicability limit: strong research analogy for later taxonomy discovery, but n
 
 ### Source P4 — OmniSearchSage
 
-[OmniSearchSage: Multi-Task Multi-Entity Embeddings for Pinterest Search](https://arxiv.org/abs/2404.16260) is a company-authored paper with an official Pinterest implementation link.
+[OmniSearchSage: Multi-Task Multi-Entity Embeddings for Pinterest Search](https://arxiv.org/abs/2404.16260) is a company-authored paper. Pinterest publishes the [OmniSearchSage implementation](https://github.com/pinterest/atg-research/tree/main/omnisearchsage).
 
 What it supports:
 
@@ -115,11 +115,11 @@ What it does not support:
 
 Applicability limit: a useful representation-learning reference, not direct evidence for taxonomy governance.
 
-Pinterest audit verdict: the repository’s factual summaries of the four sources are traceable. The steps “abstain,” “present why,” and “learn from user corrections” are sensible mdplace design proposals, but they are not established by these Pinterest sources.
+Pinterest audit verdict: the four factual summaries carried forward from the prior working notes are traceable. The steps “abstain,” “present why,” and “learn from user corrections” are sensible mdplace design proposals, but they are not established by these Pinterest sources.
 
 ## eBay
 
-Status: exact repository reference.
+Status: prior working-note precedent.
 
 ### Sources
 
@@ -132,7 +132,7 @@ What they support:
 - eBay exposes marketplace-specific category trees whose nodes can be parent or leaf categories.
 - Leaf categories have category-specific aspects with value and requirement constraints.
 - `getCategorySuggestions` accepts a free-form query, returns leaf categories with ancestor paths, and orders results by eBay’s confidence in relevance.
-- The overview states that assigning a listing to the wrong category can “severely damage” or restrict the seller’s ability to sell it. The repository’s commercial-risk statement is therefore traceable.
+- The overview states that assigning a listing to the wrong category can “severely damage” or restrict the seller’s ability to sell it. The commercial-risk statement carried forward from the prior working notes is therefore traceable.
 - eBay versions category trees and provides expired-to-active category mappings, showing that a production taxonomy evolves.
 
 What they do not support:
@@ -140,13 +140,13 @@ What they do not support:
 - The API does not return a natural-language explanation or provenance for a suggestion.
 - Rank order by confidence does not establish calibrated confidence scores or an explicit abstention contract.
 - The docs do not require a seller-facing review workflow; an integrating application decides how to present suggestions.
-- The repository’s conclusion that classification therefore “must be explainable, reviewable, and not forced when uncertain” is an mdplace design inference, not an eBay-documented rule.
+- The prior working notes’ conclusion that classification therefore “must be explainable, reviewable, and not forced when uncertain” is an mdplace design inference, not an eBay-documented rule.
 
 Applicability limit: strong analogy for a versioned hierarchy, leaf-specific constraints, and ranked candidate suggestions; weak analogy for explanation and abstention. eBay category trees also vary by marketplace, so they are not a universal ontology.
 
 ## Airbnb
 
-Status: exact repository reference.
+Status: prior working-note precedent.
 
 ### Source
 
@@ -154,7 +154,7 @@ Status: exact repository reference.
 
 What it supports:
 
-- Airbnb implemented node and edge stores over an in-house relational database, hiding row-level storage behind graph operations. The repo’s “logical graph without a native graph database” claim is exact.
+- Airbnb implemented node and edge stores over an in-house relational database, hiding row-level storage behind graph operations. This directly supports mdplace’s “logical graph without a native graph database” analogy.
 - Nodes and edges had types and constraints. Edges could include their data source, confidence score, and payload.
 - Airbnb stored a hierarchical taxonomy as special graph nodes and applied it across inventory and other travel entities.
 - Taxonomy edits required discussion and approval by a cross-functional team.
@@ -172,7 +172,7 @@ Applicability limit: one of the strongest references for mdplace’s graph-shape
 
 ## Shopify
 
-Status: additional relevant sources; no repository mention.
+Status: additional relevant sources; absent from prior working notes.
 
 ### Sources
 
@@ -199,7 +199,7 @@ Applicability limit: a strong additional analogy for stable IDs, hierarchy trave
 
 ## Google Merchant Center
 
-Status: additional relevant sources; no repository mention.
+Status: additional relevant sources; absent from prior working notes.
 
 ### Sources
 
@@ -224,7 +224,7 @@ Applicability limit: strong additional analogy for external controlled vocabular
 
 ## Walmart
 
-Status: additional relevant sources; no repository mention.
+Status: additional relevant sources; absent from prior working notes.
 
 ### Sources
 
@@ -243,19 +243,20 @@ What they support:
 What they do not support:
 
 - These sources do not document an automatic product-to-taxonomy classifier, ranked category candidates, confidence, explanations, or human review.
-- Walmart’s separately named “Get categorization API” belongs to assortment recommendations and groups recommended inventory by brand or category. It is not evidence of a listing-category suggestion API and should not be cited as one.
+- Walmart’s separately named [Get categorization API](https://developer.walmart.com/us-marketplace/docs/get-categorization-api) belongs to assortment recommendations and groups recommended inventory by brand or category. It is not evidence of a listing-category suggestion API and should not be cited as one.
 - The docs do not establish a knowledge graph.
 
 Applicability limit: useful additional precedent for versioned category schemas and change diffs; weak for mdplace’s semantic proposal pipeline. The cited endpoints are US Marketplace-specific unless their docs say otherwise.
 
 ## Amazon
 
-Status: additional relevant sources; no repository mention.
+Status: additional relevant sources; absent from prior working notes.
 
 ### Sources
 
 - [Manage Product Listings with the Selling Partner API](https://developer-docs.amazon.com/sp-api/lang-en_EN/docs/manage-product-listings-guide)
 - [Search available Product Type Definitions](https://developer-docs.amazon.com/sp-api/docs/search-available-product-type-definitions)
+- [Get Product Type Definition recommendations](https://developer-docs.amazon.com/sp-api/docs/get-product-type-definition-recommendations)
 - [SP-API release notes](https://developer-docs.amazon.com/sp-api/lang-en_US/docs/sp-api-release-notes), including the product-type and browse-node recommendation documentation
 - [Get recommended browse nodes or item type keywords](https://developer-docs.amazon.com/sp-api/docs/get-recommended-browse-nodes-or-item-type-keywords)
 - [Catalog Items API](https://developer-docs.amazon.com/sp-api/lang-en_EN/docs/catalog-items-api-v2022-04-01-use-case-guide)
@@ -282,7 +283,7 @@ Applicability limit: good additional precedent for recommendation-before-validat
 
 ## Alibaba
 
-Status: additional relevant source; no repository mention. Kept separate from Lazada.
+Status: additional relevant source; absent from prior working notes. Kept separate from Lazada.
 
 ### Sources
 
@@ -316,7 +317,7 @@ Applicability limit: strong conceptual analogy for layered concepts plus taxonom
 
 ## Lazada
 
-Status: additional relevant sources; no repository mention. Kept separate from Alibaba despite corporate ownership.
+Status: additional relevant sources; absent from prior working notes. Kept separate from Alibaba despite corporate ownership.
 
 ### Sources
 
@@ -352,12 +353,12 @@ Applicability limit: strong additional API analogy for leaf-only assignment, cat
 | Candidate retrieval before ranking | Pinterest Pin2Interest | Directly supported for Pins; not automatically transferable to notes. |
 | Human-gated taxonomy changes | Pinterest; Airbnb; Shopify’s open-source change workflow | Supports governance, not a specific mdplace UI or state machine. |
 | Graph-shaped model over relational storage | Airbnb; Pinterest’s RDF-to-relational workflow | Shows feasibility, not performance superiority or necessity. |
-| Stable IDs plus category-bound typed attributes | eBay; Shopify; Google; Walmart; Amazon; Lazada | Strong marketplace pattern; attributes are domain-specific and cannot be copied into mdplace. |
+| Stable IDs plus category-bound typed attributes | eBay; Shopify; Walmart; Amazon; Lazada | Strong marketplace pattern; attributes are domain-specific and cannot be copied into mdplace. |
 | Explicit accept/reject of an automatic suggestion | Shopify | Closest public first-party precedent; no model evidence or confidence is exposed. |
 | Platform vocabulary plus local vocabulary | Google (`google_product_category` versus `product_type`); Shopify category versus product type | Strong distinction, but local type is not the same as abstention. |
 | Version/change handling | eBay; Shopify; Walmart; Amazon; Alibaba; Lazada | Supports stable identifiers, version awareness, mappings/diffs/events; not full event sourcing. |
 | Bottom-up concepts distinct from taxonomy nodes | Pinterest μ-topics; Alibaba AliCoCo | Strong research analogy; costly systems and marketplace/user-interest semantics limit transfer. |
-| First-class “unable to categorize” with confidence thresholds | None of these sources | Untraceable as a platform-derived claim. This remains an mdplace design choice that needs independent selective-classification evidence. |
+| First-class Unresolved Placement with confidence thresholds | None of these sources | Untraceable as a platform-derived claim. This remains an mdplace design choice that needs independent selective-classification evidence. |
 | Human-readable provenance for every classification | None as a complete contract | Airbnb stores edge source/confidence and Pinterest uses review, but neither documents an end-user evidence ledger equivalent to mdplace’s proposal. |
 
 ## Claims that should not be made from this evidence
@@ -371,9 +372,9 @@ Applicability limit: strong additional API analogy for leaf-only assignment, cat
 
 ## Citation-completeness check
 
-- Pinterest: all four exact repo-cited sources traced; source-specific extrapolations marked.
-- eBay: exact repo-cited Taxonomy API and wrong-category statement traced; explanation/abstention inference marked unsupported.
-- Airbnb: exact repo-cited relational graph and categorization claims traced; 2019 applicability boundary marked.
-- Shopify, Google Merchant Center, Walmart, Amazon, Alibaba, Lazada: explicitly marked additional because none appears in existing notes.
+- Pinterest: all four prior working-note sources traced; source-specific extrapolations marked.
+- eBay: prior working-note Taxonomy API and wrong-category statement traced; explanation/abstention inference marked unsupported.
+- Airbnb: prior working-note relational graph and categorization claims traced; 2019 applicability boundary marked.
+- Shopify, Google Merchant Center, Walmart, Amazon, Alibaba, Lazada: explicitly marked additional because none appeared in the prior working notes.
 - Alibaba and Lazada: audited separately; generic or cross-company attribution rejected.
 - All factual platform claims above have an adjacent first-party source. No secondary source is used as final evidence.

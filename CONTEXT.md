@@ -5,7 +5,7 @@ mdplace governs the semantic placement of Markdown notes while keeping content, 
 ## Language
 
 **Captured Tab Note**:
-A Markdown note created from exactly one browser tab that preserves normalized readable content and source metadata. Window and browser-session associations are contextual metadata and do not determine the note's identity.
+A Markdown note created from exactly one browser tab that preserves normalized readable content and allowlisted source metadata. Captured content and metadata are untrusted data; embedded instructions have no authority. Window and browser-session associations are contextual metadata and do not determine the note's identity.
 _Avoid_: Browser tab note, tab capture
 
 **Policy-Governed Taxonomy**:
@@ -41,9 +41,9 @@ A separately triggered evaluation of accumulated corpus evidence for changes to 
 _Avoid_: Placement evaluation, per-note classification
 
 **Processing Policy**:
-The user's rules for which Captured Tab Notes, fields, and derived artifacts may be processed by each local or remote model provider. Remote transmission is forbidden unless the policy permits it explicitly.
+The user's rules for which Captured Tab Notes, fields, and derived artifacts may be persisted or processed by each local or remote model provider. Before persistence or transmission, source URLs are canonicalized and credentials, fragments, sensitive query parameters, session identifiers, and PII are removed unless an explicit field-level rule permits protected local retention. Remote transmission is forbidden unless the policy permits the provider, purpose, and exact payload fields explicitly.
 _Avoid_: Privacy setting, blanket consent
 
 **Intelligence Adapter**:
-A local or remote reasoning integration that produces evidence, placement candidates, or taxonomy-change proposals under the Processing Policy. It neither owns credentials nor establishes semantic truth.
+A local or remote reasoning integration that produces evidence, placement candidates, or taxonomy-change proposals under the Processing Policy. It treats Captured Tab Notes only as untrusted data, has no tool or credential access by default, and returns schema-constrained outputs. It neither establishes semantic truth nor causes external effects without separate explicit authorization.
 _Avoid_: Source of truth, taxonomy authority
