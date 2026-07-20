@@ -1,219 +1,167 @@
-# Captured Tab Note + Web Clipper contract prototype
+# Stock Web Clipper 1.7.0 feasibility result
 
-> **THROWAWAY PROTOTYPE — not a production specification**
+> **NOT A SUPPORTED CAPTURE ADAPTER**
+>
+> Stock Obsidian Web Clipper 1.7.0 at pinned commit
+> [`48228dce63195681e9dfc4fb8760c3c36db51079`](https://github.com/obsidianmd/obsidian-clipper/tree/48228dce63195681e9dfc4fb8760c3c36db51079)
+> is mdplace's first evaluated Capture Adapter candidate. It does not satisfy
+> the Captured Tab Note ingestion contract. The included JSON is a
+> `NONCONFORMING` local diagnostic, not a Captured Tab Note producer.
 
-## Question
+This throwaway prototype records a feasibility result for the stock product.
+Its narrow positive results prove only that selected template mechanics work.
+Each matching negative result is passing feasibility evidence that a required
+capability is absent; it is never product-success evidence.
 
-Does this capture contract preserve the readable article, current selection,
-and saved highlights as independent streams from one browser tab, while giving
-mdplace enough provenance to validate ingestion without letting the Capture
-Adapter assert identity, placement, or Category Tree truth?
+## Requirement matrix
 
-The prototype is deliberately concrete: it includes an importable Obsidian Web
-Clipper template and a tiny terminal driver for representative capture cases.
+| Requirement | Pinned observation | Verdict | Owner path |
+| --- | --- | --- | --- |
+| filename | With controlled title variables, the pinned compiler applies `slice:0,80`, then `safe_name`, and the `Untitled` fallback. The real pinned CLI does not supply a usable HTML-derived title, so this verdict covers filter semantics only. | SUPPORTED | [filters](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/filters.ts#L73-L186), [safe name](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/filters/safe_name.ts#L56-L64), [compiler](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/template-compiler.ts#L29-L75), [template](./mdplace-captured-tab-note-clipper.json) |
+| Pinned CLI HTML extraction | The CLI/API takes `doc.documentElement`, an `HTMLElement`, casts it as `Document`, and passes it to Defuddle. The pinned executable consequently emits blank HTML-derived variables and `words=0` for the fixtures. This is a CLI test-seam defect, not proof that browser extraction always returns blank data. | UNSUPPORTED | [CLI parser](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/cli.ts#L143-L147), [API extraction](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/api.ts#L176-L220), [verifier](./verify.sh) |
+| YAML/frontmatter safety | Stock frontmatter generation double-quotes text but its escaping helper escapes only double quotes. The template cannot safely serialize arbitrary page-derived free text or enforce mdplace's ingestion allowlist, so the diagnostic retains none. | UNSUPPORTED | [frontmatter generator](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/shared.ts#L145-L205), [escaping helper](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/string-utils.ts#L9-L18), [template](./mdplace-captured-tab-note-clipper.json) |
+| selection provenance | Promoting a selection creates an ordinary highlight, may merge it with existing highlights, and clears the selection. The exported shape has text, timestamp, and optional notes, but no reliable selection-origin field. | UNSUPPORTED | [selection promotion and merge](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/highlighter.ts#L558-L602), [exported highlight shape](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/highlighter.ts#L1113-L1139) |
+| metadata-only extraction artifact | Stock browser extraction rejects an empty readable-content response. The popup awaits that extraction before it initializes variables or renders template fields, so the template cannot emit the required metadata-only failure artifact. | UNSUPPORTED | [empty-content rejection](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/content-extractor.ts#L67-L123), [browser ordering](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/core/popup.ts#L678-L740) |
+| template/content compiler | The pinned compiler renders the diagnostic's static warning and three presence-only conditionals. This compiler capability does not make the resulting file conforming. | SUPPORTED | [compiler](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/template-compiler.ts#L29-L75), [renderer](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/renderer.ts#L95-L153), [verifier](./verify.sh) |
+| URL persistence policy | Stock variables remove a text fragment but still expose the current URL, and the filter registry has no mdplace sanitizer that guarantees removal of credentials, fragments, sensitive query parameters, session identifiers, and PII before persistence. The diagnostic renders no URL. | UNSUPPORTED | [URL variable construction](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/shared.ts#L40-L66), [filter registry](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/filters.ts#L73-L186), [Processing Policy](../../CONTEXT.md) |
+| missing word count | Variable construction converts a missing `wordCount` to the string `0`. Stock output therefore cannot distinguish unknown metadata from a genuine zero-word observation. | UNSUPPORTED | [variable construction](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/shared.ts#L40-L66), [verifier](./verify.sh) |
+| deterministic hash shape | Stock Web Clipper emits no mdplace hashes, and this diagnostic has no canonical stream boundaries. A reproducible future-adapter schema remains a target contract for Todo 5. | TARGET CONTRACT | [template](./mdplace-captured-tab-note-clipper.json), [driver](./prototype.sh) |
+| import/activation mechanics | The schema `0.1.0` JSON shape can be imported, and the pinned compiler can render it against local fixtures. Activation proves only those mechanics and supplies none of the missing ingestion guarantees. | SUPPORTED | [export shape](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/import-export.ts#L23-L67), [import validation](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/import-export.ts#L69-L170), [template](./mdplace-captured-tab-note-clipper.json) |
+| Captured Tab Note conformance | Stock 1.7.0 lacks required safe serialization, pre-persistence URL sanitation, metadata-only recovery, selection-origin provenance, unknown-metadata semantics, and runtime hashing. The diagnostic is not a Captured Tab Note. | UNSUPPORTED | [domain contract](../../CONTEXT.md), [template](./mdplace-captured-tab-note-clipper.json), [driver](./prototype.sh), [verifier](./verify.sh) |
 
-Run it with:
+The ten rows whose requirement names match the terminal driver are its live
+truth matrix. The additional pinned-CLI row separates a limitation of the
+local executable test seam from the browser-extension observations.
+
+## Current diagnostic artifact
+
+The importable file is
+[`mdplace-captured-tab-note-clipper.json`](./mdplace-captured-tab-note-clipper.json).
+Its exact current coordinates and behavior are:
+
+- Name: `NONCONFORMING-mdplace Web Clipper diagnostic`
+- Destination: `mdplace-prototype-diagnostics`
+- Behavior: `create`
+- Filename expression:
+  `NONCONFORMING-{{date|date:"YYYYMMDD-HHmmss"}}--{{domain|safe_name}}--{{title|slice:0,80|safe_name ?? "Untitled"}}`
+
+Its complete property allowlist is:
+
+| Property | Value | Type |
+| --- | --- | --- |
+| `mdplace_prototype_kind` | `captured_tab_note_web_clipper_feasibility` | `text` |
+| `mdplace_capture_conformance` | `nonconforming` | `text` |
+| `mdplace_placement_allowed` | `false` | `checkbox` |
+| `source_adapter` | `obsidian_web_clipper` | `text` |
+| `source_adapter_version` | `1.7.0` | `text` |
+| `source_captured_at` | `{{date}}` | `datetime` |
+
+The body is a static `NONCONFORMING DIAGNOSTIC` warning plus
+presence-only conditionals for `content`, `selection`, and `highlights`. Those
+conditionals render only `present` or `absent`. The artifact retains no
+page-derived title, URL, article, selection text, highlight text, author, site,
+description, image, publication time, or word count. It has no
+`mdplace:article`, `mdplace:selection`, or `mdplace:highlights` canonical stream
+markers. Its path and filename have no identity, placement, or semantic
+authority.
+
+## Activation boundary
+
+The only permitted activation is local fixture testing with synthetic,
+non-sensitive fixtures and disposable local state. Do not send the diagnostic
+to `Inbox`, ingest it, process or transmit it remotely, use it on live or
+sensitive pages, or treat its output as a Captured Tab Note. If browser import
+mechanics are exercised, use a disposable local profile and vault; do not
+enable the template for ordinary browsing.
+
+These local commands inspect the artifact without activating a capture flow:
 
 ```sh
-bash prototypes/captured-tab-note-web-clipper/prototype.sh
+jq empty prototypes/captured-tab-note-web-clipper/mdplace-captured-tab-note-clipper.json
+printf 'fshicpmbaeq' | bash prototypes/captured-tab-note-web-clipper/prototype.sh
+bash prototypes/captured-tab-note-web-clipper/verify.sh docs
+bash prototypes/captured-tab-note-web-clipper/verify.sh shell
 ```
 
-## Proposed contract
+The pinned-engine fixture test additionally requires a disposable, detached
+checkout at the exact pinned SHA with its CLI/API builds:
 
-### Template and destination
-
-- Export format: Obsidian Web Clipper template schema `0.1.0`.
-- Behavior: `create`; never append, prepend, or overwrite.
-- Inbox path: vault-relative `Inbox`.
-- Filename stem:
-  `YYYYMMDD-HHmmss--<safe domain>--<safe title up to 80 characters>`.
-- The filename and path are operational coordinates, not note identity or
-  semantic evidence. Collision, recapture, and duplicate semantics remain owned
-  by **Resolve source identity, recapture, and duplicate semantics**.
-- The template must be the first fallback template, or be selected explicitly.
-- Obsidian Web Clipper Interpreter is not used by this template.
-
-### Frontmatter ownership
-
-| Owner | Keys | Rule |
-| --- | --- | --- |
-| Capture Adapter | `capture_contract`, `capture_adapter`, `capture_template_version`, `captured_at`, `capture_workflow_status`, `capture_article_status`, `capture_selection_status`, `capture_highlights_status`, `capture_image_policy`, `source_*` | Preserved as observed capture provenance. They may be incomplete, but must not be silently invented or upgraded. |
-| mdplace | `mdplace_id`, accepted-placement, review, and projection bridge keys | Absent at capture. mdplace may add or update only its managed keys after ingestion. |
-| User | Any other keys added later | Preserved semantically by mdplace. |
-
-The Capture Adapter must not write `mdplace_id`, `primary_category`,
-`category_scheme`, `placement_state`, `placement_id`, `hypothesis_id`,
-`review_task_id`, or `projection_id`.
-
-`capture_adapter: obsidian-web-clipper` plus
-`capture_template_version: 1` identifies the adapter contract that mdplace can
-actually observe. The official template language exposes no variable for the
-installed extension version, so the prototype does not fabricate one.
-
-### Independent capture streams
-
-The confirmed invariant is **preserve every available stream without
-precedence-based deletion**:
-
-1. The normalized readable article is the primary content stream.
-2. A current browser selection is preserved as selection side data.
-3. Saved Web Clipper highlights are preserved as structured highlight side
-   data, including the text/element data and timestamps exposed by Web Clipper.
-
-Web Clipper must be configured to **Do nothing** when adding highlights to note
-content. That keeps `{{content}}` as the readable article when no live selection
-exists, while `{{highlights}}` is written separately.
-
-The v1 capture workflow is:
-
-1. If browser text is currently selected, promote it to a Web Clipper highlight.
-2. Clear the live browser selection.
-3. Clip the page.
-
-The newly promoted selection becomes the newest durable highlight. Its
-timestamp preserves recency, while the readable article remains available in
-`{{content}}`. A capture attempted with a live selection records
-`capture_workflow_status: invalid_live_selection`; the selection and existing
-highlights are retained for recovery, but the artifact is not a valid Captured
-Tab Note.
-
-Each stream has its own delimiters:
-
-```text
-<!-- mdplace:article:start -->
-...
-<!-- mdplace:article:end -->
-
-<!-- mdplace:selection:start -->
-...
-<!-- mdplace:selection:end -->
-
-<!-- mdplace:highlights:start -->
-...
-<!-- mdplace:highlights:end -->
+```sh
+WEB_CLIPPER_DIR=/path/to/detached/pinned/checkout \
+  bash prototypes/captured-tab-note-web-clipper/verify.sh template
 ```
 
-Absent optional streams omit their delimiter pair. The body may identify the
-source and stream type, but it contains no category, placement, or
-machine-generated semantic summary.
+That mode uses generated local HTML fixtures and writes rendered evidence to
+standard output or an explicitly selected evidence directory; it does not
+authorize live-page capture.
 
-### Official Web Clipper limitation
+## Confirmed limitations
 
-Web Clipper `1.7.0` replaces its clean `{{content}}` article variable with
-`{{selection}}` whenever a live selection exists. The template still receives
-`{{selection}}`, `{{highlights}}`, and `{{fullHtml}}`, but it does not receive a
-second independent Defuddle-normalized article variable.
+### CLI extraction and controlled filter semantics
 
-The confirmed workflow avoids that limitation by promoting the current
-selection to a highlight before clipping. If the rule is violated, the
-prototype preserves the selection and highlights, records
-`capture_article_status: unavailable_active_selection`, and requires recapture.
-It does not disguise the unprocessed full page HTML as a normalized readable
-article.
+At the pinned SHA, the CLI's linkedom parser returns a `Document`, but
+`clip()` selects `doc.documentElement` and passes that `HTMLElement` to
+Defuddle through a `Document` cast. The real pinned CLI probe consequently
+emits blank `title`, `author`, `content`, `description`, `site`, and `image`
+variables and emits `words=0`.
 
-### Extraction failures
+The controlled-title test imports the same pinned template compiler and
+supplies explicit variables. Its pass proves only the `slice:0,80`,
+`safe_name`, and `Untitled` template semantics. It does not erase or work
+around the CLI defect, and it does not prove end-to-end filename capture.
 
-- If the template can render source metadata but no valid readable article
-  stream, it creates an explicitly invalid artifact in the Inbox. The artifact
-  retains the available source metadata and any selection/highlight side data
-  for recovery.
-- mdplace records a blocking ingestion diagnostic, does **not** recognize the
-  artifact as a Captured Tab Note, and forbids semantic placement.
-- The invalid artifact remains in the Inbox for recapture or manual inspection.
-  mdplace must not fill the body from `fullHtml`, run Interpreter, or infer
-  missing content remotely.
-- A hard extension or transport failure that cannot render the template creates
-  no file.
+### Browser failure and provenance boundaries
 
-### Images
+The stock browser path requires a truthy readable-content response before
+template rendering. Empty content therefore fails before the template can
+write a metadata-only recovery artifact. A hard extraction failure creates no
+diagnostic file through that path.
 
-- Image references remain remote URLs in the captured Markdown.
-- `capture_image_policy: remote_url` makes that limitation explicit.
-- The Capture Adapter does not download image bytes. Obsidian's separate
-  **Download attachments for current file** command may localize them later,
-  which creates a new observed file version.
-- An article or selection stream hash includes Markdown image syntax and its
-  URL exactly as captured. Image binary bytes are never part of a stream hash.
+Promoting a live selection invokes ordinary highlight creation. It may merge
+with an existing highlight, clears the selection, and exports no reliable
+selection-origin marker. Timestamps do not restore that lost origin.
 
-### Hashing after the file reaches the vault
+An unknown word count is converted to `0`, so zero is not reliable evidence
+that the page was measured at zero words.
 
-The Web Clipper template does not write hashes. mdplace computes them during
-ingestion and records them in the semantic ledger:
+### Persistence safety
 
-1. Locate at most one correctly ordered delimiter pair for each stream.
-   Missing article markers, duplicate markers, or reversed markers are a
-   blocking invalid-capture diagnostic. Selection and highlight markers are
-   optional only when their corresponding status is `absent`.
-2. For each present stream, take only the bytes between its marker lines,
-   excluding the line break immediately after the start marker and immediately
-   before the end marker.
-3. Require valid UTF-8, normalize line endings to LF, and normalize Unicode to
-   NFC. Preserve all other Markdown bytes; do not reflow whitespace, rewrite
-   links, or fetch images.
-4. Reject an empty or whitespace-only present stream.
-5. SHA-256 hash each normalized stream independently as `article_content_hash`,
-   `selection_hash`, or `highlights_hash`, using
-   `sha256:<64 lowercase hex>`.
-6. Build a canonical JSON object from the Capture Adapter-owned frontmatter
-   fields, representing absent optional values as `null`, canonicalize it with
-   RFC 8785/JCS, and SHA-256 hash it as the source-metadata hash.
-7. JCS-canonicalize the ordered stream-name/hash manifest and SHA-256 hash it as
-   the capture-stream manifest hash.
+The stock template cannot guarantee mandatory source-URL sanitation before
+persistence or transmission. Its frontmatter generator also cannot guarantee
+safe YAML serialization for arbitrary page-derived free text. The diagnostic
+avoids those unsafe surfaces by retaining no page-derived values at all; that
+avoidance is diagnostic containment, not a conforming implementation.
 
-These hashes are capture-version evidence. They are not Captured Tab Note
-identity, source identity, or semantic placement.
+## Future adapter hashing boundary
 
-## Decisions confirmed
+Deterministic hashing is a **TARGET CONTRACT** for a future conforming adapter,
+not behavior of stock Web Clipper or this diagnostic. Todo 5 must complete the
+literal source-metadata and stream-manifest schemas, normalization rules,
+absent-value semantics, canonical byte inputs, order, and fixed test vectors.
+Until that work is complete, there is no reproducible hash schema and no
+runtime enforcement here. The current JSON emits no hashes and has no canonical
+stream markers.
 
-- Preserve the article, current selection, and saved highlights as independent
-  streams. No stream deletes another through precedence.
-- Before clipping, promote a live selection to a Web Clipper highlight and
-  clear the selection. The promoted selection is preserved as the newest
-  timestamped highlight so the readable article remains available.
-- If source metadata can be rendered but no readable article can be extracted,
-  preserve an explicitly invalid artifact in the Inbox for recovery. It is not
-  a Captured Tab Note and cannot be placed. A hard extension or transport
-  failure still creates no file.
-- Preserve image references as remote URLs and do not automatically download
-  image bytes. A later explicit attachment download creates a new observed file
-  version while retaining file identity.
-- Omit hashes from the Web Clipper output. During ingestion, mdplace computes
-  independent normalized hashes for each present stream, adapter-owned source
-  metadata, and the ordered stream manifest. These hashes are capture-version
-  evidence, not identity or placement authority.
-- Create every clip in the vault-relative `Inbox` using the filename stem
-  `YYYYMMDD-HHmmss--<safe domain>--<safe title up to 80 characters>`. The
-  filename and path are operational coordinates only, never note identity or
-  semantic placement evidence.
-- Limit Capture Adapter-owned frontmatter to the observable capture
-  contract/version, capture time, workflow and stream statuses, remote-image
-  policy, and `source_*` metadata listed above. Identity, placement, review,
-  and projection fields are absent until mdplace owns them after ingestion.
-- Use a human-readable title and source callout followed by independently
-  delimited article, optional unexpected-selection, and optional saved-highlight
-  streams. Marker pairs are canonical ingestion boundaries, and the body
-  contains no category, placement, or generated semantic summary.
-- Require the exact JSON template to be selected explicitly or as the first
-  fallback, Web Clipper highlight note-content behavior set to **Do nothing**,
-  any live selection promoted and cleared before capture, and Interpreter not
-  invoked.
+Any supported implementation still needs an additional adapter or upstream
+change that provides safe serialization, pre-persistence URL sanitation,
+metadata-only recovery output, selection-origin provenance, unknown-metadata
+semantics, and deterministic runtime hashing while preserving mdplace's
+untrusted-input, Processing Policy, and no-semantic-authority boundaries.
 
-## Verdict
+## Evidence
 
-The complete v1 prototype contract is accepted. A file is a valid Captured Tab
-Note only when it was produced through the confirmed workflow and contains a
-valid readable article stream with conforming provenance, statuses, and marker
-boundaries. Invalid recovery artifacts remain visible in the Inbox but have no
-Captured Tab Note or placement status.
+The executable sources of truth are the
+[JSON diagnostic](./mdplace-captured-tab-note-clipper.json), the
+[ten-case driver](./prototype.sh), and the [verifier](./verify.sh). Local task
+evidence is intentionally untracked under:
 
-## Verified upstream constraints
+- `.omo/evidence/pr15/task-2-template-green.txt` for the pinned CLI/compiler
+  fixture observations
+- `.omo/evidence/pr15/task-3-shell-green.txt` for the exact driver
+  headings/outcomes and EOF behavior
+- `.omo/evidence/pr15/task-4-contract-consistency.txt` for the README/JSON/
+  driver/domain relationship and adversarial documentation probe
 
-This prototype was checked against Obsidian Web Clipper `1.7.0` at commit
-[`48228dce63195681e9dfc4fb8760c3c36db51079`](https://github.com/obsidianmd/obsidian-clipper/tree/48228dce63195681e9dfc4fb8760c3c36db51079):
-
-- [Template export and import shape](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/import-export.ts)
-- [Template variables and selection/highlight processing](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/content-extractor.ts)
-- [Filename/path handoff to Obsidian](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/obsidian-note-creator.ts)
-- [Official capture and image behavior](https://obsidian.md/help/web-clipper/capture)
-- [Official variable semantics](https://obsidian.md/help/web-clipper/variables)
-- [Official highlight behavior](https://obsidian.md/help/web-clipper/highlight)
+A verifier pass on an `UNSUPPORTED` row means the observed missing capability
+matches this feasibility verdict. It must never be reported as successful
+Captured Tab Note delivery.

@@ -8,6 +8,8 @@ readonly SCRIPT_DIR
 REPO_ROOT="$(cd -- "$SCRIPT_DIR/../.." && pwd)"
 readonly REPO_ROOT
 readonly TEMPLATE_PATH="$SCRIPT_DIR/mdplace-captured-tab-note-clipper.json"
+readonly README_PATH="$SCRIPT_DIR/README.md"
+readonly CONTEXT_PATH="$REPO_ROOT/CONTEXT.md"
 readonly EXPECTED_NOTE_NAME='NONCONFORMING-{{date|date:"YYYYMMDD-HHmmss"}}--{{domain|safe_name}}--{{title|slice:0,80|safe_name ?? "Untitled"}}'
 readonly VERIFY_TIMEOUT_SECONDS="${MDPLACE_VERIFY_TIMEOUT_SECONDS:-60}"
 
@@ -116,6 +118,441 @@ check_command() {
 	else
 		fail "$label"
 	fi
+}
+
+run_docs_contract_check() {
+	local readme_path="$1"
+	local driver_output="$2"
+
+	python3 - \
+		"$readme_path" \
+		"$CONTEXT_PATH" \
+		"$TEMPLATE_PATH" \
+		"$driver_output" \
+		"$EXPECTED_UPSTREAM_SHA" <<'PY'
+import json
+import re
+import sys
+from pathlib import Path
+
+readme_path = Path(sys.argv[1])
+context_path = Path(sys.argv[2])
+template_path = Path(sys.argv[3])
+driver_output_path = Path(sys.argv[4])
+upstream_sha = sys.argv[5]
+readme = readme_path.read_text(encoding='utf-8')
+semantic_readme = ' '.join(re.sub(r'(?m)^>\s?', '', readme).split())
+context = context_path.read_text(encoding='utf-8')
+template = json.loads(template_path.read_text(encoding='utf-8'))
+driver_raw = driver_output_path.read_text(encoding='utf-8')
+driver = re.sub(r'\x1b\[[0-9;?]*[A-Za-z]', '', driver_raw)
+failures: list[str] = []
+
+
+def require(condition: bool, message: str) -> None:
+    if not condition:
+        failures.append(message)
+
+
+expected_properties = [
+    {
+        'name': 'mdplace_prototype_kind',
+        'value': 'captured_tab_note_web_clipper_feasibility',
+        'type': 'text',
+    },
+    {
+        'name': 'mdplace_capture_conformance',
+        'value': 'nonconforming',
+        'type': 'text',
+    },
+    {
+        'name': 'mdplace_placement_allowed',
+        'value': 'false',
+        'type': 'checkbox',
+    },
+    {
+        'name': 'source_adapter',
+        'value': 'obsidian_web_clipper',
+        'type': 'text',
+    },
+    {
+        'name': 'source_adapter_version',
+        'value': '1.7.0',
+        'type': 'text',
+    },
+    {
+        'name': 'source_captured_at',
+        'value': '{{date}}',
+        'type': 'datetime',
+    },
+]
+expected_body = (
+    '> [!warning] NONCONFORMING DIAGNOSTIC\n'
+    '> This is not a Captured Tab Note and must not be ingested.\n'
+    '> This diagnostic retains no page-derived values and is not placement-authoritative.\n'
+    '>\n'
+    '> Availability observations only:\n'
+    '\n'
+    '- readable_content: {% if content %}present{% else %}absent{% endif %}\n'
+    '- live_selection: {% if selection %}present{% else %}absent{% endif %}\n'
+    '- highlights: {% if highlights %}present{% else %}absent{% endif %}\n'
+)
+expected_driver = [
+    ('filename', 'SUPPORTED'),
+    ('YAML/frontmatter safety', 'UNSUPPORTED'),
+    ('selection provenance', 'UNSUPPORTED'),
+    ('metadata-only extraction artifact', 'UNSUPPORTED'),
+    ('template/content compiler', 'SUPPORTED'),
+    ('URL persistence policy', 'UNSUPPORTED'),
+    ('missing word count', 'UNSUPPORTED'),
+    ('deterministic hash shape', 'TARGET CONTRACT'),
+    ('import/activation mechanics', 'SUPPORTED'),
+    ('Captured Tab Note conformance', 'UNSUPPORTED'),
+]
+
+require(template.get('schemaVersion') == '0.1.0', 'live JSON schemaVersion is not 0.1.0')
+require(template.get('name') == 'NONCONFORMING-mdplace Web Clipper diagnostic', 'live JSON diagnostic name drifted')
+require(template.get('behavior') == 'create', 'live JSON behavior is not create')
+require(template.get('path') == 'mdplace-prototype-diagnostics', 'live JSON diagnostic path drifted')
+require(
+    template.get('noteNameFormat')
+    == 'NONCONFORMING-{{date|date:"YYYYMMDD-HHmmss"}}--{{domain|safe_name}}--{{title|slice:0,80|safe_name ?? "Untitled"}}',
+    'live JSON filename expression drifted',
+)
+require(template.get('properties') == expected_properties, 'live JSON six-property allowlist drifted')
+require(template.get('noteContentFormat') == expected_body, 'live JSON static/presence-only body drifted')
+require(template.get('triggers') == [], 'live JSON triggers are not empty')
+require(
+    not re.search(
+        r'{{(?:title|url|content|selection|highlights|author|site|description|image|words|published)}}',
+        template.get('noteContentFormat', ''),
+    ),
+    'live JSON body retains a page-derived interpolation',
+)
+require(
+    not any(
+        marker in template.get('noteContentFormat', '')
+        for marker in (
+            'mdplace:article:start',
+            'mdplace:selection:start',
+            'mdplace:highlights:start',
+        )
+    ),
+    'live JSON body contains a canonical stream marker',
+)
+
+headings = re.findall(r'^Case: (.+)$', driver, re.MULTILINE)
+outcomes = re.findall(r'^Outcome: (.+)$', driver, re.MULTILINE)
+require(headings == [name for name, _ in expected_driver], 'live driver heading sequence drifted')
+require(outcomes == [verdict for _, verdict in expected_driver], 'live driver outcome sequence drifted')
+require(len(headings) == len(set(headings)) == 10, 'live driver headings are not ten unique cases')
+
+lead_position = readme.find('NOT A SUPPORTED CAPTURE ADAPTER')
+first_command_position = readme.find('```sh')
+require(0 <= lead_position < 500, 'README does not lead with the unsupported verdict')
+require(first_command_position == -1 or lead_position < first_command_position, 'README verdict appears after instructions')
+require(upstream_sha in readme, 'README does not pin the exact upstream SHA')
+require(
+    "is mdplace's first evaluated Capture Adapter candidate" in readme,
+    'README does not identify stock 1.7.0 as the first evaluated candidate',
+)
+require(
+    'It does not satisfy the Captured Tab Note ingestion contract.' in semantic_readme,
+    'README does not state the stock candidate is unsupported',
+)
+
+matrix_header = '| Requirement | Pinned observation | Verdict | Owner path |'
+require(matrix_header in readme, 'README lacks the required four-column matrix')
+matrix: dict[str, tuple[str, str, str]] = {}
+if matrix_header in readme:
+    lines = readme.splitlines()
+    header_index = lines.index(matrix_header)
+    for line in lines[header_index + 2:]:
+        if not line.startswith('|'):
+            break
+        cells = [cell.strip() for cell in line.split('|')[1:-1]]
+        if len(cells) != 4:
+            failures.append(f'malformed matrix row: {line}')
+            continue
+        requirement, observation, verdict, owner = cells
+        if requirement in matrix:
+            failures.append(f'duplicate matrix requirement: {requirement}')
+        matrix[requirement] = (observation, verdict.strip('*` '), owner)
+
+for requirement, expected_verdict in expected_driver:
+    require(requirement in matrix, f'README matrix lacks live driver requirement: {requirement}')
+    if requirement in matrix:
+        observation, actual_verdict, owner = matrix[requirement]
+        require(actual_verdict == expected_verdict, f'README verdict mismatch for {requirement}: {actual_verdict}')
+        require(bool(observation), f'README observation is empty for {requirement}')
+        require('[' in owner and '](' in owner, f'README owner path is not linked for {requirement}')
+require('Pinned CLI HTML extraction' in matrix, 'README matrix lacks the pinned CLI HTMLElement defect')
+if 'Pinned CLI HTML extraction' in matrix:
+    observation, verdict, owner = matrix['Pinned CLI HTML extraction']
+    require(verdict == 'UNSUPPORTED', 'pinned CLI HTMLElement defect is not UNSUPPORTED')
+    require('HTMLElement' in observation and 'Defuddle' in observation, 'pinned CLI defect observation is incomplete')
+    require('api.ts#L176-L220' in owner, 'pinned CLI defect lacks the exact API line scope')
+
+required_readme_tokens = [
+    '`NONCONFORMING` local diagnostic',
+    '`NONCONFORMING-mdplace Web Clipper diagnostic`',
+    '`mdplace-prototype-diagnostics`',
+    '`create`',
+    'presence-only conditionals for `content`, `selection`, and `highlights`',
+    'retains no page-derived title, URL, article, selection text, highlight text',
+    'It has no `mdplace:article`, `mdplace:selection`, or `mdplace:highlights` canonical stream markers.',
+    'The only permitted activation is local fixture testing with synthetic, non-sensitive fixtures and disposable local state.',
+    'Do not send the diagnostic to `Inbox`, ingest it, process or transmit it remotely, use it on live or sensitive pages, or treat its output as a Captured Tab Note.',
+    'emits blank `title`, `author`, `content`, `description`, `site`, and `image`',
+    'supplies explicit variables',
+    'fails before the template can write a metadata-only recovery artifact',
+    'may merge with an existing highlight',
+    'no reliable selection-origin marker',
+    'converted to `0`',
+    'cannot guarantee mandatory source-URL sanitation before persistence or transmission',
+    'cannot guarantee safe YAML serialization for arbitrary page-derived free text',
+    'Todo 5 must complete the literal source-metadata and stream-manifest schemas',
+    'there is no reproducible hash schema and no runtime enforcement here',
+    'Each matching negative result is passing feasibility evidence',
+    'It must never be reported as successful Captured Tab Note delivery.',
+]
+for token in required_readme_tokens:
+    require(token in semantic_readme, f'README required contract relationship is absent: {token!r}')
+
+for prop in expected_properties:
+    row = f"| `{prop['name']}` | `{prop['value']}` | `{prop['type']}` |"
+    require(row in readme, f'README diagnostic property row drifted: {prop["name"]}')
+
+required_permalinks = [
+    f'https://github.com/obsidianmd/obsidian-clipper/blob/{upstream_sha}/src/utils/filters.ts#L73-L186',
+    f'https://github.com/obsidianmd/obsidian-clipper/blob/{upstream_sha}/src/utils/filters/safe_name.ts#L56-L64',
+    f'https://github.com/obsidianmd/obsidian-clipper/blob/{upstream_sha}/src/utils/import-export.ts#L69-L170',
+    f'https://github.com/obsidianmd/obsidian-clipper/blob/{upstream_sha}/src/utils/shared.ts#L145-L205',
+    f'https://github.com/obsidianmd/obsidian-clipper/blob/{upstream_sha}/src/utils/string-utils.ts#L9-L18',
+    f'https://github.com/obsidianmd/obsidian-clipper/blob/{upstream_sha}/src/utils/content-extractor.ts#L67-L123',
+    f'https://github.com/obsidianmd/obsidian-clipper/blob/{upstream_sha}/src/core/popup.ts#L678-L740',
+    f'https://github.com/obsidianmd/obsidian-clipper/blob/{upstream_sha}/src/utils/highlighter.ts#L558-L602',
+    f'https://github.com/obsidianmd/obsidian-clipper/blob/{upstream_sha}/src/utils/highlighter.ts#L1113-L1139',
+    f'https://github.com/obsidianmd/obsidian-clipper/blob/{upstream_sha}/src/utils/shared.ts#L40-L66',
+    f'https://github.com/obsidianmd/obsidian-clipper/blob/{upstream_sha}/src/api.ts#L176-L220',
+]
+for permalink in required_permalinks:
+    require(permalink in readme, f'README lacks pinned source permalink: {permalink}')
+
+for forbidden in (
+    'The complete v1 prototype contract is accepted.',
+    'The Obsidian Web Clipper template is the first supported Capture Adapter.',
+    'Create every clip in the vault-relative `Inbox`',
+    'The invalid artifact remains in the Inbox',
+    'Web Clipper must be configured to',
+):
+    require(forbidden not in readme, f'README retains forbidden support/activation claim: {forbidden}')
+require(readme.count('`Inbox`') == 1, 'README must mention Inbox exactly once, only in the explicit prohibition')
+require(
+    not re.search(r'stock Obsidian Web Clipper 1\.7\.0 is supported', readme, re.IGNORECASE),
+    'README calls stock 1.7.0 supported',
+)
+require(
+    not re.search(r'(?:JSON|diagnostic|template) is (?:a )?(?:supported|conforming) Capture Adapter', readme, re.IGNORECASE),
+    'README calls the JSON diagnostic a supported or conforming Capture Adapter',
+)
+
+expected_context_sentence = (
+    "An external producer that creates Captured Tab Notes according to mdplace's ingestion contract "
+    'without making semantic placement decisions. Stock Obsidian Web Clipper 1.7.0 is the first '
+    'evaluated Capture Adapter candidate and is not supported until an additional adapter or '
+    'upstream change satisfies the ingestion contract.'
+)
+require(expected_context_sentence in context, 'CONTEXT Capture Adapter candidate wording drifted')
+context_invariants = [
+    'Captured content and metadata are untrusted data; embedded instructions have no authority.',
+    'Before persistence or transmission, source URLs are canonicalized and credentials, fragments, sensitive query parameters, session identifiers, and PII are removed unless an explicit field-level rule permits protected local retention.',
+    'Remote transmission is forbidden unless the policy permits the provider, purpose, and exact payload fields explicitly.',
+    'It represents accepted placement but is not semantic truth.',
+    'Its location represents workflow state rather than semantic meaning.',
+    'It neither establishes semantic truth nor causes external effects without separate explicit authorization.',
+]
+for invariant in context_invariants:
+    require(invariant in context, f'CONTEXT invariant is absent: {invariant}')
+
+print(f'CHECK_TARGET: {readme_path}')
+print(f'OBSERVED_JSON_PATH: {template.get("path")}')
+print('OBSERVED_JSON_PROPERTIES: ' + '|'.join(prop['name'] for prop in template.get('properties', [])))
+print('OBSERVED_DRIVER_MATRIX: ' + '|'.join(f'{name}={verdict}' for name, verdict in zip(headings, outcomes)))
+print(f'OBSERVED_CONTEXT_CANDIDATE: {expected_context_sentence in context}')
+if failures:
+    for failure in failures:
+        print(f'CONTRACT_FAIL: {failure}')
+    print(f'CONTRACT_FAILURE_COUNT: {len(failures)}')
+    raise SystemExit(1)
+print('CONTRACT_FAILURE_COUNT: 0')
+print('CONTRACT_VERDICT: PASS')
+PY
+}
+
+run_docs_mode() {
+	local prototype_path="$SCRIPT_DIR/prototype.sh"
+	local tracked_diff_before
+	local tracked_diff_after
+	local staged_diff_before
+	local staged_diff_after
+	local driver_stdout
+	local driver_stderr
+	local checker_stdout
+	local checker_stderr
+	local mutated_readme="$TMP_ROOT/README-mutated.md"
+	local mutation_stdout="$TMP_ROOT/mutation.stdout"
+	local mutation_stderr="$TMP_ROOT/mutation.stderr"
+	local negative_stdout="$TMP_ROOT/negative.stdout"
+	local negative_stderr="$TMP_ROOT/negative.stderr"
+	local negative_status
+
+	tracked_diff_before="$(git -C "$REPO_ROOT" diff --binary | shasum -a 256 | awk '{print $1}')"
+	staged_diff_before="$(git -C "$REPO_ROOT" diff --cached --binary | shasum -a 256 | awk '{print $1}')"
+
+	log "SCENARIO: README, live diagnostic, terminal driver, and domain contract consistency"
+	log "COMMAND: MDPLACE_EVIDENCE_DIR=<evidence-dir> bash prototypes/captured-tab-note-web-clipper/verify.sh docs"
+	log "MDPLACE_HEAD: $(git -C "$REPO_ROOT" rev-parse HEAD)"
+	log "PINNED_UPSTREAM_SHA: $EXPECTED_UPSTREAM_SHA"
+	log "README_SHA256: $(sha256_file "$README_PATH")"
+	log "CONTEXT_SHA256: $(sha256_file "$CONTEXT_PATH")"
+	log "TEMPLATE_SHA256: $(sha256_file "$TEMPLATE_PATH")"
+	log "PROTOTYPE_SHA256: $(sha256_file "$prototype_path")"
+	log "VERIFY_SHA256: $(sha256_file "$SCRIPT_DIR/verify.sh")"
+	log "JSON_FACTS: $(jq -c '{name,path,behavior,noteNameFormat,properties,noteContentFormat}' "$TEMPLATE_PATH")"
+
+	if jq empty "$TEMPLATE_PATH"; then
+		pass "live diagnostic JSON parses"
+	else
+		fail "live diagnostic JSON parses"
+	fi
+
+	for iteration in 1 2; do
+		driver_stdout="$TMP_ROOT/driver-${iteration}.stdout"
+		driver_stderr="$TMP_ROOT/driver-${iteration}.stderr"
+		checker_stdout="$TMP_ROOT/checker-${iteration}.stdout"
+		checker_stderr="$TMP_ROOT/checker-${iteration}.stderr"
+		log "ITERATION: $iteration"
+		log "DRIVER_COMMAND: printf fshicpmbaeq | bash $prototype_path"
+		if printf 'fshicpmbaeq' | bash "$prototype_path" > "$driver_stdout" 2> "$driver_stderr"; then
+			pass "live ten-case driver exits successfully (iteration $iteration)"
+		else
+			fail "live ten-case driver exits successfully (iteration $iteration)"
+		fi
+		log "DRIVER_STDOUT_SHA256: $(sha256_file "$driver_stdout")"
+		log "DRIVER_STDERR_BYTES: $(wc -c < "$driver_stderr" | tr -d ' ')"
+
+		if run_docs_contract_check "$README_PATH" "$driver_stdout" > "$checker_stdout" 2> "$checker_stderr"; then
+			pass "cross-artifact documentation contract passes (iteration $iteration)"
+		else
+			fail "cross-artifact documentation contract passes (iteration $iteration)"
+		fi
+		log "DOCS_CHECK_STDOUT_BEGIN"
+		while IFS= read -r line || [[ -n "$line" ]]; do
+			log "  $line"
+		done < "$checker_stdout"
+		log "DOCS_CHECK_STDOUT_END"
+		if [[ -s "$checker_stderr" ]]; then
+			log "DOCS_CHECK_STDERR_BEGIN"
+			while IFS= read -r line || [[ -n "$line" ]]; do
+				log "  $line"
+			done < "$checker_stderr"
+			log "DOCS_CHECK_STDERR_END"
+		else
+			log "DOCS_CHECK_STDERR: <empty>"
+		fi
+	done
+
+	if python3 - "$README_PATH" "$mutated_readme" > "$mutation_stdout" 2> "$mutation_stderr" <<'PY'
+import sys
+from pathlib import Path
+
+source_path, target_path = map(Path, sys.argv[1:])
+text = source_path.read_text(encoding='utf-8')
+lines = text.splitlines(keepends=True)
+verdict_mutations = 0
+for index, line in enumerate(lines):
+    if line.startswith('| Captured Tab Note conformance |'):
+        replacement = line.replace(' | UNSUPPORTED | ', ' | SUPPORTED | ', 1)
+        if replacement != line:
+            lines[index] = replacement
+            verdict_mutations += 1
+text = ''.join(lines)
+path_mutations = text.count('`mdplace-prototype-diagnostics`')
+text = text.replace('`mdplace-prototype-diagnostics`', '`Inbox`', 1)
+if verdict_mutations != 1 or path_mutations < 1:
+    raise SystemExit(
+        f'mutation precondition failed: verdict_mutations={verdict_mutations}, '
+        f'path_candidates={path_mutations}'
+    )
+target_path.write_text(text, encoding='utf-8')
+print(f'VERDICT_MUTATIONS: {verdict_mutations}')
+print('PATH_MUTATIONS: 1')
+PY
+	then
+		pass "temporary README mutation fixture created"
+	else
+		fail "temporary README mutation fixture created"
+	fi
+	log "MUTATION_STDOUT: $(tr '\n' ' ' < "$mutation_stdout")"
+	if [[ -s "$mutation_stderr" ]]; then
+		log "MUTATION_STDERR: $(tr '\n' ' ' < "$mutation_stderr")"
+	else
+		log "MUTATION_STDERR: <empty>"
+	fi
+
+	if run_docs_contract_check "$mutated_readme" "$driver_stdout" > "$negative_stdout" 2> "$negative_stderr"; then
+		negative_status=0
+		fail "mutated README with SUPPORTED conformance and wrong path is rejected"
+	else
+		negative_status=$?
+		pass "mutated README with SUPPORTED conformance and wrong path is rejected"
+	fi
+	log "NEGATIVE_CHECK_EXIT_CODE: $negative_status"
+	log "NEGATIVE_CHECK_STDOUT_BEGIN"
+	while IFS= read -r line || [[ -n "$line" ]]; do
+		log "  $line"
+	done < "$negative_stdout"
+	log "NEGATIVE_CHECK_STDOUT_END"
+	if [[ -s "$negative_stderr" ]]; then
+		log "NEGATIVE_CHECK_STDERR: $(tr '\n' ' ' < "$negative_stderr")"
+	else
+		log "NEGATIVE_CHECK_STDERR: <empty>"
+	fi
+
+	tracked_diff_after="$(git -C "$REPO_ROOT" diff --binary | shasum -a 256 | awk '{print $1}')"
+	staged_diff_after="$(git -C "$REPO_ROOT" diff --cached --binary | shasum -a 256 | awk '{print $1}')"
+	if [[ "$tracked_diff_before" == "$tracked_diff_after" ]]; then
+		pass "docs verifier preserves the pre-existing tracked diff"
+	else
+		fail "docs verifier changed the tracked diff"
+	fi
+	if [[ "$staged_diff_before" == "$staged_diff_after" ]]; then
+		pass "docs verifier preserves the pre-existing staged diff"
+	else
+		fail "docs verifier changed the staged diff"
+	fi
+
+	log "ADVERSARIAL_malformed_input: temporary README flips Captured Tab Note conformance to SUPPORTED and changes the diagnostic path; checker rejects it"
+	log "ADVERSARIAL_stale_state: JSON structure and driver headings/outcomes are loaded from live files on each run"
+	log "ADVERSARIAL_dirty_worktree: tracked and staged diff digests are compared before and after the verifier"
+	log "ADVERSARIAL_flaky_tests: live driver and cross-artifact checker execute twice per docs-mode run"
+	log "ADVERSARIAL_misleading_success_output: exact parsed matrix relationships are required; PASS text alone cannot satisfy the checker"
+	log "ADVERSARIAL_prompt_injection: not applicable; documentation and local fixture metadata are repository-controlled inputs"
+	log "ADVERSARIAL_hung_or_long_commands: not applicable; docs mode runs only bounded local parsing and the finite ten-key driver"
+	log "ADVERSARIAL_cancel_resume: not applicable; docs mode has no resumable state and removes its temporary root on exit"
+	log "ADVERSARIAL_repeated_interruptions: not applicable; trap cleanup removes the temporary mutation fixture"
+	log "EXPECTED: live JSON/driver/README/CONTEXT agree, unsafe claims are absent, and mutated README exits nonzero without tracked edits"
+	log "ACTUAL: passes=$PASSES failures=$FAILURES"
+
+	if [[ "$FAILURES" -eq 0 ]]; then
+		log "EXIT_CODE: 0"
+		log "VERDICT: PASS"
+		return 0
+	fi
+	log "EXIT_CODE: 1"
+	log "VERDICT: FAIL"
+	return 1
 }
 
 run_shell_mode() {
@@ -415,8 +852,25 @@ if [[ "$MODE" == "shell" ]]; then
 	exit $?
 fi
 
+if [[ "$MODE" == "docs" ]]; then
+	TMP_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/mdplace-clipper-docs.XXXXXX")"
+	if [[ -n "${MDPLACE_EVIDENCE_DIR:-}" ]]; then
+		mkdir -p -- "$MDPLACE_EVIDENCE_DIR"
+		EVIDENCE_FILE="$MDPLACE_EVIDENCE_DIR/task-4-contract-consistency.txt"
+		if [[ "${MDPLACE_EVIDENCE_APPEND:-0}" == "1" ]]; then
+			printf '\nDOCS_RUN_SEPARATOR\n' >> "$EVIDENCE_FILE"
+		else
+			: > "$EVIDENCE_FILE"
+		fi
+	else
+		EVIDENCE_FILE="$TMP_ROOT/docs-evidence.txt"
+	fi
+	run_docs_mode
+	exit $?
+fi
+
 if [[ "$MODE" != "template" ]]; then
-	printf 'Usage: WEB_CLIPPER_DIR=/path/to/pinned/checkout %s template | %s shell\n' "$0" "$0" >&2
+	printf 'Usage: WEB_CLIPPER_DIR=/path/to/pinned/checkout %s template | %s shell | %s docs\n' "$0" "$0" "$0" >&2
 	exit 64
 fi
 
