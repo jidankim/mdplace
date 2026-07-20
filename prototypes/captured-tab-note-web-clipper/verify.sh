@@ -43,6 +43,7 @@ fail() {
 
 # shellcheck disable=SC2329 # Invoked indirectly by trap.
 cleanup() {
+	trap '' INT TERM
 	if [[ "$TEMP_VITEST_OWNED" == "true" && -n "$TEMP_VITEST_PATH" ]]; then
 		rm -f -- "$TEMP_VITEST_PATH"
 		TEMP_VITEST_OWNED=false
