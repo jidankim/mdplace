@@ -19,6 +19,7 @@ EVIDENCE_FILE=""
 TMP_ROOT=""
 TEMP_VITEST_RELATIVE="src/utils/mdplace-template-compiler.verify.test.ts"
 TEMP_VITEST_PATH=""
+TEMP_VITEST_OWNED=false
 FAILURES=0
 PASSES=0
 
@@ -41,53 +42,114 @@ fail() {
 
 # shellcheck disable=SC2329 # Invoked indirectly by trap.
 cleanup() {
-	if [[ -n "$TEMP_VITEST_PATH" && -e "$TEMP_VITEST_PATH" ]]; then
+	if [[ "$TEMP_VITEST_OWNED" == "true" && -n "$TEMP_VITEST_PATH" ]]; then
 		rm -f -- "$TEMP_VITEST_PATH"
+		TEMP_VITEST_OWNED=false
 	fi
 	if [[ -n "$TMP_ROOT" && -d "$TMP_ROOT" ]]; then
 		rm -rf -- "$TMP_ROOT"
 	fi
 }
 
-trap cleanup EXIT INT TERM
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
 sha256_file() {
 	shasum -a 256 "$1" | awk '{print $1}'
 }
 
 run_bounded() {
-	local stdout_path="$1"
-	local stderr_path="$2"
-	shift 2
+	local timeout_seconds="$1"
+	local stdout_path="$2"
+	local stderr_path="$3"
+	shift 3
 
-	local timeout_marker="${stdout_path}.timed-out"
-	local command_pid
-	local timer_pid
-	local status
+	python3 - "$timeout_seconds" "$stdout_path" "$stderr_path" "$@" <<'PY'
+from __future__ import annotations
 
-	"$@" > "$stdout_path" 2> "$stderr_path" &
-	command_pid=$!
-	(
-		sleep "$VERIFY_TIMEOUT_SECONDS"
-		if kill -0 "$command_pid" 2>/dev/null; then
-			: > "$timeout_marker"
-			kill -TERM "$command_pid" 2>/dev/null || true
-		fi
-	) &
-	timer_pid=$!
+import os
+import signal
+import subprocess
+import sys
+from types import FrameType
 
-	if wait "$command_pid"; then
-		status=0
-	else
-		status=$?
-	fi
-	kill "$timer_pid" 2>/dev/null || true
-	wait "$timer_pid" 2>/dev/null || true
 
-	if [[ -e "$timeout_marker" ]]; then
-		return 124
-	fi
-	return "$status"
+class ReceivedSignal(RuntimeError):
+    def __init__(self, signum: int) -> None:
+        self.signum = signum
+        super().__init__(f'received signal {signum}')
+
+
+def parse_timeout(raw_timeout: str) -> int:
+    try:
+        timeout = int(raw_timeout)
+    except ValueError as error:
+        raise SystemExit(f'timeout must be a positive integer: {raw_timeout!r}') from error
+    if timeout <= 0:
+        raise SystemExit(f'timeout must be a positive integer: {raw_timeout!r}')
+    return timeout
+
+
+def shell_status(returncode: int) -> int:
+    return returncode if returncode >= 0 else 128 - returncode
+
+
+timeout_seconds = parse_timeout(sys.argv[1])
+stdout_path = sys.argv[2]
+stderr_path = sys.argv[3]
+command = sys.argv[4:]
+if not command:
+    raise SystemExit('bounded command is required')
+
+grace_seconds = 0.25
+
+with open(stdout_path, 'wb') as stdout_file, open(stderr_path, 'wb') as stderr_file:
+    process = subprocess.Popen(
+        command,
+        stdout=stdout_file,
+        stderr=stderr_file,
+        start_new_session=True,
+    )
+
+    def signal_group(signum: int) -> None:
+        try:
+            os.killpg(process.pid, signum)
+        except ProcessLookupError:
+            pass
+
+    def stop_group() -> None:
+        signal.signal(signal.SIGINT, signal.SIG_IGN)
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
+        signal_group(signal.SIGTERM)
+        try:
+            process.wait(timeout=grace_seconds)
+        except subprocess.TimeoutExpired:
+            pass
+        signal_group(signal.SIGKILL)
+        if process.poll() is None:
+            try:
+                process.wait(timeout=grace_seconds)
+            except subprocess.TimeoutExpired as error:
+                raise SystemExit('command did not exit after process-group SIGKILL') from error
+
+    def receive_signal(signum: int, _frame: FrameType | None) -> None:
+        raise ReceivedSignal(signum)
+
+    signal.signal(signal.SIGINT, receive_signal)
+    signal.signal(signal.SIGTERM, receive_signal)
+
+    try:
+        returncode = process.wait(timeout=timeout_seconds)
+    except subprocess.TimeoutExpired:
+        stop_group()
+        raise SystemExit(124)
+    except ReceivedSignal as interruption:
+        stop_group()
+        raise SystemExit(128 + interruption.signum)
+
+raise SystemExit(shell_status(returncode))
+PY
 }
 
 emit_redacted_file() {
@@ -537,7 +599,6 @@ def validate_metadata(
     value: object,
     *,
     word_count_observed: bool,
-    urls_sanitized: bool,
 ) -> None:
     require(isinstance(value, dict), 'metadata must be an object')
     require(
@@ -586,7 +647,17 @@ def validate_metadata(
         url = source[member]
         require(url is None or isinstance(url, str), f'{member} type differs')
         if url is not None:
-            require(urls_sanitized, f'{member} entered metadata before sanitation')
+            parsed_url = urlsplit(url)
+            require(
+                parsed_url.scheme in ('http', 'https') and parsed_url.hostname is not None,
+                f'{member} must be an absolute HTTP(S) URL',
+            )
+            require(
+                parsed_url.username is None and parsed_url.password is None,
+                f'{member} contains credentials',
+            )
+            require('?' not in url and parsed_url.query == '', f'{member} contains a query')
+            require('#' not in url and parsed_url.fragment == '', f'{member} contains a fragment')
     word_count = source['word_count']
     require(
         word_count is None
@@ -708,7 +779,7 @@ manifest_raw = single_fence(manifest_section, 'json')
 require('\n' not in metadata_raw and '\n' not in manifest_raw, 'canonical JCS vector is line-wrapped')
 metadata_value = json.loads(metadata_raw)
 manifest_value = json.loads(manifest_raw)
-validate_metadata(metadata_value, word_count_observed=False, urls_sanitized=True)
+validate_metadata(metadata_value, word_count_observed=False)
 validate_manifest(manifest_value, ('article', 'highlights'))
 metadata_bytes = jcs_bytes(metadata_value)
 manifest_bytes = jcs_bytes(manifest_value)
@@ -825,9 +896,38 @@ expect_rejected(
     lambda: validate_metadata(
         unsafe_metadata,
         word_count_observed=False,
-        urls_sanitized=False,
     ),
 )
+for unsafe_label, component_url in (
+    ('RAW_CREDENTIAL_URL', 'https://user:password@example.test/article'),
+    ('RAW_QUERY_URL', 'https://example.test/article?token=raw'),
+    ('RAW_FRAGMENT_URL', 'https://example.test/article#fragment'),
+):
+    component_metadata = copy.deepcopy(metadata_value)
+    component_metadata['source']['canonical_url'] = component_url
+    expect_rejected(
+        unsafe_label,
+        lambda candidate=component_metadata: validate_metadata(
+            candidate,
+            word_count_observed=False,
+        ),
+    )
+try:
+    validate_metadata(
+        unsafe_metadata,
+        word_count_observed=False,
+        **{'urls_sanitized': True},
+    )
+except TypeError as error:
+    require('urls_sanitized' in str(error), 'caller sanitation override failed for an unrelated reason')
+    print(f'NEGATIVE_CALLER_SANITATION_OVERRIDE: REJECTED ({error})')
+else:
+    raise ContractError('caller-provided sanitation boolean was accepted')
+sanitized_metadata = copy.deepcopy(metadata_value)
+sanitized_metadata['source']['canonical_url'] = 'https://example.test/article'
+sanitized_metadata['source']['image_url'] = None
+validate_metadata(sanitized_metadata, word_count_observed=False)
+print('POSITIVE_SANITIZED_URL_AND_NULL_IMAGE: ACCEPTED')
 zero_unknown = copy.deepcopy(metadata_value)
 zero_unknown['source']['word_count'] = 0
 expect_rejected(
@@ -835,10 +935,9 @@ expect_rejected(
     lambda: validate_metadata(
         zero_unknown,
         word_count_observed=False,
-        urls_sanitized=True,
     ),
 )
-validate_metadata(zero_unknown, word_count_observed=True, urls_sanitized=True)
+validate_metadata(zero_unknown, word_count_observed=True)
 expect_rejected(
     'MALFORMED_METADATA_JSON',
     lambda: json.loads(metadata_raw[:-1]),
@@ -1059,7 +1158,7 @@ PY
 	log "ADVERSARIAL_malformed_input: malformed documented JSON and invalid UTF-8 are rejected"
 	log "ADVERSARIAL_wrong_order: reversed manifest entries and reversed/duplicate markers are rejected"
 	log "ADVERSARIAL_absent_insertion: absent selection inserted into the two-stream manifest is rejected"
-	log "ADVERSARIAL_unsafe_url: credential/query/fragment raw URL fails the sanitation precondition"
+	log "ADVERSARIAL_unsafe_url: parsed URL credentials, query, and fragment are rejected; no caller boolean can override value-derived checks"
 	log "ADVERSARIAL_unknown_zero: word_count 0 is rejected when the observation is unknown; observed zero remains valid"
 	log "ADVERSARIAL_LF_NFC_mutation: retained CRLF and decomposed Unicode candidates are rejected"
 	log "ADVERSARIAL_one_byte_mutation: one metadata byte changes the fixed SHA-256 digest"
@@ -1265,6 +1364,9 @@ run_shell_mode() {
 	local blanks_stderr="$TMP_ROOT/blanks.stderr"
 	local q_stdout="$TMP_ROOT/q.stdout"
 	local q_stderr="$TMP_ROOT/q.stderr"
+	local timeout_stdout="$TMP_ROOT/timeout.stdout"
+	local timeout_stderr="$TMP_ROOT/timeout.stderr"
+	local timeout_pid_file="$TMP_ROOT/timeout-pids.txt"
 	local cwd_root="$TMP_ROOT/prototype-cwd"
 	local cwd_before="$TMP_ROOT/cwd-before.txt"
 	local cwd_after="$TMP_ROOT/cwd-after.txt"
@@ -1277,6 +1379,13 @@ run_shell_mode() {
 	local repeated_status
 	local blanks_status
 	local q_status
+	local timeout_status
+	local timeout_started_at
+	local timeout_elapsed_seconds
+	local timeout_direct_pid
+	local timeout_descendant_pid
+	local timeout_direct_live
+	local timeout_descendant_live
 	local max_output_bytes=131072
 
 	if [[ ! -f "$prototype_path" ]]; then
@@ -1299,6 +1408,68 @@ run_shell_mode() {
 		pass "both shell scripts pass bash -n"
 	else
 		fail "both shell scripts pass bash -n"
+	fi
+
+	log "TIMEOUT_COMMAND: run_bounded 1 <stdout> <stderr> bash -c <TERM-ignoring direct-and-descendant fixture>"
+	timeout_started_at=$SECONDS
+	# shellcheck disable=SC2016 # Fixture variables expand only inside the child Bash process.
+	if run_bounded \
+		1 \
+		"$timeout_stdout" \
+		"$timeout_stderr" \
+		bash -c '
+			trap "" TERM
+			(
+				trap "" TERM
+				while :; do
+					sleep 1
+				done
+			) &
+			descendant_pid=$!
+			printf "%s\n%s\n" "$$" "$descendant_pid" > "$1"
+			wait "$descendant_pid"
+		' _ "$timeout_pid_file"; then
+		timeout_status=0
+	else
+		timeout_status=$?
+	fi
+	timeout_elapsed_seconds=$((SECONDS - timeout_started_at))
+	timeout_direct_pid="$(sed -n '1p' "$timeout_pid_file" 2>/dev/null || true)"
+	timeout_descendant_pid="$(sed -n '2p' "$timeout_pid_file" 2>/dev/null || true)"
+	timeout_direct_live=false
+	timeout_descendant_live=false
+	for _ in {1..20}; do
+		timeout_direct_live=false
+		timeout_descendant_live=false
+		if [[ "$timeout_direct_pid" =~ ^[0-9]+$ ]] && kill -0 "$timeout_direct_pid" 2>/dev/null; then
+			timeout_direct_live=true
+		fi
+		if [[ "$timeout_descendant_pid" =~ ^[0-9]+$ ]] && kill -0 "$timeout_descendant_pid" 2>/dev/null; then
+			timeout_descendant_live=true
+		fi
+		if [[ "$timeout_direct_live" == "false" && "$timeout_descendant_live" == "false" ]]; then
+			break
+		fi
+		sleep 0.05
+	done
+	log "TIMEOUT_EXIT_CODE: $timeout_status"
+	log "TIMEOUT_ELAPSED_SECONDS: $timeout_elapsed_seconds"
+	log "TIMEOUT_DIRECT_PID: ${timeout_direct_pid:-missing}"
+	log "TIMEOUT_DESCENDANT_PID: ${timeout_descendant_pid:-missing}"
+	log "TIMEOUT_DIRECT_LIVE_AFTER_RETURN: $timeout_direct_live"
+	log "TIMEOUT_DESCENDANT_LIVE_AFTER_RETURN: $timeout_descendant_live"
+	if [[ "$timeout_status" -eq 124 \
+		&& "$timeout_elapsed_seconds" -le 3 \
+		&& "$timeout_direct_pid" =~ ^[0-9]+$ \
+		&& "$timeout_descendant_pid" =~ ^[0-9]+$ \
+		&& "$timeout_direct_live" == "false" \
+		&& "$timeout_descendant_live" == "false" ]]; then
+		log "RUN_BOUNDED_REGRESSION: PASS"
+	else
+		fail "run_bounded returns 124 within three seconds and leaves no direct or descendant process"
+		if [[ "$timeout_direct_pid" =~ ^[0-9]+$ ]]; then
+			kill -KILL -- "-$timeout_direct_pid" 2>/dev/null || true
+		fi
 	fi
 
 	log "Q_COMMAND: printf q | bash $prototype_path"
@@ -1514,13 +1685,13 @@ PY
 	log "ADVERSARIAL_malformed_input: unknown, blank, repeated, and mixed keys asserted"
 	log "ADVERSARIAL_stale_state: live prototype headings/outcomes parsed from current output"
 	log "ADVERSARIAL_dirty_worktree: tracked and staged diff digests compared before/after"
-	log "ADVERSARIAL_hung_or_long_commands: EOF subprocess bounded at two seconds and 128 KiB"
-	log "ADVERSARIAL_flaky_tests: complete, repeated, blank, unknown, q, and EOF runs executed"
+	log "ADVERSARIAL_hung_or_long_commands: run_bounded kills a TERM-ignoring command group within three seconds; EOF is bounded at two seconds and 128 KiB"
+	log "ADVERSARIAL_flaky_tests: timeout, complete, repeated, blank, unknown, q, and EOF runs executed"
 	log "ADVERSARIAL_misleading_success_output: exact content assertions reject false PASS text and note artifacts"
 	log "ADVERSARIAL_prompt_injection: not applicable; menu input is one-byte local key data"
 	log "ADVERSARIAL_cancel_resume: not applicable; prototype has no resumable state"
-	log "ADVERSARIAL_repeated_interruptions: not applicable; prototype has no interrupt-sensitive persistent state"
-	log "EXPECTED: ten exact headings/outcomes, clean EOF, bounded output, no stderr, and no filesystem write"
+	log "ADVERSARIAL_repeated_interruptions: bounded runner handles signals and reaps its direct child after terminating the child process group"
+	log "EXPECTED: process-group timeout cleanup, ten exact headings/outcomes, clean EOF, bounded output, no stderr, and no filesystem write"
 	log "ACTUAL: passes=$PASSES failures=$FAILURES"
 
 	if [[ "$FAILURES" -eq 0 ]]; then
@@ -1632,6 +1803,33 @@ if ATTACHED_UPSTREAM_REF="$(git -C "$WEB_CLIPPER_DIR" symbolic-ref -q HEAD 2>/de
 	log "EXIT_CODE: 1"
 	log "VERDICT: PASS"
 	printf 'ERROR: WEB_CLIPPER_DIR is an attached checkout at %s; a detached checkout is required\n' "$ATTACHED_UPSTREAM_REF" >&2
+	exit 1
+fi
+
+if ! UPSTREAM_TRACKED_STATUS="$(git -C "$WEB_CLIPPER_DIR" status --porcelain=v1 --untracked-files=no 2>/dev/null)"; then
+	printf 'ERROR: unable to inspect the tracked/index state of WEB_CLIPPER_DIR\n' >&2
+	exit 1
+fi
+if [[ -n "$UPSTREAM_TRACKED_STATUS" ]]; then
+	if [[ -n "${MDPLACE_EVIDENCE_DIR:-}" ]]; then
+		mkdir -p -- "$MDPLACE_EVIDENCE_DIR"
+		EVIDENCE_FILE="$MDPLACE_EVIDENCE_DIR/task-8-dirty-upstream.txt"
+		: > "$EVIDENCE_FILE"
+	fi
+	log "SCENARIO: dirty pinned upstream fails before dist checks or render"
+	log "COMMAND: git -C <WEB_CLIPPER_DIR> status --porcelain=v1 --untracked-files=no"
+	log "UPSTREAM_TRACKED_STATUS_BEGIN"
+	while IFS= read -r status_line || [[ -n "$status_line" ]]; do
+		log "  $status_line"
+	done <<< "$UPSTREAM_TRACKED_STATUS"
+	log "UPSTREAM_TRACKED_STATUS_END"
+	log "DIST_CHECKED: false"
+	log "RENDER_ATTEMPTED: false"
+	log "EXPECTED: nonzero when the pinned checkout has staged or unstaged tracked changes"
+	log "ACTUAL: tracked/index cleanliness guard rejected the checkout"
+	log "EXIT_CODE: 1"
+	log "VERDICT: PASS"
+	printf 'ERROR: WEB_CLIPPER_DIR has staged or unstaged tracked changes\n' >&2
 	exit 1
 fi
 
@@ -1788,6 +1986,7 @@ log "SCENARIO: pinned template diagnostic safety (${EVIDENCE_PHASE})"
 log "COMMAND: WEB_CLIPPER_DIR=<detached-os-temp-checkout> MDPLACE_EVIDENCE_DIR=<selected-evidence-dir> bash prototypes/captured-tab-note-web-clipper/verify.sh template"
 log "MDPLACE_HEAD: $(git -C "$REPO_ROOT" rev-parse HEAD)"
 log "UPSTREAM_HEAD: $ACTUAL_UPSTREAM_SHA"
+log "UPSTREAM_TRACKED_STATUS: clean"
 log "NODE_VERSION: $(node --version)"
 log "NPM_VERSION: $(npm --version)"
 log "JQ_VERSION: $(jq --version)"
@@ -1895,6 +2094,7 @@ for iteration in 1 2; do
 
 		log "ENGINE_COMMAND: node <WEB_CLIPPER_DIR>/dist/cli.cjs [REDACTED_URL] --template <repository-template> --html <${fixture_kind}-fixture>"
 		if run_bounded \
+			"$VERIFY_TIMEOUT_SECONDS" \
 			"$render_stdout" \
 			"$render_stderr" \
 			node "$WEB_CLIPPER_DIR/dist/cli.cjs" "$SYNTHETIC_URL" \
@@ -2033,6 +2233,7 @@ for iteration in 1 2; do
 	probe_stdout="$TMP_ROOT/cli-probe-${iteration}.stdout"
 	probe_stderr="$TMP_ROOT/cli-probe-${iteration}.stderr"
 	if run_bounded \
+		"$VERIFY_TIMEOUT_SECONDS" \
 		"$probe_stdout" \
 		"$probe_stderr" \
 		node "$WEB_CLIPPER_DIR/dist/cli.cjs" "$SYNTHETIC_URL" \
@@ -2054,9 +2255,12 @@ for iteration in 1 2; do
 	log "CLI_DEFECT_CAUSE: pinned src/api.ts:176-220 passes doc.documentElement (HTMLElement) to Defuddle"
 	log "CLI_DEFECT_VERDICT: UNSUPPORTED title input through pinned dist/cli.cjs; this is not the controlled-title test"
 
-	if [[ -e "$TEMP_VITEST_PATH" ]]; then
+	if [[ -e "$TEMP_VITEST_PATH" || -L "$TEMP_VITEST_PATH" ]]; then
 		fail "temporary Vitest path already exists before controlled compiler tests"
+	elif ! (set -o noclobber; : > "$TEMP_VITEST_PATH") 2>/dev/null; then
+		fail "temporary Vitest path could not be acquired without overwriting an existing path"
 	else
+		TEMP_VITEST_OWNED=true
 		cat > "$TEMP_VITEST_PATH" <<'VITEST'
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
@@ -2204,6 +2408,7 @@ VITEST
 		if (
 			cd -- "$WEB_CLIPPER_DIR"
 			run_bounded \
+				"$VERIFY_TIMEOUT_SECONDS" \
 				"$vitest_stdout" \
 				"$vitest_stderr" \
 				env \
@@ -2232,11 +2437,12 @@ VITEST
 		done < "$vitest_stderr"
 		log "CONTROLLED_COMPILER_STDERR_END"
 
-		rm -f -- "$TEMP_VITEST_PATH"
-		if [[ ! -e "$TEMP_VITEST_PATH" ]]; then
+		if [[ "$TEMP_VITEST_OWNED" == "true" ]]; then
+			rm -f -- "$TEMP_VITEST_PATH"
+			TEMP_VITEST_OWNED=false
 			pass "temporary controlled-compiler Vitest removed (iteration $iteration)"
 		else
-			fail "temporary controlled-compiler Vitest remains (iteration $iteration)"
+			fail "temporary controlled-compiler Vitest ownership was lost before cleanup (iteration $iteration)"
 		fi
 	fi
 done
@@ -2244,6 +2450,7 @@ done
 malformed_stdout="$TMP_ROOT/malformed.stdout"
 malformed_stderr="$TMP_ROOT/malformed.stderr"
 if run_bounded \
+	"$VERIFY_TIMEOUT_SECONDS" \
 	"$malformed_stdout" \
 	"$malformed_stderr" \
 	node "$WEB_CLIPPER_DIR/dist/cli.cjs" "https://example.test/malformed" \
@@ -2283,8 +2490,8 @@ log "ADVERSARIAL_dirty_worktree: pre-existing tracked/staged diff digests preser
 log "ADVERSARIAL_hung_or_long_commands: CLI and Vitest invocations bounded at ${VERIFY_TIMEOUT_SECONDS}s"
 log "ADVERSARIAL_flaky_tests: standalone title, diagnostic name/presence, YAML, and URL checks repeated twice"
 log "ADVERSARIAL_misleading_success_output: engine output parsed structurally; injected VERDICT: PASS text cannot satisfy assertions"
-log "ADVERSARIAL_cancel_resume: not applicable; verifier has no resumable state and cleans OS-temp artifacts on exit"
-log "ADVERSARIAL_repeated_interruptions: not applicable; verifier has no persistent partial state and trap cleanup is interruption-safe"
+log "ADVERSARIAL_cancel_resume: INT and TERM exit through ownership-aware cleanup; the verifier has no resumable state"
+log "ADVERSARIAL_repeated_interruptions: bounded-runner cleanup ignores repeated INT/TERM while terminating the group and reaping its direct child"
 log "EXPECTED: exact adapter-time diagnostic, six-key YAML, no page-derived content/metadata values, presence-only branches, recorded CLI defect, and standalone-title compiler pass"
 log "ACTUAL: passes=$PASSES failures=$FAILURES"
 
