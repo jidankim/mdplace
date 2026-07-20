@@ -51,7 +51,7 @@ What it supports:
 
 What it does not support:
 
-- It does not specify mdplace-style evidence records, note frontmatter patches, confidence thresholds, or an `unable_to_categorize` state.
+- It does not specify mdplace-style evidence records, note frontmatter patches, confidence thresholds, or an Unresolved Placement state.
 - It does not show that RDF or WebProtégé is required; Pinterest explicitly produced relational tables for downstream use.
 - It does not justify the claim that every classification should be explainable to an end user.
 
@@ -67,7 +67,7 @@ What it supports:
 - Its pipeline separated relatively cheap, high-recall candidate generation from ranking. The post reports at most 200 candidates, averaging 70, before binary-classifier ranking.
 - Candidate and ranking features included lexical expansion, co-occurrence, embeddings, text features, hierarchy features, engagement, and context.
 - The system was designed to accept new interests without retraining the ranking model, because features could be computed for new interest nodes.
-- This supports the repo’s “retrieve plausible taxonomy nodes, then rank” analogy.
+- This supports mdplace’s proposed “retrieve plausible taxonomy nodes, then rank” analogy.
 
 What it does not support:
 
@@ -154,7 +154,7 @@ Status: prior working-note precedent.
 
 What it supports:
 
-- Airbnb implemented node and edge stores over an in-house relational database, hiding row-level storage behind graph operations. The repo’s “logical graph without a native graph database” claim is exact.
+- Airbnb implemented node and edge stores over an in-house relational database, hiding row-level storage behind graph operations. This directly supports mdplace’s “logical graph without a native graph database” analogy.
 - Nodes and edges had types and constraints. Edges could include their data source, confidence score, and payload.
 - Airbnb stored a hierarchical taxonomy as special graph nodes and applied it across inventory and other travel entities.
 - Taxonomy edits required discussion and approval by a cross-functional team.
@@ -256,6 +256,7 @@ Status: additional relevant sources; absent from prior working notes.
 
 - [Manage Product Listings with the Selling Partner API](https://developer-docs.amazon.com/sp-api/lang-en_EN/docs/manage-product-listings-guide)
 - [Search available Product Type Definitions](https://developer-docs.amazon.com/sp-api/docs/search-available-product-type-definitions)
+- [Get Product Type Definition recommendations](https://developer-docs.amazon.com/sp-api/docs/get-product-type-definition-recommendations)
 - [SP-API release notes](https://developer-docs.amazon.com/sp-api/lang-en_US/docs/sp-api-release-notes), including the product-type and browse-node recommendation documentation
 - [Get recommended browse nodes or item type keywords](https://developer-docs.amazon.com/sp-api/docs/get-recommended-browse-nodes-or-item-type-keywords)
 - [Catalog Items API](https://developer-docs.amazon.com/sp-api/lang-en_EN/docs/catalog-items-api-v2022-04-01-use-case-guide)
@@ -357,7 +358,7 @@ Applicability limit: strong additional API analogy for leaf-only assignment, cat
 | Platform vocabulary plus local vocabulary | Google (`google_product_category` versus `product_type`); Shopify category versus product type | Strong distinction, but local type is not the same as abstention. |
 | Version/change handling | eBay; Shopify; Walmart; Amazon; Alibaba; Lazada | Supports stable identifiers, version awareness, mappings/diffs/events; not full event sourcing. |
 | Bottom-up concepts distinct from taxonomy nodes | Pinterest μ-topics; Alibaba AliCoCo | Strong research analogy; costly systems and marketplace/user-interest semantics limit transfer. |
-| First-class “unable to categorize” with confidence thresholds | None of these sources | Untraceable as a platform-derived claim. This remains an mdplace design choice that needs independent selective-classification evidence. |
+| First-class Unresolved Placement with confidence thresholds | None of these sources | Untraceable as a platform-derived claim. This remains an mdplace design choice that needs independent selective-classification evidence. |
 | Human-readable provenance for every classification | None as a complete contract | Airbnb stores edge source/confidence and Pinterest uses review, but neither documents an end-user evidence ledger equivalent to mdplace’s proposal. |
 
 ## Claims that should not be made from this evidence
