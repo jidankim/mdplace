@@ -17,12 +17,12 @@ capability is absent; it is never product-success evidence.
 
 | Requirement | Pinned observation | Verdict | Owner path |
 | --- | --- | --- | --- |
-| filename | With controlled title variables, the pinned compiler applies `slice:0,80`, then `safe_name`, and the `Untitled` fallback. The real pinned CLI does not supply a usable HTML-derived title, so this verdict covers filter semantics only. | SUPPORTED | [filters](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/filters.ts#L73-L186), [safe name](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/filters/safe_name.ts#L56-L64), [compiler](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/template-compiler.ts#L29-L75), [template](./mdplace-captured-tab-note-clipper.json) |
+| filename | In a standalone, non-persisting probe, the pinned compiler applies `slice:0,80`, then `safe_name`, and the `Untitled` fallback. `safe_name` provides filename safety, not privacy sanitation. The persisted diagnostic filename is adapter-time-only and does not use page title or domain. The real pinned CLI does not supply a usable HTML-derived title, so this verdict covers stock filename/compiler mechanics only. | SUPPORTED | [filters](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/filters.ts#L73-L186), [safe name](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/filters/safe_name.ts#L56-L64), [compiler](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/template-compiler.ts#L29-L75), [template](./mdplace-captured-tab-note-clipper.json) |
 | Pinned CLI HTML extraction | The CLI/API takes `doc.documentElement`, an `HTMLElement`, casts it as `Document`, and passes it to Defuddle. The pinned executable consequently emits blank HTML-derived variables and `words=0` for the fixtures. This is a CLI test-seam defect, not proof that browser extraction always returns blank data. | UNSUPPORTED | [CLI parser](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/cli.ts#L143-L147), [API extraction](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/api.ts#L176-L220), [verifier](./verify.sh) |
-| YAML/frontmatter safety | Stock frontmatter generation double-quotes text but its escaping helper escapes only double quotes. The template cannot safely serialize arbitrary page-derived free text or enforce mdplace's ingestion allowlist, so the diagnostic retains none. | UNSUPPORTED | [frontmatter generator](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/shared.ts#L145-L205), [escaping helper](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/string-utils.ts#L9-L18), [template](./mdplace-captured-tab-note-clipper.json) |
+| YAML/frontmatter safety | Stock frontmatter generation double-quotes text but its escaping helper escapes only double quotes. The template cannot safely serialize arbitrary page-derived free text or enforce mdplace's ingestion allowlist, so the diagnostic persists no page-derived content or metadata field values. | UNSUPPORTED | [frontmatter generator](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/shared.ts#L145-L205), [escaping helper](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/string-utils.ts#L9-L18), [template](./mdplace-captured-tab-note-clipper.json) |
 | selection provenance | Promoting a selection creates an ordinary highlight, may merge it with existing highlights, and clears the selection. The exported shape has text, timestamp, and optional notes, but no reliable selection-origin field. | UNSUPPORTED | [selection promotion and merge](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/highlighter.ts#L558-L602), [exported highlight shape](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/highlighter.ts#L1113-L1139) |
 | metadata-only extraction artifact | Stock browser extraction rejects an empty readable-content response. The popup awaits that extraction before it initializes variables or renders template fields, so the template cannot emit the required metadata-only failure artifact. | UNSUPPORTED | [empty-content rejection](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/content-extractor.ts#L67-L123), [browser ordering](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/core/popup.ts#L678-L740) |
-| template/content compiler | The pinned compiler renders the diagnostic's static warning and three presence-only conditionals. This compiler capability does not make the resulting file conforming. | SUPPORTED | [compiler](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/template-compiler.ts#L29-L75), [renderer](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/renderer.ts#L95-L153), [verifier](./verify.sh) |
+| template/content compiler | With controlled variables, the pinned compiler renders the diagnostic's static warning and all positive and negative presence-only branches without rendering supplied content, selection, or highlight values. This compiler capability does not make the resulting file conforming. | SUPPORTED | [compiler](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/template-compiler.ts#L29-L75), [renderer](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/renderer.ts#L95-L153), [verifier](./verify.sh) |
 | URL persistence policy | Stock variables remove a text fragment but still expose the current URL, and the filter registry has no mdplace sanitizer that guarantees removal of credentials, fragments, sensitive query parameters, session identifiers, and PII before persistence. The diagnostic renders no URL. | UNSUPPORTED | [URL variable construction](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/shared.ts#L40-L66), [filter registry](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/filters.ts#L73-L186), [Processing Policy](../../CONTEXT.md) |
 | missing word count | Variable construction converts a missing `wordCount` to the string `0`. Stock output therefore cannot distinguish unknown metadata from a genuine zero-word observation. | UNSUPPORTED | [variable construction](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/shared.ts#L40-L66), [verifier](./verify.sh) |
 | deterministic hash shape | Stock Web Clipper emits no mdplace hashes or canonical stream boundaries. The literal schemas and fixed vectors below define a future-adapter target and are executable through `verify.sh hash`; they do not add runtime hashing to the diagnostic. | TARGET CONTRACT | [RFC 8785/JCS](https://www.rfc-editor.org/rfc/rfc8785), [verifier](./verify.sh) |
@@ -43,7 +43,7 @@ Its exact current coordinates and behavior are:
 - Destination: `mdplace-prototype-diagnostics`
 - Behavior: `create`
 - Filename expression:
-  `NONCONFORMING-{{date|date:"YYYYMMDD-HHmmss"}}--{{domain|safe_name}}--{{title|slice:0,80|safe_name ?? "Untitled"}}`
+  `NONCONFORMING-{{date|date:"YYYYMMDD-HHmmss"}}`
 
 Its complete property allowlist is:
 
@@ -58,12 +58,13 @@ Its complete property allowlist is:
 
 The body is a static `NONCONFORMING DIAGNOSTIC` warning plus
 presence-only conditionals for `content`, `selection`, and `highlights`. Those
-conditionals render only `present` or `absent`. The artifact retains no
-page-derived title, URL, article, selection text, highlight text, author, site,
-description, image, publication time, or word count. It has no
+conditionals render only `present` or `absent`. No page-derived content or
+metadata field values are persisted in its filename, body, or frontmatter. The
+only dynamic data retained are adapter-generated time and the three
+`present`/`absent` availability observations. It has no
 `mdplace:article`, `mdplace:selection`, or `mdplace:highlights` canonical stream
-markers. Its path and filename have no identity, placement, or semantic
-authority.
+markers. Its adapter-time-only path and filename have no identity, placement,
+or semantic authority.
 
 ## Activation boundary
 
@@ -107,9 +108,11 @@ emits blank `title`, `author`, `content`, `description`, `site`, and `image`
 variables and emits `words=0`.
 
 The controlled-title test imports the same pinned template compiler and
-supplies explicit variables. Its pass proves only the `slice:0,80`,
-`safe_name`, and `Untitled` template semantics. It does not erase or work
-around the CLI defect, and it does not prove end-to-end filename capture.
+compiles the standalone, non-persisting expression
+`{{title|slice:0,80|safe_name ?? "Untitled"}}` with explicit variables. Its pass
+proves only the `slice:0,80`, `safe_name`, and `Untitled` stock template
+semantics. It does not read the diagnostic's `noteNameFormat`, erase or work
+around the CLI defect, or prove end-to-end title capture.
 
 ### Browser failure and provenance boundaries
 
@@ -130,8 +133,10 @@ that the page was measured at zero words.
 The stock template cannot guarantee mandatory source-URL sanitation before
 persistence or transmission. Its frontmatter generator also cannot guarantee
 safe YAML serialization for arbitrary page-derived free text. The diagnostic
-avoids those unsafe surfaces by retaining no page-derived values at all; that
-avoidance is diagnostic containment, not a conforming implementation.
+therefore persists no page-derived content or metadata field values in its
+filename, body, or frontmatter. It retains only the three availability
+observations and adapter-generated time. That containment is not a conforming
+implementation.
 
 ## Future adapter hashing boundary
 

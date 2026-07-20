@@ -28,14 +28,14 @@ render_filename() {
 	render_case \
 		'filename' \
 		'SUPPORTED' \
-		'Controlled pinned compiler semantics support slice:0,80, safe_name, and the Untitled fallback; the pinned CLI still supplies blank HTML-derived title variables because its API passes an HTMLElement to Defuddle.'
+		'The standalone pinned compiler supports slice:0,80, safe_name, and the Untitled fallback as stock filename mechanics; the diagnostic filename is adapter-time-only and retains no title or domain, while the pinned CLI still supplies blank HTML-derived title variables because its API passes an HTMLElement to Defuddle.'
 }
 
 render_yaml_safety() {
 	render_case \
 		'YAML/frontmatter safety' \
 		'UNSUPPORTED' \
-		'The stock template cannot safely serialize arbitrary free-text YAML or enforce the required field allowlist; this diagnostic therefore retains no page-derived values.'
+		'The stock template cannot safely serialize arbitrary free-text YAML or enforce the required field allowlist; this diagnostic therefore persists no page-derived content or metadata field values and retains only presence observations plus adapter-generated time.'
 }
 
 render_selection_provenance() {

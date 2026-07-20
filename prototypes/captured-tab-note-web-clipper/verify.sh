@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# noqa: SIZE_OK - The plan requires exactly one tracked verifier and forbids helper files.
 
 set -euo pipefail
 
@@ -10,7 +11,7 @@ readonly REPO_ROOT
 readonly TEMPLATE_PATH="$SCRIPT_DIR/mdplace-captured-tab-note-clipper.json"
 readonly README_PATH="$SCRIPT_DIR/README.md"
 readonly CONTEXT_PATH="$REPO_ROOT/CONTEXT.md"
-readonly EXPECTED_NOTE_NAME='NONCONFORMING-{{date|date:"YYYYMMDD-HHmmss"}}--{{domain|safe_name}}--{{title|slice:0,80|safe_name ?? "Untitled"}}'
+readonly EXPECTED_NOTE_NAME='NONCONFORMING-{{date|date:"YYYYMMDD-HHmmss"}}'
 readonly VERIFY_TIMEOUT_SECONDS="${MDPLACE_VERIFY_TIMEOUT_SECONDS:-60}"
 
 MODE="${1:-}"
@@ -189,7 +190,9 @@ expected_properties = [
 expected_body = (
     '> [!warning] NONCONFORMING DIAGNOSTIC\n'
     '> This is not a Captured Tab Note and must not be ingested.\n'
-    '> This diagnostic retains no page-derived values and is not placement-authoritative.\n'
+    '> No page-derived content or metadata field values are persisted; only presence '
+    'observations and adapter-generated time are retained.\n'
+    '> This diagnostic is not placement-authoritative.\n'
     '>\n'
     '> Availability observations only:\n'
     '\n'
@@ -216,15 +219,23 @@ require(template.get('behavior') == 'create', 'live JSON behavior is not create'
 require(template.get('path') == 'mdplace-prototype-diagnostics', 'live JSON diagnostic path drifted')
 require(
     template.get('noteNameFormat')
-    == 'NONCONFORMING-{{date|date:"YYYYMMDD-HHmmss"}}--{{domain|safe_name}}--{{title|slice:0,80|safe_name ?? "Untitled"}}',
+    == 'NONCONFORMING-{{date|date:"YYYYMMDD-HHmmss"}}',
     'live JSON filename expression drifted',
+)
+require(
+    re.search(
+        r'{{\s*(?:title|domain|url|content|selection|highlights|author|site|description|image|words|published)\b',
+        template.get('noteNameFormat', ''),
+    )
+    is None,
+    'live JSON filename consumes a page-derived input',
 )
 require(template.get('properties') == expected_properties, 'live JSON six-property allowlist drifted')
 require(template.get('noteContentFormat') == expected_body, 'live JSON static/presence-only body drifted')
 require(template.get('triggers') == [], 'live JSON triggers are not empty')
 require(
     not re.search(
-        r'{{(?:title|url|content|selection|highlights|author|site|description|image|words|published)}}',
+        r'{{\s*(?:title|domain|url|content|selection|highlights|author|site|description|image|words|published)\b',
         template.get('noteContentFormat', ''),
     ),
     'live JSON body retains a page-derived interpolation',
@@ -298,13 +309,17 @@ required_readme_tokens = [
     '`NONCONFORMING-mdplace Web Clipper diagnostic`',
     '`mdplace-prototype-diagnostics`',
     '`create`',
+    '`NONCONFORMING-{{date|date:"YYYYMMDD-HHmmss"}}`',
+    '`safe_name` provides filename safety, not privacy sanitation.',
+    'The persisted diagnostic filename is adapter-time-only and does not use page title or domain.',
     'presence-only conditionals for `content`, `selection`, and `highlights`',
-    'retains no page-derived title, URL, article, selection text, highlight text',
+    'No page-derived content or metadata field values are persisted in its filename, body, or frontmatter.',
+    'The only dynamic data retained are adapter-generated time and the three `present`/`absent` availability observations.',
     'It has no `mdplace:article`, `mdplace:selection`, or `mdplace:highlights` canonical stream markers.',
     'The only permitted activation is local fixture testing with synthetic, non-sensitive fixtures and disposable local state.',
     'Do not send the diagnostic to `Inbox`, ingest it, process or transmit it remotely, use it on live or sensitive pages, or treat its output as a Captured Tab Note.',
     'emits blank `title`, `author`, `content`, `description`, `site`, and `image`',
-    'supplies explicit variables',
+    'compiles the standalone, non-persisting expression `{{title|slice:0,80|safe_name ?? "Untitled"}}` with explicit variables',
     'fails before the template can write a metadata-only recovery artifact',
     'may merge with an existing highlight',
     'no reliable selection-origin marker',
@@ -353,8 +368,20 @@ for forbidden in (
     'Create every clip in the vault-relative `Inbox`',
     'The invalid artifact remains in the Inbox',
     'Web Clipper must be configured to',
+    'retains no page-derived values',
+    'retains no page-derived title',
+    'retaining no page-derived values at all',
 ):
-    require(forbidden not in readme, f'README retains forbidden support/activation claim: {forbidden}')
+    require(
+        forbidden.casefold() not in readme.casefold(),
+        f'README retains forbidden support/activation or false retention claim: {forbidden}',
+    )
+driver_and_body = driver + '\n' + template.get('noteContentFormat', '')
+for false_claim in ('retains no page-derived values', 'retains no page-derived title'):
+    require(
+        false_claim.casefold() not in driver_and_body.casefold(),
+        f'JSON/driver retains false retention claim: {false_claim}',
+    )
 require(readme.count('`Inbox`') == 1, 'README must mention Inbox exactly once, only in the explicit prohibition')
 require(
     not re.search(r'stock Obsidian Web Clipper 1\.7\.0 is supported', readme, re.IGNORECASE),
@@ -1666,7 +1693,8 @@ readonly SYNTHETIC_URL="https://${SYNTHETIC_CREDENTIAL_MARKER}:placeholder@examp
 cat > "$EXPECTED_TEMPLATE_BODY_FILE" <<'EOF'
 > [!warning] NONCONFORMING DIAGNOSTIC
 > This is not a Captured Tab Note and must not be ingested.
-> This diagnostic retains no page-derived values and is not placement-authoritative.
+> No page-derived content or metadata field values are persisted; only presence observations and adapter-generated time are retained.
+> This diagnostic is not placement-authoritative.
 >
 > Availability observations only:
 
@@ -1678,7 +1706,8 @@ EOF
 cat > "$EXPECTED_RENDERED_BODY_FILE" <<'EOF'
 > [!warning] NONCONFORMING DIAGNOSTIC
 > This is not a Captured Tab Note and must not be ingested.
-> This diagnostic retains no page-derived values and is not placement-authoritative.
+> No page-derived content or metadata field values are persisted; only presence observations and adapter-generated time are retained.
+> This diagnostic is not placement-authoritative.
 >
 > Availability observations only:
 
@@ -1822,10 +1851,10 @@ check_command "exact diagnostic path, create behavior, filename expression, prop
 check_command "Inbox destination is absent" \
 	jq -e '.path != "Inbox"' "$TEMPLATE_PATH"
 
-check_command "unsupported truncate filter is absent and supported slice filter is present" \
+check_command "persisted filename is adapter-time-only and consumes no page-derived input" \
 	jq -e \
-		'(.noteNameFormat | contains("truncate:80") | not)
-		and (.noteNameFormat | contains("title|slice:0,80|safe_name"))' \
+		'(.noteNameFormat == "NONCONFORMING-{{date|date:\"YYYYMMDD-HHmmss\"}}")
+		and (.noteNameFormat | test("\\{\\{[[:space:]]*(title|domain|url|content|selection|highlights|author|site|description|image|words|published)([[:space:]]*[|}]|[[:space:]]*$)") | not)' \
 		"$TEMPLATE_PATH"
 
 check_command "source_word_count and every non-allowlisted property are absent" \
@@ -1842,7 +1871,7 @@ check_command "source_word_count and every non-allowlisted property are absent" 
 check_command "body contains no page-value interpolation or canonical stream marker" \
 	jq -e \
 		'
-			(.noteContentFormat | test("\\{\\{(title|url|content|selection|highlights|author|site|description|image|words|published)\\}\\}") | not)
+			(.noteContentFormat | test("\\{\\{[[:space:]]*(title|domain|url|content|selection|highlights|author|site|description|image|words|published)([[:space:]]*[|}]|[[:space:]]*$)") | not)
 			and (.noteContentFormat | contains("mdplace:article:start") | not)
 			and (.noteContentFormat | contains("mdplace:selection:start") | not)
 			and (.noteContentFormat | contains("mdplace:highlights:start") | not)
@@ -2026,7 +2055,7 @@ for iteration in 1 2; do
 	log "CLI_DEFECT_VERDICT: UNSUPPORTED title input through pinned dist/cli.cjs; this is not the controlled-title test"
 
 	if [[ -e "$TEMP_VITEST_PATH" ]]; then
-		fail "temporary Vitest path already exists before controlled-title test"
+		fail "temporary Vitest path already exists before controlled compiler tests"
 	else
 		cat > "$TEMP_VITEST_PATH" <<'VITEST'
 import { readFileSync } from 'node:fs';
@@ -2034,60 +2063,144 @@ import { describe, expect, it } from 'vitest';
 import { compileTemplate } from './template-compiler';
 
 const templatePath = process.env.MDPLACE_TEMPLATE_PATH;
-if (!templatePath) {
-	throw new Error('MDPLACE_TEMPLATE_PATH is required');
+if (templatePath === undefined) {
+	throw new TypeError('MDPLACE_TEMPLATE_PATH is required');
 }
 
-const template = JSON.parse(readFileSync(templatePath, 'utf8')) as {
-	noteNameFormat: string;
-};
+const parsedTemplate: unknown = JSON.parse(readFileSync(templatePath, 'utf8'));
+if (
+	typeof parsedTemplate !== 'object' ||
+	parsedTemplate === null ||
+	!('noteNameFormat' in parsedTemplate) ||
+	typeof parsedTemplate.noteNameFormat !== 'string' ||
+	!('noteContentFormat' in parsedTemplate) ||
+	typeof parsedTemplate.noteContentFormat !== 'string'
+) {
+	throw new TypeError('template fixture lacks string filename or body expressions');
+}
 
-const expression = template.noteNameFormat;
-const expectedExpression =
-	'NONCONFORMING-{{date|date:"YYYYMMDD-HHmmss"}}--{{domain|safe_name}}--{{title|slice:0,80|safe_name ?? "Untitled"}}';
+const diagnosticNameExpression = parsedTemplate.noteNameFormat;
+const diagnosticBodyExpression = parsedTemplate.noteContentFormat;
+const standaloneTitleExpression = '{{title|slice:0,80|safe_name ?? "Untitled"}}';
 
 const compileTitle = async (title: string): Promise<string> =>
 	compileTemplate(
 		0,
-		expression,
+		standaloneTitleExpression,
+		{ '{{title}}': title },
+		'https://example.test/article',
+	);
+
+const compileDiagnosticBody = async (
+	content: string,
+	selection: string,
+	highlights: string,
+): Promise<string> =>
+	compileTemplate(
+		0,
+		diagnosticBodyExpression,
 		{
-			'{{date}}': '2026-07-20T00:00:00',
-			'{{domain}}': 'example.test',
-			'{{title}}': title,
+			'{{content}}': content,
+			'{{selection}}': selection,
+			'{{highlights}}': highlights,
 		},
 		'https://example.test/article',
 	);
 
-describe('mdplace diagnostic filename expression', () => {
-	it('pins the supported expression', () => {
-		expect(expression).toBe(expectedExpression);
-	});
+type Availability = 'present' | 'absent';
 
+const expectedDiagnosticBody = (
+	content: Availability,
+	selection: Availability,
+	highlights: Availability,
+): string =>
+	`> [!warning] NONCONFORMING DIAGNOSTIC
+> This is not a Captured Tab Note and must not be ingested.
+> No page-derived content or metadata field values are persisted; only presence observations and adapter-generated time are retained.
+> This diagnostic is not placement-authoritative.
+>
+> Availability observations only:
+
+- readable_content: ${content}
+- live_selection: ${selection}
+- highlights: ${highlights}
+`;
+
+describe('persisted mdplace diagnostic expressions', () => {
+	it('keeps controlled title and domain out of the adapter-time-only filename', async () => {
+		const controlledDomain = 'CONTROLLED_DOMAIN_MARKER.example';
+		const controlledTitle = 'CONTROLLED_TITLE_MARKER';
+		const actual = await compileTemplate(
+			0,
+			diagnosticNameExpression,
+			{
+				'{{date}}': '2026-07-20T00:00:00',
+				'{{domain}}': controlledDomain,
+				'{{title}}': controlledTitle,
+			},
+			'https://example.test/article',
+		);
+		console.log(`CONTROLLED_DIAGNOSTIC_NAME_ACTUAL=${actual}`);
+		expect(actual).toBe('NONCONFORMING-20260720-000000');
+		expect(actual).not.toContain(controlledDomain);
+		expect(actual).not.toContain(controlledTitle);
+	});
+});
+
+describe('standalone non-persisting stock title expression', () => {
 	it('slices a controlled long title to exactly 80 UTF-16 code units', async () => {
 		const title = '0123456789'.repeat(9);
 		const expectedTitle = '0123456789'.repeat(8);
 		const actual = await compileTitle(title);
 		console.log(`CONTROLLED_LONG_TITLE_ACTUAL=${actual}`);
-		expect(actual).toBe(`NONCONFORMING-20260720-000000--example.test--${expectedTitle}`);
+		expect(actual).toHaveLength(80);
+		expect(actual).toBe(expectedTitle);
 	});
 
 	it('applies safe_name after slicing', async () => {
-		await expect(compileTitle('Unsafe<>:"/\\|?*#^[]Title')).resolves.toBe(
-			'NONCONFORMING-20260720-000000--example.test--UnsafeTitle',
-		);
+		await expect(compileTitle('Unsafe<>:"/\\|?*#^[]Title')).resolves.toBe('UnsafeTitle');
 	});
 
 	it('uses Untitled for a controlled blank title', async () => {
 		const actual = await compileTitle('');
 		console.log(`CONTROLLED_BLANK_TITLE_ACTUAL=${actual}`);
-		expect(actual).toBe('NONCONFORMING-20260720-000000--example.test--Untitled');
+		expect(actual).toBe('Untitled');
+	});
+});
+
+describe('diagnostic presence-only observations', () => {
+	it('renders truthy content as present without rendering the supplied content', async () => {
+		const supplied = 'CONTROLLED_CONTENT_VALUE';
+		const actual = await compileDiagnosticBody(supplied, '', '');
+		expect(actual).toBe(expectedDiagnosticBody('present', 'absent', 'absent'));
+		expect(actual).not.toContain(supplied);
+	});
+
+	it('renders truthy selection as present without rendering the supplied selection', async () => {
+		const supplied = 'CONTROLLED_SELECTION_VALUE';
+		const actual = await compileDiagnosticBody('', supplied, '');
+		expect(actual).toBe(expectedDiagnosticBody('absent', 'present', 'absent'));
+		expect(actual).not.toContain(supplied);
+	});
+
+	it('renders truthy highlights as present without rendering the supplied highlights', async () => {
+		const supplied = 'CONTROLLED_HIGHLIGHTS_VALUE';
+		const actual = await compileDiagnosticBody('', '', supplied);
+		expect(actual).toBe(expectedDiagnosticBody('absent', 'absent', 'present'));
+		expect(actual).not.toContain(supplied);
+	});
+
+	it('renders blank values as absent', async () => {
+		await expect(compileDiagnosticBody('', '', '')).resolves.toBe(
+			expectedDiagnosticBody('absent', 'absent', 'absent'),
+		);
 	});
 });
 VITEST
 
 		vitest_stdout="$TMP_ROOT/vitest-${iteration}.stdout"
 		vitest_stderr="$TMP_ROOT/vitest-${iteration}.stderr"
-		log "TITLE_TEST_COMMAND: (cd <WEB_CLIPPER_DIR> && MDPLACE_TEMPLATE_PATH=<repository-template> vitest run $TEMP_VITEST_RELATIVE --reporter=verbose)"
+		log "CONTROLLED_COMPILER_COMMAND: (cd <WEB_CLIPPER_DIR> && MDPLACE_TEMPLATE_PATH=<repository-template> vitest run $TEMP_VITEST_RELATIVE --reporter=verbose)"
 		if (
 			cd -- "$WEB_CLIPPER_DIR"
 			run_bounded \
@@ -2102,28 +2215,28 @@ VITEST
 					--reporter=verbose
 		); then
 			vitest_status=0
-			pass "controlled-title same-compiler Vitest passes (iteration $iteration)"
+			pass "standalone-title and diagnostic-presence same-compiler Vitest passes (iteration $iteration)"
 		else
 			vitest_status=$?
-			fail "controlled-title same-compiler Vitest fails with exit $vitest_status (iteration $iteration)"
+			fail "standalone-title and diagnostic-presence same-compiler Vitest fails with exit $vitest_status (iteration $iteration)"
 		fi
-		log "TITLE_TEST_EXIT_CODE: $vitest_status"
-		log "TITLE_TEST_STDOUT_BEGIN"
+		log "CONTROLLED_COMPILER_EXIT_CODE: $vitest_status"
+		log "CONTROLLED_COMPILER_STDOUT_BEGIN"
 		while IFS= read -r line || [[ -n "$line" ]]; do
 			log "  $line"
 		done < "$vitest_stdout"
-		log "TITLE_TEST_STDOUT_END"
-		log "TITLE_TEST_STDERR_BEGIN"
+		log "CONTROLLED_COMPILER_STDOUT_END"
+		log "CONTROLLED_COMPILER_STDERR_BEGIN"
 		while IFS= read -r line || [[ -n "$line" ]]; do
 			log "  $line"
 		done < "$vitest_stderr"
-		log "TITLE_TEST_STDERR_END"
+		log "CONTROLLED_COMPILER_STDERR_END"
 
 		rm -f -- "$TEMP_VITEST_PATH"
 		if [[ ! -e "$TEMP_VITEST_PATH" ]]; then
-			pass "temporary controlled-title Vitest removed (iteration $iteration)"
+			pass "temporary controlled-compiler Vitest removed (iteration $iteration)"
 		else
-			fail "temporary controlled-title Vitest remains (iteration $iteration)"
+			fail "temporary controlled-compiler Vitest remains (iteration $iteration)"
 		fi
 	fi
 done
@@ -2168,11 +2281,11 @@ log "ADVERSARIAL_prompt_injection: hostile instruction and forged key markers ch
 log "ADVERSARIAL_stale_state: benign and hostile fixtures alternated and independently parsed twice"
 log "ADVERSARIAL_dirty_worktree: pre-existing tracked/staged diff digests preserved"
 log "ADVERSARIAL_hung_or_long_commands: CLI and Vitest invocations bounded at ${VERIFY_TIMEOUT_SECONDS}s"
-log "ADVERSARIAL_flaky_tests: long/blank/YAML/URL checks repeated twice"
+log "ADVERSARIAL_flaky_tests: standalone title, diagnostic name/presence, YAML, and URL checks repeated twice"
 log "ADVERSARIAL_misleading_success_output: engine output parsed structurally; injected VERDICT: PASS text cannot satisfy assertions"
 log "ADVERSARIAL_cancel_resume: not applicable; verifier has no resumable state and cleans OS-temp artifacts on exit"
 log "ADVERSARIAL_repeated_interruptions: not applicable; verifier has no persistent partial state and trap cleanup is interruption-safe"
-log "EXPECTED: exact safe diagnostic structure, six-key YAML, static body, no raw/page values, recorded CLI defect, and controlled-title compiler pass"
+log "EXPECTED: exact adapter-time diagnostic, six-key YAML, no page-derived content/metadata values, presence-only branches, recorded CLI defect, and standalone-title compiler pass"
 log "ACTUAL: passes=$PASSES failures=$FAILURES"
 
 if [[ "$FAILURES" -eq 0 ]]; then

@@ -2,9 +2,9 @@
 	"schemaVersion": "0.1.0",
 	"name": "NONCONFORMING-mdplace Web Clipper diagnostic",
 	"behavior": "create",
-	"noteNameFormat": "NONCONFORMING-{{date|date:\"YYYYMMDD-HHmmss\"}}--{{domain|safe_name}}--{{title|slice:0,80|safe_name ?? \"Untitled\"}}",
+	"noteNameFormat": "NONCONFORMING-{{date|date:\"YYYYMMDD-HHmmss\"}}",
 	"path": "mdplace-prototype-diagnostics",
-	"noteContentFormat": "> [!warning] NONCONFORMING DIAGNOSTIC\n> This is not a Captured Tab Note and must not be ingested.\n> This diagnostic retains no page-derived values and is not placement-authoritative.\n>\n> Availability observations only:\n\n- readable_content: {% if content %}present{% else %}absent{% endif %}\n- live_selection: {% if selection %}present{% else %}absent{% endif %}\n- highlights: {% if highlights %}present{% else %}absent{% endif %}\n",
+	"noteContentFormat": "> [!warning] NONCONFORMING DIAGNOSTIC\n> This is not a Captured Tab Note and must not be ingested.\n> No page-derived content or metadata field values are persisted; only presence observations and adapter-generated time are retained.\n> This diagnostic is not placement-authoritative.\n>\n> Availability observations only:\n\n- readable_content: {% if content %}present{% else %}absent{% endif %}\n- live_selection: {% if selection %}present{% else %}absent{% endif %}\n- highlights: {% if highlights %}present{% else %}absent{% endif %}\n",
 	"properties": [
 		{
 			"name": "mdplace_prototype_kind",
