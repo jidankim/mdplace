@@ -20,6 +20,7 @@ TMP_ROOT=""
 TEMP_VITEST_RELATIVE="src/utils/mdplace-template-compiler.verify.test.ts"
 TEMP_VITEST_PATH=""
 TEMP_VITEST_OWNED=false
+TEMP_VITEST_PENDING_STATUS=0
 FAILURES=0
 PASSES=0
 
@@ -54,6 +55,25 @@ cleanup() {
 trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
+
+acquire_temp_vitest_path() {
+	local acquisition_status=0
+	TEMP_VITEST_PENDING_STATUS=0
+	trap 'if [[ "$TEMP_VITEST_PENDING_STATUS" -eq 0 ]]; then TEMP_VITEST_PENDING_STATUS=130; fi' INT
+	trap 'if [[ "$TEMP_VITEST_PENDING_STATUS" -eq 0 ]]; then TEMP_VITEST_PENDING_STATUS=143; fi' TERM
+	set -o noclobber
+	: > "$TEMP_VITEST_PATH" 2>/dev/null || acquisition_status=$?
+	if [[ "$acquisition_status" -eq 0 ]]; then
+		TEMP_VITEST_OWNED=true
+	fi
+	set +o noclobber
+	trap 'exit 130' INT
+	trap 'exit 143' TERM
+	if [[ "$TEMP_VITEST_PENDING_STATUS" -ne 0 ]]; then
+		exit "$TEMP_VITEST_PENDING_STATUS"
+	fi
+	return "$acquisition_status"
+}
 
 sha256_file() {
 	shasum -a 256 "$1" | awk '{print $1}'
@@ -2257,10 +2277,9 @@ for iteration in 1 2; do
 
 	if [[ -e "$TEMP_VITEST_PATH" || -L "$TEMP_VITEST_PATH" ]]; then
 		fail "temporary Vitest path already exists before controlled compiler tests"
-	elif ! (set -o noclobber; : > "$TEMP_VITEST_PATH") 2>/dev/null; then
+	elif ! acquire_temp_vitest_path; then
 		fail "temporary Vitest path could not be acquired without overwriting an existing path"
 	else
-		TEMP_VITEST_OWNED=true
 		cat > "$TEMP_VITEST_PATH" <<'VITEST'
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
