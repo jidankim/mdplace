@@ -21,6 +21,8 @@ TEMP_VITEST_RELATIVE="src/utils/mdplace-template-compiler.verify.test.ts"
 TEMP_VITEST_PATH=""
 TEMP_VITEST_OWNED=false
 TEMP_VITEST_PENDING_STATUS=0
+CANCELLATION_STATUS=0
+CLEANUP_ACTIVE=false
 FAILURES=0
 PASSES=0
 
@@ -43,19 +45,45 @@ fail() {
 
 # shellcheck disable=SC2329 # Invoked indirectly by trap.
 cleanup() {
-	trap '' INT TERM
+	local original_status="$1"
+	local remove_status=0
+	CLEANUP_ACTIVE=true
+	if [[ "$CANCELLATION_STATUS" -ne 0 ]]; then
+		trap '' INT TERM
+	fi
 	if [[ "$TEMP_VITEST_OWNED" == "true" && -n "$TEMP_VITEST_PATH" ]]; then
-		rm -f -- "$TEMP_VITEST_PATH"
+		rm -f -- "$TEMP_VITEST_PATH" || remove_status=$?
+		if [[ "$remove_status" -ne 0 && "$CANCELLATION_STATUS" -ne 0 ]]; then
+			rm -f -- "$TEMP_VITEST_PATH"
+		fi
 		TEMP_VITEST_OWNED=false
 	fi
+	remove_status=0
 	if [[ -n "$TMP_ROOT" && -d "$TMP_ROOT" ]]; then
-		rm -rf -- "$TMP_ROOT"
+		rm -rf -- "$TMP_ROOT" || remove_status=$?
+		if [[ "$remove_status" -ne 0 && "$CANCELLATION_STATUS" -ne 0 ]]; then
+			rm -rf -- "$TMP_ROOT"
+		fi
 	fi
+	trap - EXIT
+	exit "$((CANCELLATION_STATUS != 0 ? CANCELLATION_STATUS : original_status))"
 }
 
-trap cleanup EXIT
-trap 'exit 130' INT
-trap 'exit 143' TERM
+# shellcheck disable=SC2329 # Invoked indirectly by trap.
+handle_cancellation() {
+	if [[ "$CANCELLATION_STATUS" -eq 0 ]]; then
+		CANCELLATION_STATUS="$1"
+	fi
+	if [[ "$CLEANUP_ACTIVE" == "true" ]]; then
+		trap '' INT TERM
+		return
+	fi
+	exit "$CANCELLATION_STATUS"
+}
+
+trap 'cleanup $?' EXIT
+trap 'handle_cancellation 130' INT
+trap 'handle_cancellation 143' TERM
 
 acquire_temp_vitest_path() {
 	local acquisition_status=0
@@ -68,10 +96,11 @@ acquire_temp_vitest_path() {
 		TEMP_VITEST_OWNED=true
 	fi
 	set +o noclobber
-	trap 'exit 130' INT
-	trap 'exit 143' TERM
+	trap 'handle_cancellation 130' INT
+	trap 'handle_cancellation 143' TERM
 	if [[ "$TEMP_VITEST_PENDING_STATUS" -ne 0 ]]; then
-		exit "$TEMP_VITEST_PENDING_STATUS"
+		CANCELLATION_STATUS="$TEMP_VITEST_PENDING_STATUS"
+		exit "$CANCELLATION_STATUS"
 	fi
 	return "$acquisition_status"
 }
