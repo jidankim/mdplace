@@ -98,7 +98,7 @@ Applicability limit: strong research analogy for later taxonomy discovery, but n
 
 ### Source P4 — OmniSearchSage
 
-[OmniSearchSage: Multi-Task Multi-Entity Embeddings for Pinterest Search](https://arxiv.org/abs/2404.16260) is a company-authored paper with an official Pinterest implementation link.
+[OmniSearchSage: Multi-Task Multi-Entity Embeddings for Pinterest Search](https://arxiv.org/abs/2404.16260) is a company-authored paper. Pinterest publishes the [OmniSearchSage implementation](https://github.com/pinterest/atg-research/tree/main/omnisearchsage).
 
 What it supports:
 
@@ -243,7 +243,7 @@ What they support:
 What they do not support:
 
 - These sources do not document an automatic product-to-taxonomy classifier, ranked category candidates, confidence, explanations, or human review.
-- Walmart’s separately named “Get categorization API” belongs to assortment recommendations and groups recommended inventory by brand or category. It is not evidence of a listing-category suggestion API and should not be cited as one.
+- Walmart’s separately named [Get categorization API](https://developer.walmart.com/us-marketplace/docs/get-categorization-api) belongs to assortment recommendations and groups recommended inventory by brand or category. It is not evidence of a listing-category suggestion API and should not be cited as one.
 - The docs do not establish a knowledge graph.
 
 Applicability limit: useful additional precedent for versioned category schemas and change diffs; weak for mdplace’s semantic proposal pipeline. The cited endpoints are US Marketplace-specific unless their docs say otherwise.
@@ -353,7 +353,7 @@ Applicability limit: strong additional API analogy for leaf-only assignment, cat
 | Candidate retrieval before ranking | Pinterest Pin2Interest | Directly supported for Pins; not automatically transferable to notes. |
 | Human-gated taxonomy changes | Pinterest; Airbnb; Shopify’s open-source change workflow | Supports governance, not a specific mdplace UI or state machine. |
 | Graph-shaped model over relational storage | Airbnb; Pinterest’s RDF-to-relational workflow | Shows feasibility, not performance superiority or necessity. |
-| Stable IDs plus category-bound typed attributes | eBay; Shopify; Google; Walmart; Amazon; Lazada | Strong marketplace pattern; attributes are domain-specific and cannot be copied into mdplace. |
+| Stable IDs plus category-bound typed attributes | eBay; Shopify; Walmart; Amazon; Lazada | Strong marketplace pattern; attributes are domain-specific and cannot be copied into mdplace. |
 | Explicit accept/reject of an automatic suggestion | Shopify | Closest public first-party precedent; no model evidence or confidence is exposed. |
 | Platform vocabulary plus local vocabulary | Google (`google_product_category` versus `product_type`); Shopify category versus product type | Strong distinction, but local type is not the same as abstention. |
 | Version/change handling | eBay; Shopify; Walmart; Amazon; Alibaba; Lazada | Supports stable identifiers, version awareness, mappings/diffs/events; not full event sourcing. |
