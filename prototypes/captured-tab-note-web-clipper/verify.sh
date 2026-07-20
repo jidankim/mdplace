@@ -311,8 +311,16 @@ required_readme_tokens = [
     'converted to `0`',
     'cannot guarantee mandatory source-URL sanitation before persistence or transmission',
     'cannot guarantee safe YAML serialization for arbitrary page-derived free text',
-    'Todo 5 must complete the literal source-metadata and stream-manifest schemas',
-    'there is no reproducible hash schema and no runtime enforcement here',
+    'exact interoperability target for an additional conforming adapter',
+    'content between exactly one canonical start/end marker pair',
+    'convert every `CRLF` and remaining `CR` to `LF`',
+    'Preserve every other byte, including every remaining space, tab, and newline',
+    'an unknown `word_count` is `null`, never `0`',
+    'Raw URLs never enter this object',
+    'Omit absent streams. Order present entries `article`, then `selection`, then `highlights`',
+    'source_metadata_hash = sha256:13932d5ded70ed0a97dab4dc24043bbfc42b6dc95a60db846bdb153c5da02bb2',
+    'content_hash = sha256:90dd96398830cd225452be04490e7d3b241e8b8a947ca8c590f8803871e5246c',
+    'Remote image bytes are never fetched or hashed',
     'Each matching negative result is passing feasibility evidence',
     'It must never be reported as successful Captured Tab Note delivery.',
 ]
@@ -388,6 +396,665 @@ if failures:
 print('CONTRACT_FAILURE_COUNT: 0')
 print('CONTRACT_VERDICT: PASS')
 PY
+}
+
+run_hash_contract_check() {
+	local readme_path="$1"
+	local output_dir="$2"
+
+	python3 - "$readme_path" "$output_dir" <<'PY'
+import copy
+import hashlib
+import json
+import re
+import sys
+import unicodedata
+from pathlib import Path
+from typing import Optional
+from urllib.parse import urlsplit
+
+
+class ContractError(ValueError):
+    pass
+
+
+def require(condition: bool, message: str) -> None:
+    if not condition:
+        raise ContractError(message)
+
+
+def section(markdown: str, heading: str, next_heading: Optional[str]) -> str:
+    start_marker = f'### {heading}\n'
+    start = markdown.find(start_marker)
+    require(start >= 0, f'missing README section: {heading}')
+    start += len(start_marker)
+    if next_heading is None:
+        end = len(markdown)
+    else:
+        end_marker = f'### {next_heading}\n'
+        end = markdown.find(end_marker, start)
+        require(end >= 0, f'missing README section boundary: {next_heading}')
+    return markdown[start:end]
+
+
+def single_fence(markdown_section: str, language: str) -> str:
+    blocks = re.findall(
+        rf'```{re.escape(language)}\n(.*?)\n```',
+        markdown_section,
+        flags=re.DOTALL,
+    )
+    require(len(blocks) == 1, f'expected one {language} fence, found {len(blocks)}')
+    return blocks[0]
+
+
+def jcs_bytes(value: object) -> bytes:
+    # These schemas have fixed ASCII member names and only JCS-safe strings,
+    # null, arrays, and nonnegative integers. Sorting those names plus compact
+    # ECMAScript-compatible primitive spelling yields their RFC 8785 bytes.
+    return json.dumps(
+        value,
+        ensure_ascii=False,
+        allow_nan=False,
+        separators=(',', ':'),
+        sort_keys=True,
+    ).encode('utf-8')
+
+
+RFC3339 = re.compile(
+    r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}'
+    r'(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$'
+)
+LOWER_HASH = re.compile(r'^sha256:[0-9a-f]{64}$')
+STREAM_ORDER = ('article', 'selection', 'highlights')
+MARKERS = {
+    name: (
+        f'<!-- mdplace:{name}:start -->',
+        f'<!-- mdplace:{name}:end -->',
+    )
+    for name in STREAM_ORDER
+}
+EXPECTED_MARKER_BLOCK = '\n'.join(
+    marker
+    for name in STREAM_ORDER
+    for marker in MARKERS[name]
+)
+EXPECTED_METADATA_TYPE = (
+    '{"adapter":{"id":string,"version":string},'
+    '"captured_at":RFC3339-string,'
+    '"schema":"mdplace.capture-source-metadata/v1",'
+    '"source":{"author":string|null,'
+    '"canonical_url":sanitized-string|null,'
+    '"description":string|null,'
+    '"image_url":sanitized-string|null,'
+    '"published_at":RFC3339-string|null,'
+    '"site":string|null,'
+    '"title":string|null,'
+    '"word_count":nonnegative-integer|null}}'
+)
+EXPECTED_MANIFEST_TYPE = (
+    '{"schema":"mdplace.capture-stream-manifest/v1",'
+    '"streams":[{"hash":"sha256:<lowercase-hex>",'
+    '"name":"article|selection|highlights"}]}'
+)
+EXPECTED_METADATA_HASH = (
+    'sha256:13932d5ded70ed0a97dab4dc24043bbfc42b6dc95a60db846bdb153c5da02bb2'
+)
+EXPECTED_MANIFEST_HASH = (
+    'sha256:90dd96398830cd225452be04490e7d3b241e8b8a947ca8c590f8803871e5246c'
+)
+EXPECTED_NORMALIZED = 'Café\n  line 2 \t'.encode('utf-8')
+EXPECTED_NORMALIZED_HEX = '436166c3a90a20206c696e6520322009'
+
+
+def validate_metadata(
+    value: object,
+    *,
+    word_count_observed: bool,
+    urls_sanitized: bool,
+) -> None:
+    require(isinstance(value, dict), 'metadata must be an object')
+    require(
+        set(value) == {'adapter', 'captured_at', 'schema', 'source'},
+        'metadata top-level members differ',
+    )
+    require(
+        value['schema'] == 'mdplace.capture-source-metadata/v1',
+        'metadata schema literal differs',
+    )
+    adapter = value['adapter']
+    require(isinstance(adapter, dict) and set(adapter) == {'id', 'version'}, 'adapter shape differs')
+    require(
+        all(isinstance(adapter[key], str) for key in ('id', 'version')),
+        'adapter id/version must be strings',
+    )
+    captured_at = value['captured_at']
+    require(
+        isinstance(captured_at, str) and RFC3339.fullmatch(captured_at) is not None,
+        'captured_at must be an RFC3339 string',
+    )
+    source = value['source']
+    expected_source_members = {
+        'author',
+        'canonical_url',
+        'description',
+        'image_url',
+        'published_at',
+        'site',
+        'title',
+        'word_count',
+    }
+    require(
+        isinstance(source, dict) and set(source) == expected_source_members,
+        'source members differ',
+    )
+    for member in ('author', 'description', 'site', 'title'):
+        require(source[member] is None or isinstance(source[member], str), f'{member} type differs')
+    published_at = source['published_at']
+    require(
+        published_at is None
+        or (isinstance(published_at, str) and RFC3339.fullmatch(published_at) is not None),
+        'published_at type differs',
+    )
+    for member in ('canonical_url', 'image_url'):
+        url = source[member]
+        require(url is None or isinstance(url, str), f'{member} type differs')
+        if url is not None:
+            require(urls_sanitized, f'{member} entered metadata before sanitation')
+    word_count = source['word_count']
+    require(
+        word_count is None
+        or (type(word_count) is int and word_count >= 0),
+        'word_count must be a nonnegative integer or null',
+    )
+    if word_count_observed:
+        require(word_count is not None, 'observed word_count must be numeric')
+    else:
+        require(word_count is None, 'unknown word_count must be null')
+
+
+def validate_manifest(value: object, expected_present: tuple[str, ...]) -> None:
+    require(isinstance(value, dict), 'manifest must be an object')
+    require(set(value) == {'schema', 'streams'}, 'manifest top-level members differ')
+    require(
+        value['schema'] == 'mdplace.capture-stream-manifest/v1',
+        'manifest schema literal differs',
+    )
+    streams = value['streams']
+    require(isinstance(streams, list), 'streams must be an array')
+    expected_order = tuple(name for name in STREAM_ORDER if name in expected_present)
+    observed_order: list[str] = []
+    for entry in streams:
+        require(isinstance(entry, dict) and set(entry) == {'hash', 'name'}, 'stream entry shape differs')
+        require(entry['name'] in STREAM_ORDER, 'stream name is outside the closed union')
+        require(
+            isinstance(entry['hash'], str) and LOWER_HASH.fullmatch(entry['hash']) is not None,
+            'stream hash is not lowercase sha256 form',
+        )
+        observed_order.append(entry['name'])
+    require(tuple(observed_order) == expected_order, 'manifest absent-stream set or fixed order differs')
+
+
+def physical_lines(text: str) -> list[tuple[str, str]]:
+    lines: list[tuple[str, str]] = []
+    start = 0
+    index = 0
+    while index < len(text):
+        char = text[index]
+        if char not in '\r\n':
+            index += 1
+            continue
+        if char == '\r' and index + 1 < len(text) and text[index + 1] == '\n':
+            ending = '\r\n'
+            end = index + 2
+        else:
+            ending = char
+            end = index + 1
+        lines.append((text[start:index], ending))
+        start = end
+        index = end
+    if start < len(text):
+        lines.append((text[start:], ''))
+    return lines
+
+
+def normalized_stream(document_bytes: bytes, name: str) -> Optional[bytes]:
+    require(name in MARKERS, f'unknown stream name: {name}')
+    try:
+        text = document_bytes.decode('utf-8', errors='strict')
+    except UnicodeDecodeError as error:
+        raise ContractError('capture document is not valid UTF-8') from error
+    lines = physical_lines(text)
+    start_marker, end_marker = MARKERS[name]
+    start_indexes = [index for index, (line, _) in enumerate(lines) if line == start_marker]
+    end_indexes = [index for index, (line, _) in enumerate(lines) if line == end_marker]
+    if not start_indexes and not end_indexes:
+        return None
+    require(len(start_indexes) == len(end_indexes) == 1, f'{name} marker count differs from one pair')
+    start_index = start_indexes[0]
+    end_index = end_indexes[0]
+    require(start_index < end_index, f'{name} markers are reversed')
+    require(lines[start_index][1] in ('\n', '\r', '\r\n'), f'{name} start boundary newline is absent')
+    between = ''.join(line + ending for line, ending in lines[start_index + 1:end_index])
+    if between.endswith('\r\n'):
+        payload = between[:-2]
+    elif between.endswith('\r') or between.endswith('\n'):
+        payload = between[:-1]
+    else:
+        raise ContractError(f'{name} end boundary newline is absent')
+    normalized = unicodedata.normalize(
+        'NFC',
+        payload.replace('\r\n', '\n').replace('\r', '\n'),
+    )
+    require(normalized != '', f'{name} present stream is empty')
+    require(not all(char.isspace() for char in normalized), f'{name} present stream is whitespace-only')
+    return normalized.encode('utf-8')
+
+
+def expect_rejected(label: str, operation) -> None:
+    try:
+        operation()
+    except (ContractError, json.JSONDecodeError, UnicodeDecodeError, ValueError) as error:
+        print(f'NEGATIVE_{label}: REJECTED ({error})')
+        return
+    raise ContractError(f'negative case {label} was accepted')
+
+
+def require_candidate(candidate: bytes, actual: bytes, label: str) -> None:
+    require(candidate == actual, f'{label} candidate bytes are not canonical')
+
+
+readme_path = Path(sys.argv[1])
+output_dir = Path(sys.argv[2])
+readme = readme_path.read_text(encoding='utf-8')
+stream_section = section(readme, 'Canonical stream bytes', 'Source-metadata JCS input')
+metadata_section = section(readme, 'Source-metadata JCS input', 'Stream-manifest JCS input')
+manifest_section = section(readme, 'Stream-manifest JCS input', None)
+
+require(single_fence(stream_section, 'text') == EXPECTED_MARKER_BLOCK, 'canonical marker block differs')
+metadata_text_blocks = re.findall(r'```text\n(.*?)\n```', metadata_section, flags=re.DOTALL)
+manifest_text_blocks = re.findall(r'```text\n(.*?)\n```', manifest_section, flags=re.DOTALL)
+require(metadata_text_blocks[0:1] == [EXPECTED_METADATA_TYPE], 'metadata literal type form differs')
+require(manifest_text_blocks[0:1] == [EXPECTED_MANIFEST_TYPE], 'manifest literal type form differs')
+
+metadata_raw = single_fence(metadata_section, 'json')
+manifest_raw = single_fence(manifest_section, 'json')
+require('\n' not in metadata_raw and '\n' not in manifest_raw, 'canonical JCS vector is line-wrapped')
+metadata_value = json.loads(metadata_raw)
+manifest_value = json.loads(manifest_raw)
+validate_metadata(metadata_value, word_count_observed=False, urls_sanitized=True)
+validate_manifest(manifest_value, ('article', 'highlights'))
+metadata_bytes = jcs_bytes(metadata_value)
+manifest_bytes = jcs_bytes(manifest_value)
+require(metadata_bytes == metadata_raw.encode('utf-8'), 'documented metadata bytes are not exact JCS')
+require(manifest_bytes == manifest_raw.encode('utf-8'), 'documented manifest bytes are not exact JCS')
+
+metadata_digest = 'sha256:' + hashlib.sha256(metadata_bytes).hexdigest()
+manifest_digest = 'sha256:' + hashlib.sha256(manifest_bytes).hexdigest()
+require(metadata_digest == EXPECTED_METADATA_HASH, 'metadata fixed digest differs')
+require(manifest_digest == EXPECTED_MANIFEST_HASH, 'manifest fixed digest differs')
+metadata_hash_lines = re.findall(r'^source_metadata_hash = (sha256:[0-9a-f]{64})$', metadata_section, re.MULTILINE)
+manifest_hash_lines = re.findall(r'^content_hash = (sha256:[0-9a-f]{64})$', manifest_section, re.MULTILINE)
+require(metadata_hash_lines == [metadata_digest], 'documented source_metadata_hash differs from computed bytes')
+require(manifest_hash_lines == [manifest_digest], 'documented content_hash differs from computed bytes')
+
+article_payload = 'Cafe\u0301\r\n  line 2 \t'
+article_document = (
+    'prefix\r\n'
+    + MARKERS['article'][0] + '\r\n'
+    + article_payload + '\r\n'
+    + MARKERS['article'][1] + '\r\n'
+    + MARKERS['highlights'][0] + '\r\n'
+    + 'Saved highlight  \t' + '\r\n'
+    + MARKERS['highlights'][1] + '\r\n'
+).encode('utf-8')
+article_bytes = normalized_stream(article_document, 'article')
+highlights_bytes = normalized_stream(article_document, 'highlights')
+selection_bytes = normalized_stream(article_document, 'selection')
+require(article_bytes == EXPECTED_NORMALIZED, 'CRLF/NFC normalization or whitespace preservation differs')
+require(article_bytes.hex() == EXPECTED_NORMALIZED_HEX, 'documented normalized UTF-8 hex differs')
+require(highlights_bytes == b'Saved highlight  \t', 'remaining highlight whitespace was trimmed')
+require(selection_bytes is None, 'absent selection was treated as present')
+
+for source_line_ending in ('\r\n', '\r', '\n'):
+    equivalent_document = (
+        MARKERS['article'][0] + source_line_ending
+        + 'Cafe\u0301' + source_line_ending
+        + '  line 2 \t' + source_line_ending
+        + MARKERS['article'][1]
+    ).encode('utf-8')
+    require(
+        normalized_stream(equivalent_document, 'article') == EXPECTED_NORMALIZED,
+        f'{source_line_ending!r} source line ending did not normalize to LF',
+    )
+
+wrong_lf_bytes = 'Café\r\n  line 2 \t'.encode('utf-8')
+wrong_nfc_bytes = 'Cafe\u0301\n  line 2 \t'.encode('utf-8')
+expect_rejected(
+    'LF_CANONICAL_BYTE_CHANGE',
+    lambda: require_candidate(wrong_lf_bytes, article_bytes, 'LF'),
+)
+expect_rejected(
+    'NFC_CANONICAL_BYTE_CHANGE',
+    lambda: require_candidate(wrong_nfc_bytes, article_bytes, 'NFC'),
+)
+whitespace_document = (
+    MARKERS['selection'][0] + '\n \t\n' + MARKERS['selection'][1]
+).encode('utf-8')
+expect_rejected(
+    'WHITESPACE_ONLY_PRESENT_STREAM',
+    lambda: normalized_stream(whitespace_document, 'selection'),
+)
+reversed_document = (
+    MARKERS['article'][1] + '\nvalue\n' + MARKERS['article'][0]
+).encode('utf-8')
+expect_rejected(
+    'REVERSED_MARKERS',
+    lambda: normalized_stream(reversed_document, 'article'),
+)
+duplicate_document = (
+    MARKERS['article'][0] + '\nvalue\n' + MARKERS['article'][1] + '\n'
+    + MARKERS['article'][0] + '\nvalue\n' + MARKERS['article'][1]
+).encode('utf-8')
+expect_rejected(
+    'DUPLICATE_MARKERS',
+    lambda: normalized_stream(duplicate_document, 'article'),
+)
+expect_rejected(
+    'MALFORMED_UTF8',
+    lambda: normalized_stream(b'\xff', 'article'),
+)
+
+reversed_manifest = copy.deepcopy(manifest_value)
+reversed_manifest['streams'].reverse()
+expect_rejected(
+    'REVERSED_STREAM_ORDER',
+    lambda: validate_manifest(reversed_manifest, ('article', 'highlights')),
+)
+require(
+    hashlib.sha256(jcs_bytes(reversed_manifest)).hexdigest()
+    != EXPECTED_MANIFEST_HASH.removeprefix('sha256:'),
+    'reversed stream order unexpectedly retained the fixed digest',
+)
+inserted_selection = copy.deepcopy(manifest_value)
+inserted_selection['streams'].insert(
+    1,
+    {'hash': 'sha256:' + ('c' * 64), 'name': 'selection'},
+)
+expect_rejected(
+    'ABSENT_SELECTION_INSERTED',
+    lambda: validate_manifest(inserted_selection, ('article', 'highlights')),
+)
+
+unsafe_metadata = copy.deepcopy(metadata_value)
+unsafe_url = 'https://user:password@example.com/article?token=raw#fragment'
+unsafe_metadata['source']['canonical_url'] = unsafe_url
+unsafe_parts = urlsplit(unsafe_url)
+require(
+    unsafe_parts.username is not None and unsafe_parts.query and unsafe_parts.fragment,
+    'unsafe URL fixture lacks credential/query/fragment components',
+)
+expect_rejected(
+    'RAW_CREDENTIAL_QUERY_FRAGMENT_URL',
+    lambda: validate_metadata(
+        unsafe_metadata,
+        word_count_observed=False,
+        urls_sanitized=False,
+    ),
+)
+zero_unknown = copy.deepcopy(metadata_value)
+zero_unknown['source']['word_count'] = 0
+expect_rejected(
+    'ZERO_FOR_UNKNOWN_WORD_COUNT',
+    lambda: validate_metadata(
+        zero_unknown,
+        word_count_observed=False,
+        urls_sanitized=True,
+    ),
+)
+validate_metadata(zero_unknown, word_count_observed=True, urls_sanitized=True)
+expect_rejected(
+    'MALFORMED_METADATA_JSON',
+    lambda: json.loads(metadata_raw[:-1]),
+)
+
+mutated_metadata = bytearray(metadata_bytes)
+mutation_index = metadata_bytes.index(b'Example title')
+mutated_metadata[mutation_index] = ord('F')
+mutated_digest = hashlib.sha256(mutated_metadata).hexdigest()
+require(
+    mutated_digest != EXPECTED_METADATA_HASH.removeprefix('sha256:'),
+    'one-byte metadata mutation unexpectedly retained the fixed digest',
+)
+print(f'NEGATIVE_ONE_BYTE_MUTATION: REJECTED (sha256:{mutated_digest})')
+
+output_dir.mkdir(parents=True, exist_ok=True)
+(output_dir / 'source-metadata.jcs').write_bytes(metadata_bytes)
+(output_dir / 'stream-manifest.jcs').write_bytes(manifest_bytes)
+(output_dir / 'normalized-article.bin').write_bytes(article_bytes)
+print(f'METADATA_JCS_BYTES: {metadata_bytes.decode("utf-8")}')
+print(f'METADATA_JCS_HEX: {metadata_bytes.hex()}')
+print(f'METADATA_JCS_BYTE_COUNT: {len(metadata_bytes)}')
+print(f'SOURCE_METADATA_HASH: {metadata_digest}')
+print(f'MANIFEST_JCS_BYTES: {manifest_bytes.decode("utf-8")}')
+print(f'MANIFEST_JCS_HEX: {manifest_bytes.hex()}')
+print(f'MANIFEST_JCS_BYTE_COUNT: {len(manifest_bytes)}')
+print(f'CONTENT_HASH: {manifest_digest}')
+print(f'NORMALIZED_ARTICLE_HEX: {article_bytes.hex()}')
+print(f'NORMALIZED_ARTICLE_BYTE_COUNT: {len(article_bytes)}')
+print(f'NORMALIZED_ARTICLE_HASH: sha256:{hashlib.sha256(article_bytes).hexdigest()}')
+print('PRESENT_STREAM_ORDER: article|highlights')
+print('ABSENT_STREAMS: selection')
+print(f'PYTHON_UNICODE_VERSION: {unicodedata.unidata_version}')
+print('ORACLE_VERDICT: PASS')
+PY
+}
+
+run_hash_mode() {
+	local tracked_diff_before
+	local tracked_diff_after
+	local staged_diff_before
+	local staged_diff_after
+	local oracle_stdout
+	local oracle_stderr
+	local oracle_dir
+	local metadata_digest
+	local manifest_digest
+	local malformed_readme="$TMP_ROOT/README-malformed.md"
+	local forged_readme="$TMP_ROOT/README-forged-pass.md"
+	local mutation_stdout="$TMP_ROOT/readme-mutations.stdout"
+	local mutation_stderr="$TMP_ROOT/readme-mutations.stderr"
+	local negative_stdout
+	local negative_stderr
+	local negative_readme
+	local negative_status
+
+	tracked_diff_before="$(git -C "$REPO_ROOT" diff --binary | shasum -a 256 | awk '{print $1}')"
+	staged_diff_before="$(git -C "$REPO_ROOT" diff --cached --binary | shasum -a 256 | awk '{print $1}')"
+
+	log "SCENARIO: future-adapter canonical stream, JCS, and fixed hash-vector contract"
+	log "COMMAND: LC_ALL=${LC_ALL:-<unset>} MDPLACE_EVIDENCE_DIR=<evidence-dir> bash prototypes/captured-tab-note-web-clipper/verify.sh hash"
+	log "MDPLACE_HEAD: $(git -C "$REPO_ROOT" rev-parse HEAD)"
+	log "PINNED_UPSTREAM_SHA: $EXPECTED_UPSTREAM_SHA"
+	log "BASH_VERSION: $BASH_VERSION"
+	log "PYTHON_VERSION: $(python3 --version 2>&1)"
+	log "SHASUM_VERSION: $(shasum --version 2>&1 | head -n 1)"
+	log "LOCALE_ALL: ${LC_ALL:-<unset>}"
+	log "LOCALE_CHARMAP: $(locale charmap 2>&1)"
+	log "README_SHA256: $(sha256_file "$README_PATH")"
+	log "VERIFY_SHA256: $(sha256_file "$SCRIPT_DIR/verify.sh")"
+	log "EXPECTED_SOURCE_METADATA_HASH: sha256:13932d5ded70ed0a97dab4dc24043bbfc42b6dc95a60db846bdb153c5da02bb2"
+	log "EXPECTED_CONTENT_HASH: sha256:90dd96398830cd225452be04490e7d3b241e8b8a947ca8c590f8803871e5246c"
+
+	for iteration in 1 2; do
+		oracle_dir="$TMP_ROOT/oracle-${iteration}"
+		oracle_stdout="$TMP_ROOT/oracle-${iteration}.stdout"
+		oracle_stderr="$TMP_ROOT/oracle-${iteration}.stderr"
+		log "ITERATION: $iteration"
+		if run_hash_contract_check "$README_PATH" "$oracle_dir" > "$oracle_stdout" 2> "$oracle_stderr"; then
+			pass "README-coupled byte/JCS oracle passes (iteration $iteration)"
+		else
+			fail "README-coupled byte/JCS oracle passes (iteration $iteration)"
+		fi
+		log "ORACLE_STDOUT_BEGIN"
+		while IFS= read -r line || [[ -n "$line" ]]; do
+			log "  $line"
+		done < "$oracle_stdout"
+		log "ORACLE_STDOUT_END"
+		if [[ -s "$oracle_stderr" ]]; then
+			log "ORACLE_STDERR_BEGIN"
+			while IFS= read -r line || [[ -n "$line" ]]; do
+				log "  $line"
+			done < "$oracle_stderr"
+			log "ORACLE_STDERR_END"
+		else
+			log "ORACLE_STDERR: <empty>"
+		fi
+
+		if [[ -f "$oracle_dir/source-metadata.jcs" ]]; then
+			metadata_digest="$(sha256_file "$oracle_dir/source-metadata.jcs")"
+		else
+			metadata_digest="<missing>"
+		fi
+		if [[ -f "$oracle_dir/stream-manifest.jcs" ]]; then
+			manifest_digest="$(sha256_file "$oracle_dir/stream-manifest.jcs")"
+		else
+			manifest_digest="<missing>"
+		fi
+		log "SYSTEM_SOURCE_METADATA_HASH: sha256:$metadata_digest"
+		log "SYSTEM_CONTENT_HASH: sha256:$manifest_digest"
+		if [[ "$metadata_digest" == "13932d5ded70ed0a97dab4dc24043bbfc42b6dc95a60db846bdb153c5da02bb2" ]]; then
+			pass "independent shasum metadata digest matches fixed vector (iteration $iteration)"
+		else
+			fail "independent shasum metadata digest matches fixed vector (iteration $iteration)"
+		fi
+		if [[ "$manifest_digest" == "90dd96398830cd225452be04490e7d3b241e8b8a947ca8c590f8803871e5246c" ]]; then
+			pass "independent shasum manifest digest matches fixed vector (iteration $iteration)"
+		else
+			fail "independent shasum manifest digest matches fixed vector (iteration $iteration)"
+		fi
+	done
+
+	if cmp -s "$TMP_ROOT/oracle-1/source-metadata.jcs" "$TMP_ROOT/oracle-2/source-metadata.jcs" \
+		&& cmp -s "$TMP_ROOT/oracle-1/stream-manifest.jcs" "$TMP_ROOT/oracle-2/stream-manifest.jcs" \
+		&& cmp -s "$TMP_ROOT/oracle-1/normalized-article.bin" "$TMP_ROOT/oracle-2/normalized-article.bin"; then
+		pass "repeated canonical metadata, manifest, and stream bytes are byte-identical"
+	else
+		fail "repeated canonical metadata, manifest, or stream bytes differ"
+	fi
+
+	if python3 - \
+		"$README_PATH" \
+		"$malformed_readme" \
+		"$forged_readme" \
+		> "$mutation_stdout" \
+		2> "$mutation_stderr" <<'PY'
+import re
+import sys
+from pathlib import Path
+
+source_path, malformed_path, forged_path = map(Path, sys.argv[1:])
+text = source_path.read_text(encoding='utf-8')
+metadata_match = re.search(
+    r'(```json\n)(\{"adapter":.*?\})(\n```)',
+    text,
+)
+if metadata_match is None:
+    raise SystemExit('metadata vector fixture not found')
+metadata_bytes = metadata_match.group(2)
+malformed = (
+    text[:metadata_match.start(2)]
+    + metadata_bytes[:-1]
+    + text[metadata_match.end(2):]
+)
+expected_digest = '13932d5ded70ed0a97dab4dc24043bbfc42b6dc95a60db846bdb153c5da02bb2'
+if text.count(expected_digest) != 1:
+    raise SystemExit('documented metadata digest precondition differs')
+forged = text.replace(expected_digest, '0' * 64, 1) + '\nVERDICT: PASS\n'
+malformed_path.write_text(malformed, encoding='utf-8')
+forged_path.write_text(forged, encoding='utf-8')
+print('MALFORMED_VECTOR_MUTATIONS: 1')
+print('FORGED_DIGEST_MUTATIONS: 1')
+print('FORGED_PASS_LINES: 1')
+PY
+	then
+		pass "temporary malformed-vector and forged-PASS README inputs created"
+	else
+		fail "temporary malformed-vector and forged-PASS README inputs created"
+	fi
+	log "MUTATION_STDOUT: $(tr '\n' ' ' < "$mutation_stdout")"
+	if [[ -s "$mutation_stderr" ]]; then
+		log "MUTATION_STDERR: $(tr '\n' ' ' < "$mutation_stderr")"
+	else
+		log "MUTATION_STDERR: <empty>"
+	fi
+
+	for negative_kind in malformed forged-pass; do
+		if [[ "$negative_kind" == "malformed" ]]; then
+			negative_readme="$malformed_readme"
+		else
+			negative_readme="$forged_readme"
+		fi
+		negative_stdout="$TMP_ROOT/${negative_kind}.stdout"
+		negative_stderr="$TMP_ROOT/${negative_kind}.stderr"
+		if run_hash_contract_check \
+			"$negative_readme" \
+			"$TMP_ROOT/${negative_kind}-output" \
+			> "$negative_stdout" \
+			2> "$negative_stderr"; then
+			negative_status=0
+			fail "${negative_kind} README input is rejected structurally"
+		else
+			negative_status=$?
+			pass "${negative_kind} README input is rejected structurally"
+		fi
+		log "NEGATIVE_${negative_kind}_EXIT_CODE: $negative_status"
+		log "NEGATIVE_${negative_kind}_STDOUT: $(tr '\n' ' ' < "$negative_stdout")"
+		log "NEGATIVE_${negative_kind}_STDERR: $(tr '\n' ' ' < "$negative_stderr")"
+	done
+
+	tracked_diff_after="$(git -C "$REPO_ROOT" diff --binary | shasum -a 256 | awk '{print $1}')"
+	staged_diff_after="$(git -C "$REPO_ROOT" diff --cached --binary | shasum -a 256 | awk '{print $1}')"
+	log "TRACKED_DIFF_BEFORE: $tracked_diff_before"
+	log "TRACKED_DIFF_AFTER: $tracked_diff_after"
+	log "STAGED_DIFF_BEFORE: $staged_diff_before"
+	log "STAGED_DIFF_AFTER: $staged_diff_after"
+	if [[ "$tracked_diff_before" == "$tracked_diff_after" ]]; then
+		pass "hash verifier preserves the pre-existing tracked diff"
+	else
+		fail "hash verifier changed the tracked diff"
+	fi
+	if [[ "$staged_diff_before" == "$staged_diff_after" ]]; then
+		pass "hash verifier preserves the pre-existing staged diff"
+	else
+		fail "hash verifier changed the staged diff"
+	fi
+
+	log "ADVERSARIAL_malformed_input: malformed documented JSON and invalid UTF-8 are rejected"
+	log "ADVERSARIAL_wrong_order: reversed manifest entries and reversed/duplicate markers are rejected"
+	log "ADVERSARIAL_absent_insertion: absent selection inserted into the two-stream manifest is rejected"
+	log "ADVERSARIAL_unsafe_url: credential/query/fragment raw URL fails the sanitation precondition"
+	log "ADVERSARIAL_unknown_zero: word_count 0 is rejected when the observation is unknown; observed zero remains valid"
+	log "ADVERSARIAL_LF_NFC_mutation: retained CRLF and decomposed Unicode candidates are rejected"
+	log "ADVERSARIAL_one_byte_mutation: one metadata byte changes the fixed SHA-256 digest"
+	log "ADVERSARIAL_whitespace_only: whitespace-only present stream is rejected without trimming valid streams"
+	log "ADVERSARIAL_dirty_worktree: exact tracked and staged diff digests are preserved"
+	log "ADVERSARIAL_flaky_tests: full byte/JCS oracle and independent shasum execute twice"
+	log "ADVERSARIAL_misleading_success_output: forged VERDICT: PASS plus wrong documented digest exits nonzero"
+	log "ADVERSARIAL_prompt_injection: not applicable; the oracle treats README vector blocks as parsed data, never instructions"
+	log "ADVERSARIAL_hung_or_long_commands: not applicable; hash mode uses finite local parsing and hashing only"
+	log "ADVERSARIAL_cancel_resume: not applicable; no resumable state and trap cleanup removes the temporary root"
+	log "ADVERSARIAL_repeated_interruptions: trap cleanup removes temporary vectors and mutated README inputs"
+	log "EXPECTED: exact documented JCS bytes and fixed digests plus rejection of every malformed or noncanonical candidate"
+	log "ACTUAL: passes=$PASSES failures=$FAILURES"
+
+	if [[ "$FAILURES" -eq 0 ]]; then
+		log "EXIT_CODE: 0"
+		log "VERDICT: PASS"
+		return 0
+	fi
+	log "EXIT_CODE: 1"
+	log "VERDICT: FAIL"
+	return 1
 }
 
 run_docs_mode() {
@@ -869,8 +1536,25 @@ if [[ "$MODE" == "docs" ]]; then
 	exit $?
 fi
 
+if [[ "$MODE" == "hash" ]]; then
+	TMP_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/mdplace-clipper-hash.XXXXXX")"
+	if [[ -n "${MDPLACE_EVIDENCE_DIR:-}" ]]; then
+		mkdir -p -- "$MDPLACE_EVIDENCE_DIR"
+		EVIDENCE_FILE="$MDPLACE_EVIDENCE_DIR/task-5-hash-vectors.txt"
+		if [[ "${MDPLACE_EVIDENCE_APPEND:-0}" == "1" ]]; then
+			printf '\nHASH_RUN_SEPARATOR\n' >> "$EVIDENCE_FILE"
+		else
+			: > "$EVIDENCE_FILE"
+		fi
+	else
+		EVIDENCE_FILE="$TMP_ROOT/hash-evidence.txt"
+	fi
+	run_hash_mode
+	exit $?
+fi
+
 if [[ "$MODE" != "template" ]]; then
-	printf 'Usage: WEB_CLIPPER_DIR=/path/to/pinned/checkout %s template | %s shell | %s docs\n' "$0" "$0" "$0" >&2
+	printf 'Usage: WEB_CLIPPER_DIR=/path/to/pinned/checkout %s template | %s shell | %s docs | %s hash\n' "$0" "$0" "$0" "$0" >&2
 	exit 64
 fi
 
