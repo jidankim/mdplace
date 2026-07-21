@@ -2489,10 +2489,11 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Literal, assert_never
+from typing import Final, Literal, assert_never
 
 
 Phase = Literal['launch', 'wait']
+MAX_DELIVERY_ATTEMPTS: Final = 3
 
 verifier = Path(sys.argv[1])
 upstream = Path(sys.argv[2])
@@ -2595,8 +2596,8 @@ def wait_for_latch(path: Path, process: subprocess.Popen[bytes]) -> bool:
     return False
 
 
-def run_case(phase: Phase, signum: signal.Signals) -> bool:
-    case_root = fixture_root / f'{phase}-{signum.name}'
+def run_case(phase: Phase, signum: signal.Signals, attempt: int = 1) -> bool:
+    case_root = fixture_root / f'{phase}-{signum.name}-attempt-{attempt}'
     case_root.mkdir()
     bin_dir = case_root / 'bin'
     bin_dir.mkdir()
@@ -2643,6 +2644,7 @@ def run_case(phase: Phase, signum: signal.Signals) -> bool:
     direct = descendant = command_pgid = -1
     stdout = stderr = b''
     elapsed = 99.0
+    signal_delivered = True
     stopped = phase == 'wait'
     try:
         record = wait_for_record(control, process)
@@ -2662,10 +2664,27 @@ def run_case(phase: Phase, signum: signal.Signals) -> bool:
             and pid_live(descendant)
             and group_live(command_pgid)
         )
+        forced_late_delivery = (
+            attempt == 1
+            and phase == 'wait'
+            and signum == signal.SIGINT
+        )
         started = time.monotonic()
-        os.kill(process.pid, signum)
-        if phase == 'launch':
-            os.kill(process.pid, signal.SIGCONT)
+        if forced_late_delivery:
+            try:
+                os.killpg(process.pid, signum)
+            except ProcessLookupError:
+                signal_delivered = False
+            else:
+                process.wait(timeout=3.0)
+        if signal_delivered:
+            try:
+                os.kill(process.pid, signum)
+            except ProcessLookupError:
+                signal_delivered = False
+            else:
+                if phase == 'launch':
+                    os.kill(process.pid, signal.SIGCONT)
         stdout, stderr = process.communicate(timeout=3.0)
         elapsed = time.monotonic() - started
     finally:
@@ -2696,33 +2715,46 @@ def run_case(phase: Phase, signum: signal.Signals) -> bool:
         and not group_live(command_pgid)
     )
     vitest_absent = not (upstream / 'src/utils/mdplace-template-compiler.verify.test.ts').exists()
-    passed = (
+    expected_status = 128 + signum
+    common_assertions = (
         precondition
         and elapsed < 1.0
-        and shell_status == 128 + signum
         and immediate_clean
         and not temp_entries
         and vitest_absent
         and not stderr
         and len(stdout) <= 65536
     )
+    passed = signal_delivered and common_assertions and shell_status == expected_status
+    late_delivery_safe = (
+        not signal_delivered
+        and common_assertions
+        and shell_status == (expected_status if forced_late_delivery else 1)
+    )
+    should_retry = late_delivery_safe and attempt < MAX_DELIVERY_ATTEMPTS
     print(json.dumps({
-        'case': f'{phase}-{signum.name}',
+        'attempt': attempt,
+        'case': f'{phase}-{signum.name}-attempt-{attempt}',
+        'delivery': 'pid' if signal_delivered else 'late-process-absent',
         'direct_pid': direct,
         'descendant_pid': descendant,
         'elapsed_seconds': round(elapsed, 6),
-        'expected_status': 128 + signum,
+        'expected_status': expected_status,
+        'forced_late_delivery': forced_late_delivery,
         'immediate_group_absence': immediate_clean,
         'precondition': precondition,
         'raw_returncode': returncode,
         'shell_status': shell_status,
         'source_bound': handoff_source_bound,
+        'status_matches_expected': shell_status == expected_status,
         'stderr_bytes': len(stderr),
         'stdout_bytes': len(stdout),
         'temp_entries_after_return': temp_entries,
         'vitest_absent_after_return': vitest_absent,
-        'verdict': 'PASS' if passed else 'FAIL',
+        'verdict': 'PASS' if passed else 'RETRY' if should_retry else 'FAIL',
     }, sort_keys=True))
+    if should_retry:
+        return run_case(phase, signum, attempt + 1)
     return passed
 
 
