@@ -46,27 +46,47 @@ fail() {
 # shellcheck disable=SC2329 # Invoked indirectly by trap.
 cleanup() {
 	local original_status="$1"
+	local cleanup_failure_status=0
+	local cleanup_failed=false
 	local remove_status=0
 	CLEANUP_ACTIVE=true
 	if [[ "$CANCELLATION_STATUS" -ne 0 ]]; then
 		trap '' INT TERM
 	fi
 	if [[ "$TEMP_VITEST_OWNED" == "true" && -n "$TEMP_VITEST_PATH" ]]; then
-		rm -f -- "$TEMP_VITEST_PATH" || remove_status=$?
-		if [[ "$remove_status" -ne 0 && "$CANCELLATION_STATUS" -ne 0 ]]; then
-			rm -f -- "$TEMP_VITEST_PATH"
+		rm -f -- "$TEMP_VITEST_PATH" 2>/dev/null || remove_status=$?
+		if [[ "$remove_status" -ne 0 ]]; then
+			cleanup_failure_status="$remove_status"
 		fi
-		TEMP_VITEST_OWNED=false
+		if [[ "$remove_status" -ne 0 && "$CANCELLATION_STATUS" -ne 0 ]]; then
+			remove_status=0
+			rm -f -- "$TEMP_VITEST_PATH" 2>/dev/null || remove_status=$?
+		fi
+		if [[ "$remove_status" -eq 0 ]]; then
+			TEMP_VITEST_OWNED=false
+		else
+			cleanup_failed=true
+		fi
 	fi
 	remove_status=0
 	if [[ -n "$TMP_ROOT" && -d "$TMP_ROOT" ]]; then
-		rm -rf -- "$TMP_ROOT" || remove_status=$?
+		rm -rf -- "$TMP_ROOT" 2>/dev/null || remove_status=$?
+		if [[ "$remove_status" -ne 0 && "$cleanup_failure_status" -eq 0 ]]; then
+			cleanup_failure_status="$remove_status"
+		fi
 		if [[ "$remove_status" -ne 0 && "$CANCELLATION_STATUS" -ne 0 ]]; then
-			rm -rf -- "$TMP_ROOT"
+			remove_status=0
+			rm -rf -- "$TMP_ROOT" 2>/dev/null || remove_status=$?
+		fi
+		if [[ "$remove_status" -ne 0 ]]; then
+			cleanup_failed=true
 		fi
 	fi
+	if [[ "$cleanup_failed" == "true" ]]; then
+		printf '%s\n' 'ERROR: verifier cleanup failed; owned resources may remain' >&2
+	fi
 	trap - EXIT
-	exit "$((CANCELLATION_STATUS != 0 ? CANCELLATION_STATUS : original_status))"
+	exit "$((CANCELLATION_STATUS != 0 ? CANCELLATION_STATUS : original_status != 0 ? original_status : cleanup_failure_status))"
 }
 
 # shellcheck disable=SC2329 # Invoked indirectly by trap.
@@ -96,10 +116,12 @@ acquire_temp_vitest_path() {
 		TEMP_VITEST_OWNED=true
 	fi
 	set +o noclobber
+	if [[ "$TEMP_VITEST_PENDING_STATUS" -ne 0 && "$CANCELLATION_STATUS" -eq 0 ]]; then
+		CANCELLATION_STATUS="$TEMP_VITEST_PENDING_STATUS"
+	fi
 	trap 'handle_cancellation 130' INT
 	trap 'handle_cancellation 143' TERM
-	if [[ "$TEMP_VITEST_PENDING_STATUS" -ne 0 ]]; then
-		CANCELLATION_STATUS="$TEMP_VITEST_PENDING_STATUS"
+	if [[ "$CANCELLATION_STATUS" -ne 0 ]]; then
 		exit "$CANCELLATION_STATUS"
 	fi
 	return "$acquisition_status"
