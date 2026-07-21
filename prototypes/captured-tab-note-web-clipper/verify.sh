@@ -20,7 +20,6 @@ TMP_ROOT=""
 TEMP_VITEST_RELATIVE="src/utils/mdplace-template-compiler.verify.test.ts"
 TEMP_VITEST_PATH=""
 TEMP_VITEST_OWNED=false
-TEMP_VITEST_PENDING_STATUS=0
 CANCELLATION_STATUS=0
 CLEANUP_ACTIVE=false
 FAILURES=0
@@ -107,18 +106,14 @@ trap 'handle_cancellation 143' TERM
 
 acquire_temp_vitest_path() {
 	local acquisition_status=0
-	TEMP_VITEST_PENDING_STATUS=0
-	trap 'if [[ "$TEMP_VITEST_PENDING_STATUS" -eq 0 ]]; then TEMP_VITEST_PENDING_STATUS=130; fi' INT
-	trap 'if [[ "$TEMP_VITEST_PENDING_STATUS" -eq 0 ]]; then TEMP_VITEST_PENDING_STATUS=143; fi' TERM
+	trap 'if [[ "$CANCELLATION_STATUS" -eq 0 ]]; then CANCELLATION_STATUS=130; fi' INT
+	trap 'if [[ "$CANCELLATION_STATUS" -eq 0 ]]; then CANCELLATION_STATUS=143; fi' TERM
 	set -o noclobber
 	: > "$TEMP_VITEST_PATH" 2>/dev/null || acquisition_status=$?
 	if [[ "$acquisition_status" -eq 0 ]]; then
 		TEMP_VITEST_OWNED=true
 	fi
 	set +o noclobber
-	if [[ "$TEMP_VITEST_PENDING_STATUS" -ne 0 && "$CANCELLATION_STATUS" -eq 0 ]]; then
-		CANCELLATION_STATUS="$TEMP_VITEST_PENDING_STATUS"
-	fi
 	trap 'handle_cancellation 130' INT
 	trap 'handle_cancellation 143' TERM
 	if [[ "$CANCELLATION_STATUS" -ne 0 ]]; then
