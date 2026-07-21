@@ -2513,6 +2513,30 @@ handoff_source_bound = (
     run_bounded_source.count('\tsupervisor_pid=$!\n') == 1
     and 'wait "$supervisor_pid"' in run_bounded_source
 )
+cleanup_omission_anchor = '    signal_group(active_process, signal.SIGKILL)\n'
+if run_bounded_source.count(cleanup_omission_anchor) != 1:
+    raise SystemExit('cleanup-omission mutation anchor is not unique')
+mutated_run_bounded_source = run_bounded_source.replace(
+    cleanup_omission_anchor,
+    '    return\n',
+    1,
+)
+mutated_verifier_source = (
+    verifier_source[:source_start]
+    + mutated_run_bounded_source
+    + verifier_source[source_end:]
+)
+mutation_repo = fixture_root / 'cleanup-omission-repo'
+mutation_script_dir = mutation_repo / 'prototypes/captured-tab-note-web-clipper'
+mutation_script_dir.mkdir(parents=True)
+(mutation_repo / '.git').symlink_to(verifier.parents[2] / '.git')
+mutation_verifier = mutation_script_dir / 'verify.sh'
+mutation_verifier.write_text(mutated_verifier_source, encoding='utf-8')
+shutil.copymode(verifier, mutation_verifier)
+shutil.copy2(
+    verifier.with_name('mdplace-captured-tab-note-clipper.json'),
+    mutation_script_dir / 'mdplace-captured-tab-note-clipper.json',
+)
 
 wrapper_source = r'''#!/usr/bin/env bash
 set -euo pipefail
@@ -2576,6 +2600,14 @@ def group_live(pgid: int) -> bool:
     return True
 
 
+def absence_snapshot(direct: int, descendant: int, pgid: int) -> tuple[bool, bool, bool]:
+    return (
+        direct > 0 and not pid_live(direct),
+        descendant > 0 and not pid_live(descendant),
+        pgid > 0 and not group_live(pgid),
+    )
+
+
 def wait_for_record(path: Path, process: subprocess.Popen[bytes]) -> list[int]:
     deadline = time.monotonic() + 5.0
     while time.monotonic() < deadline:
@@ -2600,8 +2632,16 @@ def wait_for_latch(path: Path, process: subprocess.Popen[bytes]) -> bool:
     return False
 
 
-def run_case(phase: Phase, signum: signal.Signals, attempt: int = 1) -> bool:
-    case_root = fixture_root / f'{phase}-{signum.name}-attempt-{attempt}'
+def run_case(
+    phase: Phase,
+    signum: signal.Signals,
+    attempt: int = 1,
+    *,
+    case_verifier: Path = verifier,
+    expect_cleanup_omission: bool = False,
+) -> bool:
+    case_prefix = 'cleanup-omission-' if expect_cleanup_omission else ''
+    case_root = fixture_root / f'{case_prefix}{phase}-{signum.name}-attempt-{attempt}'
     case_root.mkdir()
     bin_dir = case_root / 'bin'
     bin_dir.mkdir()
@@ -2638,8 +2678,8 @@ def run_case(phase: Phase, signum: signal.Signals, attempt: int = 1) -> bool:
     })
     env.pop('MDPLACE_EVIDENCE_DIR', None)
     process = subprocess.Popen(
-        ['bash', str(verifier), 'template'],
-        cwd=verifier.parent,
+        ['bash', str(case_verifier), 'template'],
+        cwd=case_verifier.parent,
         env=env,
         start_new_session=True,
         stdout=subprocess.PIPE,
@@ -2650,6 +2690,12 @@ def run_case(phase: Phase, signum: signal.Signals, attempt: int = 1) -> bool:
     elapsed = 99.0
     signal_delivered = True
     stopped = phase == 'wait'
+    production_direct_absent = False
+    production_descendant_absent = False
+    production_group_absent = False
+    production_snapshot_captured = False
+    harness_fallback_cleanup_used = False
+    harness_fallback_cleanup_clean = False
     try:
         record = wait_for_record(control, process)
         if len(record) == 3:
@@ -2691,18 +2737,35 @@ def run_case(phase: Phase, signum: signal.Signals, attempt: int = 1) -> bool:
                     os.kill(process.pid, signal.SIGCONT)
         stdout, stderr = process.communicate(timeout=3.0)
         elapsed = time.monotonic() - started
+        (
+            production_direct_absent,
+            production_descendant_absent,
+            production_group_absent,
+        ) = absence_snapshot(direct, descendant, command_pgid)
+        production_snapshot_captured = True
     finally:
         if process.poll() is None:
+            harness_fallback_cleanup_used = True
             try:
                 os.killpg(process.pid, signal.SIGKILL)
             except ProcessLookupError:
                 pass
             process.wait(timeout=2.0)
         if command_pgid > 0 and group_live(command_pgid):
+            harness_fallback_cleanup_used = True
             try:
                 os.killpg(command_pgid, signal.SIGKILL)
             except ProcessLookupError:
                 pass
+        fallback_deadline = time.monotonic() + 2.0
+        while True:
+            fallback_snapshot = absence_snapshot(direct, descendant, command_pgid)
+            if all(fallback_snapshot) or not harness_fallback_cleanup_used:
+                break
+            if time.monotonic() >= fallback_deadline:
+                break
+            time.sleep(0.01)
+        harness_fallback_cleanup_clean = all(fallback_snapshot)
 
     returncode = process.returncode
     match returncode:
@@ -2713,40 +2776,79 @@ def run_case(phase: Phase, signum: signal.Signals, attempt: int = 1) -> bool:
         case unreachable:
             assert_never(unreachable)
     temp_entries = sorted(path.name for path in child_tmp.glob('mdplace-clipper-verify.*'))
-    immediate_clean = (
-        not pid_live(direct)
-        and not pid_live(descendant)
-        and not group_live(command_pgid)
+    production_cleanup_clean = (
+        production_snapshot_captured
+        and production_direct_absent
+        and production_descendant_absent
+        and production_group_absent
     )
     vitest_absent = not (upstream / 'src/utils/mdplace-template-compiler.verify.test.ts').exists()
     expected_status = 128 + signum
     common_assertions = (
         precondition
         and elapsed < 1.0
-        and immediate_clean
+        and production_cleanup_clean
+        and not harness_fallback_cleanup_used
+        and harness_fallback_cleanup_clean
         and not temp_entries
         and vitest_absent
         and not stderr
         and len(stdout) <= 65536
     )
-    passed = signal_delivered and common_assertions and shell_status == expected_status
+    production_assertion_passed = (
+        signal_delivered
+        and common_assertions
+        and shell_status == expected_status
+    )
     late_delivery_safe = (
         not signal_delivered
         and common_assertions
         and shell_status == (expected_status if forced_late_delivery else 1)
     )
-    should_retry = late_delivery_safe and attempt < MAX_DELIVERY_ATTEMPTS
+    should_retry = (
+        not expect_cleanup_omission
+        and late_delivery_safe
+        and attempt < MAX_DELIVERY_ATTEMPTS
+    )
+    mutation_detected = (
+        expect_cleanup_omission
+        and signal_delivered
+        and precondition
+        and elapsed < 1.0
+        and production_snapshot_captured
+        and not production_cleanup_clean
+        and not production_direct_absent
+        and not production_descendant_absent
+        and not production_group_absent
+        and harness_fallback_cleanup_used
+        and harness_fallback_cleanup_clean
+        and not temp_entries
+        and vitest_absent
+        and not stderr
+        and len(stdout) <= 65536
+        and shell_status == expected_status
+        and not production_assertion_passed
+    )
+    passed = mutation_detected if expect_cleanup_omission else production_assertion_passed
     print(json.dumps({
         'attempt': attempt,
-        'case': f'{phase}-{signum.name}-attempt-{attempt}',
+        'case': f'{case_prefix}{phase}-{signum.name}-attempt-{attempt}',
         'delivery': 'pid' if signal_delivered else 'late-process-absent',
         'direct_pid': direct,
         'descendant_pid': descendant,
         'elapsed_seconds': round(elapsed, 6),
         'expected_status': expected_status,
         'forced_late_delivery': forced_late_delivery,
-        'immediate_group_absence': immediate_clean,
+        'harness_fallback_cleanup_clean': harness_fallback_cleanup_clean,
+        'harness_fallback_cleanup_used': harness_fallback_cleanup_used,
+        'immediate_group_absence': production_cleanup_clean,
+        'mutation_detected': mutation_detected,
         'precondition': precondition,
+        'production_assertion_passed': production_assertion_passed,
+        'production_descendant_absence': production_descendant_absent,
+        'production_direct_absence': production_direct_absent,
+        'production_group_absence': production_group_absent,
+        'production_snapshot_captured': production_snapshot_captured,
         'raw_returncode': returncode,
         'shell_status': shell_status,
         'source_bound': handoff_source_bound,
@@ -2758,7 +2860,13 @@ def run_case(phase: Phase, signum: signal.Signals, attempt: int = 1) -> bool:
         'verdict': 'PASS' if passed else 'RETRY' if should_retry else 'FAIL',
     }, sort_keys=True))
     if should_retry:
-        return run_case(phase, signum, attempt + 1)
+        return run_case(
+            phase,
+            signum,
+            attempt + 1,
+            case_verifier=case_verifier,
+            expect_cleanup_omission=expect_cleanup_omission,
+        )
     return passed
 
 
@@ -2766,6 +2874,18 @@ print(json.dumps({
     'event': 'source_binding',
     'handoff_source_bound': handoff_source_bound,
     'surface': 'bash verify.sh template',
+}, sort_keys=True))
+mutation_control = run_case(
+    'wait',
+    signal.SIGTERM,
+    case_verifier=mutation_verifier,
+    expect_cleanup_omission=True,
+)
+print(json.dumps({
+    'event': 'cleanup_omission_mutation',
+    'passed': int(mutation_control),
+    'total': 1,
+    'verdict': 'PASS' if mutation_control else 'FAIL',
 }, sort_keys=True))
 results = [
     run_case(phase, signum)
@@ -2778,7 +2898,7 @@ print(json.dumps({
     'total': len(results),
     'verdict': 'PASS' if all(results) else 'FAIL',
 }, sort_keys=True))
-raise SystemExit(0 if all(results) else 1)
+raise SystemExit(0 if mutation_control and all(results) else 1)
 PY
 	then
 		parent_cancellation_status=0
