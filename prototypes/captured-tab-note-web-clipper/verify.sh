@@ -261,6 +261,11 @@ except ReceivedSignal as interruption:
     if process is not None:
         stop_group(process)
     raise SystemExit(128 + interruption.signum)
+finally:
+    if received_signal is not None:
+        if process is not None and process.poll() is None:
+            stop_group(process)
+        raise SystemExit(128 + received_signal)
 PY
 }
 
