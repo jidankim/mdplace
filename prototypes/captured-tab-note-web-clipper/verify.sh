@@ -139,13 +139,24 @@ import os
 import signal
 import subprocess
 import sys
+from enum import Enum, auto
 from types import FrameType
+from typing import assert_never
 
 
 class ReceivedSignal(RuntimeError):
     def __init__(self, signum: int) -> None:
         self.signum = signum
         super().__init__(f'received signal {signum}')
+
+
+class SupervisorPhase(Enum):
+    SETUP = auto()
+    ACQUIRING = auto()
+    WAITING = auto()
+    DISPATCHING = auto()
+    CLEANUP = auto()
+    EXITING = auto()
 
 
 def parse_timeout(raw_timeout: str) -> int:
@@ -172,7 +183,7 @@ if not command:
 grace_seconds = 0.25
 process: subprocess.Popen[bytes] | None = None
 received_signal: int | None = None
-wait_interruptible = False
+phase = SupervisorPhase.SETUP
 signal_read_fd, signal_write_fd = os.pipe()
 os.set_blocking(signal_read_fd, False)
 os.set_blocking(signal_write_fd, False)
@@ -190,8 +201,11 @@ def signal_group(active_process: subprocess.Popen[bytes], signum: int) -> None:
 
 
 def stop_group(active_process: subprocess.Popen[bytes]) -> None:
-    signal.signal(signal.SIGINT, signal.SIG_IGN)
-    signal.signal(signal.SIGTERM, signal.SIG_IGN)
+    global phase
+    phase = SupervisorPhase.CLEANUP
+    if received_signal is not None:
+        signal.signal(signal.SIGINT, signal.SIG_IGN)
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
     signal_group(active_process, signal.SIGTERM)
     try:
         active_process.wait(timeout=grace_seconds)
@@ -218,20 +232,29 @@ def receive_signal(signum: int, _frame: FrameType | None) -> None:
         if received_signal is not None:
             return
         received_signal = observed_signum
-        if wait_interruptible:
-            raise ReceivedSignal(observed_signum)
+        match phase:
+            case SupervisorPhase.SETUP | SupervisorPhase.EXITING:
+                os._exit(128 + observed_signum)
+            case SupervisorPhase.ACQUIRING | SupervisorPhase.DISPATCHING:
+                return
+            case SupervisorPhase.WAITING:
+                raise ReceivedSignal(observed_signum)
+            case SupervisorPhase.CLEANUP:
+                signal.signal(signal.SIGINT, signal.SIG_IGN)
+                signal.signal(signal.SIGTERM, signal.SIG_IGN)
+                return
+            case unreachable:
+                assert_never(unreachable)
     finally:
         signal.pthread_sigmask(signal.SIG_SETMASK, previous_handler_mask)
 
 
-previous_signal_mask = signal.pthread_sigmask(signal.SIG_BLOCK, handled_signals)
-try:
-    signal.signal(signal.SIGINT, receive_signal)
-    signal.signal(signal.SIGTERM, receive_signal)
-finally:
-    signal.pthread_sigmask(signal.SIG_SETMASK, previous_signal_mask)
+signal.pthread_sigmask(signal.SIG_UNBLOCK, handled_signals)
+signal.signal(signal.SIGINT, receive_signal)
+signal.signal(signal.SIGTERM, receive_signal)
 
 try:
+    phase = SupervisorPhase.ACQUIRING
     if received_signal is not None:
         raise ReceivedSignal(received_signal)
     with open(stdout_path, 'wb') as stdout_file, open(stderr_path, 'wb') as stderr_file:
@@ -243,16 +266,16 @@ try:
             stderr=stderr_file,
             start_new_session=True,
         )
-        wait_interruptible = True
+        phase = SupervisorPhase.WAITING
         try:
             if received_signal is not None:
                 raise ReceivedSignal(received_signal)
             returncode = process.wait(timeout=timeout_seconds)
-            if received_signal is not None:
-                raise ReceivedSignal(received_signal)
-            raise SystemExit(shell_status(returncode))
         finally:
-            wait_interruptible = False
+            phase = SupervisorPhase.DISPATCHING
+        if received_signal is not None:
+            raise ReceivedSignal(received_signal)
+        raise SystemExit(shell_status(returncode))
 except subprocess.TimeoutExpired:
     if process is not None:
         stop_group(process)
@@ -262,9 +285,12 @@ except ReceivedSignal as interruption:
         stop_group(process)
     raise SystemExit(128 + interruption.signum)
 finally:
+    phase = SupervisorPhase.DISPATCHING
     if received_signal is not None:
         if process is not None and process.poll() is None:
             stop_group(process)
+    phase = SupervisorPhase.EXITING
+    if received_signal is not None:
         raise SystemExit(128 + received_signal)
 PY
 }
