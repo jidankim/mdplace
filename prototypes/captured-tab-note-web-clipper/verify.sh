@@ -139,6 +139,7 @@ import os
 import signal
 import subprocess
 import sys
+import time
 from enum import Enum, auto
 from types import FrameType
 from typing import assert_never
@@ -181,6 +182,7 @@ if not command:
     raise SystemExit('bounded command is required')
 
 grace_seconds = 0.25
+group_reap_seconds = 2.0
 process: subprocess.Popen[bytes] | None = None
 received_signal: int | None = None
 phase = SupervisorPhase.SETUP
@@ -197,7 +199,7 @@ signal.set_wakeup_fd(signal_write_fd, warn_on_full_buffer=False)
 def signal_group(active_process: subprocess.Popen[bytes], signum: int) -> None:
     try:
         os.killpg(active_process.pid, signum)
-    except ProcessLookupError:
+    except (ProcessLookupError, PermissionError):
         pass
 
 
@@ -218,6 +220,17 @@ def stop_group(active_process: subprocess.Popen[bytes]) -> None:
             active_process.wait(timeout=grace_seconds)
         except subprocess.TimeoutExpired as error:
             raise SystemExit('command did not exit after process-group SIGKILL') from error
+    deadline = time.monotonic() + group_reap_seconds
+    while True:
+        try:
+            os.killpg(active_process.pid, 0)
+        except ProcessLookupError:
+            break
+        except PermissionError:
+            pass
+        if time.monotonic() >= deadline:
+            raise SystemExit('command process group remained after SIGKILL')
+        time.sleep(0.01)
 
 
 def receive_signal(signum: int, _frame: FrameType | None) -> None:
@@ -293,7 +306,7 @@ except ReceivedSignal as interruption:
 finally:
     phase = SupervisorPhase.DISPATCHING
     if received_signal is not None:
-        if process is not None and process.poll() is None:
+        if process is not None:
             stop_group(process)
     phase = SupervisorPhase.EXITING
     if received_signal is not None:
