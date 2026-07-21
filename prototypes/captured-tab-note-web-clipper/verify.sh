@@ -2525,7 +2525,7 @@ if [[ "${1:-}" == "$MDPLACE_TARGET_CLI" ]]; then
         done
     ) &
     descendant_pid=$!
-    pgid="$(ps -o pgid= -p "$BASHPID" | tr -d ' ')"
+    pgid="$BASHPID"
     printf '%s\n%s\n%s\n' "$BASHPID" "$descendant_pid" "$pgid" > "$MDPLACE_CONTROL_FILE"
     wait "$descendant_pid"
 fi
@@ -2536,17 +2536,21 @@ bash_env_source = r'''set -T
 trap '
     case "${MDPLACE_PARENT_CANCELLATION_PHASE:-}|${BASH_COMMAND:-}" in
         '\''launch|supervisor_pid=$!'\''|'\''wait|wait "$supervisor_pid"'\'')
-            trap - DEBUG
-            deadline=$((SECONDS + 5))
-            while [[ ! -s "$MDPLACE_CONTROL_FILE" ]]; do
-                if (( SECONDS >= deadline )); then
-                    exit 125
+            if [[ "${FUNCNAME[0]:-}" == "run_bounded" \
+                && "${1:-}" == "node" \
+                && "${2:-}" == "$MDPLACE_TARGET_CLI" ]]; then
+                trap - DEBUG
+                deadline=$((SECONDS + 5))
+                while [[ ! -s "$MDPLACE_CONTROL_FILE" ]]; do
+                    if (( SECONDS >= deadline )); then
+                        exit 125
+                    fi
+                    sleep 0.005
+                done
+                printf '%s\n' "$MDPLACE_PARENT_CANCELLATION_PHASE" > "$MDPLACE_LATCH_FILE"
+                if [[ "$MDPLACE_PARENT_CANCELLATION_PHASE" == "launch" ]]; then
+                    kill -STOP "$BASHPID"
                 fi
-                sleep 0.005
-            done
-            printf '%s\n' "$MDPLACE_PARENT_CANCELLATION_PHASE" > "$MDPLACE_LATCH_FILE"
-            if [[ "$MDPLACE_PARENT_CANCELLATION_PHASE" == "launch" ]]; then
-                kill -STOP "$BASHPID"
             fi
             ;;
     esac
