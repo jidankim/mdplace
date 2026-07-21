@@ -247,7 +247,11 @@ def receive_signal(signum: int, _frame: FrameType | None) -> None:
             return
         received_signal = observed_signum
         match phase:
-            case SupervisorPhase.SETUP | SupervisorPhase.EXITING:
+            case SupervisorPhase.SETUP:
+                os._exit(128 + observed_signum)
+            case SupervisorPhase.EXITING:
+                if process is not None:
+                    stop_group(process)
                 os._exit(128 + observed_signum)
             case SupervisorPhase.ACQUIRING | SupervisorPhase.DISPATCHING:
                 return
@@ -1529,6 +1533,8 @@ run_shell_mode() {
 	local timeout_stdout="$TMP_ROOT/timeout.stdout"
 	local timeout_stderr="$TMP_ROOT/timeout.stderr"
 	local timeout_pid_file="$TMP_ROOT/timeout-pids.txt"
+	local exiting_stdout="$TMP_ROOT/exiting-seam.stdout"
+	local exiting_stderr="$TMP_ROOT/exiting-seam.stderr"
 	local cwd_root="$TMP_ROOT/prototype-cwd"
 	local cwd_before="$TMP_ROOT/cwd-before.txt"
 	local cwd_after="$TMP_ROOT/cwd-after.txt"
@@ -1542,6 +1548,7 @@ run_shell_mode() {
 	local blanks_status
 	local q_status
 	local timeout_status
+	local exiting_status
 	local timeout_started_at
 	local timeout_elapsed_seconds
 	local timeout_direct_pid
@@ -1632,6 +1639,267 @@ run_shell_mode() {
 		if [[ "$timeout_direct_pid" =~ ^[0-9]+$ ]]; then
 			kill -KILL -- "-$timeout_direct_pid" 2>/dev/null || true
 		fi
+	fi
+
+	log "EXITING_SEAM_COMMAND: exact current run_bounded source; pause after EXITING assignment; signal exited-leader/TERM-ignoring-descendant group"
+	if python3 - "$SCRIPT_DIR/verify.sh" > "$exiting_stdout" 2> "$exiting_stderr" <<'PY'
+from __future__ import annotations
+
+import hashlib
+import json
+import os
+import select
+import signal
+import subprocess
+import sys
+import tempfile
+import time
+from pathlib import Path
+from typing import Literal, assert_never
+
+
+START = '\tpython3 - "$timeout_seconds" "$stdout_path" "$stderr_path" "$@" <<\'PY\'\n'
+END = "\nPY\n}\n\nemit_redacted_file()"
+LAUNCHER = r"""
+import os
+import signal
+import sys
+
+source, line_raw, ready_raw, *arguments = sys.argv[1:]
+line = int(line_raw)
+ready_fd = int(ready_raw)
+fired = False
+
+def trace(frame, event, _argument):
+    global fired
+    if (
+        not fired
+        and event == "line"
+        and frame.f_code.co_filename == "<extracted-supervisor>"
+        and frame.f_lineno == line
+    ):
+        fired = True
+        os.write(ready_fd, b"EXITING\n")
+        os.kill(os.getpid(), signal.SIGSTOP)
+    return trace
+
+sys.argv = ["<extracted-supervisor>", *arguments]
+sys.settrace(trace)
+exec(compile(source, "<extracted-supervisor>", "exec"), {"__name__": "__main__"})
+"""
+FIXTURE = r"""
+import os
+import signal
+import sys
+import time
+from pathlib import Path
+
+control = Path(sys.argv[1])
+ready_read, ready_write = os.pipe()
+descendant = os.fork()
+if descendant == 0:
+    os.close(ready_read)
+    signal.signal(signal.SIGTERM, signal.SIG_IGN)
+    os.write(ready_write, b"R")
+    os.close(ready_write)
+    while True:
+        time.sleep(60)
+os.close(ready_write)
+if os.read(ready_read, 1) != b"R":
+    os._exit(125)
+os.close(ready_read)
+control.with_suffix(".direct").write_text(str(os.getpid()), encoding="utf-8")
+control.with_suffix(".descendant").write_text(str(descendant), encoding="utf-8")
+control.with_suffix(".pgid").write_text(str(os.getpgrp()), encoding="utf-8")
+os._exit(0)
+"""
+
+
+Delivery = Literal["parent", "group"]
+
+
+def pid_live(pid: int) -> bool:
+    if pid <= 0:
+        return False
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    return True
+
+
+def group_live(pgid: int) -> bool:
+    if pgid <= 0:
+        return False
+    try:
+        os.killpg(pgid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    return True
+
+
+def wait_for_absence(descendant: int, pgid: int) -> bool:
+    deadline = time.monotonic() + 2.0
+    while time.monotonic() < deadline:
+        if not pid_live(descendant) and not group_live(pgid):
+            return True
+        time.sleep(0.01)
+    return not pid_live(descendant) and not group_live(pgid)
+
+
+def run_case(source: str, line: int, signum: signal.Signals, delivery: Delivery) -> bool:
+    with tempfile.TemporaryDirectory(prefix="mdplace-exiting-seam-") as temporary:
+        root = Path(temporary)
+        control = root / "control"
+        read_fd, write_fd = os.pipe()
+        process = subprocess.Popen(
+            [
+                sys.executable,
+                "-c",
+                LAUNCHER,
+                source,
+                str(line),
+                str(write_fd),
+                "5",
+                str(root / "stdout"),
+                str(root / "stderr"),
+                sys.executable,
+                "-c",
+                FIXTURE,
+                str(control),
+            ],
+            pass_fds=(write_fd,),
+            start_new_session=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+        )
+        os.close(write_fd)
+        direct = descendant = pgid = -1
+        immediate_clean = False
+        precondition = False
+        shell_status = -999
+        supervisor_stderr = b""
+        try:
+            ready, _, _ = select.select([read_fd], [], [], 3.0)
+            if not ready or os.read(read_fd, 8) != b"EXITING\n":
+                raise RuntimeError("supervisor did not reach the EXITING latch")
+            waited_pid, status = os.waitpid(process.pid, os.WUNTRACED)
+            if waited_pid != process.pid or not os.WIFSTOPPED(status):
+                raise RuntimeError("supervisor did not stop at the EXITING latch")
+            direct = int(control.with_suffix(".direct").read_text(encoding="utf-8"))
+            descendant = int(control.with_suffix(".descendant").read_text(encoding="utf-8"))
+            pgid = int(control.with_suffix(".pgid").read_text(encoding="utf-8"))
+            state = subprocess.run(
+                ["ps", "-o", "stat=", "-p", str(descendant)],
+                check=False,
+                capture_output=True,
+                text=True,
+            ).stdout.strip()
+            precondition = (
+                not pid_live(direct)
+                and pid_live(descendant)
+                and bool(state)
+                and "Z" not in state
+                and group_live(pgid)
+            )
+            match delivery:
+                case "parent":
+                    os.kill(process.pid, signum)
+                case "group":
+                    os.killpg(process.pid, signum)
+                case unreachable:
+                    assert_never(unreachable)
+            os.kill(process.pid, signal.SIGCONT)
+            _, supervisor_stderr = process.communicate(timeout=4.0)
+            raw_returncode = process.returncode
+            if raw_returncode is None:
+                raise RuntimeError("supervisor return code is unavailable")
+            shell_status = raw_returncode if raw_returncode >= 0 else 128 - raw_returncode
+            immediate_clean = (
+                not pid_live(direct)
+                and not pid_live(descendant)
+                and not group_live(pgid)
+            )
+        finally:
+            os.close(read_fd)
+            if process.poll() is None:
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                process.wait(timeout=2.0)
+            if group_live(pgid):
+                try:
+                    os.killpg(pgid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+        cleanup_clean = wait_for_absence(descendant, pgid)
+        passed = (
+            precondition
+            and shell_status == 128 + signum
+            and immediate_clean
+            and not supervisor_stderr
+            and cleanup_clean
+        )
+        print(json.dumps({
+            "case": f"exiting-{signum.name}-{delivery}",
+            "shell_status": shell_status,
+            "expected_status": 128 + signum,
+            "precondition": precondition,
+            "immediate_group_absence": immediate_clean,
+            "supervisor_stderr_bytes": len(supervisor_stderr),
+            "cleanup_clean": cleanup_clean,
+            "verdict": "PASS" if passed else "FAIL",
+        }, sort_keys=True))
+        return passed
+
+
+verifier = Path(sys.argv[1]).read_text(encoding="utf-8")
+start = verifier.index(START) + len(START)
+end = verifier.index(END, start)
+source = verifier[start:end] + "\n"
+lines = source.splitlines()
+assignment = "    phase = SupervisorPhase.EXITING"
+if lines.count(assignment) != 1:
+    raise SystemExit("final EXITING assignment is not unique")
+assignment_index = lines.index(assignment)
+if lines[assignment_index + 1] != "    if received_signal is not None:":
+    raise SystemExit("final EXITING latch moved away from assignment")
+latch_line = assignment_index + 2
+print(json.dumps({
+    "event": "source_binding",
+    "supervisor_sha256": hashlib.sha256(source.encode()).hexdigest(),
+    "exit_latch_line": latch_line,
+}, sort_keys=True))
+results = [
+    run_case(source, latch_line, signum, delivery)
+    for signum in (signal.SIGINT, signal.SIGTERM)
+    for delivery in ("parent", "group")
+]
+raise SystemExit(0 if all(results) else 1)
+PY
+	then
+		exiting_status=0
+	else
+		exiting_status=$?
+	fi
+	log "EXITING_SEAM_EXIT_CODE: $exiting_status"
+	log "EXITING_SEAM_STDOUT_BEGIN"
+	while IFS= read -r line || [[ -n "$line" ]]; do
+		log "  $line"
+	done < "$exiting_stdout"
+	log "EXITING_SEAM_STDOUT_END"
+	if [[ -s "$exiting_stderr" ]]; then
+		log "EXITING_SEAM_STDERR: $(tr '\n' ' ' < "$exiting_stderr")"
+	else
+		log "EXITING_SEAM_STDERR: <empty>"
+	fi
+	if [[ "$exiting_status" -eq 0 && ! -s "$exiting_stderr" ]]; then
+		pass "first INT/TERM at EXITING returns exact status only after immediate descendant and PGID absence"
+	else
+		fail "first INT/TERM at EXITING returns exact status only after immediate descendant and PGID absence"
 	fi
 
 	log "Q_COMMAND: printf q | bash $prototype_path"
