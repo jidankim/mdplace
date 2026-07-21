@@ -314,6 +314,8 @@ finally:
             stop_group(process)
     phase = SupervisorPhase.EXITING
     if received_signal is not None:
+        if process is not None:
+            stop_group(process)
         raise SystemExit(128 + received_signal)
 PY
 }
@@ -1641,7 +1643,7 @@ run_shell_mode() {
 		fi
 	fi
 
-	log "EXITING_SEAM_COMMAND: exact current run_bounded source; pause after EXITING assignment; signal exited-leader/TERM-ignoring-descendant group"
+	log "FINAL_TWO_SEAM_COMMAND: exact current run_bounded source; pause before and after EXITING assignment; signal exited-leader/TERM-ignoring-descendant group"
 	if python3 - "$SCRIPT_DIR/verify.sh" > "$exiting_stdout" 2> "$exiting_stderr" <<'PY'
 from __future__ import annotations
 
@@ -1679,7 +1681,7 @@ def trace(frame, event, _argument):
         and frame.f_lineno == line
     ):
         fired = True
-        os.write(ready_fd, b"EXITING\n")
+        os.write(ready_fd, b"SEAM\n")
         os.kill(os.getpid(), signal.SIGSTOP)
     return trace
 
@@ -1783,11 +1785,11 @@ def run_case(source: str, line: int, signum: signal.Signals, delivery: Delivery)
         supervisor_stderr = b""
         try:
             ready, _, _ = select.select([read_fd], [], [], 3.0)
-            if not ready or os.read(read_fd, 8) != b"EXITING\n":
-                raise RuntimeError("supervisor did not reach the EXITING latch")
+            if not ready or os.read(read_fd, 5) != b"SEAM\n":
+                raise RuntimeError("supervisor did not reach the final seam latch")
             waited_pid, status = os.waitpid(process.pid, os.WUNTRACED)
             if waited_pid != process.pid or not os.WIFSTOPPED(status):
-                raise RuntimeError("supervisor did not stop at the EXITING latch")
+                raise RuntimeError("supervisor did not stop at the final seam latch")
             direct = int(control.with_suffix(".direct").read_text(encoding="utf-8"))
             descendant = int(control.with_suffix(".descendant").read_text(encoding="utf-8"))
             pgid = int(control.with_suffix(".pgid").read_text(encoding="utf-8"))
@@ -1838,13 +1840,16 @@ def run_case(source: str, line: int, signum: signal.Signals, delivery: Delivery)
         cleanup_clean = wait_for_absence(descendant, pgid)
         passed = (
             precondition
+            and raw_returncode == 128 + signum
             and shell_status == 128 + signum
             and immediate_clean
             and not supervisor_stderr
             and cleanup_clean
         )
         print(json.dumps({
-            "case": f"exiting-{signum.name}-{delivery}",
+            "case": f"final-{line}-{signum.name}-{delivery}",
+            "trace_line": line,
+            "raw_returncode": raw_returncode,
             "shell_status": shell_status,
             "expected_status": 128 + signum,
             "precondition": precondition,
@@ -1867,14 +1872,17 @@ if lines.count(assignment) != 1:
 assignment_index = lines.index(assignment)
 if lines[assignment_index + 1] != "    if received_signal is not None:":
     raise SystemExit("final EXITING latch moved away from assignment")
-latch_line = assignment_index + 2
+dispatch_line = assignment_index + 1
+exiting_line = assignment_index + 2
 print(json.dumps({
     "event": "source_binding",
     "supervisor_sha256": hashlib.sha256(source.encode()).hexdigest(),
-    "exit_latch_line": latch_line,
+    "dispatch_pretransition_line": dispatch_line,
+    "exiting_posttransition_line": exiting_line,
 }, sort_keys=True))
 results = [
-    run_case(source, latch_line, signum, delivery)
+    run_case(source, line, signum, delivery)
+    for line in (dispatch_line, exiting_line)
     for signum in (signal.SIGINT, signal.SIGTERM)
     for delivery in ("parent", "group")
 ]
@@ -1885,21 +1893,21 @@ PY
 	else
 		exiting_status=$?
 	fi
-	log "EXITING_SEAM_EXIT_CODE: $exiting_status"
-	log "EXITING_SEAM_STDOUT_BEGIN"
+	log "FINAL_TWO_SEAM_EXIT_CODE: $exiting_status"
+	log "FINAL_TWO_SEAM_STDOUT_BEGIN"
 	while IFS= read -r line || [[ -n "$line" ]]; do
 		log "  $line"
 	done < "$exiting_stdout"
-	log "EXITING_SEAM_STDOUT_END"
+	log "FINAL_TWO_SEAM_STDOUT_END"
 	if [[ -s "$exiting_stderr" ]]; then
-		log "EXITING_SEAM_STDERR: $(tr '\n' ' ' < "$exiting_stderr")"
+		log "FINAL_TWO_SEAM_STDERR: $(tr '\n' ' ' < "$exiting_stderr")"
 	else
-		log "EXITING_SEAM_STDERR: <empty>"
+		log "FINAL_TWO_SEAM_STDERR: <empty>"
 	fi
 	if [[ "$exiting_status" -eq 0 && ! -s "$exiting_stderr" ]]; then
-		pass "first INT/TERM at EXITING returns exact status only after immediate descendant and PGID absence"
+		pass "first INT/TERM before and during EXITING returns exact status only after immediate descendant and PGID absence"
 	else
-		fail "first INT/TERM at EXITING returns exact status only after immediate descendant and PGID absence"
+		fail "first INT/TERM before and during EXITING returns exact status only after immediate descendant and PGID absence"
 	fi
 
 	log "Q_COMMAND: printf q | bash $prototype_path"
