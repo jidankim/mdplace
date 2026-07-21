@@ -184,13 +184,14 @@ grace_seconds = 0.25
 process: subprocess.Popen[bytes] | None = None
 received_signal: int | None = None
 phase = SupervisorPhase.SETUP
+handled_signals = {signal.SIGINT, signal.SIGTERM}
+signal.pthread_sigmask(signal.SIG_BLOCK, handled_signals)
 signal_read_fd, signal_write_fd = os.pipe()
 os.set_blocking(signal_read_fd, False)
 os.set_blocking(signal_write_fd, False)
 os.set_inheritable(signal_read_fd, False)
 os.set_inheritable(signal_write_fd, False)
 signal.set_wakeup_fd(signal_write_fd, warn_on_full_buffer=False)
-handled_signals = {signal.SIGINT, signal.SIGTERM}
 
 
 def signal_group(active_process: subprocess.Popen[bytes], signum: int) -> None:
@@ -249,9 +250,14 @@ def receive_signal(signum: int, _frame: FrameType | None) -> None:
         signal.pthread_sigmask(signal.SIG_SETMASK, previous_handler_mask)
 
 
-signal.pthread_sigmask(signal.SIG_UNBLOCK, handled_signals)
 signal.signal(signal.SIGINT, receive_signal)
 signal.signal(signal.SIGTERM, receive_signal)
+bootstrap_pending = signal.sigpending()
+received_signal = next(
+    (candidate for candidate in (signal.SIGINT, signal.SIGTERM) if candidate in bootstrap_pending),
+    None,
+)
+signal.pthread_sigmask(signal.SIG_UNBLOCK, handled_signals)
 
 try:
     phase = SupervisorPhase.ACQUIRING
