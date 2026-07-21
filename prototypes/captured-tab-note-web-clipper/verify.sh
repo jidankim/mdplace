@@ -130,9 +130,14 @@ run_bounded() {
 	local timeout_seconds="$1"
 	local stdout_path="$2"
 	local stderr_path="$3"
+	local supervisor_pid=""
+	local supervisor_status=0
+	local supervisor_wait_interrupted=false
 	shift 3
 
-	python3 - "$timeout_seconds" "$stdout_path" "$stderr_path" "$@" <<'PY'
+	trap 'if [[ "$CANCELLATION_STATUS" -eq 0 ]]; then CANCELLATION_STATUS=130; fi' INT
+	trap 'if [[ "$CANCELLATION_STATUS" -eq 0 ]]; then CANCELLATION_STATUS=143; fi' TERM
+	python3 - "$timeout_seconds" "$stdout_path" "$stderr_path" "$@" <<'PY' &
 from __future__ import annotations
 
 import os
@@ -318,6 +323,34 @@ finally:
             stop_group(process)
         raise SystemExit(128 + received_signal)
 PY
+	supervisor_pid=$!
+	trap 'supervisor_wait_interrupted=true; if [[ "$CANCELLATION_STATUS" -eq 0 ]]; then CANCELLATION_STATUS=130; kill -INT "$supervisor_pid" 2>/dev/null || true; fi' INT
+	trap 'supervisor_wait_interrupted=true; if [[ "$CANCELLATION_STATUS" -eq 0 ]]; then CANCELLATION_STATUS=143; kill -TERM "$supervisor_pid" 2>/dev/null || true; fi' TERM
+	if [[ "$CANCELLATION_STATUS" -eq 130 ]]; then
+		kill -INT "$supervisor_pid" 2>/dev/null || true
+	elif [[ "$CANCELLATION_STATUS" -eq 143 ]]; then
+		kill -TERM "$supervisor_pid" 2>/dev/null || true
+	fi
+	while :; do
+		supervisor_wait_interrupted=false
+		if wait "$supervisor_pid"; then
+			supervisor_status=0
+		else
+			supervisor_status=$?
+		fi
+		if [[ "$supervisor_wait_interrupted" == "false" ]]; then
+			break
+		fi
+	done
+	trap 'if [[ "$CANCELLATION_STATUS" -eq 0 ]]; then CANCELLATION_STATUS=130; fi' INT
+	trap 'if [[ "$CANCELLATION_STATUS" -eq 0 ]]; then CANCELLATION_STATUS=143; fi' TERM
+	supervisor_pid=""
+	trap 'handle_cancellation 130' INT
+	trap 'handle_cancellation 143' TERM
+	if [[ "$CANCELLATION_STATUS" -ne 0 ]]; then
+		exit "$CANCELLATION_STATUS"
+	fi
+	return "$supervisor_status"
 }
 
 emit_redacted_file() {
@@ -1660,8 +1693,8 @@ from pathlib import Path
 from typing import Literal, assert_never
 
 
-START = '\tpython3 - "$timeout_seconds" "$stdout_path" "$stderr_path" "$@" <<\'PY\'\n'
-END = "\nPY\n}\n\nemit_redacted_file()"
+START = '\tpython3 - "$timeout_seconds" "$stdout_path" "$stderr_path" "$@" <<\'PY\' &\n'
+END = "\nPY\n\tsupervisor_pid=$!\n"
 LAUNCHER = r"""
 import os
 import signal
@@ -2435,6 +2468,304 @@ log "BENIGN_HTML_SHA256: $(sha256_file "$BENIGN_HTML")"
 log "HOSTILE_HTML_SHA256: $(sha256_file "$HOSTILE_HTML")"
 log "SYNTHETIC_URL: [REDACTED credential/query/fragment test URL]"
 log "TIMEOUT_SECONDS: $VERIFY_TIMEOUT_SECONDS"
+
+if [[ "${MDPLACE_PARENT_CANCELLATION_INNER:-0}" != "1" ]]; then
+	parent_cancellation_stdout="$TMP_ROOT/parent-cancellation.stdout"
+	parent_cancellation_stderr="$TMP_ROOT/parent-cancellation.stderr"
+	log "PARENT_CANCELLATION_COMMAND: signal only Bash PID during the public template verifier's bounded-command launch and wait handoffs"
+	if python3 - \
+		"$SCRIPT_DIR/verify.sh" \
+		"$WEB_CLIPPER_DIR" \
+		"$TMP_ROOT" \
+		> "$parent_cancellation_stdout" \
+		2> "$parent_cancellation_stderr" <<'PY'
+from __future__ import annotations
+
+import json
+import os
+import shutil
+import signal
+import subprocess
+import sys
+import time
+from pathlib import Path
+from typing import Literal, assert_never
+
+
+Phase = Literal['launch', 'wait']
+
+verifier = Path(sys.argv[1])
+upstream = Path(sys.argv[2])
+fixture_root = Path(sys.argv[3]) / 'parent-cancellation-fixture'
+fixture_root.mkdir()
+real_node = shutil.which('node')
+if real_node is None:
+    raise SystemExit('node unavailable')
+
+run_bounded_start = 'run_bounded() {\n'
+run_bounded_end = '\n}\n\nemit_redacted_file()'
+verifier_source = verifier.read_text(encoding='utf-8')
+source_start = verifier_source.index(run_bounded_start)
+source_end = verifier_source.index(run_bounded_end, source_start)
+run_bounded_source = verifier_source[source_start:source_end]
+handoff_source_bound = (
+    run_bounded_source.count('\tsupervisor_pid=$!\n') == 1
+    and 'wait "$supervisor_pid"' in run_bounded_source
+)
+
+wrapper_source = r'''#!/usr/bin/env bash
+set -euo pipefail
+if [[ "${1:-}" == "$MDPLACE_TARGET_CLI" ]]; then
+    trap '' INT TERM
+    (
+        trap '' INT TERM
+        while :; do
+            sleep 60
+        done
+    ) &
+    descendant_pid=$!
+    pgid="$(ps -o pgid= -p "$BASHPID" | tr -d ' ')"
+    printf '%s\n%s\n%s\n' "$BASHPID" "$descendant_pid" "$pgid" > "$MDPLACE_CONTROL_FILE"
+    wait "$descendant_pid"
+fi
+exec "$MDPLACE_REAL_NODE" "$@"
+'''
+
+bash_env_source = r'''set -T
+trap '
+    case "${MDPLACE_PARENT_CANCELLATION_PHASE:-}|${BASH_COMMAND:-}" in
+        '\''launch|supervisor_pid=$!'\''|'\''wait|wait "$supervisor_pid"'\'')
+            trap - DEBUG
+            deadline=$((SECONDS + 5))
+            while [[ ! -s "$MDPLACE_CONTROL_FILE" ]]; do
+                if (( SECONDS >= deadline )); then
+                    exit 125
+                fi
+                sleep 0.005
+            done
+            printf '%s\n' "$MDPLACE_PARENT_CANCELLATION_PHASE" > "$MDPLACE_LATCH_FILE"
+            if [[ "$MDPLACE_PARENT_CANCELLATION_PHASE" == "launch" ]]; then
+                kill -STOP "$BASHPID"
+            fi
+            ;;
+    esac
+' DEBUG
+'''
+
+
+def pid_live(pid: int) -> bool:
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    return True
+
+
+def group_live(pgid: int) -> bool:
+    try:
+        os.killpg(pgid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    return True
+
+
+def wait_for_record(path: Path, process: subprocess.Popen[bytes]) -> list[int]:
+    deadline = time.monotonic() + 5.0
+    while time.monotonic() < deadline:
+        if process.poll() is not None:
+            return []
+        if path.exists():
+            values = path.read_text(encoding='utf-8').splitlines()
+            if len(values) == 3 and all(value.isdigit() for value in values):
+                return [int(value) for value in values]
+        time.sleep(0.005)
+    return []
+
+
+def wait_for_latch(path: Path, process: subprocess.Popen[bytes]) -> bool:
+    deadline = time.monotonic() + 5.0
+    while time.monotonic() < deadline:
+        if process.poll() is not None:
+            return False
+        if path.exists():
+            return True
+        time.sleep(0.005)
+    return False
+
+
+def run_case(phase: Phase, signum: signal.Signals) -> bool:
+    case_root = fixture_root / f'{phase}-{signum.name}'
+    case_root.mkdir()
+    bin_dir = case_root / 'bin'
+    bin_dir.mkdir()
+    wrapper = bin_dir / 'node'
+    wrapper.write_text(wrapper_source, encoding='utf-8')
+    wrapper.chmod(0o755)
+    bash_env = case_root / 'bash-env'
+    bash_env.write_text(bash_env_source, encoding='utf-8')
+    control = case_root / 'control'
+    latch = case_root / 'latch'
+    child_tmp = case_root / 'tmp'
+    child_tmp.mkdir()
+    if phase == 'launch' and not handoff_source_bound:
+        print(json.dumps({
+            'case': f'{phase}-{signum.name}',
+            'source_bound': False,
+            'verdict': 'FAIL',
+        }, sort_keys=True))
+        return False
+
+    env = os.environ.copy()
+    env.update({
+        'BASH_ENV': str(bash_env),
+        'MDPLACE_CONTROL_FILE': str(control),
+        'MDPLACE_LATCH_FILE': str(latch),
+        'MDPLACE_PARENT_CANCELLATION_INNER': '1',
+        'MDPLACE_PARENT_CANCELLATION_PHASE': phase,
+        'MDPLACE_REAL_NODE': real_node,
+        'MDPLACE_TARGET_CLI': str(upstream / 'dist/cli.cjs'),
+        'MDPLACE_VERIFY_TIMEOUT_SECONDS': '2',
+        'PATH': f'{bin_dir}:{env["PATH"]}',
+        'TMPDIR': str(child_tmp),
+        'WEB_CLIPPER_DIR': str(upstream),
+    })
+    env.pop('MDPLACE_EVIDENCE_DIR', None)
+    process = subprocess.Popen(
+        ['bash', str(verifier), 'template'],
+        cwd=verifier.parent,
+        env=env,
+        start_new_session=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    direct = descendant = command_pgid = -1
+    stdout = stderr = b''
+    elapsed = 99.0
+    stopped = phase == 'wait'
+    try:
+        record = wait_for_record(control, process)
+        if len(record) == 3:
+            direct, descendant, command_pgid = record
+        if handoff_source_bound:
+            latched = wait_for_latch(latch, process)
+        else:
+            latched = bool(record)
+        if phase == 'launch' and latched:
+            waited_pid, wait_status = os.waitpid(process.pid, os.WUNTRACED)
+            stopped = waited_pid == process.pid and os.WIFSTOPPED(wait_status)
+        precondition = (
+            latched
+            and stopped
+            and pid_live(direct)
+            and pid_live(descendant)
+            and group_live(command_pgid)
+        )
+        started = time.monotonic()
+        os.kill(process.pid, signum)
+        if phase == 'launch':
+            os.kill(process.pid, signal.SIGCONT)
+        stdout, stderr = process.communicate(timeout=3.0)
+        elapsed = time.monotonic() - started
+    finally:
+        if process.poll() is None:
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            process.wait(timeout=2.0)
+        if command_pgid > 0 and group_live(command_pgid):
+            try:
+                os.killpg(command_pgid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+
+    returncode = process.returncode
+    match returncode:
+        case int(raw_returncode):
+            shell_status = raw_returncode if raw_returncode >= 0 else 128 - raw_returncode
+        case None:
+            shell_status = -999
+        case unreachable:
+            assert_never(unreachable)
+    temp_entries = sorted(path.name for path in child_tmp.glob('mdplace-clipper-verify.*'))
+    immediate_clean = (
+        not pid_live(direct)
+        and not pid_live(descendant)
+        and not group_live(command_pgid)
+    )
+    vitest_absent = not (upstream / 'src/utils/mdplace-template-compiler.verify.test.ts').exists()
+    passed = (
+        precondition
+        and elapsed < 1.0
+        and shell_status == 128 + signum
+        and immediate_clean
+        and not temp_entries
+        and vitest_absent
+        and not stderr
+        and len(stdout) <= 65536
+    )
+    print(json.dumps({
+        'case': f'{phase}-{signum.name}',
+        'direct_pid': direct,
+        'descendant_pid': descendant,
+        'elapsed_seconds': round(elapsed, 6),
+        'expected_status': 128 + signum,
+        'immediate_group_absence': immediate_clean,
+        'precondition': precondition,
+        'raw_returncode': returncode,
+        'shell_status': shell_status,
+        'source_bound': handoff_source_bound,
+        'stderr_bytes': len(stderr),
+        'stdout_bytes': len(stdout),
+        'temp_entries_after_return': temp_entries,
+        'vitest_absent_after_return': vitest_absent,
+        'verdict': 'PASS' if passed else 'FAIL',
+    }, sort_keys=True))
+    return passed
+
+
+print(json.dumps({
+    'event': 'source_binding',
+    'handoff_source_bound': handoff_source_bound,
+    'surface': 'bash verify.sh template',
+}, sort_keys=True))
+results = [
+    run_case(phase, signum)
+    for phase in ('wait', 'launch')
+    for signum in (signal.SIGINT, signal.SIGTERM)
+]
+print(json.dumps({
+    'event': 'summary',
+    'passed': sum(results),
+    'total': len(results),
+    'verdict': 'PASS' if all(results) else 'FAIL',
+}, sort_keys=True))
+raise SystemExit(0 if all(results) else 1)
+PY
+	then
+		parent_cancellation_status=0
+	else
+		parent_cancellation_status=$?
+	fi
+	log "PARENT_CANCELLATION_EXIT_CODE: $parent_cancellation_status"
+	log "PARENT_CANCELLATION_STDOUT_BEGIN"
+	while IFS= read -r line || [[ -n "$line" ]]; do
+		log "  $line"
+	done < "$parent_cancellation_stdout"
+	log "PARENT_CANCELLATION_STDOUT_END"
+	if [[ -s "$parent_cancellation_stderr" ]]; then
+		log "PARENT_CANCELLATION_STDERR: $(tr '\n' ' ' < "$parent_cancellation_stderr")"
+	else
+		log "PARENT_CANCELLATION_STDERR: <empty>"
+	fi
+	if [[ "$parent_cancellation_status" -eq 0 && ! -s "$parent_cancellation_stderr" ]]; then
+		pass "PID-only INT/TERM promptly hand off across bounded-command launch and wait with immediate owned cleanup"
+	else
+		fail "PID-only INT/TERM promptly hand off across bounded-command launch and wait with immediate owned cleanup"
+	fi
+fi
 
 check_command "template JSON parses" jq empty "$TEMPLATE_PATH"
 
