@@ -170,52 +170,97 @@ if not command:
     raise SystemExit('bounded command is required')
 
 grace_seconds = 0.25
+process: subprocess.Popen[bytes] | None = None
+received_signal: int | None = None
+wait_interruptible = False
+signal_read_fd, signal_write_fd = os.pipe()
+os.set_blocking(signal_read_fd, False)
+os.set_blocking(signal_write_fd, False)
+os.set_inheritable(signal_read_fd, False)
+os.set_inheritable(signal_write_fd, False)
+signal.set_wakeup_fd(signal_write_fd, warn_on_full_buffer=False)
+handled_signals = {signal.SIGINT, signal.SIGTERM}
 
-with open(stdout_path, 'wb') as stdout_file, open(stderr_path, 'wb') as stderr_file:
-    process = subprocess.Popen(
-        command,
-        stdout=stdout_file,
-        stderr=stderr_file,
-        start_new_session=True,
-    )
 
-    def signal_group(signum: int) -> None:
+def signal_group(active_process: subprocess.Popen[bytes], signum: int) -> None:
+    try:
+        os.killpg(active_process.pid, signum)
+    except ProcessLookupError:
+        pass
+
+
+def stop_group(active_process: subprocess.Popen[bytes]) -> None:
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
+    signal.signal(signal.SIGTERM, signal.SIG_IGN)
+    signal_group(active_process, signal.SIGTERM)
+    try:
+        active_process.wait(timeout=grace_seconds)
+    except subprocess.TimeoutExpired:
+        pass
+    signal_group(active_process, signal.SIGKILL)
+    if active_process.poll() is None:
         try:
-            os.killpg(process.pid, signum)
-        except ProcessLookupError:
-            pass
+            active_process.wait(timeout=grace_seconds)
+        except subprocess.TimeoutExpired as error:
+            raise SystemExit('command did not exit after process-group SIGKILL') from error
 
-    def stop_group() -> None:
-        signal.signal(signal.SIGINT, signal.SIG_IGN)
-        signal.signal(signal.SIGTERM, signal.SIG_IGN)
-        signal_group(signal.SIGTERM)
+
+def receive_signal(signum: int, _frame: FrameType | None) -> None:
+    global received_signal
+    previous_handler_mask = signal.pthread_sigmask(signal.SIG_BLOCK, handled_signals)
+    try:
         try:
-            process.wait(timeout=grace_seconds)
-        except subprocess.TimeoutExpired:
-            pass
-        signal_group(signal.SIGKILL)
-        if process.poll() is None:
-            try:
-                process.wait(timeout=grace_seconds)
-            except subprocess.TimeoutExpired as error:
-                raise SystemExit('command did not exit after process-group SIGKILL') from error
+            observed_signal = os.read(signal_read_fd, 1)
+        except BlockingIOError:
+            observed_signum = signum
+        else:
+            observed_signum = observed_signal[0] if observed_signal else signum
+        if received_signal is not None:
+            return
+        received_signal = observed_signum
+        if wait_interruptible:
+            raise ReceivedSignal(observed_signum)
+    finally:
+        signal.pthread_sigmask(signal.SIG_SETMASK, previous_handler_mask)
 
-    def receive_signal(signum: int, _frame: FrameType | None) -> None:
-        raise ReceivedSignal(signum)
 
+previous_signal_mask = signal.pthread_sigmask(signal.SIG_BLOCK, handled_signals)
+try:
     signal.signal(signal.SIGINT, receive_signal)
     signal.signal(signal.SIGTERM, receive_signal)
+finally:
+    signal.pthread_sigmask(signal.SIG_SETMASK, previous_signal_mask)
 
-    try:
-        returncode = process.wait(timeout=timeout_seconds)
-    except subprocess.TimeoutExpired:
-        stop_group()
-        raise SystemExit(124)
-    except ReceivedSignal as interruption:
-        stop_group()
-        raise SystemExit(128 + interruption.signum)
-
-raise SystemExit(shell_status(returncode))
+try:
+    if received_signal is not None:
+        raise ReceivedSignal(received_signal)
+    with open(stdout_path, 'wb') as stdout_file, open(stderr_path, 'wb') as stderr_file:
+        if received_signal is not None:
+            raise ReceivedSignal(received_signal)
+        process = subprocess.Popen(
+            command,
+            stdout=stdout_file,
+            stderr=stderr_file,
+            start_new_session=True,
+        )
+        wait_interruptible = True
+        try:
+            if received_signal is not None:
+                raise ReceivedSignal(received_signal)
+            returncode = process.wait(timeout=timeout_seconds)
+            if received_signal is not None:
+                raise ReceivedSignal(received_signal)
+            raise SystemExit(shell_status(returncode))
+        finally:
+            wait_interruptible = False
+except subprocess.TimeoutExpired:
+    if process is not None:
+        stop_group(process)
+    raise SystemExit(124)
+except ReceivedSignal as interruption:
+    if process is not None:
+        stop_group(process)
+    raise SystemExit(128 + interruption.signum)
 PY
 }
 
