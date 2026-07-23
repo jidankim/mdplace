@@ -13,7 +13,7 @@ A taxonomy whose automated classification and evolution authority is bounded by 
 _Avoid_: Machine-governed taxonomy, human-governed taxonomy
 
 **Capture Adapter**:
-An external producer that creates Captured Tab Notes according to mdplace's ingestion contract without making semantic placement decisions. The Obsidian Web Clipper template is the first supported Capture Adapter.
+An external producer that creates Captured Tab Notes according to mdplace's ingestion contract without making semantic placement decisions. Stock Obsidian Web Clipper 1.7.0 is the first evaluated Capture Adapter candidate and is not supported until an additional adapter or upstream change satisfies the ingestion contract.
 _Avoid_: Importer, semantic classifier
 
 **Category Tree**:
