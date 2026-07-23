@@ -1,0 +1,41 @@
+{
+	"schemaVersion": "0.1.0",
+	"name": "NONCONFORMING-mdplace Web Clipper diagnostic",
+	"behavior": "create",
+	"noteNameFormat": "NONCONFORMING-{{date|date:\"YYYYMMDD-HHmmss\"}}",
+	"path": "mdplace-prototype-diagnostics",
+	"noteContentFormat": "> [!warning] NONCONFORMING DIAGNOSTIC\n> This is not a Captured Tab Note and must not be ingested.\n> No page-derived content or metadata field values are persisted; only presence observations and adapter-generated time are retained.\n> This diagnostic is not placement-authoritative.\n>\n> Availability observations only:\n\n- readable_content: {% if content %}present{% else %}absent{% endif %}\n- live_selection: {% if selection %}present{% else %}absent{% endif %}\n- highlights: {% if highlights %}present{% else %}absent{% endif %}\n",
+	"properties": [
+		{
+			"name": "mdplace_prototype_kind",
+			"value": "captured_tab_note_web_clipper_feasibility",
+			"type": "text"
+		},
+		{
+			"name": "mdplace_capture_conformance",
+			"value": "nonconforming",
+			"type": "text"
+		},
+		{
+			"name": "mdplace_placement_allowed",
+			"value": "false",
+			"type": "checkbox"
+		},
+		{
+			"name": "source_adapter",
+			"value": "obsidian_web_clipper",
+			"type": "text"
+		},
+		{
+			"name": "source_adapter_version",
+			"value": "1.7.0",
+			"type": "text"
+		},
+		{
+			"name": "source_captured_at",
+			"value": "{{date}}",
+			"type": "datetime"
+		}
+	],
+	"triggers": []
+}
