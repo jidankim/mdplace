@@ -44,7 +44,7 @@ Taxonomy changes remain versioned, explainable, reviewable, and reversible. High
 - [Issue #2: reconcile the existing semantic ledger](https://github.com/jidankim/mdplace/issues/2)
 - [Issue #12: Captured Tab Note and Web Clipper contract](https://github.com/jidankim/mdplace/issues/12)
 
-Local scratch drafts and research notes are intentionally ignored and are not repository evidence.
+Files intentionally kept local are ignored by explicit paths; committed project documents remain repository evidence.
 
 ## Out of scope
 
