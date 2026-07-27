@@ -13,16 +13,16 @@ The active destination is [Issue #1: Specify Captured Tab Note ingestion and pol
 mdplace is a single-user, single-vault desktop knowledge-capture system.
 
 - One browser tab creates one **Captured Tab Note** with normalized readable content and allowlisted source metadata.
-- The official Obsidian Web Clipper template is the first **Capture Adapter**. It writes the note to the vault; mdplace begins governing it only after that point.
+- Stock Obsidian Web Clipper 1.7.0 is the first evaluated **Capture Adapter** candidate, but it is not supported until an additional adapter or upstream change satisfies mdplace's ingestion contract.
 - mdplace is editor-agnostic. It does not require a custom Obsidian plugin or browser extension.
-- A Capture Adapter records provenance but cannot make semantic-placement decisions.
+- A conforming Capture Adapter writes the note to the vault and records provenance without making semantic-placement decisions; mdplace begins governing the note only after that point.
 
 ## Semantic model
 
 mdplace separates three authorities:
 
 - Markdown body and source metadata are the note's content and capture record.
-- Versioned semantic decisions and evidence are the source of placement truth.
+- Versioned accepted semantic decisions are the source of placement truth; evidence supports those decisions but cannot establish semantic truth on its own.
 - Folder paths and managed frontmatter are reversible projections for navigation and interoperability.
 
 The **Category Tree** is a strict primary hierarchy: each non-root category has one parent, and a Captured Tab Note has at most one accepted primary category. Tags, projects, workflow status, collections, and relationships are separate secondary facets.
