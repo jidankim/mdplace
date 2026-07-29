@@ -77,7 +77,7 @@ The bounded period after Automatic Promotion during which corrections and invari
 _Avoid_: Provisional truth, temporary category
 
 **Automation Circuit Breaker**:
-The scoped suspension of an Automation Grant after its observed corrections cross a safety threshold. Pending proposals become review-only until a human explicitly re-enables the grant.
+The scoped suspension of an Automation Grant when observed corrections attributed during its Promotion Observation Window cross the governing Policy Threshold; an observed correction is a human rejection of an Automatic Promotion recorded as a Taxonomy Reversal or, when dependencies prevent an exact inverse, a Compensating Taxonomy Change. The threshold may be tightened but not weakened, and pending proposals become review-only until a human explicitly re-enables the grant.
 _Avoid_: Global automation shutdown, automatic rollback
 
 **Policy Threshold**:
@@ -141,5 +141,5 @@ A durable unresolved contradiction involving accepted semantic truth, operation 
 _Avoid_: Warning, transient error
 
 **Accepted Taxonomy State**:
-The current authoritative taxonomy derived from append-only promotion, supersession, and reversal decisions. It is projected rather than silently overwritten.
+The current authoritative taxonomy derived from the accepted append-only ledger of promotion, supersession, and reversal decisions. It remains authoritative independently of the potentially lagging Folder Projection, which materializes but does not define it.
 _Avoid_: Current taxonomy file
