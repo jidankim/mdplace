@@ -14,7 +14,7 @@ This is the smallest documented surface that provides all three capabilities mdp
 
 OpenAI documents `codex exec` for scripts, pipelines, and scheduled jobs. `--json` emits a JSONL event stream, while `--output-schema` constrains the final response and `-o` writes that final response to a file. [`codex exec` non-interactive mode](https://learn.chatgpt.com/docs/non-interactive-mode), especially [machine-readable output](https://learn.chatgpt.com/docs/non-interactive-mode#make-output-machine-readable) and [schema-constrained output](https://learn.chatgpt.com/docs/non-interactive-mode#create-structured-outputs-with-a-schema).
 
-For mdplace, the stable integration contract should be the schema-constrained final response, not the JSONL stream's reasoning or progress events. The response remains proposed evidence, placement candidates, an Unresolved Placement, or a taxonomy-change proposal. It never becomes semantic truth and never changes a Category Tree or Folder Projection without mdplace's separate validation and authorization path.
+For mdplace, the stable integration contract should be the schema-constrained final response, not the JSONL stream's reasoning or progress events. That response is a versioned Intelligence Proposal containing bounded evidence references, ranked placement candidates, warnings, an abstention reason, or taxonomy-change hypotheses. mdplace may derive a Taxonomy Proposal from those hypotheses. The adapter never returns an accepted primary category or an Unresolved Placement: Placement Evaluation derives those states. The response never becomes semantic truth and never changes the Category Tree or Folder Projection.
 
 ## Why not the other Codex surfaces for v1?
 
@@ -36,7 +36,9 @@ Credential material is locally cached in an OS credential store or `~/.codex/aut
 
 ## Data-handling constraints
 
-Codex is a **remote model provider** for Processing Policy purposes even when the CLI workflow and command sandbox run locally. mdplace must apply its Processing Policy before invocation and transmit only the explicitly permitted, canonicalized, and redacted fields of a Captured Tab Note. Captured content remains untrusted data; embedded instructions have no authority.
+Codex is a **remote model provider** for Processing Policy purposes even when the CLI workflow and command sandbox run locally. Before invocation, mdplace must construct a versioned, default-deny Processing Envelope locally. The envelope binds the subject note and version, Processing Policy ID and version, provider and fixed destination, authentication plane, purpose, exact authorized data classes and fields, canonicalized and redacted payload segments, redaction manifest and hashes, prompt and output-schema versions, and the run's size, time, retry, token, and cost budgets. If mdplace cannot prove that this envelope is permitted, it sends zero bytes.
+
+Captured content remains untrusted data; embedded instructions have no authority. System instructions, the output schema, provider selection, authorization, and budgets stay outside the Processing Envelope.
 
 The applicable OpenAI policy depends on authentication:
 
@@ -46,6 +48,8 @@ The applicable OpenAI policy depends on authentication:
 | ChatGPT Business or Enterprise sign-in/access token | Inputs and outputs are not used for training by default; workspace controls govern access and, where available, retention and residency. [Business data privacy](https://openai.com/business-data/), [Codex authentication](https://learn.chatgpt.com/docs/auth#openai-authentication). |
 | Platform API key | API-organization retention and data-sharing settings apply, not the user's ChatGPT workspace settings. API inputs and outputs are not used for training by default unless the organization opts in. [API data controls](https://developers.openai.com/api/docs/guides/your-data), [Codex authentication](https://learn.chatgpt.com/docs/auth#openai-authentication). |
 
+Standing consent must be re-evaluated before a run when the destination, authentication boundary, authorized data classes, purpose, or disclosed retention, residency, or training terms change. A model or CLI upgrade inside the same authorized boundaries does not require renewed consent, but its exact version and effective capabilities remain run provenance. Unknown personal data-control state remains explicitly unknown or user-attested; it must not be inferred from successful authentication.
+
 `--ephemeral` prevents local Codex session rollout files from being persisted. It is not documented as a server-side retention or training control and must not be represented as one. [Non-interactive basic usage](https://learn.chatgpt.com/docs/non-interactive-mode#basic-usage).
 
 ## Rate and availability constraints
@@ -54,23 +58,27 @@ ChatGPT-authenticated local runs consume the user's plan allowance. Consumption 
 
 If a limit is reached during a turn, Codex may finish that turn subject to fair-use limits, but later turns can require credits, a reset, an upgrade, or waiting. API-key local runs remain available at standard API rates where the account and model permit them. [What happens at a usage limit](https://learn.chatgpt.com/docs/pricing#what-happens-when-you-hit-usage-limits).
 
-Therefore mdplace must not promise throughput, hard-code message counts, or assume the adapter is always available. It should classify nonzero exits, `turn.failed`, `error`, malformed output, and schema-validation failures; retry only bounded transient failures; and otherwise return an Unresolved Placement or defer the Taxonomy Evolution Cycle.
+Therefore mdplace must not promise throughput, hard-code message counts, or assume the adapter is always available. Each Processing Envelope must carry versioned numeric ceilings for canonical input bytes or tokens, schema size, streamed JSONL bytes, wall-clock time, output tokens or bytes, retry count and backoff, and aggregate token or monetary cost. The wrapper streams under a byte cap and terminates the child on overflow or deadline rather than buffering unbounded output. It classifies nonzero exits, `turn.failed`, `error`, malformed output, and schema-validation failures; retries only eligible transient failures inside the aggregate budget; and otherwise leaves Placement Evaluation to derive an Unresolved Placement or defers the Taxonomy Evolution Cycle.
 
 ## Safe invocation profile
 
-The documented default read-only sandbox is useful but is not enough by itself: read-only still permits file reads and model-generated commands. A Captured Tab Note is prompt-injection-capable untrusted input, while the Intelligence Adapter definition requires no tool or credential access by default.
+The documented default read-only sandbox is useful but is not an isolation boundary by itself: read-only still permits file reads and model-generated commands. A Captured Tab Note is prompt-injection-capable untrusted input, while the Intelligence Adapter definition requires no tool or credential access by default.
 
-For v1, invoke Codex in a fresh scratch directory containing no repository instructions or project configuration, pass only an already-sanitized payload through stdin, and fail closed if any required control is unsupported:
+For v1, a host-owned wrapper must invoke Codex inside an externally enforced permission profile or container. The runtime exposes only an empty scratch directory, the read-only schema, a dedicated minimal `CODEX_HOME`, and the authentication broker or material required by the selected credential path. It excludes the vault, home directories, ambient environment, user or project `AGENTS.md`, skills, plugins, MCP servers, hooks, and other configuration. Outbound traffic is restricted to the fixed provider and authentication endpoints enumerated by the Processing Policy. If the platform cannot prove those filesystem, environment, capability, and egress constraints before receiving the payload, the adapter is unavailable.
+
+The host passes one immutable, trusted adapter instruction as the CLI prompt argument and writes the serialized Processing Envelope to a private one-shot pipe connected to stdin. OpenAI documents that when a prompt argument and piped stdin are both present, the prompt is the instruction and stdin is appended as a separate `<stdin>` context block. The wrapper must never use captured content as the prompt argument. The following notation treats `$MDPLACE_ENVELOPE_PIPE` as that one-shot pipe or file descriptor, not a vault path or persistent payload file:
 
 ```bash
 codex exec \
   --skip-git-repo-check \
   --ephemeral \
   --json \
+  --strict-config \
   --ignore-user-config \
   --ignore-rules \
   --sandbox read-only \
   --disable shell_tool \
+  --disable unified_exec \
   --disable apps \
   --disable plugins \
   --disable browser_use \
@@ -81,21 +89,26 @@ codex exec \
   -c 'approval_policy="never"' \
   -c 'web_search="disabled"' \
   --output-schema "$MDPLACE_SCHEMA" \
-  --output-last-message "$MDPLACE_RESULT" \
   -C "$MDPLACE_SCRATCH" \
-  -
+  "$MDPLACE_TRUSTED_INSTRUCTION" \
+  < "$MDPLACE_ENVELOPE_PIPE"
 ```
 
 The security rationale is:
 
 - `--sandbox read-only` plus non-interactive `approval_policy="never"` prevents writes or approval escalation; OpenAI documents this combination as read-only non-interactive CI. [Sandbox and approvals](https://learn.chatgpt.com/docs/agent-approvals-security#common-sandbox-and-approval-combinations).
-- `features.shell_tool` is a documented, default-on feature, so the adapter explicitly disables it. The illustrative profile also disables installed apps/plugins, browser and computer control, image generation, hooks, and delegation; web search is separately disabled. The wrapper must reject an unsupported deny flag rather than silently dropping it. [Codex configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference#configtoml).
+- `features.shell_tool` is a documented, default-on feature, so the adapter explicitly disables it and its unified-exec backend. The illustrative profile also disables installed apps/plugins, browser and computer control, image generation, hooks, and delegation; web search is separately disabled. The wrapper must reject unsupported configuration with `--strict-config`. [Codex configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference#configtoml).
 - `--ignore-user-config` prevents a user's normal Codex configuration, including configured integrations, from silently widening this adapter's behavior; saved authentication is still the separately documented default for `codex exec`. [Non-interactive permissions and safety](https://learn.chatgpt.com/docs/non-interactive-mode#permissions-and-safety), [automation authentication](https://learn.chatgpt.com/docs/non-interactive-mode#authenticate-in-automation).
-- The scratch directory prevents project `AGENTS.md`, `.codex` configuration, skills, or other note content from becoming implicit input. Global instruction or skill discovery is not documented as disabled by `--ignore-user-config`; a high-assurance deployment therefore needs a dedicated, minimal Codex runtime profile. If it cannot exclude implicit instructions and tools, it does not satisfy the v1 Intelligence Adapter boundary. This is an mdplace recommendation, not an OpenAI guarantee.
+- The CLI flags are defense in depth, not a complete capability denylist. The wrapper pins an approved CLI build and effective capability manifest, rejects unknown versions or newly enabled features, and proves the external runtime boundary before sending the Processing Envelope.
+- The external network policy permits only the policy-named provider and required authentication endpoints. Conformance tests must demonstrate zero bytes reach an unauthorized destination; disabling web-facing model tools alone does not establish this property.
 
-The wrapper should preflight the installed CLI version and required flags, consume the JSONL stream in memory, reject any unexpected tool event, validate the final result again with mdplace's own JSON Schema validator, reject extra fields, and impose time/output limits. It should record only non-secret provenance: adapter kind, CLI version, requested model/config, schema version, sanitized input digest, timestamps, usage when present, and terminal status. Never store authentication material or a raw reasoning event stream in the semantic ledger.
+The wrapper preflights the installed CLI version, required flags, effective features, instruction roots, mounts, environment, and egress policy before transmitting data. It consumes JSONL incrementally under the Processing Envelope's byte and time caps and rejects any command, file-change, MCP, web, or other tool event as a conformance failure. Event rejection is detection, not prevention; the external runtime must already make the action impossible. After `turn.completed`, mdplace extracts the final agent message, validates it with its own strict JSON Schema validator, rejects extra fields, and constructs the versioned Intelligence Proposal. It consumes output from the bounded stream and does not authorize a CLI-managed host output file.
 
-Local verification on 2026-07-29 found `codex-cli 0.144.6`, `codex login status` reporting `Logged in using ChatGPT`, the required non-interactive flags in `codex exec --help`, and `shell_tool` available as a stable feature. This observation proves compatibility with the inspected workstation only; mdplace should capability-detect rather than infer a universal minimum version.
+### Run receipt and artifacts
+
+Every attempt appends an immutable Adapter Run Receipt containing the subject note ID and version hash; Processing Policy ID and version; authorized data classes; Processing Envelope manifest and hashes; redaction summary; adapter, provider, authentication plane, model, CLI, effective feature, prompt-contract, and output-schema versions; numeric budgets and observed usage; timestamps; provider request ID when available; latency and cost; input and output hashes; and terminal outcome. The receipt never contains credentials, secrets, raw reasoning, or the full Processing Envelope.
+
+mdplace retains the exact raw final adapter response and the validated Intelligence Proposal as content-addressed, non-authoritative local artifacts. The full JSONL reasoning or progress stream is not retained in the semantic ledger. Configurable artifact retention may later purge those local artifacts while preserving their hashes and tombstones; it cannot rewrite the receipt or accepted semantic history.
 
 ## When another credential is required
 
@@ -107,7 +120,7 @@ Local verification on 2026-07-29 found `codex-cli 0.144.6`, `codex login status`
 | Trusted Business or Enterprise script, scheduler, private runner, or app-server client that needs ChatGPT workspace entitlements/governance without browser sign-in | Use a Codex access token if the workspace supports it and an admin permits token creation and Codex Local. Tokens are tied to a user and workspace, must be secret-managed and rotated, and are not credentials for general OpenAI API calls. [Codex access tokens](https://learn.chatgpt.com/docs/enterprise/access-tokens). |
 | Public runner, fork-triggered workflow, untrusted shared machine, or client-distributed secret | Neither a cached personal ChatGPT session nor a Codex access token is safe. Redesign around a trusted service boundary, or leave the adapter unavailable. |
 
-API-key authentication is also the practical escape hatch when a user wants usage-based capacity beyond ChatGPT limits, but it changes billing, model availability, features, and the governing data-control plane. It must be a distinct Processing Policy provider choice, not a silent fallback from ChatGPT authentication.
+API-key authentication is also the practical escape hatch when a user wants usage-based capacity beyond ChatGPT limits, but it changes billing, model availability, features, authentication boundary, and the governing data-control plane. It requires a separately authorized Processing Policy boundary and renewed consent where applicable, not a silent fallback from ChatGPT authentication.
 
 ## Bounded uncertainty and documentation conflict
 
@@ -120,9 +133,12 @@ OpenAI's plan limits, eligible models, CLI flags, and feature maturity change ov
 The ChatGPT-signed-in adapter is supportable only if the implementation preserves these invariants:
 
 1. It is optional; deterministic mdplace behavior remains available without Codex.
-2. Processing Policy authorizes the provider, purpose, and exact sanitized fields before transmission.
-3. Captured content is delimited as untrusted data and receives no instruction authority.
-4. Shell, web search, integrations, network-capable tools, writes, and interactive escalation are disabled by enforced runtime controls, not prompt wording alone.
-5. Only a locally revalidated schema result enters mdplace as proposed evidence or candidates.
-6. No model output directly accepts a Placement Evaluation, changes the Category Tree, mutates a Folder Projection, or causes an external effect.
-7. Authentication, entitlement, rate, privacy, and malformed-output failures fail closed into adapter-unavailable or Unresolved Placement states.
+2. A versioned, default-deny Processing Envelope authorizes the provider, fixed destination, authentication plane, purpose, exact sanitized fields, and numeric budgets before transmission.
+3. A host-controlled instruction remains outside the envelope, while captured content arrives only as separately framed untrusted stdin data with no instruction authority.
+4. An external permission profile enforces the filesystem, environment, capability, credential, and provider-only egress boundary before the payload is sent; CLI feature flags are defense in depth.
+5. Only a locally revalidated, versioned Intelligence Proposal enters mdplace. It may abstain, but it cannot return an accepted primary category or Unresolved Placement.
+6. Placement Evaluation and the Taxonomy Evolution Cycle remain the only paths that derive placement states or Taxonomy Proposals; no model output appends accepted events, changes the Category Tree, mutates a Folder Projection, or causes an external effect.
+7. Every attempt produces the complete immutable Adapter Run Receipt and the required content-addressed final-response artifacts without storing credentials or raw reasoning.
+8. Authentication, entitlement, rate, policy drift, budget, isolation, or malformed-output failures fail closed into adapter-unavailable; mdplace then decides whether Placement Evaluation records an Unresolved Placement.
+
+[Define validation corpus, success criteria, and final spec handoff](https://github.com/jidankim/mdplace/issues/10) must test hostile instructions in every captured field, prompt-versus-stdin separation, attempted command and tool use, zero-byte unauthorized-destination behavior, authentication expiry, disabled entitlement, quota exhaustion, oversized inputs and JSONL streams, retry storms, aggregate token and cost ceilings, malformed and schema-invalid output, unknown CLI versions or capabilities, changed provider terms, unknown personal data-control state, and proof that deterministic mdplace behavior remains available without provider fallback.
