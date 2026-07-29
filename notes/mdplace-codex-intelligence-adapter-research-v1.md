@@ -50,7 +50,7 @@ The applicable OpenAI policy depends on authentication:
 | ChatGPT Business or Enterprise sign-in/access token | Inputs and outputs are not used for training by default; workspace controls govern access and, where available, retention and residency. [Business data privacy](https://openai.com/business-data/), [Codex authentication](https://learn.chatgpt.com/docs/auth#openai-authentication). |
 | Platform API key | API-organization retention and data-sharing settings apply, not the user's ChatGPT workspace settings. API inputs and outputs are not used for training by default unless the organization opts in. [API data controls](https://developers.openai.com/api/docs/guides/your-data), [Codex authentication](https://learn.chatgpt.com/docs/auth#openai-authentication). |
 
-The active Processing Policy must be reauthorized before a run when the destination, authentication boundary, authorized data classes, purpose, or disclosed retention, residency, or training terms change. A model or CLI upgrade inside the same authorized boundaries does not require new authorization, but its exact version and effective capabilities remain run provenance. Unknown personal data-control state remains explicitly unknown or user-attested; it must not be inferred from successful authentication.
+A new active Processing Policy version must explicitly authorize the changed boundary before a run when the destination, authentication boundary, authorized data classes, purpose, or disclosed retention, residency, or training terms change. A model or CLI upgrade inside the same authorized boundaries does not require new authorization, but its exact version and effective capabilities remain run provenance. Unknown personal data-control state remains explicitly unknown or user-attested; it must not be inferred from successful authentication.
 
 `--ephemeral` prevents local Codex session rollout files from being persisted. It is not documented as a server-side retention or training control and must not be represented as one. [Non-interactive basic usage](https://learn.chatgpt.com/docs/non-interactive-mode#basic-usage).
 
@@ -137,7 +137,7 @@ OpenAI's plan limits, eligible models, CLI flags, and feature maturity change ov
 The ChatGPT-signed-in adapter is supportable only if the implementation preserves these invariants:
 
 1. It is optional; deterministic mdplace behavior remains available without Codex.
-2. A versioned, default-deny Processing Envelope authorizes the provider, fixed destination, authentication plane, purpose, exact sanitized fields, and numeric budgets before transmission.
+2. The active Processing Policy explicitly authorizes the provider, fixed destination, authentication plane, purpose, exact sanitized fields, and numeric budgets before transmission; a versioned, default-deny Processing Envelope binds and evidences that authorization for the run.
 3. A host-controlled instruction remains outside the envelope, while captured content arrives only as separately framed untrusted stdin data with no instruction authority.
 4. An external permission profile enforces the filesystem, environment, capability, credential, and provider-only egress boundary before the payload is sent; CLI feature flags are defense in depth.
 5. Authentication uses only documented Codex mechanisms; browser-cookie extraction, browser-session copying, private-token scraping, and undocumented credential sources are prohibited.
