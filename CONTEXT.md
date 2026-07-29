@@ -53,7 +53,7 @@ A provenance-bearing, non-authoritative candidate for any change to the accepted
 _Avoid_: Pending truth, automatic fact
 
 **Automatic Promotion**:
-Acceptance of a Taxonomy Proposal without contemporaneous human confirmation. It is permitted only for policy-authorized changes that are additive, reversible, and low impact.
+Acceptance of a Taxonomy Proposal without contemporaneous human confirmation. It is permitted only when an enabled Automation Grant covers the proposal's operation type and named category scope, the proposal is an Auto-Promotable Taxonomy Change, and it satisfies the applicable evidence gate, Promotion Floor, and Policy Thresholds.
 _Avoid_: Silent mutation, automatic rewrite
 
 **Auto-Promotable Taxonomy Change**:
@@ -109,7 +109,7 @@ An immutable accepted bundle of taxonomy operations with its base revision, evid
 _Avoid_: Taxonomy patch file, mutable transaction
 
 **Taxonomy Revision**:
-The monotonic accepted-ledger position produced by a Taxonomy Change Set. It identifies semantic truth independently of whether Folder Projection has finished materializing it.
+The monotonic accepted-ledger position produced by a Taxonomy Change Set through a single-writer, atomic compare-and-append against the current revision; a mismatched base revision cannot be accepted. It identifies semantic truth independently of whether Folder Projection has finished materializing it.
 _Avoid_: Folder version, export version
 
 **Materialized Taxonomy Revision**:
