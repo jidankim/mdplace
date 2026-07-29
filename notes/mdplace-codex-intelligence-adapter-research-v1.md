@@ -50,7 +50,7 @@ The applicable OpenAI policy depends on authentication:
 | ChatGPT Business or Enterprise sign-in/access token | Inputs and outputs are not used for training by default; workspace controls govern access and, where available, retention and residency. [Business data privacy](https://openai.com/business-data/), [Codex authentication](https://learn.chatgpt.com/docs/auth#openai-authentication). |
 | Platform API key | API-organization retention and data-sharing settings apply, not the user's ChatGPT workspace settings. API inputs and outputs are not used for training by default unless the organization opts in. [API data controls](https://developers.openai.com/api/docs/guides/your-data), [Codex authentication](https://learn.chatgpt.com/docs/auth#openai-authentication). |
 
-A new active Processing Policy version must explicitly authorize the changed boundary before a run when the destination, authentication boundary, authorized data classes, purpose, or disclosed retention, residency, or training terms change. A model or CLI upgrade inside the same authorized boundaries does not require new authorization, but its exact version and effective capabilities remain run provenance. Unknown personal data-control state remains explicitly unknown or user-attested; it must not be inferred from successful authentication.
+A model or CLI upgrade is exempt from new Processing Policy authorization only when preflight proves that its resolved effective capabilities, provider data terms, disclosed retention, residency, and training settings, destination, authentication boundary, authorized data classes, and purpose are unchanged from the active policy's authorized boundary. Any changed or unproven dimension requires a new active Processing Policy version that explicitly authorizes the resulting boundary before the run. The exact model and CLI versions and resolved effective capabilities remain run provenance. Unknown personal data-control state remains explicitly unknown or user-attested; it must not be inferred from successful authentication.
 
 `--ephemeral` prevents local Codex session rollout files from being persisted. It is not documented as a server-side retention or training control and must not be represented as one. [Non-interactive basic usage](https://learn.chatgpt.com/docs/non-interactive-mode#basic-usage).
 
@@ -81,13 +81,25 @@ codex exec \
   --sandbox read-only \
   --disable shell_tool \
   --disable unified_exec \
+  --disable shell_snapshot \
+  --disable code_mode_host \
   --disable apps \
   --disable plugins \
+  --disable remote_plugin \
+  --disable plugin_sharing \
+  --disable skill_mcp_dependency_install \
+  --disable tool_call_mcp_elicitation \
+  --disable tool_suggest \
   --disable browser_use \
+  --disable browser_use_external \
+  --disable browser_use_full_cdp_access \
+  --disable in_app_browser \
   --disable computer_use \
   --disable image_generation \
   --disable hooks \
   --disable multi_agent \
+  --disable workspace_dependencies \
+  --disable auth_elicitation \
   -c 'approval_policy="never"' \
   -c 'web_search="disabled"' \
   --output-schema "$MDPLACE_SCHEMA" \
@@ -99,12 +111,13 @@ codex exec \
 The security rationale is:
 
 - `--sandbox read-only` plus non-interactive `approval_policy="never"` prevents writes or approval escalation; OpenAI documents this combination as read-only non-interactive CI. [Sandbox and approvals](https://learn.chatgpt.com/docs/agent-approvals-security#common-sandbox-and-approval-combinations).
-- `features.shell_tool` is a documented, default-on feature, so the adapter explicitly disables it and its unified-exec backend. The illustrative profile also disables installed apps/plugins, browser and computer control, image generation, hooks, and delegation; web search is separately disabled. The wrapper must reject unsupported configuration with `--strict-config`. [Codex configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference#configtoml).
+- `features.shell_tool` is a documented, default-on feature, so the adapter explicitly disables it and its unified-exec backend. The illustrative profile also denies shell snapshots and host code mode; apps, plugins, plugin sharing, remote plugins, MCP elicitation and dependency installation, and dynamic tool suggestion; built-in, external, and full-CDP browser paths; computer control, image generation, hooks, delegation, workspace dependencies, and authentication elicitation. Web search is separately disabled. The wrapper must reject unsupported configuration with `--strict-config`. [Codex configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference#configtoml).
 - `--ignore-user-config` prevents a user's normal Codex configuration, including configured integrations, from silently widening this adapter's behavior; saved authentication is still the separately documented default for `codex exec`. [Non-interactive permissions and safety](https://learn.chatgpt.com/docs/non-interactive-mode#permissions-and-safety), [automation authentication](https://learn.chatgpt.com/docs/non-interactive-mode#authenticate-in-automation).
-- The CLI flags are defense in depth, not a complete capability denylist. The wrapper pins an approved CLI build and effective capability manifest, rejects unknown versions or newly enabled features, and proves the external runtime boundary before sending the Processing Envelope.
+- Before constructing the execution command, the wrapper runs the approved CLI build with the exact same `--disable` set inside the same empty-config, minimal `CODEX_HOME` to obtain `codex features list`. It parses the complete resolved manifest and permits transmission only when every capability-bearing feature is `false`, every enabled feature is explicitly classified as non-capability-bearing in the versioned allowlist, and there are no unknown or unlisted features. The later `codex exec --strict-config` invocation independently rejects unrecognized configuration fields.
+- Feature flags are defense in depth, not a complete capability denylist. The same zero-payload preflight must also prove that the effective MCP-server, app, plugin, skill, instruction-root, host-file, and model-visible tool inventories are empty or match the versioned allowlist. If a surface cannot be enumerated before transmission, or the preflight manifest differs from the manifest bound into the Processing Envelope and execution argv, the adapter is unavailable.
 - The external network policy permits only the policy-named provider and required authentication endpoints. Conformance tests must demonstrate zero bytes reach an unauthorized destination; disabling web-facing model tools alone does not establish this property.
 
-The wrapper preflights the installed CLI version, required flags, effective features, instruction roots, mounts, environment, and egress policy before transmitting data. It consumes JSONL incrementally under the Processing Envelope's byte and time caps and rejects any command, file-change, MCP, web, or other tool event as a conformance failure. Event rejection is detection, not prevention; the external runtime must already make the action impossible. After `turn.completed`, mdplace extracts the final agent message, validates it with its own strict JSON Schema validator, rejects extra fields, and constructs the versioned Intelligence Proposal. It consumes output from the bounded stream and does not authorize a CLI-managed host output file.
+The wrapper preflights the installed CLI version, required flags, complete effective feature and tool manifests, integration inventories, instruction roots, mounts, environment, and egress policy before transmitting data. It consumes JSONL incrementally under the Processing Envelope's byte and time caps and rejects any command, file-change, MCP, web, or other tool event as a conformance failure. Event rejection is detection, not prevention; the external runtime must already make the action impossible. After `turn.completed`, mdplace extracts the final agent message, validates it with its own strict JSON Schema validator, rejects extra fields, and constructs the versioned Intelligence Proposal. It consumes output from the bounded stream and does not authorize a CLI-managed host output file.
 
 ### Run receipt and artifacts
 
