@@ -16,6 +16,26 @@ _Avoid_: Automatic trust, observed source version
 A protected local intake artifact produced by a Capture Source before mdplace validation. It is not a Captured Tab Note and has no placement or taxonomy authority.
 _Avoid_: Raw note, temporary Captured Tab Note
 
+**Capture Occurrence**:
+One intentional act of capturing one browser tab. Separate Capture Occurrences remain distinct even when their source URL or normalized content matches; retrying the same Capture Candidate recovers the original occurrence rather than creating another.
+_Avoid_: Browser session, source-page identity, duplicate note
+
+**Targeted Recapture**:
+An explicit mdplace-directed Capture Occurrence that names an existing Captured Tab Note and appends an Observed Note Version while preserving the note's identity and prior versions. It updates only capture-owned source data and managed content streams; user-owned data, accepted placement, and current path remain unchanged. Target authority comes from a trusted mdplace command, never from Capture Candidate or page-derived fields.
+_Avoid_: Implicit URL merge, overwrite, duplicate suppression
+
+**Recapture Plan**:
+A human-confirmed, version-bound plan for one Targeted Recapture that binds the exact Capture Candidate, target note, expected base version, source comparison, and content-change summary. V1 cannot append a targeted version without confirmation of this plan.
+_Avoid_: Automatic refresh, unattended targeted promotion
+
+**Recapture Conflict**:
+A Semantic Conflict in which a Targeted Recapture's expected base version or admitted file state no longer matches the current Captured Tab Note. It preserves the candidate and current note unchanged until a human accepts the captured version, keeps the current version, or promotes the candidate as a new Captured Tab Note.
+_Avoid_: Automatic merge, overwrite, failed intake
+
+**Recapture Source Mismatch**:
+A review state in which a Recapture Plan's prospective sanitized source URL, derived by mdplace from pending Capture Candidate evidence, differs from the current Source Observation's retained sanitized URL under compatible sanitizer versions. It preserves the candidate evidence and current Source Observation and requires explicit human confirmation before append; withheld or unusable URLs are unknown, and outputs from incompatible sanitizer versions are incomparable.
+_Avoid_: Source Page conflict, permanent rejection, URL identity
+
 **Capture Intake**:
 The protected, non-authoritative lifecycle in which Capture Candidates await validation or retain their processing outcome. It is distinct from the Inbox and has no placement, indexing, projection, or remote-processing authority.
 _Avoid_: Inbox, staging category, unclassified notes
@@ -23,6 +43,58 @@ _Avoid_: Inbox, staging category, unclassified notes
 **Captured Tab Note**:
 A Markdown note accepted by mdplace from exactly one browser tab after its Capture Candidate satisfies the ingestion contract. It preserves normalized readable content, one-tab provenance, and allowlisted source metadata when policy permits; a withheld or unusable source URL does not invalidate it.
 _Avoid_: Browser tab note, tab capture, Capture Candidate
+
+**Captured Tab Note Identity**:
+The single stable file identity shared by a Captured Tab Note's `mdplace_id` bridge and semantic ledger entity, minted in the existing `file:<ULID>` namespace. It is independent of path and content; Capture Occurrences and Observed Note Versions have distinct records but never introduce a second note identity.
+_Avoid_: Capture note ID, path identity, content identity
+
+**Identity Collision**:
+A blocking conflict in which multiple filesystem artifacts claim the same `mdplace_id`. mdplace never resolves it from path or content; a human chooses which artifact retains the identity and may explicitly adopt another as a new note with copy provenance.
+_Avoid_: Automatic reminting, duplicate note identity
+
+**Note Copy Adoption**:
+An explicit operation that gives a copied artifact a new `mdplace_id` and records its derivation from an admitted Observed Note Version. The copy remains a Captured Tab Note only when that lineage and capture provenance validate; otherwise it may be adopted solely as a generic Markdown note.
+_Avoid_: Automatic reminting, new Capture Occurrence, invented provenance
+
+**Observed Note Version**:
+A provenance-bearing snapshot of one Captured Tab Note's accepted content and allowlisted source metadata at a point in time. Each successful Capture Occurrence produces a distinct Observed Note Version even when its content and source hashes repeat; multiple versions share one note identity, and prior versions remain historical evidence.
+_Avoid_: Captured Tab Note identity, current file
+
+**Observed Version Artifact**:
+An immutable, content-addressed local artifact preserving the normalized capture-owned streams and source manifest for an Observed Note Version. Identical bytes may share storage; explicit retention-policy purging preserves version hashes, provenance receipts, and tombstones.
+_Avoid_: Current note, identity record, mutable backup
+
+**Version Restoration**:
+A human-confirmed, compare-and-append operation that makes content from an earlier Observed Version Artifact current by creating a new Observed Note Version. It never rewinds history or changes Captured Tab Note identity, accepted placement, or path.
+_Avoid_: Version rewind, history rewrite, file rollback
+
+**Source Observation**:
+The allowlisted source metadata and normalized content evidence bound to one Observed Note Version. Only source URLs produced by compatible sanitizer versions and content hashes produced by compatible hash contracts may relate observations; matches never establish a shared Source Page identity or alter Captured Tab Note identity.
+_Avoid_: Source Page identity, canonical page
+
+**Duplicate Candidate**:
+A non-authoritative proposal that two distinct Captured Tab Notes may represent redundant captured material. V1 may generate one automatically only from version-compatible exact `content_hash` equality between current Observed Note Versions; it has no merge, deletion, placement, taxonomy, or projection effect.
+_Avoid_: Duplicate fact, identity match, automatic merge
+
+**Related Capture Candidate**:
+Non-authoritative evidence that distinct Source Observations may be related, such as equal retained sanitized URLs produced by compatible sanitizer versions despite different content, or a current version matching another note's historical content under compatible hash contracts. It neither proposes duplication nor establishes a Source Page identity.
+_Avoid_: Duplicate Candidate, Source Page match, identity relation
+
+**Same Source Relationship**:
+A human-accepted, symmetric relationship between two exact Source Observations judged to come from the same external source. It records evidence and rationale but never merges notes, implies duplication, or establishes a Source Page identity.
+_Avoid_: Source Page identity, Duplicate Relationship, note identity
+
+**Duplicate Relationship**:
+A human-accepted directional assertion from one Captured Tab Note to another chosen Canonical Note, bound to the exact Observed Note Versions, evidence, and rationale reviewed. Content hashes need not match. Self-links and cycles are invalid, chains resolve to one canonical root, and the relationship never merges identities or automatically deletes, archives, moves, or rewrites either note.
+_Avoid_: Duplicate Candidate, identity merge, automatic cleanup
+
+**Stale Duplicate Relationship**:
+The current state of a Duplicate Relationship after either related Captured Tab Note gains a later Observed Note Version. The accepted historical decision remains recorded, but consumers must not collapse the notes until a human reconfirms or retracts the relationship.
+_Avoid_: Active duplicate, automatic retraction
+
+**Canonical Note**:
+The selected root representative of Captured Tab Notes connected by accepted Duplicate Relationships. It remains an ordinary Captured Tab Note and does not absorb the identities, histories, or provenance of related notes.
+_Avoid_: Merged note, source of shared identity
 
 **Annotation Stream**:
 Optional captured context derived from saved browser highlights whose original live-selection provenance cannot be established. It supplements but never replaces the Captured Tab Note's readable article.
