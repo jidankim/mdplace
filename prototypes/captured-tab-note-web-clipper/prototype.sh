@@ -76,8 +76,8 @@ render_word_count() {
 render_hash_shape() {
 	render_case \
 		'deterministic hash shape' \
-		'TARGET CONTRACT' \
-		'The canonical metadata and stream-manifest hash shape is a future adapter target; stock Web Clipper emits no hashes and this read-only report computes none.'
+		'HISTORICAL ONLY' \
+		'The superseded one-stage hash experiment is withdrawn; stock Web Clipper emits no hashes, and only the accepted two-stage intake contract is normative.'
 }
 
 render_activation() {

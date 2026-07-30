@@ -12,10 +12,10 @@ The active destination is [Issue #1: Specify Captured Tab Note ingestion and pol
 
 mdplace is a single-user, single-vault desktop knowledge-capture system.
 
-- One browser tab creates one **Captured Tab Note** with normalized readable content and allowlisted source metadata.
-- Stock Obsidian Web Clipper 1.7.0 is the first evaluated **Capture Adapter** candidate, but it is not supported until an additional adapter or upstream change satisfies mdplace's ingestion contract.
+- One browser tab produces one untrusted **Capture Candidate**. It becomes a **Captured Tab Note** only after mdplace validates and promotes it.
+- Stock Obsidian Web Clipper 1.7.0 is the first **Capture Source**. It writes into protected Capture Intake and never creates a Captured Tab Note directly.
 - mdplace is editor-agnostic. It does not require a custom Obsidian plugin or browser extension.
-- A conforming Capture Adapter writes the note to the vault and records provenance without making semantic-placement decisions; mdplace begins governing the note only after that point.
+- The mdplace **Capture Adapter** validates, sanitizes, normalizes, hashes, and promotes a conforming candidate into the Inbox without making semantic-placement decisions.
 
 ## Semantic model
 
@@ -40,6 +40,7 @@ Taxonomy changes remain versioned, explainable, reviewable, and reversible. High
 ## Read next
 
 - [Project language and boundaries](CONTEXT.md)
+- [Captured Tab Note intake contract](docs/captured-tab-note-intake-contract-v1.md)
 - [Issue #1: destination and open decisions](https://github.com/jidankim/mdplace/issues/1)
 - [Issue #2: reconcile the existing semantic ledger](https://github.com/jidankim/mdplace/issues/2)
 - [Issue #12: Captured Tab Note and Web Clipper contract](https://github.com/jidankim/mdplace/issues/12)
