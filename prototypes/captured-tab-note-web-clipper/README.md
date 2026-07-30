@@ -1,5 +1,12 @@
 # Stock Web Clipper 1.7.0 feasibility result
 
+> **SUPERSEDED CONTRACT**
+>
+> This prototype remains historical feasibility evidence. The accepted contract
+> is the two-stage [Captured Tab Note intake contract](../../docs/captured-tab-note-intake-contract-v1.md):
+> stock Web Clipper is a Capture Source that writes an untrusted Capture
+> Candidate, and an mdplace Capture Adapter validates and promotes it.
+
 > **NOT A SUPPORTED CAPTURE ADAPTER**
 >
 > Stock Obsidian Web Clipper 1.7.0 at pinned commit

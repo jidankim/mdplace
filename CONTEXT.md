@@ -4,17 +4,41 @@ mdplace governs the semantic placement of Markdown notes while keeping content, 
 
 ## Language
 
+**Capture Source**:
+An external producer that writes an untrusted Capture Candidate from exactly one browser tab without making semantic decisions. Stock Obsidian Web Clipper 1.7.0 is the first Capture Source.
+_Avoid_: Capture Adapter, semantic classifier
+
+**Source Profile**:
+A versioned, user-approved local declaration of which Capture Source, claimed source version, candidate schema, and template version a Capture Adapter may accept. It establishes compatibility permission, not semantic authority or verified runtime provenance.
+_Avoid_: Automatic trust, observed source version
+
+**Capture Candidate**:
+A protected local intake artifact produced by a Capture Source before mdplace validation. It is not a Captured Tab Note and has no placement or taxonomy authority.
+_Avoid_: Raw note, temporary Captured Tab Note
+
+**Capture Intake**:
+The protected, non-authoritative lifecycle in which Capture Candidates await validation or retain their processing outcome. It is distinct from the Inbox and has no placement, indexing, projection, or remote-processing authority.
+_Avoid_: Inbox, staging category, unclassified notes
+
 **Captured Tab Note**:
-A Markdown note created from exactly one browser tab that preserves normalized readable content and allowlisted source metadata. Captured content and metadata are untrusted data; embedded instructions have no authority. Window and browser-session associations are contextual metadata and do not determine the note's identity.
-_Avoid_: Browser tab note, tab capture
+A Markdown note accepted by mdplace from exactly one browser tab after its Capture Candidate satisfies the ingestion contract. It preserves normalized readable content, one-tab provenance, and allowlisted source metadata when policy permits; a withheld or unusable source URL does not invalidate it.
+_Avoid_: Browser tab note, tab capture, Capture Candidate
+
+**Annotation Stream**:
+Optional captured context derived from saved browser highlights whose original live-selection provenance cannot be established. It supplements but never replaces the Captured Tab Note's readable article.
+_Avoid_: Selection stream, verified highlights
+
+**Image Localization**:
+A policy-authorized operation that replaces an inert remote-image reference with a locally stored asset while preserving source provenance and creating a new observed note version. It does not change Captured Tab Note identity.
+_Avoid_: Automatic image download, transparent caching
 
 **Policy-Governed Taxonomy**:
 A taxonomy whose automated classification and evolution authority is bounded by explicit user policy. Every promoted change remains versioned, explainable, and reversible.
 _Avoid_: Machine-governed taxonomy, human-governed taxonomy
 
 **Capture Adapter**:
-An external producer that creates Captured Tab Notes according to mdplace's ingestion contract without making semantic placement decisions. Stock Obsidian Web Clipper 1.7.0 is the first evaluated Capture Adapter candidate and is not supported until an additional adapter or upstream change satisfies the ingestion contract.
-_Avoid_: Importer, semantic classifier
+A source-specific mdplace integration that validates a Capture Candidate under the Processing Policy and either promotes it to a Captured Tab Note or records a failed intake result. It cannot make semantic placement decisions.
+_Avoid_: Capture Source, importer, semantic classifier
 
 **Category Tree**:
 The strict primary hierarchy in which each non-root category has exactly one parent. A Captured Tab Note may have one accepted primary category in this tree.
@@ -41,7 +65,7 @@ A separately triggered evaluation of accumulated corpus evidence for changes to 
 _Avoid_: Placement evaluation, per-note classification
 
 **Processing Policy**:
-The user's versioned, default-deny rules for which Captured Tab Notes, fields, and derived artifacts may be persisted or processed by each local or remote model provider and which taxonomy automation is authorized. It may tighten or disable Automatic Promotion and define its Policy Thresholds, but cannot relax a Safety Invariant. Before persistence or transmission, source URLs are canonicalized and credentials, fragments, sensitive query parameters, session identifiers, and PII are removed unless an explicit field-level rule permits protected local retention. Remote transmission is forbidden unless the policy permits the provider, purpose, and exact payload fields explicitly.
+The user's versioned, default-deny rules for which Capture Candidates, Captured Tab Notes, fields, and derived artifacts may be persisted or processed by each local or remote model provider and which taxonomy automation is authorized. It may tighten or disable Automatic Promotion and define its Policy Thresholds, but cannot relax a Safety Invariant. Before persistence or transmission, source URLs are canonicalized and credentials, fragments, sensitive query parameters, session identifiers, and PII are removed unless an explicit field-level rule permits protected local intake retention. Remote transmission is forbidden unless the policy permits the provider, purpose, and exact payload fields explicitly.
 _Avoid_: Privacy setting, blanket consent
 
 **Intelligence Adapter**:
