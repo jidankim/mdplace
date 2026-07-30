@@ -9,7 +9,7 @@ An external producer that writes an untrusted Capture Candidate from exactly one
 _Avoid_: Capture Adapter, semantic classifier
 
 **Source Profile**:
-A versioned, user-approved local declaration of which Capture Source, claimed source version, candidate schema, exact template, URL-retention mode, Processing Policy hash, and capture-contract hash a Capture Adapter may accept. It establishes compatibility permission, not semantic authority or verified runtime provenance.
+A versioned, user-approved local declaration of which Capture Source, claimed source version, candidate schema, exact template identifier, version, import-artifact hash, URL-retention mode, Processing Policy hash, and capture-contract hash a Capture Adapter may accept. It establishes compatibility permission, not semantic authority or verified runtime provenance.
 _Avoid_: Automatic trust, observed source version
 
 **Capture Candidate**:

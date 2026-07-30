@@ -12,7 +12,7 @@ The active destination is [Issue #1: Specify Captured Tab Note ingestion and pol
 
 mdplace is a single-user, single-vault desktop knowledge-capture system.
 
-- One browser tab produces one untrusted **Capture Candidate**. It becomes a **Captured Tab Note** only after mdplace validates and promotes it.
+- One successful capture from one browser tab produces one untrusted **Capture Candidate**. It becomes a **Captured Tab Note** only after mdplace validates and promotes it.
 - Stock Obsidian Web Clipper 1.7.0 is the first **Capture Source**. It writes into protected Capture Intake and never creates a Captured Tab Note directly.
 - mdplace is editor-agnostic. It does not require a custom Obsidian plugin or browser extension.
 - The mdplace **Capture Adapter** validates, sanitizes, normalizes, hashes, and promotes a conforming candidate into the Inbox without making semantic-placement decisions.

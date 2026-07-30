@@ -49,8 +49,7 @@ matches all of:
 - Capture Source `obsidian_web_clipper`
 - source version claim `1.7.0`
 - candidate schema `mdplace.capture-candidate/v1`
-- one approved template identifier
-- template version `1`
+- one approved template identifier, version `1`, and import-artifact hash
 - URL-retention mode
 - the active Processing Policy and capture-contract versions
 
@@ -62,6 +61,7 @@ The Source Profile is an RFC 8785/JCS object with exactly these members:
 | `capture_contract_hash` | string | canonical contract hash |
 | `capture_source` | string | literal `obsidian_web_clipper` |
 | `capture_template` | string | one accepted template identifier |
+| `capture_template_hash` | string | exact registered import-artifact hash |
 | `capture_template_version` | string | literal `1` |
 | `enabled` | Boolean | must be `true` |
 | `processing_policy_hash` | string | active Processing Policy hash |
@@ -72,9 +72,23 @@ The Source Profile is an RFC 8785/JCS object with exactly these members:
 
 Unknown or missing members are invalid. `source_profile_hash` is SHA-256 over
 the UTF-8 JCS bytes. `capture_contract_hash` is SHA-256 over the exact UTF-8,
-LF-only, no-BOM bytes of this versioned contract file. The Processing Policy
-defines its own canonical hash; changing either hash requires explicit Source
-Profile approval.
+LF-only, no-BOM bytes of this versioned contract file. `capture_template_hash`
+is SHA-256 over the exact UTF-8, LF-only, no-BOM bytes of the approved JSON
+import artifact. The Processing Policy defines its own canonical hash;
+changing any hash requires explicit Source Profile approval.
+
+The v1 template registry is immutable:
+
+| Template identifier | Version | URL mode | Exact import artifact | `capture_template_hash` |
+| --- | --- | --- | --- | --- |
+| `mdplace-web-clipper-candidate-url-withheld` | `1` | `withheld` | [`mdplace-web-clipper-candidate-url-withheld.json`](https://github.com/jidankim/mdplace/blob/0ddf83227aeff008761addd5344d6e3f91807dd1/prototypes/captured-tab-note-two-stage-intake/mdplace-web-clipper-candidate-url-withheld.json) | `sha256:25cb91a4afa9365d1c5076bd4bcea8e8136ce44f0963e7e1e8296a7abe672c2a` |
+| `mdplace-web-clipper-candidate-url-retained` | `1` | `protected_local` | [`mdplace-web-clipper-candidate-url-retained.json`](https://github.com/jidankim/mdplace/blob/0ddf83227aeff008761addd5344d6e3f91807dd1/prototypes/captured-tab-note-two-stage-intake/mdplace-web-clipper-candidate-url-retained.json) | `sha256:5a57e8d0325838a39cf27e537df41e0d374c74788a52caf9c180dca795dc1a89` |
+
+Changing registered bytes requires a new template version and explicit Source
+Profile approval. Activation verifies the artifact digest before import.
+Stock Web Clipper supplies no trustworthy runtime template attestation, so
+this binds user approval to exact reviewed bytes without claiming that the
+candidate proves which runtime template produced it.
 
 Stock Web Clipper provides a claim, not trustworthy runtime version
 attestation. Candidates therefore contain:
@@ -120,10 +134,13 @@ Before page-derived metadata enters a promoted note, apply
 Unicode 15.1, replace every Unicode whitespace run with one ASCII space,
 remove every code point in general categories `Cc`, `Cf`, `Cs`, `Co`, and
 `Cn`, and trim ASCII spaces. Reject the value when normalization cannot be
-completed. Preserve `null` rather than an empty string. `source_title` is
-limited to 1,024 UTF-8 bytes; `source_author` and `source_site` to 512 bytes.
-`source_published_at` is retained only when it is an RFC 3339 full-date or
-date-time; date-times are rendered in UTC with exactly three fractional digits.
+completed. Preserve an input `null`; after trimming, map an empty
+`source_title`, `source_author`, or `source_site` to `null`. A null
+`source_title` renders as `Untitled`. `source_title` is limited to 1,024 UTF-8
+bytes; `source_author` and `source_site` to 512 bytes. An empty
+`source_published_at` maps to `null`; a nonempty value is retained only when it
+is an RFC 3339 full-date or date-time, and date-times are rendered in UTC with
+exactly three fractional digits.
 
 Hard v1 limits are:
 
@@ -249,7 +266,8 @@ replace or outrank the article.
 
 The accepted activation checklist is:
 
-- import and explicitly select the exact approved template
+- reproduce its registered `capture_template_hash`, then import and explicitly
+  select the exact approved template
 - match the template to an enabled Source Profile and Processing Policy
 - record the user-approved version claim and template version
 - set Web Clipper Interpreter use to disabled
@@ -274,16 +292,19 @@ request:
 1. reject inputs longer than 16 KiB or inputs that are not an absolute RFC 3986
    URI
 2. lowercase the scheme and permit only `http` or `https`
-3. reject userinfo, an empty host, IP literals, `localhost`, and hosts ending
-   in `.localhost`, `.local`, `.internal`, or `.home.arpa`
-4. convert the host with IDNA2008 ToASCII under STD3 rules, lowercase it, and
-   remove a terminal root dot
-5. reject invalid ports; remove port `80` from `http` and `443` from `https`
-6. use `/` for an empty path, remove dot segments using RFC 3986 section 5.2.4,
+3. reject userinfo
+4. canonicalize the parsed host before any allow-or-deny decision: an absent or
+   empty host remains empty, an IP literal remains a literal, and every
+   registered-name host is converted with IDNA2008 ToASCII under STD3 rules,
+   lowercased, and stripped of a terminal root dot
+5. reject the canonical host when it is empty, an IP literal, `localhost`, or
+   ends in `.localhost`, `.local`, `.internal`, or `.home.arpa`
+6. reject invalid ports; remove port `80` from `http` and `443` from `https`
+7. use `/` for an empty path, remove dot segments using RFC 3986 section 5.2.4,
    uppercase percent-escape hex digits, decode percent-encoded unreserved ASCII
    characters, and UTF-8 percent-encode every other non-ASCII path byte
-7. discard the complete query and fragment; v1 has no query-key exception
-8. serialize the remaining ASCII URI as
+8. discard the complete query and fragment; v1 has no query-key exception
+9. serialize the remaining ASCII URI as
    `scheme://host[:port]/path`
 
 Sanitization is purely syntactic: no DNS lookup, redirect resolution, preview,
@@ -308,6 +329,9 @@ Example:
 ```text
 input:  HTTPS://Example.COM:443/a/../b/%7euser?utm_source=x#fragment
 output: https://example.com/b/~user
+
+input:  https://LOCALHOST./
+result: rejected after host canonicalization produces localhost
 ```
 
 ## Images
@@ -690,25 +714,36 @@ Promotion proceeds as a recoverable journal:
    open descriptor, validate its schema, and reproduce every planned hash.
 4. Persist and fsync the canonical ledger receipt in state
    `publication_authorized`. This state authorizes only the exact
-   `promotion_id`, file hash, filesystem roots, and final relative path; it
-   does not assert that publication has occurred.
+   `promotion_id`; candidate filesystem identity, byte length, and
+   `candidate_hash`; staged-file identity, byte length, and content hash;
+   filesystem roots; and final relative path. It does not assert that
+   publication has occurred.
 5. Atomically move the staged file to the planned Inbox path with a
    no-replace rename primitive, then fsync the Inbox directory. Startup must
    fail rather than emulate this step when the platform cannot guarantee
    same-filesystem atomic no-replace publication.
-6. Append and fsync receipt state `published`, then move the candidate to
-   `processed` with a no-replace rename and fsync the intake directories.
+6. Append and fsync receipt state `published`.
+7. Under an exclusive Capture Intake lifecycle lock, reopen the pending
+   candidate relative to the trusted directory with no-follow semantics and
+   require its current regular-file identity, byte length, and SHA-256 over its
+   current bytes to equal the receipt's candidate identity, length, and
+   `candidate_hash`. On an exact match, move it to `processed` with a no-replace
+   rename and fsync the intake directories. On any mismatch, leave it
+   untrusted, append and fsync `promotion_drift`, and do not move it.
 
 An Inbox file is admitted as a Captured Tab Note only when:
 
 - a `publication_authorized` or `published` receipt exists
-- the receipt names the file's exact relative path, regular-file identity,
-  byte length, and content hash
-- the file remains beneath the trusted no-symlink Inbox root
+- the current Inbox file is opened relative to the trusted no-symlink root
+  with no-follow semantics and is a regular owner-only file
+- its current relative path and filesystem identity exactly equal the receipt
+- its current byte length and SHA-256 over the bytes read from that open
+  descriptor exactly equal the receipt's byte length and content hash
 
 All indexers, projections, publishers, and processors must enforce this
-admission check. A file without a matching receipt is an untrusted orphan and
-is quarantined without reading its body.
+admission check against the current filesystem object, not a cached path-only
+result. A file without a matching receipt is an untrusted orphan and is
+quarantined without reading its body.
 
 Recovery is state-specific:
 
@@ -718,7 +753,9 @@ Recovery is state-specific:
   or record `promotion_drift`
 - after publication but before the `published` state, verify the admitted
   Inbox file and append `published`
-- after publication but before the candidate move, complete the move
+- after publication but before the candidate move, acquire the exclusive
+  lifecycle lock, repeat the receipt-bound candidate revalidation, and complete
+  the move only on an exact match
 
 Any path collision, symlink, filesystem identity change, byte/hash mismatch, or
 missing authorized staging file appends `promotion_drift`, revokes further
