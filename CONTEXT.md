@@ -33,7 +33,7 @@ A Semantic Conflict in which a Targeted Recapture's expected base version or adm
 _Avoid_: Automatic merge, overwrite, failed intake
 
 **Recapture Source Mismatch**:
-A review state in which the pending Capture Candidate for a Targeted Recapture and the current Observed Note Version retain different sanitized source URLs produced by compatible sanitizer versions. It preserves the candidate evidence and current Source Observation and requires explicit human confirmation before append; withheld or unusable URLs are unknown, and URLs from incompatible sanitizer versions are incomparable.
+A review state in which a Recapture Plan's prospective sanitized source URL, derived by mdplace from pending Capture Candidate evidence, differs from the current Source Observation's retained sanitized URL under compatible sanitizer versions. It preserves the candidate evidence and current Source Observation and requires explicit human confirmation before append; withheld or unusable URLs are unknown, and outputs from incompatible sanitizer versions are incomparable.
 _Avoid_: Source Page conflict, permanent rejection, URL identity
 
 **Capture Intake**:
