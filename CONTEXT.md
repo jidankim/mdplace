@@ -33,7 +33,7 @@ A Semantic Conflict in which a Targeted Recapture's expected base version or adm
 _Avoid_: Automatic merge, overwrite, failed intake
 
 **Recapture Source Mismatch**:
-A review state in which a Targeted Recapture and the current Observed Note Version have different retained sanitized source URLs. It preserves both Source Observations and requires explicit human confirmation before the new version may be appended; a withheld or unusable URL is unknown rather than matching or conflicting.
+A review state in which the pending Capture Candidate for a Targeted Recapture and the current Observed Note Version retain different sanitized source URLs produced by compatible sanitizer versions. It preserves the candidate evidence and current Source Observation and requires explicit human confirmation before append; withheld or unusable URLs are unknown, and URLs from incompatible sanitizer versions are incomparable.
 _Avoid_: Source Page conflict, permanent rejection, URL identity
 
 **Capture Intake**:
@@ -69,7 +69,7 @@ A human-confirmed, compare-and-append operation that makes content from an earli
 _Avoid_: Version rewind, history rewrite, file rollback
 
 **Source Observation**:
-The allowlisted source metadata and normalized content evidence bound to one Observed Note Version. Matching source URLs or content hashes may relate observations but never establish a shared Source Page identity or alter Captured Tab Note identity.
+The allowlisted source metadata and normalized content evidence bound to one Observed Note Version. Only source URLs produced by compatible sanitizer versions and content hashes produced by compatible hash contracts may relate observations; matches never establish a shared Source Page identity or alter Captured Tab Note identity.
 _Avoid_: Source Page identity, canonical page
 
 **Duplicate Candidate**:
@@ -77,7 +77,7 @@ A non-authoritative proposal that two distinct Captured Tab Notes may represent 
 _Avoid_: Duplicate fact, identity match, automatic merge
 
 **Related Capture Candidate**:
-Non-authoritative evidence that distinct Source Observations may be related, such as equal retained sanitized URLs with different content or a current version matching another note's historical content. It neither proposes duplication nor establishes a Source Page identity.
+Non-authoritative evidence that distinct Source Observations may be related, such as equal retained sanitized URLs produced by compatible sanitizer versions despite different content, or a current version matching another note's historical content under compatible hash contracts. It neither proposes duplication nor establishes a Source Page identity.
 _Avoid_: Duplicate Candidate, Source Page match, identity relation
 
 **Same Source Relationship**:
