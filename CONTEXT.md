@@ -137,7 +137,7 @@ The single non-root Category Tree category currently accepted for a Captured Tab
 _Avoid_: Folder, inferred topic, category candidate
 
 **Secondary Facet**:
-A typed, multi-valued, versioned semantic assertion with stable identity and a lifecycle independent of Primary Category placement; the closed v1 kinds are Topic, Project, and Collection, each using a flat vocabulary whose values may be active, aliased, or deprecated but never have parentage. Every facet assertion or vocabulary change is proposal-only until human confirmation in v1; facets have no Folder Projection authority, ordinary Markdown tags remain user-owned content, workflow state remains operational, and external references and other typed relationships remain separate relationship assertions.
+A typed, multi-valued, versioned semantic assertion with stable identity and a lifecycle independent of Primary Category placement; the closed v1 kinds are Topic, Project, and Collection, each using a flat vocabulary whose values may be active, aliased, or deprecated but never have parentage. Every facet assertion, vocabulary change, or schema change is proposal-only until human confirmation in v1; facets have no Folder Projection authority, ordinary Markdown tags remain user-owned content, workflow state remains operational, and external references and other typed relationships remain separate relationship assertions.
 _Avoid_: Primary Category, Markdown tag, relationship
 
 **Folder Projection**:
@@ -149,7 +149,7 @@ A decision state indicating that no Primary Category can yet be accepted safely.
 _Avoid_: Unknown category, Uncategorized category, Miscellaneous
 
 **Unresolved Placement Reason**:
-The single canonical explanation for why a Captured Tab Note currently has no accepted Primary Category, chosen from the closed v1 set Awaiting Evaluation, Insufficient Evidence, Ambiguous Candidates, Conflicting Evidence, No Fitting Category, and User Deferred. Awaiting Evaluation applies before the first completed current evaluation and whenever a bound evaluation-input change makes the prior evaluation stale, except that User Deferred remains current across automatic input changes until the user explicitly resumes evaluation; afterward precedence is User Deferred, Conflicting Evidence, No Fitting Category, Ambiguous Candidates, then Insufficient Evidence, while review workflow states and adapter, policy, or missing-field diagnostics remain contributing context.
+The single canonical explanation for why a Captured Tab Note currently has no accepted Primary Category, chosen from the closed v1 set Awaiting Evaluation, Insufficient Evidence, Ambiguous Candidates, Conflicting Evidence, No Fitting Category, and User Deferred. For a note without an accepted Primary Category, Awaiting Evaluation applies before the first completed current evaluation and whenever a bound evaluation-input change makes the prior evaluation stale, except that User Deferred remains current across automatic input changes until the user explicitly resumes evaluation; afterward precedence is User Deferred, Conflicting Evidence, No Fitting Category, Ambiguous Candidates, then Insufficient Evidence, while review workflow states and adapter, policy, or missing-field diagnostics remain contributing context.
 _Avoid_: Category, status tag, diagnostic list
 
 **Inbox**:
@@ -189,7 +189,7 @@ A Taxonomy Proposal limited to creating a new leaf beneath an existing active pa
 _Avoid_: Safe change, minor structural change
 
 **Human-Gated Taxonomy Change**:
-A Taxonomy Proposal that alters existing accepted meaning or projected paths and therefore requires explicit human confirmation before promotion. Rename, reparent, merge, split, deprecate, and delete operations are human-gated.
+A Taxonomy Proposal that alters existing accepted meaning or projected paths and therefore requires explicit human confirmation before promotion. Rename, reparent, merge, split, and deprecate operations are human-gated; category deletion is invalid in v1.
 _Avoid_: Automatic structural change
 
 **Safety Invariant**:
