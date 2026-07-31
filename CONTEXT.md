@@ -113,23 +113,55 @@ A source-specific mdplace integration that validates a Capture Candidate under t
 _Avoid_: Capture Source, importer, semantic classifier
 
 **Category Tree**:
-The strict primary hierarchy in which each non-root category has exactly one parent. A Captured Tab Note may have one accepted primary category in this tree.
+The strict primary hierarchy in which each non-root category has exactly one parent and the root is never placeable. Every active non-root category may be accepted as a Primary Category whether it is a leaf or an interior node; adding descendants neither invalidates nor automatically refines an existing placement.
 _Avoid_: Folder tree, tag hierarchy
+
+**Category Identity**:
+The opaque stable identifier of one Category Tree category, independent of its name, parent, path, and lifecycle state. It is never reused and survives rename, reparent, deprecation, and historical mapping.
+_Avoid_: Category path, category name, folder identity
+
+**Category Name**:
+The canonical label of one Category Tree category, normalized uniquely among siblings. Different branches may reuse a name, but ambiguous references require Category Identity or the full category path.
+_Avoid_: Category Identity, globally unique label
+
+**Category Lifecycle**:
+The accepted state of a category, limited in v1 to Active or Deprecated. Active categories may receive new placements and appear in current Placement Candidate Sets; Deprecated categories preserve identity and existing placements for review but receive neither, merge and split deprecate their source categories through explicit mappings, categories are never deleted or reused, and reactivation requires a new accepted taxonomy change.
+_Avoid_: Deletion, archival state, implicit reactivation
+
+**Placement Outcome**:
+The single current semantic outcome for a Captured Tab Note: either an accepted Primary Category or an Unresolved Placement, never both or neither. Retracting a Primary Category without a replacement produces Awaiting Evaluation by default, while only an explicit defer action produces User Deferred.
+_Avoid_: Placement status, empty placement, review flag
+
+**Primary Category**:
+The single non-root Category Tree category currently accepted for a Captured Tab Note. New placements may target only Active categories; an existing placement remains accepted across bound evaluation-input changes, including later category deprecation under review, until a separate accepted placement decision supersedes or retracts it.
+_Avoid_: Folder, inferred topic, category candidate
+
+**Secondary Facet**:
+A typed, multi-valued, versioned semantic assertion with stable identity and a lifecycle independent of Primary Category placement; the closed v1 kinds are Topic, Project, and Collection, each using a flat vocabulary whose values may be active, aliased, or deprecated but never have parentage. Every facet assertion or vocabulary change is proposal-only until human confirmation in v1; facets have no Folder Projection authority, ordinary Markdown tags remain user-owned content, workflow state remains operational, and external references and other typed relationships remain separate relationship assertions.
+_Avoid_: Primary Category, Markdown tag, relationship
 
 **Folder Projection**:
 The nested directory structure generated from the Category Tree for ordinary filesystem and Obsidian navigation. It represents accepted placement but is not semantic truth.
 _Avoid_: Taxonomy, source of truth
 
 **Unresolved Placement**:
-A decision state indicating that no primary category can yet be accepted safely, together with the reason and candidate categories when available. It is not a category in the Category Tree.
+A decision state indicating that no Primary Category can yet be accepted safely. It has exactly one current Unresolved Placement Reason, while retaining candidate categories and all contributing evidence and diagnostics; it is not a category in the Category Tree.
 _Avoid_: Unknown category, Uncategorized category, Miscellaneous
 
+**Unresolved Placement Reason**:
+The single canonical explanation for why a Captured Tab Note currently has no accepted Primary Category, chosen from the closed v1 set Awaiting Evaluation, Insufficient Evidence, Ambiguous Candidates, Conflicting Evidence, No Fitting Category, and User Deferred. Awaiting Evaluation applies before the first completed current evaluation and whenever a bound evaluation-input change makes the prior evaluation stale, except that User Deferred remains current across automatic input changes until the user explicitly resumes evaluation; afterward precedence is User Deferred, Conflicting Evidence, No Fitting Category, Ambiguous Candidates, then Insufficient Evidence, while review workflow states and adapter, policy, or missing-field diagnostics remain contributing context.
+_Avoid_: Category, status tag, diagnostic list
+
 **Inbox**:
-The operational holding area for Captured Tab Notes that do not yet have an accepted primary category. Its location represents workflow state rather than semantic meaning.
+The operational holding area for Captured Tab Notes that do not yet have an accepted Primary Category. Its location represents workflow state rather than semantic meaning.
 _Avoid_: Unknown folder, taxonomy root
 
+**Placement Candidate Set**:
+An immutable, non-authoritative ranked snapshot bound to one exact Observed Note Version, Taxonomy Revision, evaluator contract, and Processing Policy. At most one set is current for a note; any bound-input change makes it stale, and reevaluation creates a new set without rewriting history.
+_Avoid_: Mutable suggestions, accepted placement, evergreen ranking
+
 **Placement Evaluation**:
-The evaluation of one Captured Tab Note against the active Category Tree, resulting in an accepted primary category or an Unresolved Placement. It does not change the Category Tree.
+The evaluation of one Captured Tab Note against the active Category Tree, resulting in an accepted Primary Category or an Unresolved Placement. It does not change the Category Tree.
 _Avoid_: Taxonomy update, folder move
 
 **Taxonomy Evolution Cycle**:
@@ -189,7 +221,7 @@ The recurring, cross-source evidence required before an authorized Taxonomy Prop
 _Avoid_: Placement confidence, category suggestion
 
 **Category Alias**:
-A collision-free, non-canonical label that resolves unambiguously to one active category without changing that category's identity, canonical name, parentage, or projected path.
+A globally unique, collision-free, non-canonical label that resolves without path context to one active category. It never changes that category's identity, canonical name, parentage, or projected path.
 _Avoid_: Rename, duplicate category
 
 **Alias Evidence Gate**:
