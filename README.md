@@ -35,7 +35,7 @@ Placement Evaluation decides whether one note can be placed in the current Categ
 
 All processing is local by default. A **Processing Policy** must explicitly permit any remote Intelligence Adapter, including its provider, purpose, and exact fields transmitted. A locally authenticated Codex installation may be explored as an optional Intelligence Adapter, but it cannot become semantic authority or act outside that policy.
 
-Taxonomy changes remain versioned, explainable, reviewable, and reversible. High-impact or destructive changes require stronger policy gates.
+Taxonomy changes remain versioned, explainable, reviewable, and reversible. Category deletion is invalid in v1; other high-impact or destructive changes require stronger policy gates.
 
 ## Read next
 

@@ -85,7 +85,7 @@ A human-accepted, symmetric relationship between two exact Source Observations j
 _Avoid_: Source Page identity, Duplicate Relationship, note identity
 
 **Duplicate Relationship**:
-A human-accepted directional assertion from one Captured Tab Note to another chosen Canonical Note, bound to the exact Observed Note Versions, evidence, and rationale reviewed. Content hashes need not match. Self-links and cycles are invalid, only chains of current, non-stale accepted Duplicate Relationships resolve to one canonical root, and the relationship never merges identities or automatically deletes, archives, moves, or rewrites either note.
+A human-accepted directional assertion from one Captured Tab Note to another chosen Canonical Note, bound to the exact Observed Note Versions, evidence, and rationale reviewed. Content hashes need not match. Self-links, cycles, and more than one current, non-stale accepted outgoing Duplicate Relationship from the same Captured Tab Note are invalid; following the sole current outgoing relationship repeatedly therefore resolves to one Canonical Note, and the relationship never merges identities or automatically deletes, archives, moves, or rewrites either note.
 _Avoid_: Duplicate Candidate, identity merge, automatic cleanup
 
 **Stale Duplicate Relationship**:
@@ -93,7 +93,7 @@ The current state of a Duplicate Relationship after either related Captured Tab 
 _Avoid_: Active duplicate, automatic retraction
 
 **Canonical Note**:
-The selected root representative of Captured Tab Notes connected by current, non-stale accepted Duplicate Relationships. It remains an ordinary Captured Tab Note and does not absorb the identities, histories, or provenance of related notes.
+The root representative of a Captured Tab Note under current, non-stale accepted Duplicate Relationships. A note with no such outgoing relationship is its own Canonical Note; otherwise, following its sole current outgoing chain determines the Canonical Note. It remains an ordinary Captured Tab Note and does not absorb the identities, histories, or provenance of related notes.
 _Avoid_: Merged note, source of shared identity
 
 **Annotation Stream**:
