@@ -8,7 +8,7 @@ Status: research asset for [Choose evidence and abstention behavior for Placemen
 
 Which evidence, retrieval/ranking, uncertainty, reject, and ledger rules should Placement Evaluation use for Captured Tab Notes?
 
-Use a two-stage selective classifier. Retrieve a high-recall union of existing Active categories from transparent lexical and semantic channels, explicit user rules, accepted exemplars, and validated Intelligence Proposals; then rank that bounded set with a versioned, inspectable fit model. Keep raw fit, calibrated probability of correctness, ambiguity, and novelty as different measurements. Automatic initial placement is default-off and requires a scoped Placement Automation Grant plus demonstrated risk/coverage performance for the exact evaluator. Otherwise record one reasoned Unresolved Placement. Every evaluation writes immutable, non-authoritative evidence and candidate artifacts; only a separate authorized `PlacementAccepted` event creates accepted semantic truth.
+Use a two-stage selective classifier. Retrieve a high-recall union of existing Active categories from transparent lexical and semantic channels, explicit user rules, accepted exemplars, and validated Intelligence Proposals; then rank that bounded set with a versioned, inspectable fit model. Keep raw fit, calibrated probability of correctness, ambiguity, and novelty as different measurements. Automatic initial placement is default-off and requires an explicit, scoped placement-automation permission plus demonstrated risk/coverage performance for the exact evaluator. Otherwise record one reasoned Unresolved Placement. Every evaluation writes immutable, non-authoritative evidence and candidate artifacts; only a separate authorized `PlacementAccepted` event creates accepted semantic truth.
 
 ## Fixed project boundaries
 
@@ -17,7 +17,7 @@ This recommendation preserves prior Wayfinder decisions:
 - Every Captured Tab Note has exactly one current Placement Outcome: one accepted Primary Category or one Unresolved Placement. A Placement Candidate Set is immutable, non-authoritative, and bound to an Observed Note Version, Taxonomy Revision, evaluator contract, and Processing Policy. The unresolved reasons and precedence are fixed by [Specify Category Tree, facets, and Unresolved Placement semantics](https://github.com/jidankim/mdplace/issues/9#issuecomment-5145840118).
 - Capture intake hashes and metadata establish capture-version provenance, not placement truth. Invalid intake artifacts cannot be evaluated. See [Prototype the Captured Tab Note and Web Clipper contract](https://github.com/jidankim/mdplace/issues/12#issuecomment-5124738198).
 - Intelligence Adapters return schema-validated proposals with explicitly uncalibrated scores. They cannot accept placement or create canonical Unresolved Placement. See [Define Processing Policy and Intelligence Adapter contracts](https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093).
-- Canonical semantic history is append-only and repo-replayable. Evidence, hypotheses, review, accepted placement, and Folder Projection remain separate. Evidence is content-version-bound; stale evidence cannot be sole support. See [semantic truth persistence](../docs/mdplace-semantic-truth-persistence-v1.md) and [evidence/abstention additions](../docs/mdplace-additions-v1.md).
+- Canonical semantic history is append-only and repo-replayable. Evidence, hypotheses, review, accepted placement, and Folder Projection remain separate. Evidence is content-version-bound; stale evidence cannot be sole support. See the accepted [Captured Tab Note semantic-ledger reconciliation](https://github.com/jidankim/mdplace/issues/2#issuecomment-5012541174).
 - Inbox or current folder location is workflow state, never a semantic prior. Automatic replacement or reinterpretation of an already accepted placement remains human-gated under [Define Policy-Governed Taxonomy authority and change safety](https://github.com/jidankim/mdplace/issues/3#issuecomment-5111658070).
 
 ## Primary evidence and its limits
@@ -99,7 +99,7 @@ All thresholds live in a versioned Placement Policy and come from the vault's va
 
 ### 4. Automatic initial placement
 
-Automatic acceptance is disabled by default. A Placement Automation Grant may enable only initial placement of a currently Unresolved note into an existing Active category. It binds allowed scope, exact evaluator/calibrator, Processing and Placement Policies, target selective risk/confidence level, minimum overall/per-category calibration support, acceptance/ambiguity/novelty thresholds, validation-corpus digest/window, drift checks, and a circuit breaker.
+Automatic acceptance is disabled by default. An explicit placement-automation permission may enable only initial placement of a currently Unresolved note into an existing Active category. It binds allowed scope, exact evaluator/calibrator, Processing and Placement Policies, target selective risk/confidence level, minimum overall/per-category calibration support, acceptance/ambiguity/novelty thresholds, validation-corpus digest/window, drift checks, and a circuit breaker. This is a proposed placement-specific Processing Policy permission, not the taxonomy-specific `Automation Grant` already defined for Automatic Promotion; [the final-spec ticket](https://github.com/jidankim/mdplace/issues/10) owns its exact registered name and schema.
 
 Automatic acceptance requires all gates:
 
@@ -129,30 +129,36 @@ If any gate fails, no accepted event is appended. A human may still accept an Ac
 
 Append three non-authoritative records and, only when authorized, one separate authoritative decision.
 
+The fields below state the information and relationships the final contract must preserve. Angle-bracketed values are non-normative placeholders, not allocated identifier namespaces, formats, thresholds, or defaults. `file:<ULID>` is the sole exception because Captured Tab Note Identity already uses that established namespace. Exact event names, schemas, and any additional identity allocation belong to [the final-spec ticket](https://github.com/jidankim/mdplace/issues/10).
+
 #### `PlacementEvidenceRecorded`
 
 Required fields:
 
 ```yaml
-evidence_id: ev:...
-file_id: file:...
-observed_note_version_id: notev:...
-content_manifest_hash: sha256:...
-taxonomy_revision: taxrev:...
-category_profile_hash: sha256:...
+evidence_id: "<opaque evidence identity>"
+file_id: "file:<ULID>"
+observed_note_version_id: "<opaque observed-version identity>"
+content_manifest_hash: "sha256:..."
+taxonomy_revision: "<monotonic accepted revision>"
+category_profile_hash: "sha256:..."
 signal_family: lexical_profile_match
-method_id: extractor:lexical-v1
-target_category_id: cat:...
-polarity: supports | contradicts | neutral
-raw_value: 0.73
+method_id: "<versioned method identity>"
+target_category_id: "<opaque Category Identity>"
+polarity: "supports | contradicts | neutral"
+raw_value: "<method-specific value>"
 value_scale: method_specific
-source_locator: {stream_id: article, start: 120, end: 173, segment_hash: sha256:...}
-source_entity_ids: [notev:..., catprofile:...]
-generated_by_activity_id: evalrun:...
-generated_by_agent_id: evaluator:...
-processing_policy_id: processing-policy:...
+source_locator:
+  stream_id: article
+  start: "<normalized start offset>"
+  end: "<normalized end offset>"
+  segment_hash: "sha256:..."
+source_entity_ids: ["<opaque source identities>"]
+generated_by_activity_id: "<opaque evaluator-run identity>"
+generated_by_agent_id: "<opaque evaluator identity>"
+processing_policy_id: "<opaque Processing Policy identity>"
 adapter_run_receipt_id: null
-created_at: 2026-08-02T00:00:00Z
+created_at: "<timestamp>"
 binding_status_at_creation: current
 ```
 
@@ -161,31 +167,42 @@ binding_status_at_creation: current
 Required fields:
 
 ```yaml
-candidate_set_id: candidates:...
-file_id: file:...
-observed_note_version_id: notev:...
-content_manifest_hash: sha256:...
-taxonomy_revision: taxrev:...
-evaluator_contract_id: placement-evaluator:v1
-evaluator_config_hash: sha256:...
-category_profile_set_hash: sha256:...
-processing_policy_id: processing-policy:...
-placement_policy_id: placement-policy:...
-retrieval_channels: [{method_id: lexical:..., cutoff: 20, result_hash: sha256:...}]
-fusion_method_id: fusion:...
-ranker_method_id: ranker:...
-calibrator_method_id: calibrator:... | null
-calibration_sample_hash: sha256:... | null
+candidate_set_id: "<opaque candidate-set identity>"
+file_id: "file:<ULID>"
+observed_note_version_id: "<opaque observed-version identity>"
+content_manifest_hash: "sha256:..."
+taxonomy_revision: "<monotonic accepted revision>"
+evaluator_contract_id: "<versioned evaluator contract identity>"
+evaluator_config_hash: "sha256:..."
+category_profile_set_hash: "sha256:..."
+processing_policy_id: "<opaque Processing Policy identity>"
+placement_policy_id: "<opaque Placement Policy identity>"
+retrieval_channels:
+  - method_id: "<versioned method identity>"
+    cutoff: "<policy-selected K>"
+    result_hash: "sha256:..."
+fusion_method_id: "<versioned fusion-method identity>"
+ranker_method_id: "<versioned ranker identity>"
+calibrator_method_id: null
+calibration_sample_hash: null
 candidates:
-  - {rank: 1, category_id: cat:..., fit_score: 2.41, calibrated_correctness: 0.94, evidence_ids: [ev:...]}
-top_two_margin: 0.18
+  - rank: 1
+    category_id: "<opaque Category Identity>"
+    fit_score: "<native ranker score>"
+    calibrated_correctness: null
+    evidence_ids: ["<opaque evidence identities>"]
+top_two_margin: "<value on the named scale>"
 margin_scale: calibrated_correctness
-prediction_set: [cat:...]
-novelty: {method_id: novelty:..., score: 0.12, threshold: 0.65, disposition: in_distribution}
+prediction_set: ["<opaque Category Identities>"]
+novelty:
+  method_id: "<versioned novelty-method identity>"
+  score: "<method-specific value>"
+  threshold: "<policy-selected operating point>"
+  disposition: in_distribution
 normalized_entropy: null
 warnings: []
-started_at: 2026-08-02T00:00:00Z
-completed_at: 2026-08-02T00:00:01Z
+started_at: "<timestamp>"
+completed_at: "<timestamp>"
 ```
 
 The set is immutable. Any bound-input change marks it stale; reevaluation appends a new set.
@@ -195,26 +212,29 @@ The set is immutable. Any bound-input change marks it stale; reevaluation append
 Required fields:
 
 ```yaml
-evaluation_id: evaluation:...
-candidate_set_id: candidates:...
-outcome: acceptance_eligible | unresolved
-canonical_unresolved_reason: null | insufficient_evidence | ambiguous_candidates | conflicting_evidence | no_fitting_category
-reason_code: policy:...
+evaluation_id: "<opaque evaluation identity>"
+candidate_set_id: "<opaque candidate-set identity>"
+recommendation: abstain
+resulting_placement_outcome: unresolved
+canonical_unresolved_reason: insufficient_evidence
+reason_code: "<versioned policy reason>"
 thresholds_applied: {acceptance: policy-bound, ambiguity_margin: policy-bound, novelty: policy-bound}
-gate_results: {freshness: pass, evidence: pass, selective_risk: pass, ambiguity: pass, novelty: pass, automation_grant: fail}
+gate_results: {freshness: pass, evidence: pass, selective_risk: pass, ambiguity: pass, novelty: pass, placement_automation_permission: fail}
 missing_evidence: []
 review_action: present_top_candidates
-placement_policy_id: placement-policy:...
-automation_grant_id: null
+placement_policy_id: "<opaque Placement Policy identity>"
+placement_automation_permission_id: null
 ```
 
-`acceptance_eligible` means evidence gates passed, not that a placement exists.
+An evaluation may identify a strong candidate without having authority to accept it. If the same semantic transaction does not append an authorized `PlacementAccepted`, the completed evaluation must produce an Unresolved Placement and a non-null canonical reason. In the illustrated permission-failure case, `Insufficient Evidence` applies as the already-defined default policy diagnostic unless a higher-precedence semantic reason applies.
 
 #### Authoritative decision
 
 `PlacementAccepted` references the chosen category, candidate set, evidence IDs, actor, authorization, and override rationale. It does not copy model output into an asserted fact. Human rejection, defer, or no-fit confirmation is a separate immutable Review Decision. Accepted events are superseded or retracted by later events, never edited.
 
-### 7. Validation before an Automation Grant
+The Markdown/CLI interaction for inspecting these records and accepting, overriding, or deferring a placement belongs to [Design Inbox review and correction without an Obsidian plugin](https://github.com/jidankim/mdplace/issues/13), not this research asset.
+
+### 7. Validation before placement automation
 
 The validation corpus must cover clear, ambiguous, conflicting, insufficient, and genuinely no-fit notes; content/source/language/category-depth cohorts; extraction failures and hostile title/body mismatches; duplicates/exemplar leakage; taxonomy/profile drift; and adapter denial/malformed/uncalibrated output.
 
@@ -229,12 +249,12 @@ Report at minimum:
 - unresolved-reason confusion matrix; and
 - human override/correction rates plus drift results.
 
-Do not enable a grant until the exact evaluator, calibrator, profile set, corpus, and taxonomy range meet its target risk. Disable it when validation expires, drift invalidates calibration, or the observed correction circuit breaker fires. The validation Wayfinder ticket should select numeric thresholds; no paper or marketplace provides universal values for mdplace.
+Do not enable placement automation until the exact evaluator, calibrator, profile set, corpus, and taxonomy range meet its target risk. Disable it when validation expires, drift invalidates calibration, or the observed correction circuit breaker fires. [Define validation corpus, success criteria, and final spec handoff](https://github.com/jidankim/mdplace/issues/10) must select numeric thresholds and specify the final contract; no paper or marketplace provides universal values for mdplace.
 
 ## Resolution-comment-ready contract
 
 Placement Evaluation uses versioned evidence from article title/headings/body, category profiles, accepted exemplars, explicit user rules, source metadata, relationships, content quality, and validated Intelligence Proposals. It retrieves a high-recall lexical/semantic union and ranks it with an inspectable fit model. Raw fit, calibrated correctness, top-two ambiguity, optional conformal set, and novelty remain separate. Low confidence means insufficient evidence unless an independently validated novelty gate plus lack of known-category fit establishes No Fitting Category.
 
-Automatic initial placement into an existing Active category is default-off and available only under a scoped Placement Automation Grant after the exact evaluator meets a declared selective-risk target. It requires fresh positive evidence, calibrated correctness, adequate margin or singleton prediction set, an in-distribution novelty result, no blocking conflict/diagnostic, and current policy/grant bindings. It never auto-changes an accepted placement.
+Automatic initial placement into an existing Active category is default-off and available only under an explicit, scoped placement-automation permission after the exact evaluator meets a declared selective-risk target. It requires fresh positive evidence, calibrated correctness, adequate margin or singleton prediction set, an in-distribution novelty result, no blocking conflict/diagnostic, and current policy/permission bindings. It never auto-changes an accepted placement.
 
 Every run appends version-bound Evidence, an immutable ranked Candidate Set, and a completed Evaluation record with thresholds and gate results. These remain non-authoritative. Only a separate authorized `PlacementAccepted` event creates accepted semantic truth; otherwise the evaluator creates the already-defined reasoned Unresolved Placement. Marketplace sources justify staged, reviewable suggestions only. The abstention, calibration, novelty, automation, and ledger rules are mdplace's independently justified design.
