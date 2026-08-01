@@ -50,7 +50,7 @@ Everything below is mdplace design. The cited sources motivate individual mechan
 
 ### 1. Explainable signals
 
-Each signal is an immutable observation or derivation bound to the exact Observed Note Version, Taxonomy Revision, category-profile hash, and evaluator run. It has a declared numeric scale, polarity, method/version, source locator, and applicable target category. It never asserts truth.
+Each signal is an immutable observation or derivation bound to the exact Observed Note Version, Taxonomy Revision, category-profile hash, and evaluator run. It has a declared numeric scale, polarity, method/version, signal-family-specific provenance, and applicable target category. It never asserts truth.
 
 | Signal | Required provenance and role |
 | --- | --- |
@@ -64,7 +64,7 @@ Each signal is an immutable observation or derivation bound to the exact Observe
 | `intelligence_proposal` | Treat a validated adapter proposal as derived, uncalibrated evidence. Preserve envelope segment references, proposal/artifact hashes, and Adapter Run Receipt. Never copy its score into calibrated confidence. |
 | `content_quality` | Record extraction completeness, usable text, language support, boilerplate/truncation, and parser warnings as eligibility/missing-evidence diagnostics, not category support. |
 
-Signal locators use stream ID, normalized offsets, and a segment hash. The semantic ledger stores a short policy-safe preview only when needed for UI, not whole page content, embeddings, or raw provider responses. A bound-input change makes the signal stale unless its schema explicitly proves reusability.
+Content-segment locators use stream ID, normalized offsets, and a segment hash. Other signal families preserve their appropriate rule, metadata-field, entity/decision, relationship, diagnostic, model-artifact, or adapter-receipt references instead of fabricating article offsets. The semantic ledger stores a short policy-safe preview only when needed for UI, not whole page content, embeddings, or raw provider responses. A bound-input change makes the signal stale unless its schema explicitly proves reusability.
 
 ### 2. Candidate retrieval and ranking
 
@@ -107,7 +107,7 @@ Automatic acceptance requires all gates:
 2. top candidate is Active, non-root, and within the placement-automation permission's scope;
 3. current positive evidence exists and no blocking contradiction exists;
 4. calibrated correctness and the confidence-bounded selective risk at its threshold meet the placement-automation permission;
-5. top-two margin passes and, when enabled, the conformal set is exactly the top candidate;
+5. when at least two candidates exist, top-two margin passes; with fewer candidates, margin status is explicitly not applicable; and, when enabled, the conformal set is exactly the top candidate;
 6. novelty result is in-distribution;
 7. no extraction, language, policy, adapter, stale-evidence, or redaction diagnostic configured as blocking exists; and
 8. no already accepted placement would be replaced, retracted, or reinterpreted.
@@ -129,15 +129,15 @@ Placement Evaluation that can change the current outcome is scoped to notes whos
 
 ### 6. Ledger contract
 
-Append three non-authoritative records and, only when authorized, one separate authoritative decision.
+For a current Placement Evaluation of an Unresolved note, append the three non-authoritative records below and, only when authorized, one separate authoritative decision. Advisory analysis of a note with an accepted Primary Category appends only explicitly advisory, non-current Evidence and Candidate Set records; it omits a current `PlacementEvaluationCompleted` and does not append an authoritative decision unless a separate human-gated placement command is performed.
 
-Package their ordered, typed events in the adopted immutable OperationCommit envelope with schema/version, command-specific base references, an idempotency key, actor provenance, and JCS/SHA-256 fixity. Replay fails closed on unknown events, invalid schemas or hashes, stale bases, incompatible versions, and non-commuting conflicts. The operation atomically leaves exactly one current Placement Outcome: it either appends an authorized `PlacementAccepted` transition or records the applicable Unresolved Placement; it never exposes a half-applied state.
+Package each applicable record set as ordered, typed events in the adopted immutable OperationCommit envelope with schema/version, command-specific base references, an idempotency key, actor provenance, and JCS/SHA-256 fixity. Replay fails closed on unknown events, invalid schemas or hashes, stale bases, incompatible versions, and non-commuting conflicts. A current evaluation operation atomically leaves exactly one current Placement Outcome: it either appends an authorized `PlacementAccepted` transition or records the applicable Unresolved Placement; it never exposes a half-applied state. An advisory operation uses the same fixity and replay rules while leaving the accepted Placement Outcome unchanged.
 
 The fields below state the information and relationships the final contract must preserve. Angle-bracketed values are non-normative placeholders, not allocated identifier namespaces, formats, thresholds, or defaults. `file:<ULID>` is the sole exception because Captured Tab Note Identity already uses that established namespace. Exact event names, schemas, and any additional identity allocation belong to [the final-spec ticket](https://github.com/jidankim/mdplace/issues/10).
 
 #### `PlacementEvidenceRecorded`
 
-Required fields:
+Required common fields plus a provenance variant discriminated by `signal_family`:
 
 ```yaml
 evidence_id: "<opaque evidence identity>"
@@ -152,19 +152,37 @@ target_category_id: "<opaque Category Identity>"
 polarity: "supports | contradicts | neutral"
 raw_value: "<method-specific value>"
 value_scale: method_specific
-source_locator:
-  stream_id: article
-  start: "<normalized start offset>"
-  end: "<normalized end offset>"
-  segment_hash: "sha256:..."
-source_entity_ids: ["<opaque source identities>"]
+provenance:
+  kind: content_segment
+  source_locator:
+    stream_id: article
+    start: "<normalized start offset>"
+    end: "<normalized end offset>"
+    segment_hash: "sha256:..."
+  source_entity_ids: ["<opaque source identities>"]
+  adapter_run_receipt_id: null
 generated_by_activity_id: "<opaque evaluator-run identity>"
 generated_by_agent_id: "<opaque evaluator identity>"
 processing_policy_id: "<opaque Processing Policy identity>"
-adapter_run_receipt_id: null
 created_at: "<timestamp>"
 binding_status_at_creation: current
 ```
+
+The provenance union rejects a `signal_family`/variant mismatch and preserves only references meaningful to that family:
+
+| `signal_family` | Provenance variant and required references |
+| --- | --- |
+| `lexical_profile_match` | `content_segment`: article stream locator, matched note/profile fields, and segment/profile hashes. |
+| `semantic_profile_match` | `semantic_artifacts`: note-field manifest plus embedding-model, embedding-artifact, distance-method, and category-profile references; article offsets are not required. |
+| `accepted_exemplar_similarity` | `exemplar_decision`: exemplar file/version and accepted-decision identities plus duplicate-influence controls. |
+| `explicit_user_rule` | `rule_match`: immutable rule identity/version/hash, scope, matched predicate fields, actor/authorization provenance, and match result. |
+| `source_metadata_prior` | `metadata_fields`: allowlisted metadata field names and value hashes plus sanitizer/Processing Policy bindings. |
+| `annotation_signal` | `annotation_segment`: Annotation Stream locator and artifact hash, never an invented article locator. |
+| `relationship_neighborhood` | `relationship_records`: relationship identities, endpoint identities/versions, and accepted-decision references. |
+| `content_quality` | `diagnostic`: extraction/parser/language diagnostic identity, affected field or artifact, and reason code. |
+| `intelligence_proposal` | `adapter_proposal`: envelope segment, proposal/artifact hashes, and a non-null Adapter Run Receipt identity. |
+
+`adapter_run_receipt_id` is required and non-null only for `intelligence_proposal`; it is nullable or omitted in every other provenance variant.
 
 #### `PlacementCandidateSetRecorded`
 
@@ -209,6 +227,7 @@ candidates:
     evidence_ids: ["<opaque evidence identities>"]
 top_two_margin: "<value on the named scale>"
 margin_scale: native_ranker_score
+margin_status: available
 conformal:
   method_id: null
   prediction_set: []
@@ -224,13 +243,14 @@ novelty:
   score: "<method-specific value>"
   threshold: "<policy-selected operating point>"
   disposition: in_distribution
+  reason: null
 normalized_entropy: null
 warnings: []
 started_at: "<timestamp>"
 completed_at: "<timestamp>"
 ```
 
-The set is immutable. Each retrieval result preserves its channel-specific rank, raw score and scale, and input-field set. Calibration, conformal, and novelty fields either bind the complete required provenance directly or reference immutable artifacts that contain it. Any bound-input change marks the set stale; reevaluation appends a new set.
+The set is immutable. Each retrieval result preserves its channel-specific rank, raw score and scale, and input-field set. Calibration, conformal, and novelty fields either bind the complete required provenance directly or reference immutable artifacts that contain it. With fewer than two candidates, `margin_status` is `not_applicable` and both `top_two_margin` and `margin_scale` are `null`; the margin-based ambiguity branch is skipped while the remaining evidence, confidence, novelty, and safety gates still apply. With at least two candidates, `margin_status` is `available` and both margin fields are required. Novelty `disposition` is `in_distribution`, `out_of_distribution`, `not_run`, or `indeterminate`: evaluated dispositions require method, corpus, metrics artifact, score, and threshold; `not_run` and `indeterminate` require a reason and permit those fields to be `null`. Automatic acceptance requires `in_distribution`, so every other disposition fails its novelty gate. Any bound-input change marks the set stale; reevaluation appends a new set.
 
 #### `PlacementEvaluationCompleted`
 
@@ -244,7 +264,16 @@ resulting_placement_outcome: unresolved
 canonical_unresolved_reason: insufficient_evidence
 reason_code: "<versioned policy reason>"
 thresholds_applied: {acceptance: policy-bound, ambiguity_margin: policy-bound, novelty: policy-bound}
-gate_results: {freshness: pass, evidence: pass, selective_risk: pass, ambiguity: pass, novelty: pass, placement_automation_permission: fail}
+gate_results:
+  gate_set_contract_id: "<versioned mapping to automatic-acceptance gates 1-8>"
+  bindings_current: {gate: 1, result: fail, reason: placement_automation_permission_absent}
+  target_active_non_root_and_in_scope: {gate: 2, result: pass}
+  positive_evidence_and_no_blocking_contradiction: {gate: 3, result: pass}
+  calibrated_correctness_and_selective_risk: {gate: 4, result: pass}
+  ambiguity: {gate: 5, result: pass}
+  novelty: {gate: 6, result: pass}
+  no_blocking_diagnostics: {gate: 7, result: pass}
+  no_accepted_placement_replacement: {gate: 8, result: pass}
 missing_evidence: []
 review_action: present_top_candidates
 placement_policy_id: "<opaque Placement Policy identity>"
@@ -278,7 +307,7 @@ Do not enable placement automation until the exact evaluator, calibrator, profil
 
 ## Resolution-comment-ready contract
 
-Placement Evaluation uses versioned evidence from article title/headings/body, category profiles, accepted exemplars, explicit user rules, source metadata, relationships, content quality, and validated Intelligence Proposals. It retrieves a high-recall lexical/semantic union and ranks it with an inspectable fit model. Raw fit, calibrated correctness, top-two ambiguity, optional conformal set, and novelty remain separate. Low confidence means insufficient evidence unless an independently validated novelty gate plus lack of known-category fit establishes No Fitting Category.
+Placement Evaluation uses versioned evidence from article title/headings/body, category profiles, accepted exemplars, explicit user rules, source metadata, relationships, content quality, and validated Intelligence Proposals. It retrieves a high-recall lexical/semantic union and ranks it with an inspectable fit model. Raw fit, calibrated correctness, top-two ambiguity, optional conformal set, and novelty remain separate. After honoring `User Deferred`, resolve `Conflicting Evidence`, then an independently validated novelty gate plus lack of known-category fit as `No Fitting Category`, then `Ambiguous Candidates`; only when none applies does remaining low confidence or evidence map to `Insufficient Evidence`.
 
 Automatic initial placement into an existing Active category is default-off and available only under an explicit, scoped placement-automation permission after the exact evaluator meets a declared selective-risk target. It requires fresh positive evidence, calibrated correctness, adequate margin or singleton prediction set, an in-distribution novelty result, no blocking conflict/diagnostic, and current policy/permission bindings. It never auto-changes an accepted placement.
 
