@@ -103,16 +103,18 @@ Automatic acceptance is disabled by default. An explicit placement-automation pe
 
 Automatic acceptance requires all gates:
 
-1. note, taxonomy, profiles, evidence, candidate set, evaluator, calibrator, policies, and grant are current;
-2. top candidate is Active, non-root, and within grant scope;
+1. note, taxonomy, profiles, evidence, candidate set, evaluator, calibrator, policies, and placement-automation permission are current;
+2. top candidate is Active, non-root, and within the placement-automation permission's scope;
 3. current positive evidence exists and no blocking contradiction exists;
-4. calibrated correctness and the confidence-bounded selective risk at its threshold meet the grant;
+4. calibrated correctness and the confidence-bounded selective risk at its threshold meet the placement-automation permission;
 5. top-two margin passes and, when enabled, the conformal set is exactly the top candidate;
 6. novelty result is in-distribution;
 7. no extraction, language, policy, adapter, stale-evidence, or redaction diagnostic configured as blocking exists; and
 8. no already accepted placement would be replaced, retracted, or reinterpreted.
 
 If any gate fails, no accepted event is appended. A human may still accept an Active category through a separate review decision that records the actor, snapshot, and override rationale.
+
+Placement Evaluation that can change the current outcome is scoped to notes whose current outcome is Unresolved. Analysis against a note that already has an accepted Primary Category is advisory drift evidence only: it may append explicitly advisory, non-current evidence and candidate artifacts, but it does not append a current `PlacementEvaluationCompleted`, create an Unresolved Placement, or alter the accepted outcome. Only a separate human-gated placement decision may supersede or retract that accepted placement.
 
 ### 5. Exact unresolved rules
 
@@ -128,6 +130,8 @@ If any gate fails, no accepted event is appended. A human may still accept an Ac
 ### 6. Ledger contract
 
 Append three non-authoritative records and, only when authorized, one separate authoritative decision.
+
+Package their ordered, typed events in the adopted immutable OperationCommit envelope with schema/version, command-specific base references, an idempotency key, actor provenance, and JCS/SHA-256 fixity. Replay fails closed on unknown events, invalid schemas or hashes, stale bases, incompatible versions, and non-commuting conflicts. The operation atomically leaves exactly one current Placement Outcome: it either appends an authorized `PlacementAccepted` transition or records the applicable Unresolved Placement; it never exposes a half-applied state.
 
 The fields below state the information and relationships the final contract must preserve. Angle-bracketed values are non-normative placeholders, not allocated identifier namespaces, formats, thresholds, or defaults. `file:<ULID>` is the sole exception because Captured Tab Note Identity already uses that established namespace. Exact event names, schemas, and any additional identity allocation belong to [the final-spec ticket](https://github.com/jidankim/mdplace/issues/10).
 
@@ -180,11 +184,23 @@ placement_policy_id: "<opaque Placement Policy identity>"
 retrieval_channels:
   - method_id: "<versioned method identity>"
     cutoff: "<policy-selected K>"
+    input_fields: ["<note/profile fields used by this channel>"]
     result_hash: "sha256:..."
+    results:
+      - category_id: "<opaque Category Identity>"
+        channel_rank: "<positive integer>"
+        raw_score: "<method-specific raw score>"
+        raw_score_scale: "<declared channel scale>"
 fusion_method_id: "<versioned fusion-method identity>"
 ranker_method_id: "<versioned ranker identity>"
-calibrator_method_id: null
-calibration_sample_hash: null
+calibration:
+  method_id: null
+  artifact_hash: null
+  cohort_id: null
+  cohort_definition_hash: null
+  sample_count: null
+  window: null
+  reliability_metrics_artifact_hash: null
 candidates:
   - rank: 1
     category_id: "<opaque Category Identity>"
@@ -192,10 +208,19 @@ candidates:
     calibrated_correctness: null
     evidence_ids: ["<opaque evidence identities>"]
 top_two_margin: "<value on the named scale>"
-margin_scale: calibrated_correctness
-prediction_set: ["<opaque Category Identities>"]
+margin_scale: native_ranker_score
+conformal:
+  method_id: null
+  prediction_set: []
+  calibration_sample_hash: null
+  calibration_sample_count: null
+  nominal_coverage: null
+  exchangeability_status: not_enabled
+  drift_status: not_applicable
 novelty:
   method_id: "<versioned novelty-method identity>"
+  reference_corpus_hash: "sha256:..."
+  validation_metrics_artifact_hash: "sha256:..."
   score: "<method-specific value>"
   threshold: "<policy-selected operating point>"
   disposition: in_distribution
@@ -205,7 +230,7 @@ started_at: "<timestamp>"
 completed_at: "<timestamp>"
 ```
 
-The set is immutable. Any bound-input change marks it stale; reevaluation appends a new set.
+The set is immutable. Each retrieval result preserves its channel-specific rank, raw score and scale, and input-field set. Calibration, conformal, and novelty fields either bind the complete required provenance directly or reference immutable artifacts that contain it. Any bound-input change marks the set stale; reevaluation appends a new set.
 
 #### `PlacementEvaluationCompleted`
 
@@ -226,7 +251,7 @@ placement_policy_id: "<opaque Placement Policy identity>"
 placement_automation_permission_id: null
 ```
 
-An evaluation may identify a strong candidate without having authority to accept it. If the same semantic transaction does not append an authorized `PlacementAccepted`, the completed evaluation must produce an Unresolved Placement and a non-null canonical reason. In the illustrated permission-failure case, `Insufficient Evidence` applies as the already-defined default policy diagnostic unless a higher-precedence semantic reason applies.
+An evaluation may identify a strong candidate without having authority to accept it. For a note whose current outcome is Unresolved, if the same semantic transaction does not append an authorized `PlacementAccepted`, the completed evaluation must preserve an Unresolved Placement and a non-null canonical reason. In the illustrated permission-failure case, `Insufficient Evidence` applies as the already-defined default policy diagnostic unless a higher-precedence semantic reason applies. Advisory analysis of an already accepted note follows the earlier no-current-evaluation rule and leaves that accepted outcome unchanged.
 
 #### Authoritative decision
 
