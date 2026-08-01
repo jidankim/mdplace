@@ -25,7 +25,7 @@ mdplace separates three authorities:
 - Versioned accepted semantic decisions are the source of placement truth; evidence supports those decisions but cannot establish semantic truth on its own.
 - Folder paths and managed frontmatter are reversible projections for navigation and interoperability.
 
-The **Category Tree** is a strict primary hierarchy: each non-root category has one parent, and a Captured Tab Note has at most one accepted primary category. Tags, projects, workflow status, collections, and relationships are separate secondary facets.
+The **Category Tree** is a strict primary hierarchy: each non-root category has one parent, and every Captured Tab Note has exactly one current **Placement Outcome**, either an accepted **Primary Category** or an **Unresolved Placement**. The closed v1 **Secondary Facet** kinds are Topic, Project, and Collection; Markdown tags remain user-owned content, workflow state remains operational, and relationships remain separate assertions.
 
 A note that cannot be placed safely remains in the **Inbox** with an **Unresolved Placement** and a reason such as insufficient, ambiguous, or conflicting evidence. `Unknown`, `Miscellaneous`, and `Uncategorized` are workflow labels, never semantic categories.
 
@@ -35,7 +35,7 @@ Placement Evaluation decides whether one note can be placed in the current Categ
 
 All processing is local by default. A **Processing Policy** must explicitly permit any remote Intelligence Adapter, including its provider, purpose, and exact fields transmitted. A locally authenticated Codex installation may be explored as an optional Intelligence Adapter, but it cannot become semantic authority or act outside that policy.
 
-Taxonomy changes remain versioned, explainable, reviewable, and reversible. High-impact or destructive changes require stronger policy gates.
+Taxonomy changes remain versioned, explainable, reviewable, and reversible. Category deletion is invalid in v1; other high-impact or destructive changes require stronger policy gates.
 
 ## Read next
 
