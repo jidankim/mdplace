@@ -36,8 +36,10 @@ Accepted with the user on 2026-08-02:
 - An ambiguous parent, collision, stale evidence, rejected-evidence cooldown,
   circuit breaker, or missing grant makes the proposal review-only.
 - A pending proposal must be approved, rejected, or promoted before another
-  cycle can advance. An Active leaf is not rediscovered as a new proposal, and
-  an automatically promoted leaf remains available for explicit correction.
+  cycle can advance or another proposal can replace it. Accepted state and its
+  correction observation are tracked separately from the current proposal, so
+  an Active leaf is not rediscovered and an automatically promoted leaf remains
+  available for explicit correction.
 - A collision-free alias may use the same narrow automatic path only when its
   target is already an accepted Active category. Rename, reparent, merge,
   split, and deprecate operations remain human-gated.
@@ -100,7 +102,10 @@ projected moves, and impact separate.
 After an automatic leaf promotion, press `x`.
 
 - The prototype records a human correction, appends a dependency-safe forward
-  reversal, and starts a 30-day rediscovery cooldown.
+  reversal or compensating Change Set, and starts a 30-day rediscovery
+  cooldown. A dependent accepted alias is retired by compensation; a pending
+  proposal must be disposed before the correction can advance. Corrections
+  outside the promotion observation window do not count against the grant.
 - Generated labels, proposal outputs, and automatically placed notes never feed
   the proposal's own evidence. Only reviewed placements may become positive
   exemplars.

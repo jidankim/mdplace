@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 initial_taxonomy_cycle_state() {
-  printf '%s\n' '0|0|none|disabled|disabled|0|0|none|none|no|no|5|3|clear|no|1|0|closed|0|Revision 0: stable non-placeable root only'
+  printf '%s\n' '0|0|none|disabled|disabled|0|0|none|none|no|no|5|3|clear|no|no|0|1|0|closed|0|Revision 0: stable non-placeable root only'
 }
 
 reduce_taxonomy_cycle_state() {
@@ -10,7 +10,17 @@ reduce_taxonomy_cycle_state() {
 
   IFS='|' read -r revision day bootstrap leaf_grant alias_grant cycle recurrence proposal \
     proposal_label auto_eligible human_gate unresolved_notes source_origins \
-    parent_fit leaf_active negative_evidence corrections circuit cooldown_until last_event <<< "$state"
+    parent_fit leaf_active alias_active leaf_observation_until negative_evidence corrections \
+    circuit cooldown_until last_event <<< "$state"
+
+  case "$proposal" in
+    bootstrap_seed|leaf_ready|leaf_review|alias_ready|alias_review|merge|split|reparent|deprecate)
+      proposal_pending=yes
+      ;;
+    *)
+      proposal_pending=no
+      ;;
+  esac
 
   case "$action" in
     b)
@@ -38,17 +48,21 @@ reduce_taxonomy_cycle_state() {
           ;;
         leaf_review)
           revision=$((revision + 1))
-          proposal=leaf_promoted_manual
+          proposal=none
+          proposal_label=none
           auto_eligible=no
           human_gate=no
           leaf_active=yes
+          leaf_observation_until=0
           last_event='NewLeafAcceptedByHuman: taxonomy changed; all supporting notes remain Unresolved'
           ;;
         alias_review)
           revision=$((revision + 1))
-          proposal=alias_promoted_manual
+          proposal=none
+          proposal_label=none
           auto_eligible=no
           human_gate=no
+          alias_active=yes
           last_event='AliasAcceptedByHuman: lookup vocabulary changed without rename or placement effect'
           ;;
         merge|split|reparent|deprecate)
@@ -72,6 +86,11 @@ reduce_taxonomy_cycle_state() {
         last_event='GrantBlocked: circuit breaker requires explicit reset outside this prototype'
       elif [ "$leaf_grant" = enabled ]; then
         leaf_grant=disabled
+        if [ "$proposal" = leaf_ready ]; then
+          proposal=leaf_review
+          auto_eligible=no
+          human_gate=yes
+        fi
         last_event='AutomationGrantRevoked: pending leaf proposals become review-only'
       else
         leaf_grant=enabled
@@ -83,6 +102,11 @@ reduce_taxonomy_cycle_state() {
         last_event='AliasGrantBlocked: an Automation Grant requires an accepted target scope'
       elif [ "$alias_grant" = enabled ]; then
         alias_grant=disabled
+        if [ "$proposal" = alias_ready ]; then
+          proposal=alias_review
+          auto_eligible=no
+          human_gate=yes
+        fi
         last_event='AliasAutomationGrantRevoked: pending alias proposals become review-only'
       else
         alias_grant=enabled
@@ -92,21 +116,20 @@ reduce_taxonomy_cycle_state() {
     c)
       if [ "$bootstrap" != accepted ]; then
         last_event='CycleBlocked: revision 0 has no human-approved seed taxonomy'
-      elif [[ "$proposal" = leaf_ready || "$proposal" = leaf_review || \
-        "$proposal" = alias_ready || "$proposal" = alias_review || \
-        "$proposal" = merge || "$proposal" = split || \
-        "$proposal" = reparent || "$proposal" = deprecate ]]; then
+      elif [ "$proposal_pending" = yes ]; then
         last_event='CycleBlocked: the current proposal requires disposition before another cycle'
       elif [ "$leaf_active" = yes ]; then
         cycle=$((cycle + 1))
         day=$((day + 7))
-        if [ "$proposal" = leaf_promoted_auto ]; then
+        proposal=none
+        proposal_label=none
+        auto_eligible=no
+        human_gate=no
+        if [ "$day" -lt "$leaf_observation_until" ]; then
           last_event='CycleCompleted: the Active leaf was not rediscovered and remains under observation'
+        elif [ "$leaf_observation_until" -gt 0 ]; then
+          last_event='CycleCompleted: the Active leaf was not rediscovered and remains correctable after observation'
         else
-          proposal=none
-          proposal_label=none
-          auto_eligible=no
-          human_gate=no
           last_event='CycleCompleted: the Active leaf was not proposed again'
         fi
       else
@@ -148,24 +171,32 @@ reduce_taxonomy_cycle_state() {
     p)
       if [ "$proposal" = leaf_ready ] && [ "$auto_eligible" = yes ] && [ "$leaf_grant" = enabled ] && [ "$circuit" = closed ]; then
         revision=$((revision + 1))
-        proposal=leaf_promoted_auto
+        proposal=none
+        proposal_label=none
         auto_eligible=no
         human_gate=no
         leaf_active=yes
+        leaf_observation_until=$((day + 30))
         last_event='NewLeafAutomaticallyPromoted: taxonomy changed; all five notes remain Unresolved'
       elif [ "$proposal" = alias_ready ] && [ "$auto_eligible" = yes ] && [ "$alias_grant" = enabled ]; then
         revision=$((revision + 1))
-        proposal=alias_promoted_auto
+        proposal=none
+        proposal_label=none
         auto_eligible=no
         human_gate=no
+        alias_active=yes
         last_event='AliasAutomaticallyPromoted: lookup vocabulary changed without rename or placement effect'
       else
         last_event='AutomaticPromotionBlocked: the proposal lacks its operation-type grant or eligibility gates'
       fi
       ;;
     l)
-      if [ "$leaf_active" != yes ]; then
+      if [ "$proposal_pending" = yes ]; then
+        last_event='AliasBlocked: the current proposal requires disposition before another proposal'
+      elif [ "$leaf_active" != yes ]; then
         last_event='AliasBlocked: Graph orchestration is not an accepted Active category'
+      elif [ "$alias_active" = yes ]; then
+        last_event='AliasBlocked: Graph ops is already an accepted alias'
       else
         proposal_label='Graph ops -> Graph orchestration'
         if [ "$alias_grant" = enabled ] && [ "$cycle" -ge 2 ]; then
@@ -203,6 +234,8 @@ reduce_taxonomy_cycle_state() {
     m)
       if [ "$bootstrap" != accepted ]; then
         last_event='MergeBlocked: no accepted categories exist at revision 0'
+      elif [ "$proposal_pending" = yes ]; then
+        last_event='MergeBlocked: the current proposal requires disposition before another proposal'
       else
         proposal=merge
         proposal_label='Knowledge systems + Graph systems'
@@ -214,6 +247,8 @@ reduce_taxonomy_cycle_state() {
     s)
       if [ "$bootstrap" != accepted ]; then
         last_event='SplitBlocked: no accepted categories exist at revision 0'
+      elif [ "$proposal_pending" = yes ]; then
+        last_event='SplitBlocked: the current proposal requires disposition before another proposal'
       else
         proposal='split'
         proposal_label='Split Research into Methods + Systems'
@@ -225,6 +260,8 @@ reduce_taxonomy_cycle_state() {
     r)
       if [ "$bootstrap" != accepted ]; then
         last_event='ReparentBlocked: no accepted categories exist at revision 0'
+      elif [ "$proposal_pending" = yes ]; then
+        last_event='ReparentBlocked: the current proposal requires disposition before another proposal'
       else
         proposal=reparent
         proposal_label='Move Graph systems under Research'
@@ -236,6 +273,8 @@ reduce_taxonomy_cycle_state() {
     d)
       if [ "$bootstrap" != accepted ]; then
         last_event='DeprecationBlocked: no accepted categories exist at revision 0'
+      elif [ "$proposal_pending" = yes ]; then
+        last_event='DeprecationBlocked: the current proposal requires disposition before another proposal'
       else
         proposal=deprecate
         proposal_label='Deprecate Legacy tooling'
@@ -248,7 +287,11 @@ reduce_taxonomy_cycle_state() {
       clear_proposal=no
       case "$proposal" in
         none)
-          last_event='RejectionIgnored: no proposal is selected'
+          if [ "$leaf_observation_until" -gt 0 ]; then
+            last_event='RejectionIgnored: accepted changes require correction or reversal'
+          else
+            last_event='RejectionIgnored: no proposal is selected'
+          fi
           ;;
         bootstrap_seed)
           bootstrap=none
@@ -273,9 +316,6 @@ reduce_taxonomy_cycle_state() {
           clear_proposal=yes
           last_event="StructuralProposalRejected: $rejected_operation recorded without changing leaf-discovery cooldown"
           ;;
-        leaf_promoted_auto|leaf_promoted_manual|alias_promoted_auto|alias_promoted_manual)
-          last_event='RejectionIgnored: accepted changes require correction or reversal'
-          ;;
         *)
           last_event='RejectionIgnored: selected state is not a pending proposal'
           ;;
@@ -288,19 +328,36 @@ reduce_taxonomy_cycle_state() {
       fi
       ;;
     x)
-      if [ "$proposal" = leaf_promoted_auto ]; then
+      if [ "$proposal_pending" = yes ]; then
+        last_event='CorrectionBlocked: the current proposal requires disposition; the accepted leaf remains correctable'
+      elif [ "$leaf_observation_until" -gt 0 ] && [ "$leaf_active" = yes ]; then
         negative_evidence=$((negative_evidence + 1))
-        corrections=$((corrections + 1))
+        correction_attributed=no
+        if [ "$day" -lt "$leaf_observation_until" ]; then
+          corrections=$((corrections + 1))
+          correction_attributed=yes
+        fi
         revision=$((revision + 1))
         proposal=none
         proposal_label=none
         recurrence=0
         leaf_active=no
+        leaf_observation_until=0
         cooldown_until=$((day + 30))
-        if [ "$corrections" -ge 2 ]; then
+        if [ "$correction_attributed" = yes ] && [ "$corrections" -ge 2 ]; then
           circuit=suspended
           leaf_grant=disabled
-          last_event='TaxonomyReversalAppended: second correction suspended the scoped new-leaf grant'
+          if [ "$alias_active" = yes ]; then
+            alias_active=no
+            last_event='CompensatingTaxonomyChangeAppended: alias dependency retired; second correction suspended the scoped new-leaf grant'
+          else
+            last_event='TaxonomyReversalAppended: second correction suspended the scoped new-leaf grant'
+          fi
+        elif [ "$alias_active" = yes ]; then
+          alias_active=no
+          last_event="CompensatingTaxonomyChangeAppended: the accepted alias dependency was retired; rediscovery cools down through day $cooldown_until"
+        elif [ "$correction_attributed" = no ]; then
+          last_event="TaxonomyReversalAppended: correction fell outside grant attribution; rediscovery cools down through day $cooldown_until"
         else
           last_event="TaxonomyReversalAppended: correction recorded; rediscovery cools down through day $cooldown_until"
         fi
@@ -317,9 +374,10 @@ reduce_taxonomy_cycle_state() {
       ;;
   esac
 
-  printf '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\n' \
+  printf '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\n' \
     "$revision" "$day" "$bootstrap" "$leaf_grant" "$alias_grant" "$cycle" "$recurrence" \
     "$proposal" "$proposal_label" "$auto_eligible" "$human_gate" \
     "$unresolved_notes" "$source_origins" "$parent_fit" "$leaf_active" \
-    "$negative_evidence" "$corrections" "$circuit" "$cooldown_until" "$last_event"
+    "$alias_active" "$leaf_observation_until" "$negative_evidence" "$corrections" \
+    "$circuit" "$cooldown_until" "$last_event"
 }

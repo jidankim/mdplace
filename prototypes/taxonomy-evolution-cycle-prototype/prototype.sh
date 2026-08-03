@@ -13,7 +13,18 @@ state=$(initial_taxonomy_cycle_state)
 render() {
   IFS='|' read -r revision day bootstrap leaf_grant alias_grant cycle recurrence proposal \
     proposal_label auto_eligible human_gate unresolved_notes source_origins \
-    parent_fit leaf_active negative_evidence corrections circuit cooldown_until last_event <<< "$state"
+    parent_fit leaf_active alias_active leaf_observation_until negative_evidence corrections \
+    circuit cooldown_until last_event <<< "$state"
+
+  if [ "$leaf_observation_until" -gt 0 ]; then
+    if [ "$day" -lt "$leaf_observation_until" ]; then
+      leaf_correction_status="available; grant attribution through day $leaf_observation_until"
+    else
+      leaf_correction_status="available; grant attribution expired on day $leaf_observation_until"
+    fi
+  else
+    leaf_correction_status=none
+  fi
 
   candidate_parent='not applicable'
   parent_alternative='not applicable'
@@ -86,7 +97,8 @@ render() {
   printf '  bootstrap:         %s\n' "$bootstrap"
   printf '  simulated day:     %s\n' "$day"
   printf '  cycle count:       %s\n\n' "$cycle"
-  printf '  Graph orchestration leaf active: %s\n\n' "$leaf_active"
+  printf '  Graph orchestration leaf active: %s\n' "$leaf_active"
+  printf '  Graph ops alias active:           %s\n\n' "$alias_active"
 
   printf '%bFrozen evidence snapshot%b\n' "$bold" "$reset"
   printf '  unresolved no-fit notes: %s\n' "$unresolved_notes"
@@ -113,7 +125,8 @@ render() {
   printf '  scoped new-leaf grant: %s\n' "$leaf_grant"
   printf '  scoped alias grant:    %s\n' "$alias_grant"
   printf '  leaf circuit breaker:  %s\n' "$circuit"
-  printf '  corrections:        %s\n' "$corrections"
+  printf '  leaf correction:    %s\n' "$leaf_correction_status"
+  printf '  attributed corrections: %s\n' "$corrections"
   printf '  cooldown until day: %s\n' "$cooldown_until"
   printf '  supporting notes:   %s remain Unresolved after taxonomy promotion\n\n' "$unresolved_notes"
 
