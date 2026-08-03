@@ -35,6 +35,9 @@ Accepted with the user on 2026-08-02:
   Grants. Suspending one grant never authorizes or suspends the other.
 - An ambiguous parent, collision, stale evidence, rejected-evidence cooldown,
   circuit breaker, or missing grant makes the proposal review-only.
+- A pending proposal must be approved, rejected, or promoted before another
+  cycle can advance. An Active leaf is not rediscovered as a new proposal, and
+  an automatically promoted leaf remains available for explicit correction.
 - A collision-free alias may use the same narrow automatic path only when its
   target is already an accepted Active category. Rename, reparent, merge,
   split, and deprecate operations remain human-gated.

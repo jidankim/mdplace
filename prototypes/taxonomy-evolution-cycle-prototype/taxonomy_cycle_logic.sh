@@ -92,6 +92,23 @@ reduce_taxonomy_cycle_state() {
     c)
       if [ "$bootstrap" != accepted ]; then
         last_event='CycleBlocked: revision 0 has no human-approved seed taxonomy'
+      elif [[ "$proposal" = leaf_ready || "$proposal" = leaf_review || \
+        "$proposal" = alias_ready || "$proposal" = alias_review || \
+        "$proposal" = merge || "$proposal" = split || \
+        "$proposal" = reparent || "$proposal" = deprecate ]]; then
+        last_event='CycleBlocked: the current proposal requires disposition before another cycle'
+      elif [ "$leaf_active" = yes ]; then
+        cycle=$((cycle + 1))
+        day=$((day + 7))
+        if [ "$proposal" = leaf_promoted_auto ]; then
+          last_event='CycleCompleted: the Active leaf was not rediscovered and remains under observation'
+        else
+          proposal=none
+          proposal_label=none
+          auto_eligible=no
+          human_gate=no
+          last_event='CycleCompleted: the Active leaf was not proposed again'
+        fi
       else
         cycle=$((cycle + 1))
         day=$((day + 7))
@@ -228,24 +245,46 @@ reduce_taxonomy_cycle_state() {
       fi
       ;;
     n)
-      if [ "$proposal" = none ]; then
-        last_event='RejectionIgnored: no proposal is selected'
-      elif [ "$proposal" = bootstrap_seed ]; then
-        bootstrap=none
+      clear_proposal=no
+      case "$proposal" in
+        none)
+          last_event='RejectionIgnored: no proposal is selected'
+          ;;
+        bootstrap_seed)
+          bootstrap=none
+          clear_proposal=yes
+          last_event='BootstrapRejected: draft discarded without changing taxonomy or evolution evidence'
+          ;;
+        leaf_shadow|leaf_ready|leaf_review)
+          negative_evidence=$((negative_evidence + 1))
+          recurrence=0
+          cooldown_until=$((day + 30))
+          clear_proposal=yes
+          last_event="LeafProposalRejected: version-bound negative evidence and cooldown through day $cooldown_until"
+          ;;
+        alias_ready|alias_review)
+          negative_evidence=$((negative_evidence + 1))
+          clear_proposal=yes
+          last_event='AliasProposalRejected: version-bound negative evidence recorded without changing leaf-discovery cooldown'
+          ;;
+        merge|split|reparent|deprecate)
+          rejected_operation=$proposal
+          negative_evidence=$((negative_evidence + 1))
+          clear_proposal=yes
+          last_event="StructuralProposalRejected: $rejected_operation recorded without changing leaf-discovery cooldown"
+          ;;
+        leaf_promoted_auto|leaf_promoted_manual|alias_promoted_auto|alias_promoted_manual)
+          last_event='RejectionIgnored: accepted changes require correction or reversal'
+          ;;
+        *)
+          last_event='RejectionIgnored: selected state is not a pending proposal'
+          ;;
+      esac
+      if [ "$clear_proposal" = yes ]; then
         proposal=none
         proposal_label=none
         auto_eligible=no
         human_gate=no
-        last_event='BootstrapRejected: draft discarded without changing taxonomy or evolution evidence'
-      else
-        negative_evidence=$((negative_evidence + 1))
-        proposal=none
-        proposal_label=none
-        auto_eligible=no
-        human_gate=no
-        recurrence=0
-        cooldown_until=$((day + 30))
-        last_event="ProposalRejected: version-bound negative evidence and cooldown through day $cooldown_until"
       fi
       ;;
     x)
