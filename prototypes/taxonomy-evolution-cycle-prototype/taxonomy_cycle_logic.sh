@@ -131,7 +131,15 @@ reduce_taxonomy_cycle_state() {
         last_event='AutomationGrantRevoked: pending leaf proposals become review-only'
       else
         leaf_grant=enabled
-        last_event='AutomationGrantEnabled: new leaves under Research only'
+        if [ "$proposal" = leaf_review ] && [ "$recurrence" -ge 2 ] && \
+          [ "$parent_fit" = clear ] && [ "$circuit" = closed ]; then
+          proposal=leaf_ready
+          auto_eligible=yes
+          human_gate=no
+          last_event='AutomationGrantEnabled: pending leaf review re-evaluated as eligible under Research'
+        else
+          last_event='AutomationGrantEnabled: new leaves under Research only'
+        fi
       fi
       ;;
     k)
@@ -147,7 +155,15 @@ reduce_taxonomy_cycle_state() {
         last_event='AliasAutomationGrantRevoked: pending alias proposals become review-only'
       else
         alias_grant=enabled
-        last_event='AliasAutomationGrantEnabled: aliases for Graph orchestration only'
+        if [ "$proposal" = alias_review ] && [ "$cycle" -ge 2 ] && \
+          [ "$leaf_active" = yes ] && [ "$alias_active" = no ]; then
+          proposal=alias_ready
+          auto_eligible=yes
+          human_gate=no
+          last_event='AliasAutomationGrantEnabled: pending alias review re-evaluated as eligible'
+        else
+          last_event='AliasAutomationGrantEnabled: aliases for Graph orchestration only'
+        fi
       fi
       ;;
     c)
