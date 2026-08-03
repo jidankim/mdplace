@@ -40,6 +40,10 @@ Accepted with the user on 2026-08-02:
   correction observation are tracked separately from the current proposal, so
   an Active leaf is not rediscovered and an automatically promoted leaf remains
   available for explicit correction.
+- The runnable surface keeps an append-only in-memory transition ledger with
+  stable accepted-change identifiers, grant and observation-window attribution,
+  proposal dispositions, and reversal or compensation links. Later actions may
+  change the current view but cannot erase earlier prototype evidence.
 - A collision-free alias may use the same narrow automatic path only when its
   target is already an accepted Active category. Rename, reparent, merge,
   split, and deprecate operations remain human-gated.
@@ -144,6 +148,8 @@ After an automatic leaf promotion, press `x`.
    evidence and counterevidence, parent alternatives, affected accepted notes,
    projected moves, impact, grant/gate results, and intended inverse. Rejected,
    stale, superseded, reversed, and compensating decisions remain append-only.
+   The prototype demonstrates that invariant in process memory; it does not
+   define the production ledger schema or storage format.
 
 ## What this prototype does not decide
 
@@ -152,3 +158,7 @@ After an automatic leaf promotion, press `x`.
   authority defaults and floors.
 - The final CLI review presentation or Folder Projection mechanics.
 - Production schemas, storage, or process packaging.
+- A durable regression suite or decomposed production reducer. The prototype
+  deliberately keeps its state schema and transitions in one disposable,
+  inspectable Bash surface; verification uses temporary reducer assertions and
+  real terminal walkthroughs, and that test machinery is removed afterward.

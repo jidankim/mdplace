@@ -1,17 +1,52 @@
 #!/usr/bin/env bash
 
 initial_taxonomy_cycle_state() {
-  printf '%s\n' '0|0|none|disabled|disabled|0|0|none|none|no|no|5|3|clear|no|no|0|1|0|closed|0|Revision 0: stable non-placeable root only'
+  printf '%s\n' '0|0|none|disabled|disabled|0|0|none|none|no|no|5|3|clear|no|no|0|0|0|0|1|0|closed|0|e0/r0/d0:Genesis: stable non-placeable root only|Revision 0: stable non-placeable root only'
+}
+
+load_taxonomy_cycle_state() {
+  local remaining_state=$1
+  local state_fields=()
+
+  while [[ "$remaining_state" == *'|'* ]]; do
+    state_fields+=("${remaining_state%%|*}")
+    remaining_state=${remaining_state#*|}
+  done
+  state_fields+=("$remaining_state")
+
+  revision=${state_fields[0]}
+  day=${state_fields[1]}
+  bootstrap=${state_fields[2]}
+  leaf_grant=${state_fields[3]}
+  alias_grant=${state_fields[4]}
+  cycle=${state_fields[5]}
+  recurrence=${state_fields[6]}
+  proposal=${state_fields[7]}
+  proposal_label=${state_fields[8]}
+  auto_eligible=${state_fields[9]}
+  human_gate=${state_fields[10]}
+  unresolved_notes=${state_fields[11]}
+  source_origins=${state_fields[12]}
+  parent_fit=${state_fields[13]}
+  leaf_active=${state_fields[14]}
+  alias_active=${state_fields[15]}
+  leaf_observation_until=${state_fields[16]}
+  leaf_change_revision=${state_fields[17]}
+  alias_change_revision=${state_fields[18]}
+  transition_count=${state_fields[19]}
+  negative_evidence=${state_fields[20]}
+  corrections=${state_fields[21]}
+  circuit=${state_fields[22]}
+  cooldown_until=${state_fields[23]}
+  transition_ledger=${state_fields[24]}
+  last_event=${state_fields[25]}
 }
 
 reduce_taxonomy_cycle_state() {
   state=$1
   action=$2
 
-  IFS='|' read -r revision day bootstrap leaf_grant alias_grant cycle recurrence proposal \
-    proposal_label auto_eligible human_gate unresolved_notes source_origins \
-    parent_fit leaf_active alias_active leaf_observation_until negative_evidence corrections \
-    circuit cooldown_until last_event <<< "$state"
+  load_taxonomy_cycle_state "$state"
 
   case "$proposal" in
     bootstrap_seed|leaf_ready|leaf_review|alias_ready|alias_review|merge|split|reparent|deprecate)
@@ -44,7 +79,7 @@ reduce_taxonomy_cycle_state() {
           proposal_label=none
           human_gate=no
           auto_eligible=no
-          last_event='TaxonomyChangeSetAccepted: seed tree is revision 1'
+          last_event="TaxonomyChangeSetAccepted[seed-change-r$revision]: human-approved seed tree"
           ;;
         leaf_review)
           revision=$((revision + 1))
@@ -54,7 +89,8 @@ reduce_taxonomy_cycle_state() {
           human_gate=no
           leaf_active=yes
           leaf_observation_until=0
-          last_event='NewLeafAcceptedByHuman: taxonomy changed; all supporting notes remain Unresolved'
+          leaf_change_revision=$revision
+          last_event="NewLeafAcceptedByHuman[leaf-change-r$revision]: taxonomy changed; all supporting notes remain Unresolved"
           ;;
         alias_review)
           revision=$((revision + 1))
@@ -63,7 +99,8 @@ reduce_taxonomy_cycle_state() {
           auto_eligible=no
           human_gate=no
           alias_active=yes
-          last_event='AliasAcceptedByHuman: lookup vocabulary changed without rename or placement effect'
+          alias_change_revision=$revision
+          last_event="AliasAcceptedByHuman[alias-change-r$revision]: lookup vocabulary changed without rename or placement effect"
           ;;
         merge|split|reparent|deprecate)
           accepted_operation=$proposal
@@ -72,7 +109,7 @@ reduce_taxonomy_cycle_state() {
           proposal_label=none
           human_gate=no
           auto_eligible=no
-          last_event="StructuralChangeAcceptedByHuman: $accepted_operation produced a new revision"
+          last_event="StructuralChangeAcceptedByHuman[$accepted_operation-change-r$revision]: accepted append-only Change Set"
           ;;
         *)
           last_event='ApprovalIgnored: no human-gated proposal is ready'
@@ -177,7 +214,8 @@ reduce_taxonomy_cycle_state() {
         human_gate=no
         leaf_active=yes
         leaf_observation_until=$((day + 30))
-        last_event='NewLeafAutomaticallyPromoted: taxonomy changed; all five notes remain Unresolved'
+        leaf_change_revision=$revision
+        last_event="NewLeafAutomaticallyPromoted[leaf-change-r$revision]: grant=new-leaf@Research; observation-until-day=$leaf_observation_until; all five notes remain Unresolved"
       elif [ "$proposal" = alias_ready ] && [ "$auto_eligible" = yes ] && [ "$alias_grant" = enabled ]; then
         revision=$((revision + 1))
         proposal=none
@@ -185,7 +223,8 @@ reduce_taxonomy_cycle_state() {
         auto_eligible=no
         human_gate=no
         alias_active=yes
-        last_event='AliasAutomaticallyPromoted: lookup vocabulary changed without rename or placement effect'
+        alias_change_revision=$revision
+        last_event="AliasAutomaticallyPromoted[alias-change-r$revision]: grant=alias@Graph-orchestration; lookup vocabulary changed without placement effect"
       else
         last_event='AutomaticPromotionBlocked: the proposal lacks its operation-type grant or eligibility gates'
       fi
@@ -331,6 +370,8 @@ reduce_taxonomy_cycle_state() {
       if [ "$proposal_pending" = yes ]; then
         last_event='CorrectionBlocked: the current proposal requires disposition; the accepted leaf remains correctable'
       elif [ "$leaf_observation_until" -gt 0 ] && [ "$leaf_active" = yes ]; then
+        corrected_leaf_change_revision=$leaf_change_revision
+        dependent_alias_change_revision=$alias_change_revision
         negative_evidence=$((negative_evidence + 1))
         correction_attributed=no
         if [ "$day" -lt "$leaf_observation_until" ]; then
@@ -349,18 +390,21 @@ reduce_taxonomy_cycle_state() {
           leaf_grant=disabled
           if [ "$alias_active" = yes ]; then
             alias_active=no
-            last_event='CompensatingTaxonomyChangeAppended: alias dependency retired; second correction suspended the scoped new-leaf grant'
+            alias_change_revision=0
+            last_event="CompensatingTaxonomyChangeAppended[revision-r$revision]: compensates=leaf-change-r$corrected_leaf_change_revision; retires=alias-change-r$dependent_alias_change_revision; second attributed correction suspended grant=new-leaf@Research"
           else
-            last_event='TaxonomyReversalAppended: second correction suspended the scoped new-leaf grant'
+            last_event="TaxonomyReversalAppended[revision-r$revision]: reverses=leaf-change-r$corrected_leaf_change_revision; second attributed correction suspended grant=new-leaf@Research"
           fi
         elif [ "$alias_active" = yes ]; then
           alias_active=no
-          last_event="CompensatingTaxonomyChangeAppended: the accepted alias dependency was retired; rediscovery cools down through day $cooldown_until"
+          alias_change_revision=0
+          last_event="CompensatingTaxonomyChangeAppended[revision-r$revision]: compensates=leaf-change-r$corrected_leaf_change_revision; retires=alias-change-r$dependent_alias_change_revision; cooldown-until-day=$cooldown_until"
         elif [ "$correction_attributed" = no ]; then
-          last_event="TaxonomyReversalAppended: correction fell outside grant attribution; rediscovery cools down through day $cooldown_until"
+          last_event="TaxonomyReversalAppended[revision-r$revision]: reverses=leaf-change-r$corrected_leaf_change_revision; grant-attribution=expired; cooldown-until-day=$cooldown_until"
         else
-          last_event="TaxonomyReversalAppended: correction recorded; rediscovery cools down through day $cooldown_until"
+          last_event="TaxonomyReversalAppended[revision-r$revision]: reverses=leaf-change-r$corrected_leaf_change_revision; grant-attribution=recorded; cooldown-until-day=$cooldown_until"
         fi
+        leaf_change_revision=0
       else
         last_event='CorrectionIgnored: no current automatically promoted leaf is under observation'
       fi
@@ -374,10 +418,16 @@ reduce_taxonomy_cycle_state() {
       ;;
   esac
 
-  printf '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\n' \
+  if [ "$last_event" != IgnoredAction ]; then
+    transition_count=$((transition_count + 1))
+    transition_ledger="$transition_ledger <> e$transition_count/r$revision/d$day:$last_event"
+  fi
+
+  printf '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\n' \
     "$revision" "$day" "$bootstrap" "$leaf_grant" "$alias_grant" "$cycle" "$recurrence" \
     "$proposal" "$proposal_label" "$auto_eligible" "$human_gate" \
     "$unresolved_notes" "$source_origins" "$parent_fit" "$leaf_active" \
-    "$alias_active" "$leaf_observation_until" "$negative_evidence" "$corrections" \
-    "$circuit" "$cooldown_until" "$last_event"
+    "$alias_active" "$leaf_observation_until" "$leaf_change_revision" \
+    "$alias_change_revision" "$transition_count" "$negative_evidence" "$corrections" \
+    "$circuit" "$cooldown_until" "$transition_ledger" "$last_event"
 }

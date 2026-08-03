@@ -11,10 +11,22 @@ reset='\033[0m'
 state=$(initial_taxonomy_cycle_state)
 
 render() {
-  IFS='|' read -r revision day bootstrap leaf_grant alias_grant cycle recurrence proposal \
-    proposal_label auto_eligible human_gate unresolved_notes source_origins \
-    parent_fit leaf_active alias_active leaf_observation_until negative_evidence corrections \
-    circuit cooldown_until last_event <<< "$state"
+  local revision='' day='' bootstrap='' leaf_grant='' alias_grant='' cycle=''
+  local recurrence='' proposal='' proposal_label='' auto_eligible='' human_gate=''
+  local unresolved_notes='' source_origins='' parent_fit='' leaf_active=''
+  local alias_active='' leaf_observation_until='' leaf_change_revision=''
+  local alias_change_revision='' transition_count='' negative_evidence=''
+  local corrections='' circuit='' cooldown_until='' transition_ledger='' last_event=''
+
+  load_taxonomy_cycle_state "$state"
+
+  transition_ledger_tail=$transition_ledger
+  hidden_transitions=$transition_count
+  while [ "$hidden_transitions" -gt 4 ]; do
+    transition_ledger_tail=${transition_ledger_tail#* <> }
+    hidden_transitions=$((hidden_transitions - 1))
+  done
+  transition_ledger_display=${transition_ledger_tail// <> /$'\n    '}
 
   if [ "$leaf_observation_until" -gt 0 ]; then
     if [ "$day" -lt "$leaf_observation_until" ]; then
@@ -98,7 +110,9 @@ render() {
   printf '  simulated day:     %s\n' "$day"
   printf '  cycle count:       %s\n\n' "$cycle"
   printf '  Graph orchestration leaf active: %s\n' "$leaf_active"
+  printf '  Graph orchestration accepted change revision: %s\n' "$leaf_change_revision"
   printf '  Graph ops alias active:           %s\n\n' "$alias_active"
+  printf '  Graph ops accepted change revision: %s\n\n' "$alias_change_revision"
 
   printf '%bFrozen evidence snapshot%b\n' "$bold" "$reset"
   printf '  unresolved no-fit notes: %s\n' "$unresolved_notes"
@@ -129,6 +143,10 @@ render() {
   printf '  attributed corrections: %s\n' "$corrections"
   printf '  cooldown until day: %s\n' "$cooldown_until"
   printf '  supporting notes:   %s remain Unresolved after taxonomy promotion\n\n' "$unresolved_notes"
+
+  printf '%bAppend-only in-memory transition ledger (%s events; latest five shown)%b\n' \
+    "$bold" "$transition_count" "$reset"
+  printf '    %s\n\n' "$transition_ledger_display"
 
   printf '%bLast transition%b\n  %s\n\n' "$bold" "$reset" "$last_event"
 
