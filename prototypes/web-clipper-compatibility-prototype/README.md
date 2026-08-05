@@ -29,6 +29,8 @@ Changing any bound template, contract, policy, source release asset, browser fam
 
 The runner uses the official Chrome release asset for Web Clipper 1.7.0, verifies its SHA-256 digest, loads it in Chrome for Testing, installs the two immutable v1 template artifacts into the stock extension's own compressed storage representation, invokes the stock popup, and captures its exact generated candidate bytes through the popup's Copy to clipboard action.
 
+The committed [Chrome 150/macOS arm64 matrix evidence](evidence/matrix-chrome-150-macos-arm64.json) records the exact browser and extension archive digests, fixture-suite revision, observation time, assertions, compatibility outcomes, and candidate digests. It contains no candidate bodies, credentials, or user data.
+
 | Case | Stock result | Intake boundary | Required diagnostic or reason |
 | --- | --- | --- | --- |
 | Semantic `<article>` | Candidate with sentinel | Eligible for adapter validation | None |
@@ -61,7 +63,9 @@ The persistence controls are requirements derived from the capture contract. The
 
 ## Prototype harness limitation
 
-The complete 15-case matrix passed in one disposable Chrome run, and an independent Playwright session exercised the stock popup and both URL-retention templates. Repeated fresh browser launches can still race Chrome's unpacked-extension registration: the extension page may briefly resolve to `chrome-error://chromewebdata/` or expose no `chrome.runtime`/`chrome.storage` API. This launcher nondeterminism does not change the observed compatibility outcomes, but the product smoke runner must wait for deterministic extension registration before this harness is suitable for unattended CI.
+The complete 15-case browser matrix is recorded in the linked evidence artifact. The runner bounds target discovery, CDP commands, popup clipboard capture, and shutdown; it also waits for the exact unpacked-extension target and confirms the required extension APIs before storage bootstrap. An infrastructure failure is reported separately from a genuine pre-intake page rejection, so a missing Copy action or stalled clipboard interception cannot masquerade as a compatibility result.
+
+This remains a browser-rendering prototype. It does not exercise the required disposable Obsidian-vault persistence controls and therefore cannot enable a production Source Profile by itself.
 
 ## Run
 
@@ -73,11 +77,19 @@ bash prototypes/web-clipper-compatibility-prototype/run.sh
 
 The runner downloads Chrome for Testing 150.0.7871.124 and the official Web Clipper 1.7.0 Chrome package unless `CHROME_FOR_TESTING_ZIP` and `WEB_CLIPPER_ZIP` point to local copies. It uses disposable browser and fixture-server state and removes that state on exit.
 
+Set `EVIDENCE_OUTPUT` to atomically retain the matrix JSON from a run:
+
+```bash
+EVIDENCE_OUTPUT=/absolute/path/matrix.json \
+  bash prototypes/web-clipper-compatibility-prototype/run.sh
+```
+
 Pinned source evidence:
 
 - Web Clipper release: <https://github.com/obsidianmd/obsidian-clipper/releases/tag/1.7.0>
 - Web Clipper source revision: <https://github.com/obsidianmd/obsidian-clipper/commit/48228dce63195681e9dfc4fb8760c3c36db51079>
 - Chrome extension archive SHA-256: `8861e7a77c3aaa27d5ac0b22b66a02aea4c03f67c56c700800d4c977c384de96`
+- Chrome for Testing 150.0.7871.124 macOS arm64 archive SHA-256: `36c8b5fe04c08a418a172206bb392600ec1550941bde6af2d4353df21db87a47`
 - URL-withheld template SHA-256: `25cb91a4afa9365d1c5076bd4bcea8e8136ce44f0963e7e1e8296a7abe672c2a`
 - Protected-local URL template SHA-256: `5a57e8d0325838a39cf27e537df41e0d374c74788a52caf9c180dca795dc1a89`
 

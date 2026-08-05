@@ -2,6 +2,23 @@ import {evaluate} from './cdp.mjs';
 
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
+export const templateExpectations = new Map([
+  ['mdplace Capture Candidate v1 — URL withheld',{
+    captureTemplate:'mdplace-web-clipper-candidate-url-withheld',
+    marker:'<!-- mdplace:candidate:source-url:withheld-by-policy -->',
+  }],
+  ['mdplace Capture Candidate v1 — protected local URL',{
+    captureTemplate:'mdplace-web-clipper-candidate-url-retained',
+    marker:'<!-- mdplace:candidate:source-url-raw:start -->',
+  }],
+]);
+
+export function classifyCaptureState(state) {
+  if (state.clipboardStatus === 'captured' && state.candidate) return 'rendered_candidate';
+  if (state.clipboardStatus === 'no_note' && !state.candidate) return 'failed_before_intake';
+  return 'capture_infrastructure_failed';
+}
+
 export async function reloadPopup(popup) {
   const generation = `${Date.now()}-${Math.random()}`;
   await evaluate(popup, `window.__mdplaceReloadGeneration=${JSON.stringify(generation)}`);
@@ -24,16 +41,7 @@ export async function reloadPopup(popup) {
 }
 
 export async function selectTemplate(popup, name) {
-  const expectation = new Map([
-    ['mdplace Capture Candidate v1 — URL withheld',{
-      captureTemplate:'mdplace-web-clipper-candidate-url-withheld',
-      marker:'<!-- mdplace:candidate:source-url:withheld-by-policy -->',
-    }],
-    ['mdplace Capture Candidate v1 — protected local URL',{
-      captureTemplate:'mdplace-web-clipper-candidate-url-retained',
-      marker:'<!-- mdplace:candidate:source-url-raw:start -->',
-    }],
-  ]).get(name);
+  const expectation = templateExpectations.get(name);
   if (!expectation) throw new Error(`unknown template: ${name}`);
   await evaluate(popup, `(async()=>{
     const select=document.getElementById('template-select');
@@ -101,20 +109,30 @@ export async function capturePopupState(popup) {
       value:input.type==='checkbox'?input.checked:input.value,
     }));
     let candidate=null;
+    let clipboardStatus=note?'copy_control_missing':'no_note';
     if(note){
-      window.__mdplaceCapturedClipboard=null;
-      navigator.clipboard.writeText=async text=>{window.__mdplaceCapturedClipboard=text};
-      document.getElementById('more-btn').click();
-      const copy=[...document.querySelectorAll('.menu-item')].find(item=>item.innerText.includes('Copy to clipboard'));
-      if(copy){
-        copy.click();
-        const deadline=Date.now()+2000;
-        while(!window.__mdplaceCapturedClipboard&&Date.now()<deadline){
-          await new Promise(resolve=>setTimeout(resolve,20));
+      const more=document.getElementById('more-btn');
+      if(typeof navigator.clipboard?.writeText!=='function'){
+        clipboardStatus='clipboard_api_missing';
+      }else if(more){
+        window.__mdplaceCapturedClipboard=null;
+        navigator.clipboard.writeText=async text=>{window.__mdplaceCapturedClipboard=text};
+        more.click();
+        const copy=[...document.querySelectorAll('.menu-item')].find(item=>item.innerText.includes('Copy to clipboard'));
+        if(copy){
+          clipboardStatus='clipboard_timed_out';
+          copy.click();
+          const deadline=Date.now()+2000;
+          while(window.__mdplaceCapturedClipboard===null&&Date.now()<deadline){
+            await new Promise(resolve=>setTimeout(resolve,20));
+          }
+          if(window.__mdplaceCapturedClipboard!==null){
+            candidate=window.__mdplaceCapturedClipboard;
+            clipboardStatus='captured';
+          }
         }
-        candidate=window.__mdplaceCapturedClipboard;
       }
     }
-    return {candidate,error,note,noteName,path,properties,template};
+    return {candidate,clipboardStatus,error,note,noteName,path,properties,template};
   })()`);
 }

@@ -36,14 +36,45 @@ function storageChunks(template) {
   return chunks;
 }
 
-await fetch(`${debugBase}/json/new?${encodeURIComponent(`chrome-extension://${extensionId}/highlights.html`)}`, {method: 'PUT'});
-const hostTarget = await findTarget(
-  debugBase,
-  (target) => target.type === 'page' && target.url === `chrome-extension://${extensionId}/highlights.html`,
-  'Web Clipper bootstrap host',
-);
-const host = new CdpClient(hostTarget.webSocketDebuggerUrl);
-const manifest = await evaluate(host, 'chrome.runtime.getManifest()');
+const hostUrl = `chrome-extension://${extensionId}/highlights.html`;
+const readinessDeadline = Date.now() + 15000;
+let host = null;
+let manifest = null;
+let readinessError = null;
+while (Date.now() < readinessDeadline && !host) {
+  let candidate = null;
+  try {
+    const response = await fetch(`${debugBase}/json/new?${encodeURIComponent(hostUrl)}`, {
+      method: 'PUT',
+      signal: AbortSignal.timeout(1000),
+    });
+    if (!response.ok) throw new Error(`bootstrap target creation failed: HTTP ${response.status}`);
+    const hostTarget = await findTarget(
+      debugBase,
+      (target) => target.type === 'page' && target.url === hostUrl,
+      'Web Clipper bootstrap host',
+      {timeoutMs: Math.min(1000, readinessDeadline - Date.now())},
+    );
+    candidate = new CdpClient(hostTarget.webSocketDebuggerUrl, {commandTimeoutMs: 1000});
+    const APIsReady = await evaluate(candidate, `
+      typeof globalThis.chrome==='object' &&
+      typeof chrome.runtime?.getManifest==='function' &&
+      typeof chrome.storage?.sync?.get==='function' &&
+      typeof chrome.tabs?.query==='function' &&
+      typeof chrome.action?.openPopup==='function'
+    `);
+    if (!APIsReady) throw new Error('Web Clipper extension APIs are not ready');
+    manifest = await evaluate(candidate, 'chrome.runtime.getManifest()');
+    host = candidate;
+  } catch (error) {
+    readinessError = error;
+    candidate?.close();
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+}
+if (!host || !manifest) {
+  throw new Error(`Web Clipper extension readiness timed out: ${readinessError?.message ?? 'unknown error'}`);
+}
 if (manifest.name !== 'Obsidian Web Clipper' || manifest.version !== '1.7.0') {
   throw new Error(`unexpected extension: ${manifest.name} ${manifest.version}`);
 }

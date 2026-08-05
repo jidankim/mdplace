@@ -10,22 +10,37 @@ debug_base="http://127.0.0.1:${debug_port}"
 server_pid=
 chrome_pid=
 
+terminate() {
+  local pid=$1
+  if [[ -z "$pid" ]]; then return; fi
+  kill "$pid" 2>/dev/null || true
+  for _ in {1..30}; do
+    if ! kill -0 "$pid" 2>/dev/null; then
+      wait "$pid" 2>/dev/null || true
+      return
+    fi
+    sleep 0.1
+  done
+  kill -KILL "$pid" 2>/dev/null || true
+  wait "$pid" 2>/dev/null || true
+}
+
 cleanup() {
-  if [[ -n "$chrome_pid" ]]; then
-    kill "$chrome_pid" 2>/dev/null || true
-    wait "$chrome_pid" 2>/dev/null || true
-  fi
-  if [[ -n "$server_pid" ]]; then
-    kill "$server_pid" 2>/dev/null || true
-    wait "$server_pid" 2>/dev/null || true
-  fi
+  trap - EXIT INT TERM
+  terminate "$chrome_pid"
+  terminate "$server_pid"
   rm -rf -- "$work_dir"
 }
-trap cleanup EXIT INT TERM
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
-for command in curl node python3 shasum unzip; do
+for command in curl git node python3 shasum unzip; do
   command -v "$command" >/dev/null || { echo "missing command: $command" >&2; exit 1; }
 done
+node -e '
+  if(typeof fetch!=="function"||typeof WebSocket!=="function"||typeof AbortSignal.timeout!=="function")process.exit(1)
+' || { echo 'Node.js must provide fetch, WebSocket, and AbortSignal.timeout' >&2; exit 1; }
 
 if [[ $(uname -s) != Darwin || $(uname -m) != arm64 ]]; then
   echo "this throwaway runner currently supports macOS arm64 only" >&2
@@ -53,19 +68,35 @@ else
     https://storage.googleapis.com/chrome-for-testing-public/150.0.7871.124/mac-arm64/chrome-mac-arm64.zip \
     -o "$chrome_zip"
 fi
+printf '%s  %s\n' \
+  36c8b5fe04c08a418a172206bb392600ec1550941bde6af2d4353df21db87a47 \
+  "$chrome_zip" | shasum -a 256 -c -
 unzip -q "$chrome_zip" -d "$work_dir/chrome"
 chrome_bin="$work_dir/chrome/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing"
 "$chrome_bin" --version | grep -F 'Google Chrome for Testing 150.0.7871.124' >/dev/null
 
+extension_realpath=$(CDPATH='' cd -- "$work_dir/extension" && pwd -P)
+extension_id=$(node -e '
+  const {createHash}=require("node:crypto");
+  const hex=createHash("sha256").update(process.argv[1]).digest("hex").slice(0,32);
+  console.log(hex.replace(/[0-9a-f]/g,value=>String.fromCharCode(97+parseInt(value,16))));
+' "$extension_realpath")
+extension_origin="chrome-extension://${extension_id}/"
+
 python3 -m http.server "$fixture_port" --bind 127.0.0.1 \
   --directory "$prototype_dir/fixtures" >"$work_dir/server.log" 2>&1 &
 server_pid=$!
+for _ in {1..120}; do
+  if curl -fsS "$fixture_base/semantic-article.html" >/dev/null 2>&1; then break; fi
+  sleep 0.1
+done
+curl -fsS "$fixture_base/semantic-article.html" >/dev/null
 
 "$chrome_bin" \
   --disable-gpu \
-  --no-sandbox \
   --no-first-run \
   --no-default-browser-check \
+  --remote-debugging-address=127.0.0.1 \
   --remote-debugging-port="$debug_port" \
   --user-data-dir="$work_dir/profile" \
   --disable-extensions-except="$work_dir/extension" \
@@ -79,12 +110,24 @@ for _ in {1..120}; do
 done
 curl -fsS "$debug_base/json/version" >/dev/null
 
-extension_realpath=$(CDPATH='' cd -- "$work_dir/extension" && pwd -P)
-extension_id=$(node -e '
-  const {createHash}=require("node:crypto");
-  const hex=createHash("sha256").update(process.argv[1]).digest("hex").slice(0,32);
-  console.log(hex.replace(/[0-9a-f]/g,value=>String.fromCharCode(97+parseInt(value,16))));
-' "$extension_realpath")
+extension_target_ready=false
+for _ in {1..120}; do
+  if curl -fsS "$debug_base/json/list" -o "$work_dir/targets.json" && \
+    node -e '
+      const {readFileSync}=require("node:fs");
+      const targets=JSON.parse(readFileSync(process.argv[1],"utf8"));
+      process.exit(targets.some(target=>target.url.startsWith(process.argv[2]))?0:1);
+    ' "$work_dir/targets.json" "$extension_origin"
+  then
+    extension_target_ready=true
+    break
+  fi
+  sleep 0.1
+done
+if [[ "$extension_target_ready" != true ]]; then
+  echo "Web Clipper extension target did not become ready" >&2
+  exit 1
+fi
 
 env \
   CHROME_DEBUG_BASE="$debug_base" \
@@ -94,8 +137,26 @@ env \
   RETAINED_TEMPLATE="$prototype_dir/mdplace-web-clipper-candidate-url-retained.json" \
   node "$prototype_dir/bootstrap.mjs"
 
+fixture_suite_revision=${FIXTURE_SUITE_REVISION:-$(git -C "$prototype_dir" rev-parse HEAD)}
+matrix_output="$work_dir/matrix.json"
+matrix_status=0
 env \
+  BROWSER_FAMILY='Chrome for Testing' \
+  BROWSER_VERSION='150.0.7871.124' \
+  CHROME_ARCHIVE_SHA256='36c8b5fe04c08a418a172206bb392600ec1550941bde6af2d4353df21db87a47' \
   CHROME_DEBUG_BASE="$debug_base" \
   FIXTURE_BASE="$fixture_base" \
+  FIXTURE_SUITE_REVISION="$fixture_suite_revision" \
+  WEB_CLIPPER_ARCHIVE_SHA256='8861e7a77c3aaa27d5ac0b22b66a02aea4c03f67c56c700800d4c977c384de96' \
   WEB_CLIPPER_EXTENSION_ID="$extension_id" \
-  node "$prototype_dir/matrix.mjs"
+  node "$prototype_dir/matrix.mjs" >"$matrix_output" || matrix_status=$?
+cat "$matrix_output"
+
+if [[ -n ${EVIDENCE_OUTPUT:-} ]]; then
+  mkdir -p -- "$(dirname -- "$EVIDENCE_OUTPUT")"
+  evidence_temp="${EVIDENCE_OUTPUT}.tmp.$$"
+  cp -- "$matrix_output" "$evidence_temp"
+  mv -- "$evidence_temp" "$EVIDENCE_OUTPUT"
+fi
+
+exit "$matrix_status"
