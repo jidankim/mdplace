@@ -75,7 +75,7 @@ export async function selectTemplate(popup, name) {
         return type==='checkbox'?input.type==='checkbox'&&input.checked===value:input.value===value;
       });
       const timestamp=byId.get('source_captured_at_claim');
-      const timestampReady=timestamp?.dataset.type==='datetime'&&
+      const timestampReady=timestamp?.dataset.type==='text'&&
         /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}(?:Z|[+-]\\d{2}:?\\d{2})$/.test(timestamp.value);
       if(inputs.length===7&&generationReady&&staticPropertiesReady&&timestampReady&&
         select.selectedOptions[0]?.textContent===${JSON.stringify(name)}&&

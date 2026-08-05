@@ -151,7 +151,7 @@ export function inspectProperties(properties, captureTemplate) {
   ];
   const envelopeConforming = properties.length === propertyNames.length && properties.every((property, index) =>
     property.name === propertyNames[index] &&
-    property.type === ['text', 'text', 'text', 'checkbox', 'text', 'text', 'datetime'][index] &&
+    property.type === ['text', 'text', 'text', 'checkbox', 'text', 'text', 'text'][index] &&
     (index === 6 ? /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}(?:Z|[+-]\d{2}:?\d{2})$/.test(property.value) : property.value === expectedValues[index])
   );
   return {propertyCount: properties.length, propertyEnvelopeConforming: envelopeConforming};

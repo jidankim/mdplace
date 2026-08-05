@@ -49,7 +49,7 @@ The committed [Chrome 150/macOS arm64 matrix evidence](evidence/matrix-chrome-15
 | `chrome://version` | No candidate | Fails before intake | Stock popup says the page cannot be clipped |
 | `about:blank` | No candidate | Fails before intake | Stock popup says the page cannot be clipped |
 
-Web Clipper renders `source_captured_at_claim` as a plain YAML timestamp scalar. Under the contract's YAML 1.2 core schema this decodes to the required string value, so it is a harmless serialization difference rather than a compatibility failure.
+The templates declare `source_captured_at_claim` as text so stock Web Clipper emits the rendered RFC 3339 value as the contract-required quoted string scalar.
 
 ## Required product smoke suite
 
@@ -90,8 +90,8 @@ Pinned source evidence:
 - Web Clipper source revision: <https://github.com/obsidianmd/obsidian-clipper/commit/48228dce63195681e9dfc4fb8760c3c36db51079>
 - Chrome extension archive SHA-256: `8861e7a77c3aaa27d5ac0b22b66a02aea4c03f67c56c700800d4c977c384de96`
 - Chrome for Testing 150.0.7871.124 macOS arm64 archive SHA-256: `36c8b5fe04c08a418a172206bb392600ec1550941bde6af2d4353df21db87a47`
-- URL-withheld template SHA-256: `25cb91a4afa9365d1c5076bd4bcea8e8136ce44f0963e7e1e8296a7abe672c2a`
-- Protected-local URL template SHA-256: `5a57e8d0325838a39cf27e537df41e0d374c74788a52caf9c180dca795dc1a89`
+- URL-withheld template SHA-256: `fa72c5fbe5e0da5cfd88d58427af875ded19c75866e0b47d9e2ec6117af10fff`
+- Protected-local URL template SHA-256: `0c3d4be3391f12cc5aab5b4b85e4d14153e7bf5e1dd1edcac6faa9ae76ed7084`
 
 ## Human reaction
 

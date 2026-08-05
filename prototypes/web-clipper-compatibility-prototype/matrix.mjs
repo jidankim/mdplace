@@ -22,12 +22,12 @@ const retainedFixtureUrl = `${fixtureBase}/semantic-article.html?session=synthet
 const templateArtifacts = [
   {
     identifier: withheldTemplate,
-    sha256: '25cb91a4afa9365d1c5076bd4bcea8e8136ce44f0963e7e1e8296a7abe672c2a',
+    sha256: 'fa72c5fbe5e0da5cfd88d58427af875ded19c75866e0b47d9e2ec6117af10fff',
     version: '1',
   },
   {
     identifier: retainedTemplate,
-    sha256: '5a57e8d0325838a39cf27e537df41e0d374c74788a52caf9c180dca795dc1a89',
+    sha256: '0c3d4be3391f12cc5aab5b4b85e4d14153e7bf5e1dd1edcac6faa9ae76ed7084',
     version: '1',
   },
 ];
