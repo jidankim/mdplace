@@ -164,6 +164,10 @@ _Avoid_: Mutable suggestions, accepted placement, evergreen ranking
 The evaluation of one Captured Tab Note against the active Category Tree, resulting in an accepted Primary Category or an Unresolved Placement. It does not change the Category Tree.
 _Avoid_: Taxonomy update, folder move
 
+**Placement Automation Permission**:
+A versioned, default-deny Processing Policy permission allowing automatic initial placement of an Unresolved Captured Tab Note into an existing Active category within a validation-bound scope. It never changes an accepted Primary Category or the Category Tree and remains distinct from the taxonomy-specific Automation Grant.
+_Avoid_: Automation Grant, automatic reclassification, global placement consent
+
 **Taxonomy Evolution Cycle**:
 A separately triggered evaluation of accumulated corpus evidence for changes to the Category Tree. It may propose or promote changes according to the Policy-Governed Taxonomy rules.
 _Avoid_: Placement evaluation, per-note classification
