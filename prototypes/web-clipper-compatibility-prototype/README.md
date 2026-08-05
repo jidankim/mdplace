@@ -67,6 +67,12 @@ The complete 15-case browser matrix is recorded in the linked evidence artifact.
 
 This remains a browser-rendering prototype. It does not exercise the required disposable Obsidian-vault persistence controls and therefore cannot enable a production Source Profile by itself.
 
+## Stock filename precision
+
+The approved template asks for `candidate-{{date|date:"YYYYMMDD-HHmmss-SSS"}}`, but pinned Web Clipper 1.7.0 builds `{{date}}` and `{{time}}` from a timestamp formatted only through seconds. The later date filter can reformat that value, but cannot recover the discarded milliseconds, so `SSS` renders as `000`. See the pinned [`buildVariables()` source](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/shared.ts#L40-L52) and [date filter](https://github.com/obsidianmd/obsidian-clipper/blob/48228dce63195681e9dfc4fb8760c3c36db51079/src/utils/filters/date.ts#L12-L50).
+
+The checked observation therefore contains 13 distinct candidate digests but only five distinct stock filenames. The browser matrix intentionally preserves those collisions: it does not retry, deduplicate, or claim filename uniqueness. Collision-safe create-only behavior, including no overwrite or append, belongs to issue #27's separate disposable-vault persistence smoke and was not observed here.
+
 ## Run
 
 On macOS arm64, from the repository root:
@@ -75,9 +81,11 @@ On macOS arm64, from the repository root:
 bash prototypes/web-clipper-compatibility-prototype/run.sh
 ```
 
-The runner downloads Chrome for Testing 150.0.7871.124 and the official Web Clipper 1.7.0 Chrome package unless `CHROME_FOR_TESTING_ZIP` and `WEB_CLIPPER_ZIP` point to local copies. It uses disposable browser and fixture-server state and removes that state on exit. Because Chrome permits `chrome.action.openPopup()` only for the frontmost application window, the runner asks macOS System Events to foreground the exact Chrome-for-Testing process by PID before opening the popup. The browser may briefly take focus, and macOS may request Automation permission for the invoking terminal.
+The runner downloads Chrome for Testing 150.0.7871.124 and the official Web Clipper 1.7.0 Chrome package unless `CHROME_FOR_TESTING_ZIP` and `WEB_CLIPPER_ZIP` point to local copies. `FIXTURE_PORT` defaults to `8766` and `DEBUG_PORT` defaults to `9228`; the ports must differ and both must be available on `127.0.0.1`. `FIXTURE_SUITE_REVISION` defaults to the Git HEAD resolved from the prototype directory. Set it explicitly when running a copy outside a Git checkout so evidence remains bound to an exact revision.
 
-Set `EVIDENCE_OUTPUT` to atomically retain the matrix JSON from a run:
+The runner uses disposable browser and fixture-server state and removes that state on exit. Because Chrome permits `chrome.action.openPopup()` only for the frontmost application window, the runner asks macOS System Events to foreground the exact Chrome-for-Testing process by PID before opening the popup. The browser may briefly take focus, and macOS may request Automation permission for the invoking terminal.
+
+Set `EVIDENCE_OUTPUT` to atomically retain the matrix JSON only after a passing matrix. A failed matrix does not publish output or replace an existing destination:
 
 ```bash
 EVIDENCE_OUTPUT=/absolute/path/matrix.json \

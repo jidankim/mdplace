@@ -9,6 +9,7 @@ fixture_base="http://127.0.0.1:${fixture_port}"
 debug_base="http://127.0.0.1:${debug_port}"
 server_pid=
 chrome_pid=
+evidence_temp=
 
 terminate() {
   local pid=$1
@@ -29,6 +30,7 @@ cleanup() {
   trap - EXIT INT TERM
   terminate "$chrome_pid"
   terminate "$server_pid"
+  if [[ -n "$evidence_temp" ]]; then rm -f -- "$evidence_temp"; fi
   rm -rf -- "$work_dir"
 }
 trap cleanup EXIT
@@ -92,6 +94,7 @@ import socket, sys
 for value in sys.argv[1:]:
     probe = socket.socket()
     try:
+        probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         probe.bind(("127.0.0.1", int(value)))
     except OSError as error:
         raise SystemExit(f"local port {value} is unavailable: {error}")
@@ -187,11 +190,20 @@ env \
   node "$prototype_dir/matrix.mjs" >"$matrix_output" || matrix_status=$?
 cat "$matrix_output"
 
-if [[ -n ${EVIDENCE_OUTPUT:-} ]]; then
+if [[ "$matrix_status" == 0 && -n ${EVIDENCE_OUTPUT:-} ]]; then
   mkdir -p -- "$(dirname -- "$EVIDENCE_OUTPUT")"
   evidence_temp=$(mktemp "${EVIDENCE_OUTPUT}.tmp.XXXXXX")
-  cp -- "$matrix_output" "$evidence_temp"
-  mv -- "$evidence_temp" "$EVIDENCE_OUTPUT"
+  if ! cp -- "$matrix_output" "$evidence_temp"; then
+    echo "failed to copy passing matrix output to temporary evidence file" >&2
+    exit 1
+  fi
+  if ! mv -- "$evidence_temp" "$EVIDENCE_OUTPUT"; then
+    echo "failed to publish passing matrix output: $EVIDENCE_OUTPUT" >&2
+    exit 1
+  fi
+  evidence_temp=
+elif [[ -n ${EVIDENCE_OUTPUT:-} ]]; then
+  echo "matrix failed; evidence output not written: $EVIDENCE_OUTPUT" >&2
 fi
 
 exit "$matrix_status"

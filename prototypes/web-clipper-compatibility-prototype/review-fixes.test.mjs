@@ -239,7 +239,14 @@ test('runner authenticates Chrome, preserves sandboxing, and documents evidence'
   assert.doesNotMatch(runner, /--no-sandbox/);
   const focusIndex = runner.indexOf('set frontmost of first process whose unix id is ${chrome_pid} to true');
   const bootstrapIndex = runner.indexOf('node "$prototype_dir/bootstrap.mjs"');
-  assert.ok(focusIndex >= 0 && focusIndex < bootstrapIndex, 'Chrome must be foregrounded before opening the popup');
+  assert.ok(focusIndex >= 0, 'run.sh must foreground the Chrome process by PID');
+  assert.ok(bootstrapIndex >= 0, 'run.sh must invoke bootstrap.mjs');
+  assert.ok(focusIndex < bootstrapIndex, 'Chrome must be foregrounded before opening the popup');
+  assert.match(runner, /probe\.setsockopt\(socket\.SOL_SOCKET, socket\.SO_REUSEADDR, 1\)[\s\S]*probe\.bind/);
+  assert.match(runner, /evidence_temp=\n[\s\S]*rm -f -- "\$evidence_temp"/);
+  assert.match(runner, /if \[\[ "\$matrix_status" == 0 && -n \$\{EVIDENCE_OUTPUT:-\} \]\]; then[\s\S]*evidence_temp=\$\(mktemp "\$\{EVIDENCE_OUTPUT\}\.tmp\.XXXXXX"\)[\s\S]*cp -- "\$matrix_output" "\$evidence_temp"[\s\S]*mv -- "\$evidence_temp" "\$EVIDENCE_OUTPUT"[\s\S]*evidence_temp=\nelif/);
+  assert.match(readme, /FIXTURE_PORT[\s\S]*8766[\s\S]*DEBUG_PORT[\s\S]*9228[\s\S]*FIXTURE_SUITE_REVISION/);
+  assert.match(readme, /outside a Git checkout[\s\S]*EVIDENCE_OUTPUT[\s\S]*passing matrix/i);
   assert.match(readme, /evidence\/matrix-chrome-150-macos-arm64\.json/);
   assert.match(probe, /127\.0\.0\.1:9228/);
   assert.match(fixture, /id="live-selection-target"/);
