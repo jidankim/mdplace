@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "0.1.0",
+  "name": "mdplace Capture Candidate v1 — URL withheld",
+  "behavior": "create",
+  "noteNameFormat": "candidate-{{date|date:\"YYYYMMDD-HHmmss-SSS\"}}",
+  "path": ".mdplace/intake/web-clipper/pending",
+  "noteContentFormat": "> [!warning] CAPTURE CANDIDATE — NOT A NOTE\n> Untrusted local intake. Not valid for placement or processing.\n\n<!-- mdplace:candidate:v1:start -->\n<!-- mdplace:candidate:live-selection:{% if selection %}present{% else %}absent{% endif %} -->\n<!-- mdplace:candidate:source-url:withheld-by-policy -->\n{% if title %}<!-- mdplace:candidate:source-title-raw:start -->\n{{title}}\n<!-- mdplace:candidate:source-title-raw:end -->\n{% endif %}{% if author %}<!-- mdplace:candidate:source-author-raw:start -->\n{{author}}\n<!-- mdplace:candidate:source-author-raw:end -->\n{% endif %}{% if published %}<!-- mdplace:candidate:source-published-at-raw:start -->\n{{published}}\n<!-- mdplace:candidate:source-published-at-raw:end -->\n{% endif %}{% if site %}<!-- mdplace:candidate:source-site-raw:start -->\n{{site}}\n<!-- mdplace:candidate:source-site-raw:end -->\n{% endif %}<!-- mdplace:candidate:article:start -->\n{{content}}\n<!-- mdplace:candidate:article:end -->\n{% if highlights %}<!-- mdplace:candidate:annotations:start -->\n{{highlights}}\n<!-- mdplace:candidate:annotations:end -->\n{% endif %}<!-- mdplace:candidate:v1:end -->\n",
+  "properties": [
+    {
+      "name": "mdplace_candidate_schema",
+      "value": "mdplace.capture-candidate/v1",
+      "type": "text"
+    },
+    {
+      "name": "capture_source",
+      "value": "obsidian_web_clipper",
+      "type": "text"
+    },
+    {
+      "name": "source_version_claim",
+      "value": "1.7.0",
+      "type": "text"
+    },
+    {
+      "name": "source_version_verified",
+      "value": "false",
+      "type": "checkbox"
+    },
+    {
+      "name": "capture_template",
+      "value": "mdplace-web-clipper-candidate-url-withheld",
+      "type": "text"
+    },
+    {
+      "name": "capture_template_version",
+      "value": "1",
+      "type": "text"
+    },
+    {
+      "name": "source_captured_at_claim",
+      "value": "{{date|date:\"YYYY-MM-DDTHH:mm:ss.SSSZ\"}}",
+      "type": "text"
+    }
+  ],
+  "triggers": []
+}
