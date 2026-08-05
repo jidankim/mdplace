@@ -1,4 +1,11 @@
 {
+  "activationArtifact": false,
+  "activationBlockers": [
+    "source_profile_hash",
+    "processing_policy_hash",
+    "disposable_vault_persistence_smoke"
+  ],
+  "reportKind": "browser_compatibility_observation",
   "source": {
     "browser": {
       "archiveSha256": "36c8b5fe04c08a418a172206bb392600ec1550941bde6af2d4353df21db87a47",
@@ -12,12 +19,25 @@
       "version": "1.7.0"
     },
     "fixtureBase": "http://127.0.0.1:8766",
-    "fixtureSuiteRevision": "ea3f0ec0b4f65cfcf6ac4de9cb414c307aa41841",
-    "observedAt": "2026-08-05T06:36:54.226Z",
+    "fixtureSuiteRevision": "c60c0172b10728fe59c8db90812889c0e848988c",
+    "captureContractSha256": "ec3532df1d7b07ebb8dd9fdb5570bb13673ffda780e269b231cc7b87c00dfb54",
+    "observedAt": "2026-08-05T10:28:36.125Z",
     "platform": {
       "architecture": "arm64",
       "operatingSystem": "darwin"
-    }
+    },
+    "templateArtifacts": [
+      {
+        "identifier": "mdplace-web-clipper-candidate-url-withheld",
+        "sha256": "25cb91a4afa9365d1c5076bd4bcea8e8136ce44f0963e7e1e8296a7abe672c2a",
+        "version": "1"
+      },
+      {
+        "identifier": "mdplace-web-clipper-candidate-url-retained",
+        "sha256": "5a57e8d0325838a39cf27e537df41e0d374c74788a52caf9c180dca795dc1a89",
+        "version": "1"
+      }
+    ]
   },
   "assertions": [
     {
@@ -498,17 +518,18 @@
       "sentinelPresent": true,
       "diagnostic": null,
       "error": null,
-      "noteName": "candidate-20260805-153649-000",
+      "noteName": "candidate-20260805-192831-000",
       "path": ".mdplace/intake/web-clipper/pending",
       "template": "mdplace Capture Candidate v1 — URL withheld",
       "propertyCount": 7,
       "propertyEnvelopeConforming": true,
       "candidateCreated": true,
       "candidateEnvelopeConforming": true,
-      "candidateSha256": "aa541f2749934d80df64e974b29a0283b7dfb8c5753a9b370da1d47bdace0e46",
+      "candidateSha256": "0ac0db114318ef5f506f937ed9bda038302bf9cdb9f51b62e9a7642dd670e1af",
       "decodedTimestampType": "string_under_yaml_1_2_core",
       "promotionGate": "eligible_for_adapter_validation",
-      "reasons": []
+      "reasons": [],
+      "compatibilityStatus": "candidate_eligible"
     },
     {
       "id": "documentation",
@@ -518,17 +539,18 @@
       "sentinelPresent": true,
       "diagnostic": null,
       "error": null,
-      "noteName": "candidate-20260805-153650-000",
+      "noteName": "candidate-20260805-192831-000",
       "path": ".mdplace/intake/web-clipper/pending",
       "template": "mdplace Capture Candidate v1 — URL withheld",
       "propertyCount": 7,
       "propertyEnvelopeConforming": true,
       "candidateCreated": true,
       "candidateEnvelopeConforming": true,
-      "candidateSha256": "80ae90503889038508ab07834afec2c57fd21d9ddd7544a14ffb4bff7ec519c9",
+      "candidateSha256": "357c7f7e3553df1ae1a80f73cdca03e3c8dab372f57f3366b6e054a1ff8887f7",
       "decodedTimestampType": "string_under_yaml_1_2_core",
       "promotionGate": "eligible_for_adapter_validation",
-      "reasons": []
+      "reasons": [],
+      "compatibilityStatus": "candidate_eligible"
     },
     {
       "id": "schema_article",
@@ -538,17 +560,18 @@
       "sentinelPresent": true,
       "diagnostic": null,
       "error": null,
-      "noteName": "candidate-20260805-153650-000",
+      "noteName": "candidate-20260805-192832-000",
       "path": ".mdplace/intake/web-clipper/pending",
       "template": "mdplace Capture Candidate v1 — URL withheld",
       "propertyCount": 7,
       "propertyEnvelopeConforming": true,
       "candidateCreated": true,
       "candidateEnvelopeConforming": true,
-      "candidateSha256": "ee02ae946316e827d625943beab84c8c9b6605c701720c133d25a6579501d4f1",
+      "candidateSha256": "8dec29c207865dc1ce16c4702979309afdf742d73284e24101f84a16f15741b4",
       "decodedTimestampType": "string_under_yaml_1_2_core",
       "promotionGate": "eligible_for_adapter_validation",
-      "reasons": []
+      "reasons": [],
+      "compatibilityStatus": "candidate_eligible"
     },
     {
       "id": "dynamic_spa",
@@ -558,17 +581,18 @@
       "sentinelPresent": true,
       "diagnostic": null,
       "error": null,
-      "noteName": "candidate-20260805-153651-000",
+      "noteName": "candidate-20260805-192832-000",
       "path": ".mdplace/intake/web-clipper/pending",
       "template": "mdplace Capture Candidate v1 — URL withheld",
       "propertyCount": 7,
       "propertyEnvelopeConforming": true,
       "candidateCreated": true,
       "candidateEnvelopeConforming": true,
-      "candidateSha256": "7ea3bc412bd6eb35eca9603e2d3ab28a0b838ded600432dbe75a23627e74c040",
+      "candidateSha256": "d2106f9d83277f2af7f694b396c8c1c260e1dc8a5f898b478867b3c0d39057f4",
       "decodedTimestampType": "string_under_yaml_1_2_core",
       "promotionGate": "eligible_for_adapter_validation",
-      "reasons": []
+      "reasons": [],
+      "compatibilityStatus": "candidate_eligible"
     },
     {
       "id": "open_shadow_dom",
@@ -578,17 +602,18 @@
       "sentinelPresent": true,
       "diagnostic": null,
       "error": null,
-      "noteName": "candidate-20260805-153651-000",
+      "noteName": "candidate-20260805-192833-000",
       "path": ".mdplace/intake/web-clipper/pending",
       "template": "mdplace Capture Candidate v1 — URL withheld",
       "propertyCount": 7,
       "propertyEnvelopeConforming": true,
       "candidateCreated": true,
       "candidateEnvelopeConforming": true,
-      "candidateSha256": "afa74553b6fafee5c464274191af96bc186843844d95ec5ae4d758b5084b6daf",
+      "candidateSha256": "1dfec340fda62c9d28f6b0cb1b8a3158474577183fb38a4ac0a082332ad7fd8a",
       "decodedTimestampType": "string_under_yaml_1_2_core",
       "promotionGate": "eligible_for_adapter_validation",
-      "reasons": []
+      "reasons": [],
+      "compatibilityStatus": "candidate_eligible"
     },
     {
       "id": "closed_shadow_dom",
@@ -598,19 +623,20 @@
       "sentinelPresent": null,
       "diagnostic": null,
       "error": null,
-      "noteName": "candidate-20260805-153651-000",
+      "noteName": "candidate-20260805-192833-000",
       "path": ".mdplace/intake/web-clipper/pending",
       "template": "mdplace Capture Candidate v1 — URL withheld",
       "propertyCount": 7,
       "propertyEnvelopeConforming": true,
       "candidateCreated": true,
       "candidateEnvelopeConforming": true,
-      "candidateSha256": "66571314286cddcf5f234b394b98e7e70b0d7ce6f9519ca8897a13ceb7134dab",
+      "candidateSha256": "ffe25bec3563343988cee7367274f6a94e97a9a2f253f09fee3b60d639335cb1",
       "decodedTimestampType": "string_under_yaml_1_2_core",
       "promotionGate": "fails_after_intake",
       "reasons": [
         "article_empty"
-      ]
+      ],
+      "compatibilityStatus": "candidate_failed"
     },
     {
       "id": "iframe_only",
@@ -620,19 +646,20 @@
       "sentinelPresent": null,
       "diagnostic": null,
       "error": null,
-      "noteName": "candidate-20260805-153652-000",
+      "noteName": "candidate-20260805-192833-000",
       "path": ".mdplace/intake/web-clipper/pending",
       "template": "mdplace Capture Candidate v1 — URL withheld",
       "propertyCount": 7,
       "propertyEnvelopeConforming": true,
       "candidateCreated": true,
       "candidateEnvelopeConforming": true,
-      "candidateSha256": "12d07b45268e6ac88250a3b7a92681e2595e24208f316294432d6a76a7cde352",
+      "candidateSha256": "13416ad7bfcb4f66ef28b2d39b9c66c426b6d0783b24271aa6733b6857f7b976",
       "decodedTimestampType": "string_under_yaml_1_2_core",
       "promotionGate": "fails_after_intake",
       "reasons": [
         "article_empty"
-      ]
+      ],
+      "compatibilityStatus": "candidate_failed"
     },
     {
       "id": "metadata_only",
@@ -642,19 +669,20 @@
       "sentinelPresent": null,
       "diagnostic": null,
       "error": null,
-      "noteName": "candidate-20260805-153652-000",
+      "noteName": "candidate-20260805-192834-000",
       "path": ".mdplace/intake/web-clipper/pending",
       "template": "mdplace Capture Candidate v1 — URL withheld",
       "propertyCount": 7,
       "propertyEnvelopeConforming": true,
       "candidateCreated": true,
       "candidateEnvelopeConforming": true,
-      "candidateSha256": "fc0c25ea3c1b5749ed771af1a1cbfbfe1d4d4b5f9e6396e0ea1f40fa3142209e",
+      "candidateSha256": "2b65ba7a737aa805c8060acfb6812736986b2f99f122ac2d0225bb602cca1ec6",
       "decodedTimestampType": "string_under_yaml_1_2_core",
       "promotionGate": "fails_after_intake",
       "reasons": [
         "article_empty"
-      ]
+      ],
+      "compatibilityStatus": "candidate_failed"
     },
     {
       "id": "paywall_shell",
@@ -664,17 +692,18 @@
       "sentinelPresent": true,
       "diagnostic": "access_limited_content",
       "error": null,
-      "noteName": "candidate-20260805-153652-000",
+      "noteName": "candidate-20260805-192834-000",
       "path": ".mdplace/intake/web-clipper/pending",
       "template": "mdplace Capture Candidate v1 — URL withheld",
       "propertyCount": 7,
       "propertyEnvelopeConforming": true,
       "candidateCreated": true,
       "candidateEnvelopeConforming": true,
-      "candidateSha256": "50c1904e545bd663b790a27749d90ae20ea52c6c64eeed4d972eb00c50773fe9",
+      "candidateSha256": "cf4446f947f70ead576392df192e208a1992ec35c4cfca0a55bb39693f153da7",
       "decodedTimestampType": "string_under_yaml_1_2_core",
       "promotionGate": "eligible_for_adapter_validation",
-      "reasons": []
+      "reasons": [],
+      "compatibilityStatus": "candidate_eligible"
     },
     {
       "id": "unsafe_resources",
@@ -684,17 +713,18 @@
       "sentinelPresent": true,
       "diagnostic": "markdown_safety_transform_required",
       "error": null,
-      "noteName": "candidate-20260805-153652-000",
+      "noteName": "candidate-20260805-192834-000",
       "path": ".mdplace/intake/web-clipper/pending",
       "template": "mdplace Capture Candidate v1 — URL withheld",
       "propertyCount": 7,
       "propertyEnvelopeConforming": true,
       "candidateCreated": true,
       "candidateEnvelopeConforming": true,
-      "candidateSha256": "736f7dc71669891dfad33802d0a0893523f084df33dc5b3cad52c6d1584ab6bd",
+      "candidateSha256": "e8f19ef0c6bd1e6d2c7b35c0fa222507bc1b9d2eb231259bed95a8b39393b4a5",
       "decodedTimestampType": "string_under_yaml_1_2_core",
       "promotionGate": "eligible_for_adapter_validation",
-      "reasons": []
+      "reasons": [],
+      "compatibilityStatus": "candidate_eligible"
     },
     {
       "id": "marker_collision",
@@ -704,19 +734,20 @@
       "sentinelPresent": true,
       "diagnostic": null,
       "error": null,
-      "noteName": "candidate-20260805-153653-000",
+      "noteName": "candidate-20260805-192835-000",
       "path": ".mdplace/intake/web-clipper/pending",
       "template": "mdplace Capture Candidate v1 — URL withheld",
       "propertyCount": 7,
       "propertyEnvelopeConforming": true,
       "candidateCreated": true,
       "candidateEnvelopeConforming": false,
-      "candidateSha256": "f9c7ae84c70fa5c1a75f86debf56ca048c5a4633e56e2cd523797af469d4370d",
+      "candidateSha256": "c979add08d9d0dafc9d5d4cf1119a9a7ebfda3c275ffc09c6366ee518ecf8c17",
       "decodedTimestampType": "string_under_yaml_1_2_core",
       "promotionGate": "fails_after_intake",
       "reasons": [
         "marker_grammar_invalid"
-      ]
+      ],
+      "compatibilityStatus": "candidate_failed"
     },
     {
       "id": "live_selection",
@@ -726,19 +757,20 @@
       "sentinelPresent": true,
       "diagnostic": null,
       "error": null,
-      "noteName": "candidate-20260805-153653-000",
+      "noteName": "candidate-20260805-192835-000",
       "path": ".mdplace/intake/web-clipper/pending",
       "template": "mdplace Capture Candidate v1 — URL withheld",
       "propertyCount": 7,
       "propertyEnvelopeConforming": true,
       "candidateCreated": true,
       "candidateEnvelopeConforming": true,
-      "candidateSha256": "29aae65b36a8194d7e418a94d4b4de685fd6b184712e9012600741269b3b9b22",
+      "candidateSha256": "e3cee6b8bff282b45cf8daaa89a9401b16b596ac8e3f7551217b6f2f83f9d908",
       "decodedTimestampType": "string_under_yaml_1_2_core",
       "promotionGate": "fails_after_intake",
       "reasons": [
         "live_selection_present"
-      ]
+      ],
+      "compatibilityStatus": "candidate_failed"
     },
     {
       "id": "protected_local_url_profile",
@@ -748,17 +780,18 @@
       "rawUrlPreservedInProtectedIntake": true,
       "diagnostic": "url_sanitization_required_before_promotion",
       "error": null,
-      "noteName": "candidate-20260805-153653-000",
+      "noteName": "candidate-20260805-192835-000",
       "path": ".mdplace/intake/web-clipper/pending",
       "template": "mdplace Capture Candidate v1 — protected local URL",
       "propertyCount": 7,
       "propertyEnvelopeConforming": true,
       "candidateCreated": true,
       "candidateEnvelopeConforming": true,
-      "candidateSha256": "81560a92f15c8d2b09266aa82ef66ebeddc8587628691b71bb56be6152f0afb8",
+      "candidateSha256": "c99901d88c9d40f4bc97e53cd0760fcaba93f6d5206b16faaac2fcec4b1b8f0a",
       "decodedTimestampType": "string_under_yaml_1_2_core",
       "promotionGate": "eligible_for_adapter_validation",
-      "reasons": []
+      "reasons": [],
+      "compatibilityStatus": "candidate_eligible"
     },
     {
       "id": "restricted_browser_page",
@@ -777,7 +810,8 @@
       "candidateEnvelopeConforming": false,
       "candidateSha256": null,
       "promotionGate": null,
-      "reasons": []
+      "reasons": [],
+      "compatibilityStatus": "pre_intake_no_candidate"
     },
     {
       "id": "blank_page",
@@ -796,7 +830,8 @@
       "candidateEnvelopeConforming": false,
       "candidateSha256": null,
       "promotionGate": null,
-      "reasons": []
+      "reasons": [],
+      "compatibilityStatus": "pre_intake_no_candidate"
     }
   ]
 }
