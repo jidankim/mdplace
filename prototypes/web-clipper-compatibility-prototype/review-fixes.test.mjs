@@ -86,6 +86,8 @@ test('candidate envelope rejects undeclared frontmatter and a mismatched templat
 test('candidate envelope requires the static warning and no content outside the outer envelope', () => {
   const wrongWarning = inspectCandidate(candidate(validWithheldMarkers, {warning: '> different warning'}), withheldTemplate);
   const trailing = inspectCandidate(candidate(validWithheldMarkers, {extraBody: 'outside envelope\n'}), withheldTemplate);
+  assert.equal(typeof wrongWarning.candidateEnvelopeConforming, 'boolean');
+  assert.equal(wrongWarning.candidateEnvelopeConforming, false);
   assert.equal(wrongWarning.promotionGate, 'fails_after_intake');
   assert.equal(trailing.promotionGate, 'fails_after_intake');
   assert.ok(wrongWarning.reasons.includes('candidate_envelope_invalid'));

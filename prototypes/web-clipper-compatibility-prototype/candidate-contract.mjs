@@ -135,8 +135,10 @@ export function inspectCandidate(candidate, expectedCaptureTemplate) {
   const envelope = expectedWarning && body.startsWith(`${expectedWarning}\n\n`)
     ? body.slice(expectedWarning.length + 2)
     : null;
-  const bodyConforming = envelope?.startsWith('<!-- mdplace:candidate:v1:start -->\n') &&
-    envelope.endsWith('<!-- mdplace:candidate:v1:end -->\n');
+  const bodyConforming = Boolean(
+    envelope?.startsWith('<!-- mdplace:candidate:v1:start -->\n') &&
+    envelope.endsWith('<!-- mdplace:candidate:v1:end -->\n'),
+  );
   const propertyEnvelopeConforming = valuesConforming &&
     JSON.stringify(candidatePropertyNames) === JSON.stringify(propertyNames);
   const grammar = inspectMarkerGrammar(normalizedCandidate, captureTemplate);
