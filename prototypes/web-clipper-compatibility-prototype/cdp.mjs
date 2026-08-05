@@ -26,6 +26,16 @@ export async function findTarget(debugBase, predicate, label, {
   throw new Error(`target not found: ${label}`);
 }
 
+export async function closeTarget(debugBase, targetId, {
+  fetchImpl = globalThis.fetch,
+  timeoutMs = 1000,
+} = {}) {
+  const response = await fetchImpl(`${debugBase}/json/close/${encodeURIComponent(targetId)}`, {
+    signal: AbortSignal.timeout(timeoutMs),
+  });
+  if (!response.ok) throw new Error(`target cleanup failed: HTTP ${response.status}`);
+}
+
 function connectionError(kind, url) {
   return new Error(`CDP WebSocket ${kind}: ${url}`);
 }
@@ -43,8 +53,15 @@ export class CdpClient {
     this.readySettled = false;
     this.ready = new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
+        if (this.readySettled) return;
         this.readySettled = true;
-        reject(connectionError('open timed out', url));
+        let timeoutError = connectionError('open timed out', url);
+        try {
+          this.socket.close();
+        } catch (error) {
+          timeoutError = new Error(`${timeoutError.message}; socket cleanup failed: ${error.message}`);
+        }
+        reject(timeoutError);
       }, commandTimeoutMs);
       const settle = (callback, value) => {
         if (this.readySettled) return;

@@ -51,7 +51,7 @@ extension_zip="$work_dir/obsidian-web-clipper-1.7.0-chrome.zip"
 if [[ -n ${WEB_CLIPPER_ZIP:-} ]]; then
   cp -- "$WEB_CLIPPER_ZIP" "$extension_zip"
 else
-  curl -fL \
+  curl -fL --connect-timeout 10 --max-time 120 --retry 2 \
     https://github.com/obsidianmd/obsidian-clipper/releases/download/1.7.0/obsidian-web-clipper-1.7.0-chrome.zip \
     -o "$extension_zip"
 fi
@@ -64,7 +64,7 @@ chrome_zip="$work_dir/chrome-mac-arm64.zip"
 if [[ -n ${CHROME_FOR_TESTING_ZIP:-} ]]; then
   cp -- "$CHROME_FOR_TESTING_ZIP" "$chrome_zip"
 else
-  curl -fL \
+  curl -fL --connect-timeout 10 --max-time 120 --retry 2 \
     https://storage.googleapis.com/chrome-for-testing-public/150.0.7871.124/mac-arm64/chrome-mac-arm64.zip \
     -o "$chrome_zip"
 fi
@@ -83,6 +83,22 @@ extension_id=$(node -e '
 ' "$extension_realpath")
 extension_origin="chrome-extension://${extension_id}/"
 
+if [[ "$fixture_port" == "$debug_port" ]]; then
+  echo "fixture and debug ports must differ" >&2
+  exit 1
+fi
+python3 -c '
+import socket, sys
+for value in sys.argv[1:]:
+    probe = socket.socket()
+    try:
+        probe.bind(("127.0.0.1", int(value)))
+    except OSError as error:
+        raise SystemExit(f"local port {value} is unavailable: {error}")
+    finally:
+        probe.close()
+' "$fixture_port" "$debug_port"
+
 python3 -m http.server "$fixture_port" --bind 127.0.0.1 \
   --directory "$prototype_dir/fixtures" >"$work_dir/server.log" 2>&1 &
 server_pid=$!
@@ -91,6 +107,10 @@ for _ in {1..120}; do
   sleep 0.1
 done
 curl -fsS "$fixture_base/semantic-article.html" >/dev/null
+if ! kill -0 "$server_pid" 2>/dev/null; then
+  echo "fixture server exited before readiness" >&2
+  exit 1
+fi
 
 "$chrome_bin" \
   --disable-gpu \
@@ -109,6 +129,10 @@ for _ in {1..120}; do
   sleep 0.1
 done
 curl -fsS "$debug_base/json/version" >/dev/null
+if ! kill -0 "$chrome_pid" 2>/dev/null; then
+  echo "Chrome exited before DevTools readiness" >&2
+  exit 1
+fi
 
 extension_target_ready=false
 for _ in {1..120}; do
@@ -138,11 +162,14 @@ env \
   node "$prototype_dir/bootstrap.mjs"
 
 fixture_suite_revision=${FIXTURE_SUITE_REVISION:-$(git -C "$prototype_dir" rev-parse HEAD)}
+capture_contract_digest=$(shasum -a 256 "$prototype_dir/../../docs/captured-tab-note-intake-contract-v1.md")
+capture_contract_sha256=${capture_contract_digest%% *}
 matrix_output="$work_dir/matrix.json"
 matrix_status=0
 env \
   BROWSER_FAMILY='Chrome for Testing' \
   BROWSER_VERSION='150.0.7871.124' \
+  CAPTURE_CONTRACT_SHA256="$capture_contract_sha256" \
   CHROME_ARCHIVE_SHA256='36c8b5fe04c08a418a172206bb392600ec1550941bde6af2d4353df21db87a47' \
   CHROME_DEBUG_BASE="$debug_base" \
   FIXTURE_BASE="$fixture_base" \
@@ -154,7 +181,7 @@ cat "$matrix_output"
 
 if [[ -n ${EVIDENCE_OUTPUT:-} ]]; then
   mkdir -p -- "$(dirname -- "$EVIDENCE_OUTPUT")"
-  evidence_temp="${EVIDENCE_OUTPUT}.tmp.$$"
+  evidence_temp=$(mktemp "${EVIDENCE_OUTPUT}.tmp.XXXXXX")
   cp -- "$matrix_output" "$evidence_temp"
   mv -- "$evidence_temp" "$EVIDENCE_OUTPUT"
 fi

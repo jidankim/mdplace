@@ -2,25 +2,33 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
 import {inspectCandidate} from './candidate-contract.mjs';
-import {CdpClient, findTarget} from './cdp.mjs';
+import {CdpClient, closeTarget, findTarget} from './cdp.mjs';
 import {classifyCaptureState} from './clipper-popup.mjs';
 import {injectFileText} from './probe-expression.mjs';
 
 const withheldTemplate = 'mdplace-web-clipper-candidate-url-withheld';
 
-function candidate(markers, {captureTemplate = withheldTemplate, extraFrontmatter = ''} = {}) {
+function candidate(markers, {
+  captureTemplate = withheldTemplate,
+  extraBody = '',
+  extraFrontmatter = '',
+  plainStrings = false,
+  timestamp = '"2026-08-05T12:34:56.789Z"',
+  warning = '> [!warning] CAPTURE CANDIDATE — NOT A NOTE\n> Untrusted local intake. Not valid for placement or processing.',
+} = {}) {
+  const stringValue = (value) => plainStrings ? value : `"${value}"`;
   return `---
-mdplace_candidate_schema: "mdplace.capture-candidate/v1"
-capture_source: "obsidian_web_clipper"
-source_version_claim: "1.7.0"
+mdplace_candidate_schema: ${stringValue('mdplace.capture-candidate/v1')}
+capture_source: ${stringValue('obsidian_web_clipper')}
+source_version_claim: ${stringValue('1.7.0')}
 source_version_verified: false
-capture_template: "${captureTemplate}"
+capture_template: ${stringValue(captureTemplate)}
 capture_template_version: "1"
-source_captured_at_claim: "2026-08-05T12:34:56.789Z"${extraFrontmatter}
+source_captured_at_claim: ${plainStrings ? timestamp.replaceAll('"', '') : timestamp}${extraFrontmatter}
 ---
-> [!warning] CAPTURE CANDIDATE — NOT A NOTE
+${warning}
 
-${markers.join('\n')}
+${markers.join('\n')}${extraBody ? `\n${extraBody.trimEnd()}` : ''}
 `;
 }
 
@@ -69,6 +77,30 @@ test('candidate envelope rejects undeclared frontmatter and a mismatched templat
   }), withheldTemplate);
   assert.equal(extra.candidateEnvelopeConforming, false);
   assert.equal(mismatch.candidateEnvelopeConforming, false);
+  assert.equal(extra.promotionGate, 'fails_after_intake');
+  assert.equal(mismatch.promotionGate, 'fails_after_intake');
+  assert.ok(extra.reasons.includes('candidate_envelope_invalid'));
+  assert.ok(mismatch.reasons.includes('candidate_envelope_invalid'));
+});
+
+test('candidate envelope requires the static warning and no content outside the outer envelope', () => {
+  const wrongWarning = inspectCandidate(candidate(validWithheldMarkers, {warning: '> different warning'}), withheldTemplate);
+  const trailing = inspectCandidate(candidate(validWithheldMarkers, {extraBody: 'outside envelope\n'}), withheldTemplate);
+  assert.equal(wrongWarning.promotionGate, 'fails_after_intake');
+  assert.equal(trailing.promotionGate, 'fails_after_intake');
+  assert.ok(wrongWarning.reasons.includes('candidate_envelope_invalid'));
+  assert.ok(trailing.reasons.includes('candidate_envelope_invalid'));
+});
+
+test('candidate frontmatter accepts contract-safe plain strings and rejects unmatched quotes', () => {
+  const plain = inspectCandidate(candidate(validWithheldMarkers, {plainStrings: true}), withheldTemplate);
+  const unmatched = inspectCandidate(candidate(validWithheldMarkers, {
+    timestamp: '"2026-08-05T12:34:56.789Z',
+  }), withheldTemplate);
+  assert.equal(plain.candidateEnvelopeConforming, true);
+  assert.equal(plain.promotionGate, 'eligible_for_adapter_validation');
+  assert.equal(unmatched.candidateEnvelopeConforming, false);
+  assert.equal(unmatched.promotionGate, 'fails_after_intake');
 });
 
 test('clipboard timeout is infrastructure failure, not pre-intake rejection', () => {
@@ -106,6 +138,7 @@ class FakeSocket {
   send() {}
 
   close() {
+    this.closed = true;
     this.emit('close', {});
   }
 }
@@ -137,6 +170,27 @@ test('target discovery has a bounded fetch deadline', async (context) => {
     new Promise((_, reject) => setTimeout(() => reject(new Error('test guard expired')), 30)),
   ]);
   await assert.rejects(guarded, /target not found: fixture/);
+});
+
+test('CDP open timeout closes its socket and target cleanup is bounded', async () => {
+  class NeverOpenSocket extends FakeSocket {
+    emit(type, event) {
+      if (type !== 'open') super.emit(type, event);
+    }
+  }
+  const client = new CdpClient('ws://never-opens', {commandTimeoutMs: 5, WebSocketImpl: NeverOpenSocket});
+  await assert.rejects(client.send('Runtime.evaluate'), /open timed out/);
+  assert.equal(client.socket.closed, true);
+
+  const requests = [];
+  await closeTarget('http://127.0.0.1:9228', 'target/id', {
+    fetchImpl: async (url, options) => {
+      requests.push({options, url});
+      return {ok: true, status: 200};
+    },
+  });
+  assert.equal(requests[0].url, 'http://127.0.0.1:9228/json/close/target%2Fid');
+  assert.ok(requests[0].options.signal instanceof AbortSignal);
 });
 
 test('runner authenticates Chrome, preserves sandboxing, and documents evidence', async () => {

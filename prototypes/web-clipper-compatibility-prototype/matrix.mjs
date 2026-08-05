@@ -19,6 +19,18 @@ const withheldTemplate = templateExpectations.get(withheldTemplateName).captureT
 const retainedTemplate = templateExpectations.get(retainedTemplateName).captureTemplate;
 const intakePath = '.mdplace/intake/web-clipper/pending';
 const retainedFixtureUrl = `${fixtureBase}/semantic-article.html?session=synthetic-fixture-value#fragment`;
+const templateArtifacts = [
+  {
+    identifier: withheldTemplate,
+    sha256: '25cb91a4afa9365d1c5076bd4bcea8e8136ce44f0963e7e1e8296a7abe672c2a',
+    version: '1',
+  },
+  {
+    identifier: retainedTemplate,
+    sha256: '5a57e8d0325838a39cf27e537df41e0d374c74788a52caf9c180dca795dc1a89',
+    version: '1',
+  },
+];
 
 if (!extensionId) {
   console.error('WEB_CLIPPER_EXTENSION_ID is required');
@@ -145,6 +157,14 @@ for (const control of [
   });
 }
 
+for (const result of results) {
+  result.compatibilityStatus = result.extraction === 'failed_before_intake'
+    ? 'pre_intake_no_candidate'
+    : result.promotionGate === 'eligible_for_adapter_validation'
+      ? 'candidate_eligible'
+      : 'candidate_failed';
+}
+
 fixture.close();
 popup.close();
 
@@ -212,6 +232,13 @@ expect(
 );
 
 const report = {
+  activationArtifact: false,
+  activationBlockers: [
+    'source_profile_hash',
+    'processing_policy_hash',
+    'disposable_vault_persistence_smoke',
+  ],
+  reportKind: 'browser_compatibility_observation',
   source: {
     browser: {
       archiveSha256: process.env.CHROME_ARCHIVE_SHA256 ?? null,
@@ -226,11 +253,13 @@ const report = {
     },
     fixtureBase,
     fixtureSuiteRevision: process.env.FIXTURE_SUITE_REVISION ?? null,
+    captureContractSha256: process.env.CAPTURE_CONTRACT_SHA256 ?? null,
     observedAt: new Date().toISOString(),
     platform: {
       architecture: process.arch,
       operatingSystem: process.platform,
     },
+    templateArtifacts,
   },
   assertions,
   results,

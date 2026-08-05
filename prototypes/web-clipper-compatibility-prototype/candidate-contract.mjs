@@ -11,6 +11,26 @@ const propertyNames = [
 ];
 
 const markerPrefix = '<!-- mdplace:candidate:';
+const warningByTemplate = new Map([
+  ['mdplace-web-clipper-candidate-url-withheld', '> [!warning] CAPTURE CANDIDATE — NOT A NOTE\n> Untrusted local intake. Not valid for placement or processing.'],
+  ['mdplace-web-clipper-candidate-url-retained', '> [!warning] CAPTURE CANDIDATE — NOT A NOTE\n> Untrusted protected local intake. Not valid for placement or processing.'],
+]);
+
+function decodedString(line, name) {
+  const prefix = `${name}: `;
+  if (!line?.startsWith(prefix)) return null;
+  const source = line.slice(prefix.length);
+  const startsQuoted = source.startsWith('"');
+  const endsQuoted = source.endsWith('"');
+  if (startsQuoted !== endsQuoted) return null;
+  if (!startsQuoted) return source;
+  try {
+    const value = JSON.parse(source);
+    return typeof value === 'string' ? value : null;
+  } catch {
+    return null;
+  }
+}
 
 function inspectMarkerGrammar(candidate, captureTemplate) {
   const lines = candidate.replaceAll('\r\n', '\n').replaceAll('\r', '\n').split('\n');
@@ -77,28 +97,40 @@ export function inspectCandidate(candidate, expectedCaptureTemplate) {
     return {candidateCreated: false, candidateEnvelopeConforming: false, candidateSha256: null, promotionGate: null, reasons: []};
   }
   const reasons = [];
-  const frontmatter = candidate.match(/^---\n([\s\S]*?)\n---\n/);
+  const normalizedCandidate = candidate.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
+  const frontmatter = normalizedCandidate.match(/^---\n([\s\S]*?)\n---\n/);
   const frontmatterLines = (frontmatter?.[1] ?? '').split('\n');
   const candidatePropertyNames = frontmatterLines.map((line) => line.match(/^([a-z_]+):/)?.[1]).filter(Boolean);
-  const captureTemplate = frontmatterLines[4]?.match(/^capture_template: "([^"]+)"$/)?.[1] ?? null;
+  const captureTemplate = decodedString(frontmatterLines[4], 'capture_template');
+  const sourceCapturedAt = decodedString(frontmatterLines[6], 'source_captured_at_claim');
   const valuesConforming =
     frontmatterLines.length === propertyNames.length &&
-    frontmatterLines[0] === 'mdplace_candidate_schema: "mdplace.capture-candidate/v1"' &&
-    frontmatterLines[1] === 'capture_source: "obsidian_web_clipper"' &&
-    frontmatterLines[2] === 'source_version_claim: "1.7.0"' &&
+    decodedString(frontmatterLines[0], 'mdplace_candidate_schema') === 'mdplace.capture-candidate/v1' &&
+    decodedString(frontmatterLines[1], 'capture_source') === 'obsidian_web_clipper' &&
+    decodedString(frontmatterLines[2], 'source_version_claim') === '1.7.0' &&
     frontmatterLines[3] === 'source_version_verified: false' &&
     captureTemplate === expectedCaptureTemplate &&
-    frontmatterLines[5] === 'capture_template_version: "1"' &&
-    /^source_captured_at_claim: "?\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}(?:Z|[+-]\d{2}:?\d{2})"?$/.test(frontmatterLines[6]);
-  const grammar = inspectMarkerGrammar(candidate, captureTemplate);
+    decodedString(frontmatterLines[5], 'capture_template_version') === '1' &&
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}(?:Z|[+-]\d{2}:?\d{2})$/.test(sourceCapturedAt ?? '');
+  const expectedWarning = warningByTemplate.get(captureTemplate);
+  const body = frontmatter ? normalizedCandidate.slice(frontmatter[0].length) : '';
+  const envelope = expectedWarning && body.startsWith(`${expectedWarning}\n\n`)
+    ? body.slice(expectedWarning.length + 2)
+    : null;
+  const bodyConforming = envelope?.startsWith('<!-- mdplace:candidate:v1:start -->\n') &&
+    envelope.endsWith('<!-- mdplace:candidate:v1:end -->\n');
+  const propertyEnvelopeConforming = valuesConforming &&
+    JSON.stringify(candidatePropertyNames) === JSON.stringify(propertyNames);
+  const grammar = inspectMarkerGrammar(normalizedCandidate, captureTemplate);
   if (grammar.liveSelectionPresent) reasons.push('live_selection_present');
   if (!grammar.article?.trim()) reasons.push('article_empty');
   if (!grammar.valid) reasons.push('marker_grammar_invalid');
+  if (!propertyEnvelopeConforming || !bodyConforming) reasons.push('candidate_envelope_invalid');
   return {
     candidateCreated: true,
-    candidateEnvelopeConforming: valuesConforming &&
-      grammar.valid &&
-      JSON.stringify(candidatePropertyNames) === JSON.stringify(propertyNames),
+    candidateEnvelopeConforming: propertyEnvelopeConforming &&
+      bodyConforming &&
+      grammar.valid,
     candidateSha256: createHash('sha256').update(candidate, 'utf8').digest('hex'),
     decodedTimestampType: 'string_under_yaml_1_2_core',
     promotionGate: reasons.length ? 'fails_after_intake' : 'eligible_for_adapter_validation',

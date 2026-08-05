@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import {readFile} from 'node:fs/promises';
-import {CdpClient, evaluate, findTarget} from './cdp.mjs';
+import {CdpClient, closeTarget, evaluate, findTarget} from './cdp.mjs';
 import {compressToUTF16} from './lz-string.mjs';
 
 const debugBase = process.env.CHROME_DEBUG_BASE;
@@ -39,19 +39,24 @@ function storageChunks(template) {
 const hostUrl = `chrome-extension://${extensionId}/highlights.html`;
 const readinessDeadline = Date.now() + 15000;
 let host = null;
+let hostTargetId = null;
 let manifest = null;
 let readinessError = null;
 while (Date.now() < readinessDeadline && !host) {
   let candidate = null;
+  let candidateTargetId = null;
   try {
     const response = await fetch(`${debugBase}/json/new?${encodeURIComponent(hostUrl)}`, {
       method: 'PUT',
       signal: AbortSignal.timeout(1000),
     });
     if (!response.ok) throw new Error(`bootstrap target creation failed: HTTP ${response.status}`);
+    const createdTarget = await response.json();
+    candidateTargetId = createdTarget.id;
+    if (!candidateTargetId) throw new Error('bootstrap target creation returned no target id');
     const hostTarget = await findTarget(
       debugBase,
-      (target) => target.type === 'page' && target.url === hostUrl,
+      (target) => target.id === candidateTargetId && target.type === 'page' && target.url === hostUrl,
       'Web Clipper bootstrap host',
       {timeoutMs: Math.min(1000, readinessDeadline - Date.now())},
     );
@@ -66,9 +71,17 @@ while (Date.now() < readinessDeadline && !host) {
     if (!APIsReady) throw new Error('Web Clipper extension APIs are not ready');
     manifest = await evaluate(candidate, 'chrome.runtime.getManifest()');
     host = candidate;
+    hostTargetId = candidateTargetId;
   } catch (error) {
     readinessError = error;
     candidate?.close();
+    if (candidateTargetId) {
+      try {
+        await closeTarget(debugBase, candidateTargetId);
+      } catch (cleanupError) {
+        readinessError = new Error(`${error.message}; ${cleanupError.message}`);
+      }
+    }
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
 }
@@ -129,6 +142,7 @@ const popupTarget = await findTarget(
 if (!popupTarget.webSocketDebuggerUrl) throw new Error('Web Clipper popup is not debuggable');
 
 host.close();
+await closeTarget(debugBase, hostTargetId);
 
 console.log(JSON.stringify({
   extensionId,
