@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta property="og:title" content="Iframe-only fixture">
+  <title>Iframe-only fixture</title>
+</head>
+<body>
+  <iframe title="Embedded story" srcdoc="
+    <!doctype html><html lang='en'><body><main><article>
+      <h1>Iframe-only story</h1>
+      <p>IFRAME_ONLY_SENTINEL exists only in the embedded document.</p>
+      <p>The top-level page deliberately carries no readable article.</p>
+    </article></main></body></html>
+  "></iframe>
+</body>
+</html>

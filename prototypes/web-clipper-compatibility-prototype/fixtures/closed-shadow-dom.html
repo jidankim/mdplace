@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta property="og:title" content="Closed shadow DOM fixture">
+  <title>Closed shadow DOM fixture</title>
+</head>
+<body>
+  <fixture-story></fixture-story>
+  <script>
+    document.querySelector('fixture-story').attachShadow({mode: 'closed'}).innerHTML = `
+      <main><article>
+        <h1>Closed shadow DOM fixture</h1>
+        <p>CLOSED_SHADOW_SENTINEL is intentionally inaccessible from the page document.</p>
+        <p>This content represents components whose closed root cannot be flattened by an extension.</p>
+      </article></main>`;
+  </script>
+</body>
+</html>

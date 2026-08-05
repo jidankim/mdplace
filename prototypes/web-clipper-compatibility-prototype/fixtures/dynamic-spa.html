@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Dynamic SPA fixture</title>
+</head>
+<body>
+  <div id="app">Loading fixture...</div>
+  <script>
+    setTimeout(() => {
+      document.querySelector('#app').innerHTML = `
+        <main><article>
+          <h1>Dynamic SPA fixture</h1>
+          <p>DYNAMIC_SPA_SENTINEL appears only after client-side rendering.</p>
+          <p>The second mounted paragraph verifies that extraction observes the settled live DOM.</p>
+          <p>The final mounted paragraph makes the result representative of a short client-rendered article.</p>
+        </article></main>`;
+      document.title = 'Dynamic SPA fixture — mounted';
+    }, 250);
+  </script>
+</body>
+</html>
