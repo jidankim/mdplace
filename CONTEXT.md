@@ -4,6 +4,22 @@ mdplace governs the semantic placement of Markdown notes while keeping content, 
 
 ## Language
 
+**mdplace Agent**:
+The persistent local authority for one vault that coordinates capture processing, semantic decisions, derived views, and authorized filesystem materialization.
+_Avoid_: daemon, service, worker
+
+**Semantic Kernel**:
+The sole authority that validates commands and appends canonical semantic operations for a vault, whether hosted by the background mdplace Agent or foreground recovery mode.
+_Avoid_: direct ledger writer, database writer
+
+**Control Channel**:
+The same-user, per-vault, operating-system-local path through which a Control Client sends commands to the mdplace Agent.
+_Avoid_: network API, loopback service, remote control endpoint
+
+**Vault Mutation Gate**:
+The sole mdplace boundary that performs journaled, precondition-checked filesystem changes inside a vault without deciding semantic truth.
+_Avoid_: semantic writer, arbitrary filesystem access
+
 **Capture Source**:
 An external producer that writes an untrusted Capture Candidate from exactly one browser tab without making semantic decisions. Stock Obsidian Web Clipper 1.7.0 is the first Capture Source.
 _Avoid_: Capture Adapter, semantic classifier
