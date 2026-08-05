@@ -16,6 +16,22 @@ const warningByTemplate = new Map([
   ['mdplace-web-clipper-candidate-url-retained', '> [!warning] CAPTURE CANDIDATE — NOT A NOTE\n> Untrusted protected local intake. Not valid for placement or processing.'],
 ]);
 
+export function isRfc3339MillisTimestamp(value) {
+  if (typeof value !== 'string') return false;
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.(\d{3})(?:Z|[+-](\d{2}):(\d{2}))$/.exec(value);
+  if (!match) return false;
+  const [, yearText, monthText, dayText, hourText, minuteText, secondText, , offsetHourText, offsetMinuteText] = match;
+  const [year, month, day, hour, minute, second] =
+    [yearText, monthText, dayText, hourText, minuteText, secondText].map(Number);
+  const leapYear = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  const daysInMonth = [31, leapYear ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  const offsetValid = offsetHourText === undefined ||
+    (Number(offsetHourText) <= 23 && Number(offsetMinuteText) <= 59);
+  return month >= 1 && month <= 12 &&
+    day >= 1 && day <= daysInMonth[month - 1] &&
+    hour <= 23 && minute <= 59 && second <= 60 && offsetValid;
+}
+
 function decodedString(line, name) {
   const prefix = `${name}: `;
   if (!line?.startsWith(prefix)) return null;
@@ -113,7 +129,7 @@ export function inspectCandidate(candidate, expectedCaptureTemplate) {
     frontmatterLines[3] === 'source_version_verified: false' &&
     captureTemplate === expectedCaptureTemplate &&
     decodedString(frontmatterLines[5], 'capture_template_version') === '1' &&
-    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}(?:Z|[+-]\d{2}:?\d{2})$/.test(sourceCapturedAt ?? '');
+    isRfc3339MillisTimestamp(sourceCapturedAt ?? '');
   const expectedWarning = warningByTemplate.get(captureTemplate);
   const body = frontmatter ? normalizedCandidate.slice(frontmatter[0].length) : '';
   const envelope = expectedWarning && body.startsWith(`${expectedWarning}\n\n`)
@@ -152,7 +168,7 @@ export function inspectProperties(properties, captureTemplate) {
   const envelopeConforming = properties.length === propertyNames.length && properties.every((property, index) =>
     property.name === propertyNames[index] &&
     property.type === ['text', 'text', 'text', 'checkbox', 'text', 'text', 'text'][index] &&
-    (index === 6 ? /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}(?:Z|[+-]\d{2}:?\d{2})$/.test(property.value) : property.value === expectedValues[index])
+    (index === 6 ? isRfc3339MillisTimestamp(property.value) : property.value === expectedValues[index])
   );
   return {propertyCount: properties.length, propertyEnvelopeConforming: envelopeConforming};
 }

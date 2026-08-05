@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
-import {inspectCandidate} from './candidate-contract.mjs';
+import {inspectCandidate, inspectProperties} from './candidate-contract.mjs';
 import {CdpClient, closeTarget, findTarget} from './cdp.mjs';
 import {classifyCaptureState} from './clipper-popup.mjs';
 import {injectFileText} from './probe-expression.mjs';
@@ -106,6 +106,32 @@ test('candidate frontmatter accepts safe plain strings and rejects invalid times
   assert.equal(unquotedTimestamp.promotionGate, 'fails_after_intake');
   assert.equal(unmatched.candidateEnvelopeConforming, false);
   assert.equal(unmatched.promotionGate, 'fails_after_intake');
+});
+
+test('candidate envelope requires a real RFC 3339 millisecond timestamp', () => {
+  const validOffset = inspectCandidate(candidate(validWithheldMarkers, {
+    timestamp: '"2026-08-05T12:34:56.789+09:00"',
+  }), withheldTemplate);
+  const offsetWithoutColon = inspectCandidate(candidate(validWithheldMarkers, {
+    timestamp: '"2026-08-05T12:34:56.789+0900"',
+  }), withheldTemplate);
+  const impossibleDate = inspectCandidate(candidate(validWithheldMarkers, {
+    timestamp: '"2026-99-99T99:99:99.999Z"',
+  }), withheldTemplate);
+  const properties = [
+    {name: 'mdplace_candidate_schema', type: 'text', value: 'mdplace.capture-candidate/v1'},
+    {name: 'capture_source', type: 'text', value: 'obsidian_web_clipper'},
+    {name: 'source_version_claim', type: 'text', value: '1.7.0'},
+    {name: 'source_version_verified', type: 'checkbox', value: false},
+    {name: 'capture_template', type: 'text', value: withheldTemplate},
+    {name: 'capture_template_version', type: 'text', value: '1'},
+    {name: 'source_captured_at_claim', type: 'text', value: '2026-02-30T12:34:56.789Z'},
+  ];
+
+  assert.equal(validOffset.candidateEnvelopeConforming, true);
+  assert.equal(offsetWithoutColon.candidateEnvelopeConforming, false);
+  assert.equal(impossibleDate.candidateEnvelopeConforming, false);
+  assert.equal(inspectProperties(properties, withheldTemplate).propertyEnvelopeConforming, false);
 });
 
 test('clipboard timeout is infrastructure failure, not pre-intake rejection', () => {
