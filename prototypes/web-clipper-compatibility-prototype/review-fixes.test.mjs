@@ -24,7 +24,7 @@ source_version_claim: ${stringValue('1.7.0')}
 source_version_verified: false
 capture_template: ${stringValue(captureTemplate)}
 capture_template_version: "1"
-source_captured_at_claim: ${plainStrings ? timestamp.replaceAll('"', '') : timestamp}${extraFrontmatter}
+source_captured_at_claim: ${timestamp}${extraFrontmatter}
 ---
 ${warning}
 
@@ -92,13 +92,18 @@ test('candidate envelope requires the static warning and no content outside the 
   assert.ok(trailing.reasons.includes('candidate_envelope_invalid'));
 });
 
-test('candidate frontmatter accepts contract-safe plain strings and rejects unmatched quotes', () => {
+test('candidate frontmatter accepts safe plain strings and rejects invalid timestamp quoting', () => {
   const plain = inspectCandidate(candidate(validWithheldMarkers, {plainStrings: true}), withheldTemplate);
+  const unquotedTimestamp = inspectCandidate(candidate(validWithheldMarkers, {
+    timestamp: '2026-08-05T12:34:56.789Z',
+  }), withheldTemplate);
   const unmatched = inspectCandidate(candidate(validWithheldMarkers, {
     timestamp: '"2026-08-05T12:34:56.789Z',
   }), withheldTemplate);
   assert.equal(plain.candidateEnvelopeConforming, true);
   assert.equal(plain.promotionGate, 'eligible_for_adapter_validation');
+  assert.equal(unquotedTimestamp.candidateEnvelopeConforming, false);
+  assert.equal(unquotedTimestamp.promotionGate, 'fails_after_intake');
   assert.equal(unmatched.candidateEnvelopeConforming, false);
   assert.equal(unmatched.promotionGate, 'fails_after_intake');
 });

@@ -102,7 +102,9 @@ export function inspectCandidate(candidate, expectedCaptureTemplate) {
   const frontmatterLines = (frontmatter?.[1] ?? '').split('\n');
   const candidatePropertyNames = frontmatterLines.map((line) => line.match(/^([a-z_]+):/)?.[1]).filter(Boolean);
   const captureTemplate = decodedString(frontmatterLines[4], 'capture_template');
-  const sourceCapturedAt = decodedString(frontmatterLines[6], 'source_captured_at_claim');
+  const sourceCapturedAt = frontmatterLines[6]?.startsWith('source_captured_at_claim: "')
+    ? decodedString(frontmatterLines[6], 'source_captured_at_claim')
+    : null;
   const valuesConforming =
     frontmatterLines.length === propertyNames.length &&
     decodedString(frontmatterLines[0], 'mdplace_candidate_schema') === 'mdplace.capture-candidate/v1' &&
