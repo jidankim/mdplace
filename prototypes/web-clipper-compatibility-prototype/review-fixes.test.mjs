@@ -204,6 +204,9 @@ test('runner authenticates Chrome, preserves sandboxing, and documents evidence'
   ]);
   assert.match(runner, /36c8b5fe04c08a418a172206bb392600ec1550941bde6af2d4353df21db87a47/);
   assert.doesNotMatch(runner, /--no-sandbox/);
+  const focusIndex = runner.indexOf('set frontmost of first process whose unix id is ${chrome_pid} to true');
+  const bootstrapIndex = runner.indexOf('node "$prototype_dir/bootstrap.mjs"');
+  assert.ok(focusIndex >= 0 && focusIndex < bootstrapIndex, 'Chrome must be foregrounded before opening the popup');
   assert.match(readme, /evidence\/matrix-chrome-150-macos-arm64\.json/);
   assert.match(probe, /127\.0\.0\.1:9228/);
   assert.match(fixture, /id="live-selection-target"/);

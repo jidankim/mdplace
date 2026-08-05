@@ -153,6 +153,14 @@ if [[ "$extension_target_ready" != true ]]; then
   exit 1
 fi
 
+frontmost=$(/usr/bin/osascript \
+  -e "tell application \"System Events\" to set frontmost of first process whose unix id is ${chrome_pid} to true" \
+  -e "tell application \"System Events\" to get frontmost of first process whose unix id is ${chrome_pid}")
+if [[ "$frontmost" != true ]]; then
+  echo "Chrome did not become the frontmost macOS application" >&2
+  exit 1
+fi
+
 env \
   CHROME_DEBUG_BASE="$debug_base" \
   FIXTURE_BASE="$fixture_base" \

@@ -75,7 +75,7 @@ On macOS arm64, from the repository root:
 bash prototypes/web-clipper-compatibility-prototype/run.sh
 ```
 
-The runner downloads Chrome for Testing 150.0.7871.124 and the official Web Clipper 1.7.0 Chrome package unless `CHROME_FOR_TESTING_ZIP` and `WEB_CLIPPER_ZIP` point to local copies. It uses disposable browser and fixture-server state and removes that state on exit.
+The runner downloads Chrome for Testing 150.0.7871.124 and the official Web Clipper 1.7.0 Chrome package unless `CHROME_FOR_TESTING_ZIP` and `WEB_CLIPPER_ZIP` point to local copies. It uses disposable browser and fixture-server state and removes that state on exit. Because Chrome permits `chrome.action.openPopup()` only for the frontmost application window, the runner asks macOS System Events to foreground the exact Chrome-for-Testing process by PID before opening the popup. The browser may briefly take focus, and macOS may request Automation permission for the invoking terminal.
 
 Set `EVIDENCE_OUTPUT` to atomically retain the matrix JSON from a run:
 
