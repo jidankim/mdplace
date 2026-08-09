@@ -1,0 +1,9 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-PKG-BND-003",
+  "category": "exact_boundary",
+  "requirement_ids": ["REQ-PKG-002", "REQ-PKG-006", "REQ-PKG-009"],
+  "subject": {"kind": "sha256_boundary", "value": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0"},
+  "expected": {"verdict": "fail", "codes": ["schema.pattern"], "outputs": ["digest rejected"], "operations": ["validate sha256 boundary"], "receipts": ["ValidationReceipt"], "filesystem_effects": ["none"], "terminal_state": "rejected", "illegal_transition": false}
+}

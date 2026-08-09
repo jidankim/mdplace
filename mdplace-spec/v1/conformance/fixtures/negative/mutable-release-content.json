@@ -1,0 +1,18 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-PKG-NEG-004",
+  "category": "negative",
+  "requirement_ids": ["REQ-PKG-002", "REQ-PKG-003", "REQ-PKG-008", "REQ-PKG-010"],
+  "subject": {
+    "kind": "release_mutation",
+    "source_version": "1.0.0",
+    "source_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "source_digest_after_attempt": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "source_path": "releases/1.0.0",
+    "target_version": "1.0.0",
+    "target_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "target_path": "releases/1.0.0"
+  },
+  "expected": {"verdict": "fail", "codes": ["release.immutable"], "outputs": ["release mutation rejected"], "operations": ["compare version and path bindings"], "receipts": ["PackageTransitionDenied", "VersionAmendmentReport"], "filesystem_effects": ["preserve released source byte-for-byte"], "terminal_state": "released", "illegal_transition": true}
+}

@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:transition-table:v1",
+  "title": "mdplace lifecycle transition table",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "table_id", "lifecycle", "version", "states", "commands", "transitions"],
+  "properties": {
+    "$schema": {"const": "../schemas/transition-table.schema.json"},
+    "schema_id": {"const": "mdplace.transition-table/v1"},
+    "table_id": {"type": "string", "pattern": "^TRANS-[A-Z][A-Z0-9-]{1,31}$"},
+    "lifecycle": {"type": "string", "minLength": 1},
+    "version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "states": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}},
+    "commands": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}},
+    "transitions": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/transition"}}
+  },
+  "$defs": {
+    "stringList": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["roles", "quorum", "distinct_actors", "delegation"],
+      "properties": {
+        "roles": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"enum": ["package_author", "vault_owner", "independent_technical_reviewer", "release_coordinator"]}
+        },
+        "quorum": {"type": "integer", "minimum": 1, "maximum": 2},
+        "distinct_actors": {"type": "boolean"},
+        "delegation": {"enum": ["forbidden", "permitted"]}
+      }
+    },
+    "idempotency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key_fields", "retry_result"],
+      "properties": {
+        "key_fields": {"$ref": "#/$defs/stringList"},
+        "retry_result": {"type": "string", "minLength": 1}
+      }
+    },
+    "failure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "state_effect", "emitted_records", "filesystem_effects"],
+      "properties": {
+        "code": {"type": "string", "pattern": "^[a-z][a-z0-9_.]*$"},
+        "state_effect": {"const": "unchanged"},
+        "emitted_records": {"$ref": "#/$defs/stringList"},
+        "filesystem_effects": {"$ref": "#/$defs/stringList"}
+      }
+    },
+    "transition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "transition_id",
+        "command_or_event",
+        "from_state",
+        "allowed",
+        "actor_authority",
+        "preconditions",
+        "base_references",
+        "emitted_records",
+        "filesystem_effects",
+        "idempotency",
+        "terminal_state",
+        "failure_result",
+        "recovery"
+      ],
+      "properties": {
+        "transition_id": {"type": "string", "pattern": "^TR-PKG-[0-9]{3}$"},
+        "command_or_event": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+        "from_state": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+        "allowed": {"type": "boolean"},
+        "actor_authority": {"$ref": "#/$defs/authority"},
+        "preconditions": {"$ref": "#/$defs/stringList"},
+        "base_references": {"$ref": "#/$defs/stringList"},
+        "emitted_records": {"$ref": "#/$defs/stringList"},
+        "filesystem_effects": {"$ref": "#/$defs/stringList"},
+        "idempotency": {"$ref": "#/$defs/idempotency"},
+        "terminal_state": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+        "failure_result": {"$ref": "#/$defs/failure"},
+        "recovery": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

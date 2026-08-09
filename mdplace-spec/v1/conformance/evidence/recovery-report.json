@@ -1,0 +1,20 @@
+{
+  "schema_id": "mdplace.recovery-report/v1",
+  "fixture_id": "FIX-PKG-REC-001",
+  "source_state": "released",
+  "source_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "crash_point": "after_target_directory_created",
+  "operations": [
+    "verify source digest",
+    "inspect staged target",
+    "discard unverified partial target"
+  ],
+  "receipts": ["PackageRecoveryReport"],
+  "filesystem_effects": [
+    "preserve released source byte-for-byte",
+    "remove unverified partial target"
+  ],
+  "terminal_state": "released",
+  "source_preserved": true,
+  "verdict": "pass"
+}

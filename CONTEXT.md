@@ -291,3 +291,27 @@ _Avoid_: Warning, transient error
 **Accepted Taxonomy State**:
 The current authoritative taxonomy derived from the accepted append-only ledger of promotion, supersession, and reversal decisions. It remains authoritative independently of the potentially lagging Folder Projection, which materializes but does not define it.
 _Avoid_: Current taxonomy file
+
+**Specification Package**:
+An independently versioned, immutable-after-release collection of mdplace Normative Material, Informative Material, schemas, Conformance Fixtures, transition tables, traceability, and validation evidence. The `mdplace-spec/v1` series begins the contract and never contains production mdplace behavior.
+_Avoid_: Implementation bundle, mutable specification folder
+
+**Normative Material**:
+Binding content in a Specification Package that defines required behavior, authority, schemas, transitions, acceptance gates, or conformance outcomes. Its authority is declared by the package manifest and cannot be weakened by Informative Material.
+_Avoid_: Guidance, example, background
+
+**Informative Material**:
+Nonbinding context, rationale, examples, generated reports, or operator guidance in a Specification Package. It may explain Normative Material but cannot add, remove, or override a requirement.
+_Avoid_: Optional requirement, secondary authority
+
+**Conformance Fixture**:
+A deterministic, version-bound input and observable oracle used to accept or reject a Specification Package or implementation claim without inspecting private implementation details.
+_Avoid_: Unit-test mock, illustrative sample
+
+**Traceability Record**:
+A stable machine-readable binding from one normative requirement to its accepted decision source, canonical terms, schemas or transition tables, positive and negative Conformance Fixtures, acceptance gate, scope, and validation evidence.
+_Avoid_: Link list, issue backlink
+
+**Package Amendment**:
+A new immutable Specification Package release that names the earlier release it changes and preserves the earlier release byte-for-byte. It never edits or replaces released requirements, fixtures, or evidence in place.
+_Avoid_: Patch in place, silent correction

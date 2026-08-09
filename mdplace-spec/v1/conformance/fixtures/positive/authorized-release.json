@@ -1,0 +1,48 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-PKG-POS-005",
+  "category": "positive",
+  "requirement_ids": ["REQ-PKG-003", "REQ-PKG-007", "REQ-PKG-009", "REQ-PKG-010", "REQ-PKG-011"],
+  "subject": {
+    "kind": "transition",
+    "table": "contracts/transitions/package-lifecycle.json",
+    "from_state": "release_ready",
+    "command": "release",
+    "actors": [{"principal_id": "person:coordinator-001", "identity_assurance": "canonical_authenticated_human", "roles": ["release_coordinator"], "delegated": false}],
+    "base_references": {"package_series": "mdplace-spec/v1", "release_version": "1.0.0", "normative_digest_ref": "package-manifest.yaml#/normative_digest"},
+    "preconditions": {"declared_conditions_met": true},
+    "release_evidence": {
+      "required_release_slots_observation": {
+        "receipt_id": "slot-observation:release-001",
+        "observer_id": "mdplace.package-validator/v1",
+        "identity_assurance": "trusted_local_validator",
+        "verification_method": "filesystem_lstat",
+        "observation_root": "conformance/release-targets/complete",
+        "package_series": "mdplace-spec/v1",
+        "release_version": "1.0.0",
+        "normative_digest_ref": "package-manifest.yaml#/normative_digest",
+        "required_release_slots_digest": "6ecd59530fa555d73c05619d50eb0cc5b3ae31b0c633ba731e93c2727414c228",
+        "observed_slots": [{"path": "README.md", "presence": "present"}, {"path": "product.md", "presence": "present"}, {"path": "architecture.md", "presence": "present"}, {"path": "contracts/", "presence": "present"}, {"path": "operations.md", "presence": "present"}, {"path": "security-and-privacy.md", "presence": "present"}, {"path": "performance.md", "presence": "present"}, {"path": "conformance/manifest.yaml", "presence": "present"}, {"path": "conformance/fixtures/", "presence": "present"}, {"path": "conformance/scenarios/", "presence": "present"}, {"path": "conformance/benchmarks/", "presence": "present"}, {"path": "conformance/manual-acceptance.md", "presence": "present"}, {"path": "traceability.yaml", "presence": "present"}, {"path": "claims-and-evidence.yaml", "presence": "present"}, {"path": "package-manifest.yaml", "presence": "present"}]
+      },
+      "verified_artifact_digest_ref": "package-manifest.yaml#/normative_digest",
+      "approval_receipts": [
+        {"receipt_id": "approval:semantic-001", "approval_kind": "semantic", "principal_id": "person:owner-001", "identity_assurance": "canonical_authenticated_human", "role": "vault_owner", "normative_digest_ref": "package-manifest.yaml#/normative_digest", "delegated": false},
+        {"receipt_id": "approval:technical-001", "approval_kind": "technical", "principal_id": "person:reviewer-001", "identity_assurance": "canonical_authenticated_human", "role": "independent_technical_reviewer", "normative_digest_ref": "package-manifest.yaml#/normative_digest", "delegated": false}
+      ],
+      "immutable_target": {"path": "releases/1.0.0", "status": "reserved_empty"}
+    },
+    "idempotency_key": "fixture-release-001",
+    "idempotency_status": "new"
+  },
+  "expected": {
+    "verdict": "pass",
+    "codes": [],
+    "outputs": ["transition accepted"],
+    "operations": ["release"],
+    "receipts": ["SpecificationPackageReleased"],
+    "filesystem_effects": ["publish immutable release tag", "publish specification and conformance digests", "publish validation report"],
+    "terminal_state": "released",
+    "illegal_transition": false
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:validation-report:v1",
+  "title": "mdplace deterministic validation report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_id", "package_series", "release_version", "validator_version", "normative_digest", "verdict", "checks", "fixture_results"],
+  "properties": {
+    "schema_id": {"const": "mdplace.validation-report/v1"},
+    "package_series": {"const": "mdplace-spec/v1"},
+    "release_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "validator_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "normative_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "verdict": {"enum": ["pass", "fail"]},
+    "checks": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/result"}},
+    "fixture_results": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/result"}}
+  },
+  "$defs": {
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "verdict", "codes"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "verdict": {"enum": ["pass", "fail"]},
+        "codes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-PKG-NEG-010",
+  "category": "negative",
+  "requirement_ids": ["REQ-PKG-007", "REQ-PKG-009"],
+  "subject": {
+    "kind": "transition",
+    "table": "contracts/transitions/package-lifecycle.json",
+    "from_state": "draft",
+    "command": "submit",
+    "actors": [{"principal_id": "person:author-001", "identity_assurance": "canonical_authenticated_human", "roles": ["package_author"], "delegated": false}],
+    "base_references": {"package_series": "mdplace-spec/v1", "release_version": "1.0.0", "normative_digest_ref": "package-manifest.yaml#/normative_digest"},
+    "preconditions": {"declared_conditions_met": true},
+    "release_evidence": null,
+    "idempotency_key": "fixture-conflict-001",
+    "idempotency_status": "conflict"
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": ["transition.idempotency_conflict"],
+    "outputs": ["transition rejected"],
+    "operations": ["validate idempotency key"],
+    "receipts": ["PackageTransitionDenied"],
+    "filesystem_effects": ["none"],
+    "terminal_state": "draft",
+    "illegal_transition": false
+  }
+}

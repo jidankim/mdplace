@@ -1,0 +1,26 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-PKG-NEG-013",
+  "category": "negative",
+  "requirement_ids": ["REQ-PKG-006", "REQ-PKG-009"],
+  "subject": {
+    "kind": "artifact",
+    "schema": "contracts/schemas/requirements.schema.json",
+    "document": {
+      "$schema": "does-not-exist.json",
+      "schema_id": "mdplace.requirements/v1",
+      "package_series": "mdplace-spec/v1",
+      "requirements": [{
+        "id": "REQ-PKG-006",
+        "title": "Structured contracts are closed",
+        "normative_anchor": "normative/package-contract.md#req-pkg-006-structured-contracts-are-closed",
+        "decision_urls": ["https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"],
+        "canonical_terms": ["Specification Package"],
+        "acceptance_gate": "The instance names the fixed requirements schema.",
+        "scope": "foundation"
+      }]
+    }
+  },
+  "expected": {"verdict": "fail", "codes": ["schema.constraint"], "outputs": ["artifact rejected"], "operations": ["parse boundary document", "validate stable requirement identifiers"], "receipts": ["ValidationReceipt"], "filesystem_effects": ["none"], "terminal_state": "rejected", "illegal_transition": false}
+}

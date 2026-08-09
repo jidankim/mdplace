@@ -1,0 +1,9 @@
+{
+  "$schema": "../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-PKG-AUTH-001",
+  "category": "authority_denial",
+  "requirement_ids": ["REQ-PKG-007", "REQ-PKG-009", "REQ-PKG-011"],
+  "subject": {"kind": "transition", "table": "contracts/transitions/package-lifecycle.json", "from_state": "candidate", "command": "approve", "actors": [{"principal_id": "person:owner-reviewer-001", "identity_assurance": "canonical_authenticated_human", "roles": ["vault_owner", "independent_technical_reviewer"], "delegated": false}], "base_references": {"package_series": "mdplace-spec/v1", "release_version": "1.0.0", "normative_digest_ref": "package-manifest.yaml#/normative_digest"}, "preconditions": {"declared_conditions_met": true}, "release_evidence": null, "idempotency_key": "fixture-authority-001", "idempotency_status": "new"},
+  "expected": {"verdict": "fail", "codes": ["transition.authority_denied"], "outputs": ["transition rejected"], "operations": ["validate actor authority"], "receipts": ["PackageTransitionDenied"], "filesystem_effects": ["none"], "terminal_state": "candidate", "illegal_transition": false}
+}

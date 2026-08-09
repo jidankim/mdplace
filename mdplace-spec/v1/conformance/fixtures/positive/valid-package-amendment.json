@@ -1,0 +1,27 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-PKG-POS-003",
+  "category": "positive",
+  "requirement_ids": ["REQ-PKG-002", "REQ-PKG-003", "REQ-PKG-004", "REQ-PKG-007"],
+  "subject": {
+    "kind": "release_mutation",
+    "source_version": "1.0.0",
+    "source_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "source_digest_after_attempt": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "source_path": "releases/1.0.0",
+    "target_version": "1.0.1",
+    "target_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "target_path": "releases/1.0.1"
+  },
+  "expected": {
+    "verdict": "pass",
+    "codes": [],
+    "outputs": ["package amendment opened"],
+    "operations": ["compare version and path bindings"],
+    "receipts": ["PackageAmendmentOpened", "VersionAmendmentReport"],
+    "filesystem_effects": ["create a new draft version path"],
+    "terminal_state": "released",
+    "illegal_transition": false
+  }
+}

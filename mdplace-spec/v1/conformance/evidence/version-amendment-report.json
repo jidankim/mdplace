@@ -1,0 +1,18 @@
+{
+  "schema_id": "mdplace.version-amendment-report/v1",
+  "fixture_id": "FIX-PKG-NEG-004",
+  "source_release": {
+    "version": "1.0.0",
+    "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "path": "releases/1.0.0"
+  },
+  "attempted_change": {
+    "version": "1.0.0",
+    "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "path": "releases/1.0.0"
+  },
+  "verdict": "fail",
+  "code": "release.immutable",
+  "source_preserved": true,
+  "required_recovery": "Create a Package Amendment at a new version and path while preserving the released source byte-for-byte."
+}

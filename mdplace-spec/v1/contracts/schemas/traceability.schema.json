@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:traceability:v1",
+  "title": "mdplace requirement traceability map",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "package_series", "release_version", "decisions", "records"],
+  "properties": {
+    "$schema": {"const": "contracts/schemas/traceability.schema.json"},
+    "schema_id": {"const": "mdplace.traceability/v1"},
+    "package_series": {"const": "mdplace-spec/v1"},
+    "release_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "decisions": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/decision"}},
+    "records": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/record"}}
+  },
+  "$defs": {
+    "stringList": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decision_id", "url", "status", "use"],
+      "properties": {
+        "decision_id": {"type": "string", "pattern": "^DEC-[0-9]{3}$"},
+        "url": {"type": "string", "pattern": "^https://github\\.com/jidankim/mdplace/issues/[0-9]+#issuecomment-[0-9]+$"},
+        "status": {"const": "accepted"},
+        "use": {"const": "input_without_reopening"}
+      }
+    },
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirement_id", "decision_ids", "canonical_terms", "normative_anchors", "schema_or_transition_refs", "positive_fixture_ids", "negative_fixture_ids", "acceptance_gate", "scope", "evidence_refs"],
+      "properties": {
+        "requirement_id": {"type": "string", "pattern": "^REQ-PKG-[0-9]{3}$"},
+        "decision_ids": {"$ref": "#/$defs/stringList"},
+        "canonical_terms": {"$ref": "#/$defs/stringList"},
+        "normative_anchors": {"$ref": "#/$defs/stringList"},
+        "schema_or_transition_refs": {"$ref": "#/$defs/stringList"},
+        "positive_fixture_ids": {"$ref": "#/$defs/stringList"},
+        "negative_fixture_ids": {"$ref": "#/$defs/stringList"},
+        "acceptance_gate": {"type": "string", "minLength": 1},
+        "scope": {"const": "foundation"},
+        "evidence_refs": {"$ref": "#/$defs/stringList"}
+      }
+    }
+  }
+}

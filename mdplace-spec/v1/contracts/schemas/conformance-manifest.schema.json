@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:conformance-manifest:v1",
+  "title": "mdplace conformance suite manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "suite_id", "package_series", "release_version", "validator_version", "required_categories", "fixtures"],
+  "properties": {
+    "$schema": {"const": "../contracts/schemas/conformance-manifest.schema.json"},
+    "schema_id": {"const": "mdplace.conformance-manifest/v1"},
+    "suite_id": {"const": "mdplace.package-foundation-conformance/v1"},
+    "package_series": {"const": "mdplace-spec/v1"},
+    "release_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "validator_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "required_categories": {
+      "type": "array",
+      "minItems": 7,
+      "uniqueItems": true,
+      "items": {"enum": ["positive", "negative", "exact_boundary", "stale_state", "authority_denial", "illegal_transition", "crash_recovery"]}
+    },
+    "fixtures": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/fixtureEntry"}}
+  },
+  "$defs": {
+    "observableAssertions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inputs", "outputs", "operations", "receipts", "filesystem_effects", "terminal_state", "illegal_transition"],
+      "properties": {
+        "inputs": {"const": true},
+        "outputs": {"const": true},
+        "operations": {"const": true},
+        "receipts": {"const": true},
+        "filesystem_effects": {"const": true},
+        "terminal_state": {"const": true},
+        "illegal_transition": {"type": "boolean"}
+      }
+    },
+    "fixtureEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fixture_id", "path", "category", "requirement_ids", "expected_verdict", "observable_assertions"],
+      "properties": {
+        "fixture_id": {"type": "string", "pattern": "^FIX-PKG-[A-Z]+-[0-9]{3}$"},
+        "path": {"type": "string", "pattern": "^(fixtures|scenarios)/.+\\.json$"},
+        "category": {"enum": ["positive", "negative", "exact_boundary", "stale_state", "authority_denial", "illegal_transition", "crash_recovery"]},
+        "requirement_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^REQ-PKG-[0-9]{3}$"}},
+        "expected_verdict": {"enum": ["pass", "fail"]},
+        "observable_assertions": {"$ref": "#/$defs/observableAssertions"}
+      }
+    }
+  }
+}

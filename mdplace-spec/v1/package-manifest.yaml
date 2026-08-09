@@ -1,0 +1,495 @@
+{
+  "$schema": "contracts/schemas/package-manifest.schema.json",
+  "schema_id": "mdplace.package-manifest/v1",
+  "package_series": "mdplace-spec/v1",
+  "release_version": "1.0.0",
+  "lifecycle_state": "candidate",
+  "validator_version": "1.0.0",
+  "normative_vocabulary": "../../CONTEXT.md",
+  "authority": {
+    "normative_rule": "binding",
+    "informative_rule": "nonbinding",
+    "conflict_result": "informative_ignored_for_conformance"
+  },
+  "layout": {
+    "required_release_slots": [
+      "README.md",
+      "product.md",
+      "architecture.md",
+      "contracts/",
+      "operations.md",
+      "security-and-privacy.md",
+      "performance.md",
+      "conformance/manifest.yaml",
+      "conformance/fixtures/",
+      "conformance/scenarios/",
+      "conformance/benchmarks/",
+      "conformance/manual-acceptance.md",
+      "traceability.yaml",
+      "claims-and-evidence.yaml",
+      "package-manifest.yaml"
+    ],
+    "candidate_foundation_slots": [
+      "README.md",
+      "normative/package-contract.md",
+      "normative/requirements.json",
+      "contracts/schemas/",
+      "contracts/transitions/",
+      "conformance/",
+      "traceability.yaml",
+      "package-manifest.yaml"
+    ]
+  },
+  "artifacts": [
+    {
+      "path": "README.md",
+      "authority": "informative",
+      "media_type": "text/markdown",
+      "sha256": "5aed59e9d15efcd4caad06ebdf91bf1e7912f38091ef9f17561cd4386c882796"
+    },
+    {
+      "path": "conformance/README.md",
+      "authority": "informative",
+      "media_type": "text/markdown",
+      "sha256": "317529eda4041f192806095efc3165d9ba09acc888cc1252e234e39cf8b43934"
+    },
+    {
+      "path": "conformance/evidence/recovery-report.json",
+      "authority": "informative",
+      "media_type": "application/json",
+      "sha256": "2b9fe3526d842b52aed563bc38cfef2329113d2fd69d635ac5482ce04b7506d6"
+    },
+    {
+      "path": "conformance/evidence/validation-report.json",
+      "authority": "informative",
+      "media_type": "application/json",
+      "sha256": "3d96beccd634a5ce5b4a5007aec048365f044037f586e6f66c31e51c8f472acb"
+    },
+    {
+      "path": "conformance/evidence/version-amendment-report.json",
+      "authority": "informative",
+      "media_type": "application/json",
+      "sha256": "5369897c912cddb7435bd81277d430ef8927490855a1b5c894906d7e8a262446"
+    },
+    {
+      "path": "conformance/fixture-observer.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "daa906563ea30ef6234ebb35da856d58f8b7dcc9fe8a13cdccb5a79a06d680f3"
+    },
+    {
+      "path": "conformance/fixtures/boundary/above-sha256.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "5bacd27a010d337014e1621536dcdb871125af32bf53ac3262c44b5a2df0deea"
+    },
+    {
+      "path": "conformance/fixtures/boundary/below-sha256.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "daa28b9e69c8b863c187e8318019499d8dc10cdd872472769381f28525cff58c"
+    },
+    {
+      "path": "conformance/fixtures/boundary/exact-sha256.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "a714731d057116c89aca7bd8189bab0fb4a51d2e62cc1d47aafd24f16299be22"
+    },
+    {
+      "path": "conformance/fixtures/negative/amendment-version-downgrade.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "db8253e037bcf075051e2e71701e935488c32faedfaac232e2cf3fb1f1c184f5"
+    },
+    {
+      "path": "conformance/fixtures/negative/ambiguous-authority.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "f37eef4c607184034a96e6fe3282000c2335307d31a03d70b42ba15e7b53a7c9"
+    },
+    {
+      "path": "conformance/fixtures/negative/duplicate-requirement-id.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "1ba1cd5e46111939def3475d91827f6f597ab7bffba6b2b5d5733b5ebd15bd62"
+    },
+    {
+      "path": "conformance/fixtures/negative/idempotency-conflict.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "e8a80dfa9faaf020fb909d70291d7633c0eed420553d9ffc6cae9ff697da0204"
+    },
+    {
+      "path": "conformance/fixtures/negative/incomplete-transition.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "8607b6190e3960acf149e73d9a259749cc4972448a7056708689ddc58cef60ec"
+    },
+    {
+      "path": "conformance/fixtures/negative/invalid-schema-declaration.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "69694f7a5ae100ff9a854ea19901d5bdab1f427d28bdf632aee9e42bf04f3576"
+    },
+    {
+      "path": "conformance/fixtures/negative/mutable-release-content.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "98cdc6f1efadd559cb585274c462570c30bf24e768674b535ce2cfc09b12ecb0"
+    },
+    {
+      "path": "conformance/fixtures/negative/missing-release-slot.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "3d2797275feda0c05c05d66517227c750cedb4ca264742602b37a2629fba13fd"
+    },
+    {
+      "path": "conformance/fixtures/negative/production-code-boundary.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "8641b519369836f87094d7fb95797b4b18a247efbf1e6623814320eb0bcc1a1e"
+    },
+    {
+      "path": "conformance/fixtures/negative/unknown-canonical-term.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "34911571da7a2a48560d38cc6541aea77c59de5ae1bd88c5714385eba126d15f"
+    },
+    {
+      "path": "conformance/fixtures/negative/unknown-field.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "9c9a194474b7a99ce7d3faf212f69dd367c555e357abc5db9a349c1166fb34fc"
+    },
+    {
+      "path": "conformance/fixtures/negative/unproven-release.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "ff30cdf57d8664e09eec815d180d0b0f2f4df453044288e3a16fcec425a57e95"
+    },
+    {
+      "path": "conformance/fixtures/negative/untraced-requirement.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "569a161940f83a3bef10c84c63143d4b5601e01d82f72bcf5cf3f15bc56e85b6"
+    },
+    {
+      "path": "conformance/fixtures/positive/authorized-release.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "bf16a7ad1ddf7965e7bb68bf2764f20cba58373e0177f33650cf43584ea3c7f1"
+    },
+    {
+      "path": "conformance/fixtures/positive/authorized-submit.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "13f6668aabe922a2d874bbbf8d1e55198711fcd62276bbf9701c55aa6388e292"
+    },
+    {
+      "path": "conformance/fixtures/positive/distinct-approval.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "a3effdd946edd677af8e13ffafc5bbe462421cac8cc319cd08c6713fc6c119b9"
+    },
+    {
+      "path": "conformance/fixtures/positive/valid-package-amendment.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "2e0d4f2c33e68b59d1815f4f81971ec0ba3a285a7f7528b185a8aae1c0e6bb92"
+    },
+    {
+      "path": "conformance/fixtures/positive/valid-package-manifest.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "949269b1cfa20282288c93531ac0f63e1940a3b5111757be68d844f789eda589"
+    },
+    {
+      "path": "conformance/json-schema.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "029e97265a38b9eb603dcfd7dba6808853a8ed3f8ab3114efea626970eb30672"
+    },
+    {
+      "path": "conformance/manifest.yaml",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "65d0169145936c39ceb8b892d3753978c74ddff879e411b562ea41daf185e5dc"
+    },
+    {
+      "path": "conformance/package-checks.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "12d514e4bdf10d935cab009ceb049c95ce81a2d4193a8e9bebe72b245b88f3f9"
+    },
+    {
+      "path": "conformance/release-targets/complete/README.md",
+      "authority": "normative",
+      "media_type": "text/markdown",
+      "sha256": "e882f7c919d197842dd86297bfe287c97f7a53668b040b138f0ec288afb1fe34"
+    },
+    {
+      "path": "conformance/release-targets/complete/architecture.md",
+      "authority": "normative",
+      "media_type": "text/markdown",
+      "sha256": "29936f6741428a871e6cae1ec7138fe4772b6bca799ebf748280c415c21165d8"
+    },
+    {
+      "path": "conformance/release-targets/complete/claims-and-evidence.yaml",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "0109988d0c7f859ca2ae76caf2d744e389fc079993d8455e35a89a6fa015f613"
+    },
+    {
+      "path": "conformance/release-targets/complete/conformance/benchmarks/fixture-entry.txt",
+      "authority": "normative",
+      "media_type": "text/plain",
+      "sha256": "d1517c64b15516e924bf2a99df0caa4b21c58d1c8efc904cabe508bbe465bd38"
+    },
+    {
+      "path": "conformance/release-targets/complete/conformance/fixtures/fixture-entry.txt",
+      "authority": "normative",
+      "media_type": "text/plain",
+      "sha256": "29eda3c8744ce3d7bce15eecfa68ae4160b4fa99e3add88e88ba3d4ab753f4a3"
+    },
+    {
+      "path": "conformance/release-targets/complete/conformance/manifest.yaml",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "0109988d0c7f859ca2ae76caf2d744e389fc079993d8455e35a89a6fa015f613"
+    },
+    {
+      "path": "conformance/release-targets/complete/conformance/manual-acceptance.md",
+      "authority": "normative",
+      "media_type": "text/markdown",
+      "sha256": "b922126053f63c1e75ffab3685b366eb1ddd1fd9d19ef0296e98f6f28e06da37"
+    },
+    {
+      "path": "conformance/release-targets/complete/conformance/scenarios/fixture-entry.txt",
+      "authority": "normative",
+      "media_type": "text/plain",
+      "sha256": "41de649196f34dfbc1935c049944becdd5e4a01c57db48d8f95964f82d811253"
+    },
+    {
+      "path": "conformance/release-targets/complete/contracts/fixture-entry.txt",
+      "authority": "normative",
+      "media_type": "text/plain",
+      "sha256": "cccf4982d499de02a8359f83511c73e2293a541b059d53386ff6970f36db0781"
+    },
+    {
+      "path": "conformance/release-targets/complete/operations.md",
+      "authority": "normative",
+      "media_type": "text/markdown",
+      "sha256": "60a382796347b1ddcedb1c93c2f4d4ce260bb4cb3e2b97c12d9085615559257a"
+    },
+    {
+      "path": "conformance/release-targets/complete/package-manifest.yaml",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "0109988d0c7f859ca2ae76caf2d744e389fc079993d8455e35a89a6fa015f613"
+    },
+    {
+      "path": "conformance/release-targets/complete/performance.md",
+      "authority": "normative",
+      "media_type": "text/markdown",
+      "sha256": "567f400a306dc68989bfaf9bb9be0fc14c1331e85311614df14c1dbcaa01dec9"
+    },
+    {
+      "path": "conformance/release-targets/complete/product.md",
+      "authority": "normative",
+      "media_type": "text/markdown",
+      "sha256": "505218da3a0692b564b4385a86759ae06f974aa590c5cf6dcde225e6309f4fa3"
+    },
+    {
+      "path": "conformance/release-targets/complete/security-and-privacy.md",
+      "authority": "normative",
+      "media_type": "text/markdown",
+      "sha256": "63a1c90ae6314bf094209aa2a97ec7adff202541cbf1431cb74edc13ee3ab0c0"
+    },
+    {
+      "path": "conformance/release-targets/complete/traceability.yaml",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "0109988d0c7f859ca2ae76caf2d744e389fc079993d8455e35a89a6fa015f613"
+    },
+    {
+      "path": "conformance/scenarios/authority-denial.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "5c2d11f9278f5a7c92a3a5e84793b3ce6199f9cece8cb5a4e9307809ebccab66"
+    },
+    {
+      "path": "conformance/scenarios/crash-recovery.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "7128105b37d719fe833a80959c759fcd475143b31d695a5d4f43168a5ba3590f"
+    },
+    {
+      "path": "conformance/scenarios/illegal-release.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "c2191050aabd6268fad53f36993db275fa62156aaa5a1e5f654bdea5feb50a31"
+    },
+    {
+      "path": "conformance/scenarios/stale-base.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "af90bb89aba97e5a9c1497faa694093e2a9ae4c2a731b3d31e238121b9389a55"
+    },
+    {
+      "path": "conformance/schema-instances.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "39a96f0d2ecc684fd0cc0409e94ef11857c6ae4d93b170a265a29a1a4ec9ed9f"
+    },
+    {
+      "path": "conformance/traceability-checks.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "e0dd68362c85d341547671f87b786d948bbc690dca184f8422c66ececad9db08"
+    },
+    {
+      "path": "conformance/transition-observer.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "1bcc16affc62b2d82478558af4be210c193f3d7b07a1fda8c0780920e28e4b82"
+    },
+    {
+      "path": "conformance/validator-contract-cases.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "e7fecbaf023ffc57ed8f4c2237d44819db97ff3108d7bcbd7f0197a3f22a7b49"
+    },
+    {
+      "path": "conformance/validator-fixture-cases.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "07fa25bc0b42d2a1a498b912fd0fc214da2ee681e5b2f56a722066b4c06bad8a"
+    },
+    {
+      "path": "conformance/validator-package-cases.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "2971aac8117fdf47b1c29fd5152aafdd5c4c1716ff8e035f45bf9f64340e7bb5"
+    },
+    {
+      "path": "conformance/validator-rules.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "0888371d853d985b7d9e2b17a4bc002bdb8eb733fe5054ffc3b0ef323b83e482"
+    },
+    {
+      "path": "conformance/validator-test-support.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "ffe764b6a68f324d150f0da77ca66505d448b95d1818fdb5964f9ecc58dbff27"
+    },
+    {
+      "path": "conformance/validator-transition-cases.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "2a20a5eabfbd367bc4e858e1f93a722f1589f76d015c80403d4a4bd9aa7c0072"
+    },
+    {
+      "path": "conformance/validator.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "dd0194cbba1560ca00a04fa82af8545c57bd189d5c2b95d2fc2a66439460ed3f"
+    },
+    {
+      "path": "conformance/validator.test.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "a6e4cbaebbfd0df00393b867b1302ffd7ccb9c312ab3f43237a7f011203181d6"
+    },
+    {
+      "path": "contracts/schemas/conformance-fixture.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "12c6e43f84583db4804d3a4180c493c4b7b257d82cf7e3a7f744e9ea70e5f25b"
+    },
+    {
+      "path": "contracts/schemas/conformance-manifest.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "21da89295178dbb7640d927792e4e8b287d325e2a5432d0e803421134599fe0f"
+    },
+    {
+      "path": "contracts/schemas/package-manifest.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "1e140862e1af6d3c222679754fd0de5f8fa0aadec61b2004298ff3c4432f6f15"
+    },
+    {
+      "path": "contracts/schemas/recovery-report.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "00dba1f40061bdf5ee3c5326647b3110b5052c7c8b76c66899ff9abecdcefea1"
+    },
+    {
+      "path": "contracts/schemas/requirements.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "b2406b517197a9e54ed8f946ebbb3daf794656db2eb093770e1ca1fe8048eca7"
+    },
+    {
+      "path": "contracts/schemas/traceability.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "3af49558b5c0f89f59535e4eddaa4c75bc3b80961d2837e4fa0bdf82ebdfd8a3"
+    },
+    {
+      "path": "contracts/schemas/transition-table.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "5626ad83e1175e33c373d9ca31f72aa9024a9ec042fb7a27a7bbdb5af5091c27"
+    },
+    {
+      "path": "contracts/schemas/validation-report.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "1efff4480bf4e8a4ea95fe80b831385c22df06832e212247d97c47f87670c110"
+    },
+    {
+      "path": "contracts/schemas/version-amendment-report.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "dfd7c915b4d1eca3ea62592dc96a4acc462a33a330a7fde5db1451c04e055321"
+    },
+    {
+      "path": "contracts/transitions/package-lifecycle.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "3d82dea3f3601977bbbb90fe8bd8691ffc1d67b107c2f88302391f61f15d7d2c"
+    },
+    {
+      "path": "normative/package-contract.md",
+      "authority": "normative",
+      "media_type": "text/markdown",
+      "sha256": "a4971b6d6103565caf541aee1a23a6c2c795b87eff8f188054c78ed3c5b95ae2"
+    },
+    {
+      "path": "normative/requirements.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "5068ea755107a2598ee5ac324ed197633b18c4066d0af7e3b6fd467c91908943"
+    },
+    {
+      "path": "traceability.yaml",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "19e5b202def93b58ded6622cd8f7b825f49aea15fa9673b12ffbcfdca72a979a"
+    }
+  ],
+  "normative_digest": "476a342b33da841a297a7fcf418bcd93b6eafe76fff43b75eaf936e5af3721f7",
+  "amendment_policy": {
+    "immutable_after_release": true,
+    "in_place_mutation": "forbidden",
+    "new_version_required": true,
+    "previous_release": null
+  },
+  "conformance": {
+    "manifest": "conformance/manifest.yaml",
+    "validator": "conformance/validator.mjs",
+    "report": "conformance/evidence/validation-report.json"
+  }
+}
