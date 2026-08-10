@@ -11,7 +11,7 @@
     "command": "release",
     "actors": [{"principal_id": "person:coordinator-001", "identity_assurance": "canonical_authenticated_human", "roles": ["release_coordinator"], "delegated": false}],
     "base_references": {"package_series": "mdplace-spec/v1", "release_version": "1.0.0", "normative_digest_ref": "package-manifest.yaml#/normative_digest"},
-    "preconditions": {"manifest_ref": "package-manifest.yaml", "artifact_ledger_ref": "package-manifest.yaml#/artifacts", "normative_digest_ref": "package-manifest.yaml#/normative_digest"},
+    "preconditions": {"manifest_ref": "package-manifest.yaml", "state_manifest_ref": "conformance/state-observations/release-ready/package-manifest.yaml", "artifact_ledger_ref": "package-manifest.yaml#/artifacts", "normative_digest_ref": "package-manifest.yaml#/normative_digest"},
     "amendment_evidence": null,
     "release_evidence": {
       "required_release_slots_observation": {
@@ -31,7 +31,15 @@
         {"receipt_id": "approval:semantic-001", "approval_kind": "semantic", "principal_id": "person:owner-001", "identity_assurance": "canonical_authenticated_human", "role": "vault_owner", "normative_digest_ref": "package-manifest.yaml#/normative_digest", "delegated": false},
         {"receipt_id": "approval:technical-001", "approval_kind": "technical", "principal_id": "person:reviewer-001", "identity_assurance": "canonical_authenticated_human", "role": "independent_technical_reviewer", "normative_digest_ref": "package-manifest.yaml#/normative_digest", "delegated": false}
       ],
-      "immutable_target": {"observation_root": "conformance/release-targets/complete", "path": "releases/1.0.0", "status": "absent_available"}
+      "immutable_target": {"observation_root": "conformance/release-targets/complete", "path": "releases/1.0.0", "status": "absent_available"},
+      "release_assets": {
+        "specification_digest_ref": "package-manifest.yaml#/normative_digest",
+        "conformance_digest_ref": "package-manifest.yaml#/artifacts/conformance/evidence/validation-report.json/sha256",
+        "validator_version_ref": "package-manifest.yaml#/validator_version",
+        "validation_report_ref": "conformance/evidence/validation-report.json",
+        "traceability_report_ref": "conformance/evidence/traceability-report.json",
+        "traceability_report_digest_ref": "package-manifest.yaml#/artifacts/conformance/evidence/traceability-report.json/sha256"
+      }
     },
     "idempotency_key": "fixture-release-001",
     "idempotency_status": "new"
@@ -42,7 +50,7 @@
     "outputs": ["transition accepted"],
     "operations": ["release"],
     "receipts": ["SpecificationPackageReleased"],
-    "filesystem_effects": ["publish immutable release tag", "publish specification and conformance digests", "publish validation report"],
+    "filesystem_effects": ["publish immutable release tag", "publish specification and conformance digests", "publish validator version", "publish validation and traceability reports"],
     "terminal_state": "released",
     "illegal_transition": false
   }

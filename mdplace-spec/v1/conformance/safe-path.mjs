@@ -100,6 +100,38 @@ export async function readPackageFile(packageRoot, relativePath, byteLimit = max
   }
 }
 
+export async function writePackageFile(packageRoot, relativePath, content) {
+  const bytes = Buffer.isBuffer(content) ? content : Buffer.from(content);
+  if (bytes.length > maxFileBytes) return {status: 'too_large'};
+  const inspected = await inspectPackageEntry(packageRoot, relativePath, 'file');
+  if (inspected.status !== 'present') return inspected;
+  const noFollow = constants.O_NOFOLLOW ?? 0;
+  let handle;
+  try {
+    handle = await open(inspected.target, constants.O_WRONLY | noFollow);
+  } catch (error) {
+    if (error.code === 'ENOENT') return {status: 'absent'};
+    if (error.code === 'ELOOP' || error.code === 'ENOTDIR') return {status: 'unsafe'};
+    throw error;
+  }
+  try {
+    const openedStats = await handle.stat();
+    if (!openedStats.isFile() || openedStats.dev !== inspected.stats.dev || openedStats.ino !== inspected.stats.ino) {
+      return {status: 'unsafe'};
+    }
+    let offset = 0;
+    while (offset < bytes.length) {
+      const {bytesWritten} = await handle.write(bytes, offset, bytes.length - offset, offset);
+      offset += bytesWritten;
+    }
+    await handle.truncate(bytes.length);
+    await handle.sync();
+    return {status: 'written'};
+  } finally {
+    await handle.close();
+  }
+}
+
 export async function listPackageFiles(packageRoot) {
   const paths = [];
   let entryCount = 0;

@@ -1,7 +1,6 @@
-import {createHash} from 'node:crypto';
-
 import {checkArtifactBindings, checkManifest} from './package-checks.mjs';
-import {inspectAbsentPackageEntry, inspectPackageEntry, readPackageFile} from './safe-path.mjs';
+import {readPackageFile} from './safe-path.mjs';
+import {amendmentEvidenceMatches, releaseEvidenceMatches} from './transition-evidence.mjs';
 
 const normativeDigestReference = 'package-manifest.yaml#/normative_digest';
 
@@ -13,10 +12,6 @@ function rolesHaveDistinctActors(roles, actors, index = 0, usedActorIds = new Se
     rolesHaveDistinctActors(roles, actors, index + 1, new Set([...usedActorIds, actor.principal_id])));
 }
 
-function equalSets(left, right) {
-  return left.length === right.length && left.every((value) => right.includes(value));
-}
-
 async function readJson(packageRoot, path) {
   const read = await readPackageFile(packageRoot, path);
   if (read.status !== 'present') return null;
@@ -25,75 +20,6 @@ async function readJson(packageRoot, path) {
   } catch {
     return null;
   }
-}
-
-function observedPath(root, path) {
-  return root === '.' ? path : `${root}/${path}`;
-}
-
-function isGreaterSemver(target, source) {
-  const semver = /^[1-9][0-9]*\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)$/;
-  if (!semver.test(target) || !semver.test(source)) return false;
-  const targetParts = target.split('.').map(Number);
-  const sourceParts = source.split('.').map(Number);
-  return targetParts.some((part, index) => part > sourceParts[index] &&
-    targetParts.slice(0, index).every((earlier, earlierIndex) => earlier === sourceParts[earlierIndex]));
-}
-
-async function releaseEvidenceMatches(subject, packageRoot) {
-  const evidence = subject.release_evidence;
-  if (evidence === null || evidence === undefined) return false;
-  const manifest = await readJson(packageRoot, 'package-manifest.yaml');
-  if (manifest === null) return false;
-  const requiredSlots = manifest.layout?.required_release_slots ?? [];
-  const observation = evidence.required_release_slots_observation ?? {};
-  const observedSlots = observation.observed_slots ?? [];
-  const observedPaths = observedSlots.map(({path}) => path);
-  const approvals = evidence.approval_receipts ?? [];
-  const semantic = approvals.find(({approval_kind: kind}) => kind === 'semantic');
-  const technical = approvals.find(({approval_kind: kind}) => kind === 'technical');
-  const slotDigest = createHash('sha256').update(
-    [...requiredSlots].sort().map((path) => `${path}\n`).join(''),
-  ).digest('hex');
-  const observationRootIsSafe = observation.observation_root === '.' ||
-    /^conformance\/release-targets\/[a-z][a-z0-9-]{2,63}$/.test(observation.observation_root ?? '');
-  const observedPresenceMatches = observationRootIsSafe && (await Promise.all(
-    observedSlots.map(async ({path, presence}) => {
-      if (typeof path !== 'string') return false;
-      const inspected = await inspectPackageEntry(
-        packageRoot,
-        observedPath(observation.observation_root, path),
-        path.endsWith('/') ? 'directory' : 'file',
-      );
-      return inspected.status === (presence === 'present' ? 'present' : 'absent');
-    }),
-  )).every(Boolean);
-  const approvalsMatch = approvals.length === 2 && semantic !== undefined && technical !== undefined &&
-    semantic.role === 'vault_owner' && technical.role === 'independent_technical_reviewer' &&
-    semantic.principal_id !== technical.principal_id &&
-    approvals.every((approval) => approval.identity_assurance === 'canonical_authenticated_human' &&
-      approval.delegated === false && approval.normative_digest_ref === normativeDigestReference);
-  const slotObservationMatches = observation.observer_id === 'mdplace.package-validator/v1' &&
-    observation.identity_assurance === 'trusted_local_validator' &&
-    observation.verification_method === 'filesystem_lstat' &&
-    observation.package_series === manifest.package_series &&
-    observation.release_version === manifest.release_version &&
-    observation.normative_digest_ref === normativeDigestReference &&
-    observation.required_release_slots_digest === slotDigest &&
-    new Set(observedPaths).size === observedPaths.length &&
-    equalSets(observedPaths, requiredSlots) &&
-    observedSlots.every(({presence}) => presence === 'present') && observedPresenceMatches;
-  const immutableTarget = evidence.immutable_target;
-  const immutableTargetMatches = /^conformance\/release-targets\/[a-z][a-z0-9-]{2,63}$/.test(immutableTarget?.observation_root ?? '') &&
-    immutableTarget?.path === `releases/${manifest.release_version}` &&
-    immutableTarget?.status === 'absent_available' &&
-    (await inspectAbsentPackageEntry(
-      packageRoot,
-      observedPath(immutableTarget.observation_root, immutableTarget.path),
-    )).status === 'absent';
-  return slotObservationMatches &&
-    evidence.verified_artifact_digest_ref === normativeDigestReference && approvalsMatch &&
-    immutableTargetMatches;
 }
 
 async function baseReferencesMatch(subject, packageRoot) {
@@ -111,56 +37,26 @@ async function candidatePreconditionsMatch(subject, packageRoot) {
       preconditions?.normative_digest_ref !== normativeDigestReference) return false;
   const manifest = await readJson(packageRoot, 'package-manifest.yaml');
   if (manifest === null) return false;
+  const stateManifestReference = preconditions.state_manifest_ref;
+  const stateManifestReferenceIsSafe = stateManifestReference === 'package-manifest.yaml' ||
+    /^conformance\/state-observations\/[a-z][a-z0-9-]{2,63}\/package-manifest\.yaml$/.test(stateManifestReference ?? '');
+  if (!stateManifestReferenceIsSafe) return false;
+  const stateManifest = await readJson(packageRoot, stateManifestReference);
+  if (stateManifest === null || stateManifest.package_series !== manifest.package_series ||
+      stateManifest.release_version !== manifest.release_version ||
+      stateManifest.validator_version !== manifest.validator_version ||
+      stateManifest.normative_digest !== manifest.normative_digest ||
+      stateManifest.lifecycle_state !== subject.from_state) return false;
+  if (stateManifestReference !== 'package-manifest.yaml' &&
+      (stateManifest.schema_id !== 'mdplace.package-state-observation/v1' ||
+       stateManifest.observer_id !== 'mdplace.package-validator/v1' ||
+       stateManifest.identity_assurance !== 'trusted_local_validator' ||
+       stateManifest.verification_method !== 'manifest_snapshot')) return false;
   const [manifestCheck, artifactCheck] = await Promise.all([
     checkManifest(packageRoot, manifest),
     checkArtifactBindings(packageRoot, manifest).then(({check}) => check),
   ]);
   return manifestCheck.verdict === 'pass' && artifactCheck.verdict === 'pass';
-}
-
-async function amendmentEvidenceMatches(subject, packageRoot) {
-  const evidence = subject.amendment_evidence;
-  if (evidence === null || evidence === undefined) return false;
-  const rootIsSafe = /^conformance\/release-targets\/[a-z][a-z0-9-]{2,63}$/.test(evidence.observation_root ?? '');
-  if (!rootIsSafe || typeof evidence.source_manifest !== 'string' ||
-      !Array.isArray(evidence.changed_requirement_ids) || evidence.changed_requirement_ids.length === 0) {
-    return false;
-  }
-  const sourceManifest = await readJson(packageRoot, observedPath(evidence.observation_root, evidence.source_manifest));
-  const sourceArtifacts = Array.isArray(sourceManifest?.artifacts) ? sourceManifest.artifacts : [];
-  const sourceDirectory = evidence.source_manifest.split('/').slice(0, -1).join('/');
-  const artifactPaths = sourceArtifacts.map((artifact) => artifact?.path);
-  const artifactBindingsMatch = sourceArtifacts.length > 0 && new Set(artifactPaths).size === artifactPaths.length &&
-    (await Promise.all(sourceArtifacts.map(async (artifact) => {
-      if (artifact === null || typeof artifact !== 'object' || typeof artifact.path !== 'string' ||
-          typeof artifact.sha256 !== 'string' || !['normative', 'informative'].includes(artifact.authority)) return false;
-      const read = await readPackageFile(
-        packageRoot,
-        observedPath(evidence.observation_root, observedPath(sourceDirectory, artifact.path)),
-      );
-      return read.status === 'present' && createHash('sha256').update(read.content).digest('hex') === artifact.sha256;
-    }))).every(Boolean);
-  const observedSourceDigest = createHash('sha256').update(
-    sourceArtifacts
-      .filter((artifact) => artifact?.authority === 'normative' &&
-        typeof artifact.path === 'string' && typeof artifact.sha256 === 'string')
-      .sort((left, right) => left.path.localeCompare(right.path))
-      .map(({path, sha256}) => `${path}\0${sha256}\n`)
-      .join(''),
-  ).digest('hex');
-  if (sourceManifest === null || sourceManifest.lifecycle_state !== 'released' ||
-      sourceManifest.package_series !== subject.base_references.package_series ||
-      sourceManifest.release_version !== subject.base_references.release_version ||
-      sourceManifest.normative_digest !== evidence.source_digest ||
-      observedSourceDigest !== sourceManifest.normative_digest || !artifactBindingsMatch ||
-      !/^[a-f0-9]{64}$/.test(evidence.source_digest) ||
-      !isGreaterSemver(evidence.target_version, sourceManifest.release_version) ||
-      evidence.target_path !== `releases/${evidence.target_version}`) return false;
-  const target = await inspectAbsentPackageEntry(
-    packageRoot,
-    observedPath(evidence.observation_root, evidence.target_path),
-  );
-  return target.status === 'absent';
 }
 
 async function commandPreconditionsMatch(subject, packageRoot) {

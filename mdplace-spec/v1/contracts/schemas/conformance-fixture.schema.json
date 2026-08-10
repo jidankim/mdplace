@@ -82,9 +82,10 @@
     "transitionPreconditions": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["manifest_ref", "artifact_ledger_ref", "normative_digest_ref"],
+      "required": ["manifest_ref", "state_manifest_ref", "artifact_ledger_ref", "normative_digest_ref"],
       "properties": {
         "manifest_ref": {"const": "package-manifest.yaml"},
+        "state_manifest_ref": {"type": "string", "pattern": "^(package-manifest\\.yaml|conformance/state-observations/[a-z][a-z0-9-]{2,63}/package-manifest\\.yaml)$"},
         "artifact_ledger_ref": {"const": "package-manifest.yaml#/artifacts"},
         "normative_digest_ref": {"const": "package-manifest.yaml#/normative_digest"}
       }
@@ -102,12 +103,26 @@
     "releaseEvidence": {
       "type": ["object", "null"],
       "additionalProperties": false,
-      "required": ["required_release_slots_observation", "verified_artifact_digest_ref", "approval_receipts", "immutable_target"],
+      "required": ["required_release_slots_observation", "verified_artifact_digest_ref", "approval_receipts", "immutable_target", "release_assets"],
       "properties": {
         "required_release_slots_observation": {"$ref": "#/$defs/releaseSlotObservation"},
         "verified_artifact_digest_ref": {"const": "package-manifest.yaml#/normative_digest"},
         "approval_receipts": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"$ref": "#/$defs/approvalReceipt"}},
-        "immutable_target": {"$ref": "#/$defs/immutableTarget"}
+        "immutable_target": {"$ref": "#/$defs/immutableTarget"},
+        "release_assets": {"$ref": "#/$defs/releaseAssets"}
+      }
+    },
+    "releaseAssets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["specification_digest_ref", "conformance_digest_ref", "validator_version_ref", "validation_report_ref", "traceability_report_ref", "traceability_report_digest_ref"],
+      "properties": {
+        "specification_digest_ref": {"const": "package-manifest.yaml#/normative_digest"},
+        "conformance_digest_ref": {"const": "package-manifest.yaml#/artifacts/conformance/evidence/validation-report.json/sha256"},
+        "validator_version_ref": {"const": "package-manifest.yaml#/validator_version"},
+        "validation_report_ref": {"const": "conformance/evidence/validation-report.json"},
+        "traceability_report_ref": {"const": "conformance/evidence/traceability-report.json"},
+        "traceability_report_digest_ref": {"const": "package-manifest.yaml#/artifacts/conformance/evidence/traceability-report.json/sha256"}
       }
     },
     "releaseSlotObservation": {
@@ -163,14 +178,15 @@
     "amendmentEvidence": {
       "type": ["object", "null"],
       "additionalProperties": false,
-      "required": ["observation_root", "source_manifest", "source_digest", "target_version", "target_path", "changed_requirement_ids"],
+      "required": ["observation_root", "source_manifest", "source_digest", "target_version", "target_path", "changed_requirement_ids", "new_requirement_ids"],
       "properties": {
         "observation_root": {"type": "string", "pattern": "^conformance/release-targets/[a-z][a-z0-9-]{2,63}$"},
         "source_manifest": {"type": "string", "pattern": "^[a-z][a-z0-9-]*/package-manifest\\.yaml$"},
         "source_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
         "target_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
         "target_path": {"type": "string", "pattern": "^releases/[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
-        "changed_requirement_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^REQ-[A-Z][A-Z0-9]{1,15}-[0-9]{3}$"}}
+        "changed_requirement_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^REQ-[A-Z][A-Z0-9]{1,15}-[0-9]{3}$"}},
+        "new_requirement_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^REQ-[A-Z][A-Z0-9]{1,15}-[0-9]{3}$"}}
       }
     },
     "releaseMutationSubject": {

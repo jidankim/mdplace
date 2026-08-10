@@ -5,6 +5,7 @@ import {completeTransition, validatePackage} from './validator-test-support.mjs'
 
 const satisfiedPreconditions = {
   manifest_ref: 'package-manifest.yaml',
+  state_manifest_ref: 'package-manifest.yaml',
   artifact_ledger_ref: 'package-manifest.yaml#/artifacts',
   normative_digest_ref: 'package-manifest.yaml#/normative_digest',
 };
@@ -37,6 +38,14 @@ const releaseEvidence = {
     {receipt_id: 'approval:technical-001', approval_kind: 'technical', principal_id: 'person:reviewer-001', identity_assurance: 'canonical_authenticated_human', role: 'independent_technical_reviewer', normative_digest_ref: normativeDigestReference, delegated: false},
   ],
   immutable_target: {observation_root: 'conformance/release-targets/complete', path: 'releases/1.0.0', status: 'absent_available'},
+  release_assets: {
+    specification_digest_ref: normativeDigestReference,
+    conformance_digest_ref: 'package-manifest.yaml#/artifacts/conformance/evidence/validation-report.json/sha256',
+    validator_version_ref: 'package-manifest.yaml#/validator_version',
+    validation_report_ref: 'conformance/evidence/validation-report.json',
+    traceability_report_ref: 'conformance/evidence/traceability-report.json',
+    traceability_report_digest_ref: 'package-manifest.yaml#/artifacts/conformance/evidence/traceability-report.json/sha256',
+  },
 };
 
 function partialPackageReport(result) {
@@ -79,7 +88,7 @@ test('CLI rejects a non-current digest reference without side effects', async ()
 
   // When the public validator CLI evaluates the transition attempt.
   const result = await validatePackage({
-    'package-manifest.yaml': {schema_id: 'mdplace.package-manifest/v1'},
+    'package-manifest.yaml': {schema_id: 'mdplace.package-manifest/v1', lifecycle_state: 'draft'},
     'contracts/transitions/package-lifecycle.json': table,
     'conformance/manifest.yaml': conformance,
     'conformance/scenarios/stale.json': fixture,
@@ -155,7 +164,7 @@ test('CLI emits the declared observable result for an allowed transition', async
 
   // When the public validator CLI evaluates the transition attempt.
   const result = await validatePackage({
-    'package-manifest.yaml': {schema_id: 'mdplace.package-manifest/v1'},
+    'package-manifest.yaml': {schema_id: 'mdplace.package-manifest/v1', lifecycle_state: 'draft'},
     'contracts/transitions/package-lifecycle.json': table,
     'conformance/manifest.yaml': conformance,
     'conformance/fixtures/submit.json': fixture,

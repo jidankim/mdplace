@@ -10,10 +10,15 @@ export async function checkSchemaInstances(packageRoot, conformance) {
   const codes = [];
   const bindings = [
     ['package-manifest.yaml', 'contracts/schemas/package-manifest.schema.json'],
+    ['conformance/state-observations/draft/package-manifest.yaml', 'contracts/schemas/package-state-observation.schema.json'],
+    ['conformance/state-observations/candidate/package-manifest.yaml', 'contracts/schemas/package-state-observation.schema.json'],
+    ['conformance/state-observations/release-ready/package-manifest.yaml', 'contracts/schemas/package-state-observation.schema.json'],
+    ['conformance/state-observations/released/package-manifest.yaml', 'contracts/schemas/package-state-observation.schema.json'],
     ['normative/requirements.json', 'contracts/schemas/requirements.schema.json'],
     ['contracts/transitions/package-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
     ['conformance/manifest.yaml', 'contracts/schemas/conformance-manifest.schema.json'],
     ['traceability.yaml', 'contracts/schemas/traceability.schema.json'],
+    ['conformance/evidence/traceability-report.json', 'contracts/schemas/traceability-report.schema.json'],
     ['conformance/evidence/validation-report.json', 'contracts/schemas/validation-report.schema.json'],
     ['conformance/evidence/version-amendment-report.json', 'contracts/schemas/version-amendment-report.schema.json'],
     ['conformance/evidence/recovery-report.json', 'contracts/schemas/recovery-report.schema.json'],

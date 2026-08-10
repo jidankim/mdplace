@@ -22,7 +22,7 @@
       "negative_fixture_ids": ["FIX-PKG-NEG-001"],
       "acceptance_gate": "Every listed artifact has exactly one authority and conformance is derived exclusively from normative artifacts.",
       "scope": "foundation",
-      "evidence_refs": ["conformance/evidence/validation-report.json"]
+      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/traceability-report.json"]
     },
     {
       "requirement_id": "REQ-PKG-002",
@@ -56,7 +56,7 @@
       "schema_or_transition_refs": ["contracts/schemas/requirements.schema.json", "contracts/schemas/traceability.schema.json"],
       "positive_fixture_ids": ["FIX-PKG-POS-001", "FIX-PKG-POS-003", "FIX-PKG-POS-006"],
       "negative_fixture_ids": ["FIX-PKG-NEG-003", "FIX-PKG-NEG-007", "FIX-PKG-NEG-011", "FIX-PKG-NEG-015"],
-      "acceptance_gate": "Requirement identifiers match the stable format, are unique, and are not reassigned by amendments.",
+      "acceptance_gate": "Requirement identifiers match the shared stable format; amendments compare bound catalogs and exactly mark changed and new identifiers without removal or reassignment.",
       "scope": "foundation",
       "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/version-amendment-report.json"]
     },
@@ -80,7 +80,7 @@
       "schema_or_transition_refs": ["contracts/schemas/package-manifest.schema.json", "contracts/schemas/conformance-fixture.schema.json", "contracts/schemas/transition-table.schema.json"],
       "positive_fixture_ids": ["FIX-PKG-POS-001", "FIX-PKG-BND-001"],
       "negative_fixture_ids": ["FIX-PKG-NEG-001", "FIX-PKG-NEG-002", "FIX-PKG-NEG-013", "FIX-PKG-BND-002", "FIX-PKG-BND-003"],
-      "acceptance_gate": "Draft 2020-12 schemas reject unknown fields and enforce identifier and digest boundaries.",
+      "acceptance_gate": "Draft 2020-12 schemas reject unknown fields, enforce identifier and digest boundaries, and terminate within explicit evaluation and error budgets.",
       "scope": "foundation",
       "evidence_refs": ["conformance/evidence/validation-report.json"]
     },
@@ -101,19 +101,19 @@
       "decision_ids": ["DEC-010"],
       "canonical_terms": ["Traceability Record", "Conformance Fixture", "Specification Package"],
       "normative_anchors": ["normative/package-contract.md#req-pkg-008-traceability-is-stable-and-total"],
-      "schema_or_transition_refs": ["contracts/schemas/requirements.schema.json", "contracts/schemas/traceability.schema.json"],
+      "schema_or_transition_refs": ["contracts/schemas/requirements.schema.json", "contracts/schemas/traceability.schema.json", "contracts/schemas/traceability-report.schema.json"],
       "positive_fixture_ids": ["FIX-PKG-POS-001"],
       "negative_fixture_ids": ["FIX-PKG-NEG-003", "FIX-PKG-NEG-007"],
       "acceptance_gate": "Every normative requirement has one resolving traceability record and every reference resolves.",
       "scope": "foundation",
-      "evidence_refs": ["conformance/evidence/validation-report.json"]
+      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/traceability-report.json"]
     },
     {
       "requirement_id": "REQ-PKG-009",
       "decision_ids": ["DEC-010"],
       "canonical_terms": ["Conformance Fixture", "Specification Package"],
       "normative_anchors": ["normative/package-contract.md#req-pkg-009-conformance-observes-public-effects"],
-      "schema_or_transition_refs": ["contracts/schemas/conformance-manifest.schema.json", "contracts/schemas/conformance-fixture.schema.json"],
+      "schema_or_transition_refs": ["contracts/schemas/conformance-manifest.schema.json", "contracts/schemas/conformance-fixture.schema.json", "contracts/schemas/package-state-observation.schema.json"],
       "positive_fixture_ids": [
         "FIX-PKG-POS-002",
         "FIX-PKG-POS-004",
@@ -131,7 +131,7 @@
         "FIX-PKG-AUTH-001",
         "FIX-PKG-ILLEGAL-001"
       ],
-      "acceptance_gate": "Required fixture categories assert observable results without private implementation assertions.",
+      "acceptance_gate": "Required fixtures bind observable lifecycle state and command evidence, while release assets bind digests, validator version, validation, and traceability reports.",
       "scope": "foundation",
       "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/recovery-report.json"]
     },
@@ -167,7 +167,7 @@
       "schema_or_transition_refs": ["contracts/schemas/package-manifest.schema.json"],
       "positive_fixture_ids": ["FIX-PKG-POS-001", "FIX-PKG-REC-001"],
       "negative_fixture_ids": ["FIX-PKG-NEG-008"],
-      "acceptance_gate": "Only specification and conformance artifacts exist under the package and no production boundary is implemented or invoked.",
+      "acceptance_gate": "Only declared specification artifacts and the exact conformance executable inventory exist; no production boundary is implemented or invoked.",
       "scope": "foundation",
       "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/recovery-report.json"]
     }

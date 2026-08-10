@@ -13,7 +13,7 @@ node --test mdplace-spec/v1/conformance/validator.test.mjs
 node mdplace-spec/v1/conformance/validator.mjs mdplace-spec/v1
 ```
 
-The validator produces a deterministic report on standard output. Pass `--write-evidence` to replace the committed generated report after intentional package changes.
+The validator produces a deterministic report on standard output. Pass `--write-evidence` to replace the existing committed generated report after intentional package changes. The write opens only the already verified package file, refuses links and path swaps, and verifies the opened inode before changing bytes. Release evidence also includes the generated traceability report at `conformance/evidence/traceability-report.json`.
 
 ## Authority
 

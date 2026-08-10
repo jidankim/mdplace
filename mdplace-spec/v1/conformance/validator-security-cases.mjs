@@ -1,8 +1,7 @@
 import assert from 'node:assert/strict';
-import {createHash} from 'node:crypto';
 import {mkdir, mkdtemp, readFile, symlink, unlink, writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
-import {dirname, join} from 'node:path';
+import {join} from 'node:path';
 import test from 'node:test';
 
 import {validateJsonSchema} from './json-schema.mjs';

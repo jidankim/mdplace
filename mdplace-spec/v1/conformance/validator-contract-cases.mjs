@@ -31,6 +31,7 @@ test('CLI validates every committed conformance fixture', () => {
     'conformance-manifest',
     'version-amendment-evidence',
     'recovery-evidence',
+    'traceability-evidence',
   ]);
   assert.match(report.normative_digest, /^[a-f0-9]{64}$/);
 });

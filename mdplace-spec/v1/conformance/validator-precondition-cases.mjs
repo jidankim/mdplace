@@ -40,6 +40,7 @@ function fixture(command, fromState, actors) {
     actors, base_references: {package_series: 'mdplace-spec/v1', release_version: '1.0.0', normative_digest_ref: digestReference},
     preconditions: {
       manifest_ref: 'package-manifest.yaml',
+      state_manifest_ref: 'package-manifest.yaml',
       artifact_ledger_ref: 'package-manifest.yaml#/artifacts',
       normative_digest_ref: digestReference,
     },

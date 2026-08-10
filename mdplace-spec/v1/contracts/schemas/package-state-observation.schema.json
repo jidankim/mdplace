@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:package-state-observation:v1",
+  "title": "mdplace package lifecycle state observation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "observer_id", "identity_assurance", "verification_method", "package_series", "release_version", "lifecycle_state", "validator_version", "normative_digest"],
+  "properties": {
+    "$schema": {"const": "../../../contracts/schemas/package-state-observation.schema.json"},
+    "schema_id": {"const": "mdplace.package-state-observation/v1"},
+    "observer_id": {"const": "mdplace.package-validator/v1"},
+    "identity_assurance": {"const": "trusted_local_validator"},
+    "verification_method": {"const": "manifest_snapshot"},
+    "package_series": {"const": "mdplace-spec/v1"},
+    "release_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "lifecycle_state": {"enum": ["draft", "candidate", "release_ready", "released"]},
+    "validator_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "normative_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

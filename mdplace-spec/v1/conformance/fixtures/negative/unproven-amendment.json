@@ -11,7 +11,7 @@
     "command": "amend",
     "actors": [{"principal_id": "person:author-001", "identity_assurance": "canonical_authenticated_human", "roles": ["package_author"], "delegated": false}],
     "base_references": {"package_series": "mdplace-spec/v1", "release_version": "1.0.0", "normative_digest_ref": "package-manifest.yaml#/normative_digest"},
-    "preconditions": {"manifest_ref": "package-manifest.yaml", "artifact_ledger_ref": "package-manifest.yaml#/artifacts", "normative_digest_ref": "package-manifest.yaml#/normative_digest"},
+    "preconditions": {"manifest_ref": "package-manifest.yaml", "state_manifest_ref": "conformance/state-observations/released/package-manifest.yaml", "artifact_ledger_ref": "package-manifest.yaml#/artifacts", "normative_digest_ref": "package-manifest.yaml#/normative_digest"},
     "release_evidence": null,
     "amendment_evidence": null,
     "idempotency_key": "fixture-amend-unproven-001",

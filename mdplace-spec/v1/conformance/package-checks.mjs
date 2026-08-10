@@ -25,11 +25,13 @@ export const requiredReleaseSlots = [
 
 export const requiredSchemaPaths = [
   'contracts/schemas/package-manifest.schema.json',
+  'contracts/schemas/package-state-observation.schema.json',
   'contracts/schemas/requirements.schema.json',
   'contracts/schemas/transition-table.schema.json',
   'contracts/schemas/conformance-manifest.schema.json',
   'contracts/schemas/conformance-fixture.schema.json',
   'contracts/schemas/traceability.schema.json',
+  'contracts/schemas/traceability-report.schema.json',
   'contracts/schemas/validation-report.schema.json',
   'contracts/schemas/version-amendment-report.schema.json',
   'contracts/schemas/recovery-report.schema.json',
@@ -168,7 +170,7 @@ export async function checkRequirements(packageRoot, requirements) {
   if (!Array.isArray(requirements?.requirements)) codes.push('schema.constraint');
   const ids = entries.map((entry) => entry?.id);
   if (new Set(ids).size !== ids.length) codes.push('requirements.duplicate_id');
-  if (ids.some((id) => !/^REQ-[A-Z][A-Z0-9]{1,7}-[0-9]{3}$/.test(id))) codes.push('requirements.invalid_id');
+  if (ids.some((id) => !/^REQ-[A-Z][A-Z0-9]{1,15}-[0-9]{3}$/.test(id))) codes.push('requirements.invalid_id');
   const glossary = await readFile(resolve(packageRoot, '../../CONTEXT.md'), 'utf8');
   const canonicalTerms = new Set([...glossary.matchAll(/^\*\*(.+)\*\*:/gm)].map((match) => match[1]));
   if (entries.flatMap((entry) => Array.isArray(entry?.canonical_terms) ? entry.canonical_terms : [])

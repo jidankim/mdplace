@@ -166,7 +166,7 @@
       "preconditions": ["a trusted local-validator receipt binds the canonical slot-set digest and every claimed-present slot matches a filesystem lstat at its safe package-relative observation root", "verified artifacts resolve the current package manifest normative-digest reference", "two nondelegated approval receipts from different canonical authenticated human principals resolve the same manifest digest reference", "immutable release target for the manifest release version is reserved and empty"],
       "base_references": ["package_series", "release_version", "normative_digest"],
       "emitted_records": ["SpecificationPackageReleased"],
-      "filesystem_effects": ["publish immutable release tag", "publish specification and conformance digests", "publish validation report"],
+      "filesystem_effects": ["publish immutable release tag", "publish specification and conformance digests", "publish validator version", "publish validation and traceability reports"],
       "idempotency": {"key_fields": ["package_series", "release_version", "command_or_event", "idempotency_key"], "retry_result": "return the original release receipt without republishing"},
       "terminal_state": "released",
       "failure_result": {"code": "transition.precondition_failed", "state_effect": "unchanged", "emitted_records": ["PackageTransitionDenied"], "filesystem_effects": ["remove unverified staged target and preserve candidate"]},

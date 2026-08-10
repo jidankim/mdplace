@@ -180,6 +180,7 @@ export async function checkEvidence(packageRoot) {
     return [
       result('version-amendment-evidence', ['evidence.version_amendment_mismatch']),
       result('recovery-evidence', ['evidence.recovery_mismatch']),
+      result('traceability-evidence', ['evidence.traceability_mismatch']),
     ];
   }
   const versionMatches = versionReport.fixture_id === versionFixture.fixture_id &&
@@ -197,6 +198,7 @@ export async function checkEvidence(packageRoot) {
     return [
       result('version-amendment-evidence', versionMatches ? [] : ['evidence.version_amendment_mismatch']),
       result('recovery-evidence', ['evidence.recovery_mismatch']),
+      result('traceability-evidence', ['evidence.traceability_mismatch']),
     ];
   }
   const recoveryMatches = recoveryReport.fixture_id === recoveryFixture.fixture_id &&
@@ -208,8 +210,29 @@ export async function checkEvidence(packageRoot) {
     isDeepStrictEqual(recoveryReport.filesystem_effects, recoveryFixture.expected.filesystem_effects) &&
     recoveryReport.terminal_state === recoveryFixture.expected.terminal_state &&
     recoveryReport.source_preserved === true && recoveryReport.verdict === 'pass';
+  const manifest = await readJson('package-manifest.yaml');
+  const requirements = await readJson('normative/requirements.json');
+  const traceability = await readJson('traceability.yaml');
+  const traceabilityReport = await readJson('conformance/evidence/traceability-report.json');
+  const requirementIds = Array.isArray(requirements?.requirements)
+    ? requirements.requirements.map(({id}) => id)
+    : [];
+  const tracedIds = Array.isArray(traceability?.records)
+    ? traceability.records.map(({requirement_id: id}) => id)
+    : [];
+  const unresolved = requirementIds.filter((id) => !tracedIds.includes(id));
+  const traceabilityMatches = traceabilityReport?.schema_id === 'mdplace.traceability-report/v1' &&
+    traceabilityReport.package_series === manifest?.package_series &&
+    traceabilityReport.release_version === manifest?.release_version &&
+    traceabilityReport.validator_version === manifest?.validator_version &&
+    traceabilityReport.normative_digest === manifest?.normative_digest &&
+    traceabilityReport.requirements_total === requirementIds.length &&
+    traceabilityReport.records_total === tracedIds.length &&
+    isDeepStrictEqual(traceabilityReport.unresolved_requirement_ids, unresolved) &&
+    traceabilityReport.verdict === (unresolved.length === 0 ? 'pass' : 'fail');
   return [
     result('version-amendment-evidence', versionMatches ? [] : ['evidence.version_amendment_mismatch']),
     result('recovery-evidence', recoveryMatches ? [] : ['evidence.recovery_mismatch']),
+    result('traceability-evidence', traceabilityMatches ? [] : ['evidence.traceability_mismatch']),
   ];
 }

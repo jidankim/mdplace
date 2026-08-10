@@ -37,6 +37,30 @@ const authorityByCommand = new Map([
   ['amend', {roles: ['package_author'], quorum: 1, distinct_actors: false, delegation: 'permitted'}],
 ]);
 
+const conformanceExecutables = new Set([
+  'conformance/fixture-observer.mjs',
+  'conformance/json-schema.mjs',
+  'conformance/package-checks.mjs',
+  'conformance/safe-path.mjs',
+  'conformance/schema-instances.mjs',
+  'conformance/traceability-checks.mjs',
+  'conformance/transition-observer.mjs',
+  'conformance/transition-evidence.mjs',
+  'conformance/validator-boundary-cases.mjs',
+  'conformance/validator-contract-cases.mjs',
+  'conformance/validator-final-review-cases.mjs',
+  'conformance/validator-fixture-cases.mjs',
+  'conformance/validator-meta-schema-cases.mjs',
+  'conformance/validator-package-cases.mjs',
+  'conformance/validator-precondition-cases.mjs',
+  'conformance/validator-rules.mjs',
+  'conformance/validator-security-cases.mjs',
+  'conformance/validator-test-support.mjs',
+  'conformance/validator-transition-cases.mjs',
+  'conformance/validator.mjs',
+  'conformance/validator.test.mjs',
+]);
+
 export function authorityMatches(command, actual) {
   const expected = authorityByCommand.get(command);
   return expected !== undefined && actual !== null && typeof actual === 'object' &&
@@ -53,5 +77,6 @@ export function packageArtifactPathAllowed(path) {
   if (/^(?:package-manifest|traceability|claims-and-evidence)\.yaml$/.test(path)) return true;
   if (/^normative\/[a-z0-9][a-z0-9./-]*\.(?:md|json|yaml)$/.test(path)) return true;
   if (/^contracts\/[a-z0-9][a-z0-9./-]*\.json$/.test(path)) return true;
-  return /^conformance\/[A-Za-z0-9][A-Za-z0-9./-]*\.(?:md|json|yaml|txt|mjs)$/.test(path);
+  if (path.endsWith('.mjs')) return conformanceExecutables.has(path);
+  return /^conformance\/[A-Za-z0-9][A-Za-z0-9./-]*\.(?:md|json|yaml|txt)$/.test(path);
 }

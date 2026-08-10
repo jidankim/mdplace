@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import {mkdir, writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 
 import {
@@ -10,7 +9,7 @@ import {
   checkSchemas,
   checkTransitionTable,
 } from './package-checks.mjs';
-import {readPackageFile} from './safe-path.mjs';
+import {readPackageFile, writePackageFile} from './safe-path.mjs';
 import {checkSchemaInstances} from './schema-instances.mjs';
 import {checkEvidence, checkTraceability, runConformance} from './traceability-checks.mjs';
 
@@ -67,6 +66,7 @@ async function validate(packageRoot) {
   const evidencePaths = [
     'conformance/evidence/version-amendment-report.json',
     'conformance/evidence/recovery-report.json',
+    'conformance/evidence/traceability-report.json',
   ];
   const evidenceReads = await Promise.all(evidencePaths.map((path) => readPackageFile(packageRoot, path)));
   if (evidenceReads.every(({status}) => status === 'present')) checks.push(...await checkEvidence(packageRoot));
@@ -102,9 +102,20 @@ try {
   if (!(error instanceof Error)) throw error;
 }
 if (writeEvidence && report.verdict === 'pass') {
-  const reportPath = resolve(packageRoot, 'conformance/evidence/validation-report.json');
-  await mkdir(resolve(reportPath, '..'), {recursive: true});
-  await writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`);
+  const write = await writePackageFile(
+    packageRoot,
+    'conformance/evidence/validation-report.json',
+    `${JSON.stringify(report, null, 2)}\n`,
+  );
+  if (write.status !== 'written') {
+    report = {
+      ...report,
+      verdict: 'fail',
+      checks: [...report.checks, check('evidence-output', [
+        write.status === 'too_large' ? 'schema.resource_limit' : 'artifact.path_unsafe',
+      ])],
+    };
+  }
 }
 process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
 process.exitCode = report.verdict === 'pass' ? 0 : 1;

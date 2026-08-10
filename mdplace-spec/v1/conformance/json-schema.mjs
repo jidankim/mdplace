@@ -1,4 +1,5 @@
 import {isDeepStrictEqual} from 'node:util';
+import {runInNewContext} from 'node:vm';
 
 import {readPackageFile} from './safe-path.mjs';
 
@@ -7,6 +8,8 @@ const maxCollectionEntries = 10_000;
 const maxErrors = 256;
 const maxPatternLength = 512;
 const maxPatternInputLength = 1_024;
+const maxPatternEvaluationMilliseconds = 25;
+const maxSchemaEvaluationMilliseconds = 1_000;
 
 function matchesType(value, type) {
   switch (type) {
@@ -27,11 +30,28 @@ function resolveReference(rootSchema, reference) {
 }
 
 function addError(errors, path, keyword) {
-  errors.push({path, keyword});
+  if (errors.length < maxErrors) errors.push({path, keyword});
+}
+
+function evaluatePattern(pattern, value) {
+  try {
+    return {
+      status: 'complete',
+      matches: runInNewContext('new RegExp(pattern, "u").test(value)', {pattern, value}, {
+        timeout: maxPatternEvaluationMilliseconds,
+      }),
+    };
+  } catch (error) {
+    return {status: error?.code === 'ERR_SCRIPT_EXECUTION_TIMEOUT' ? 'resourceLimit' : 'invalidSchema'};
+  }
 }
 
 function validateNode(schema, value, rootSchema, path, errors, state) {
   if (errors.length >= maxErrors) return;
+  if (Date.now() > state.budget.deadline) {
+    addError(errors, path, 'resourceLimit');
+    return;
+  }
   if (state.depth > maxDepth) {
     addError(errors, path, 'resourceLimit');
     return;
@@ -59,6 +79,7 @@ function validateNode(schema, value, rootSchema, path, errors, state) {
       validateNode(resolveReference(rootSchema, schema.$ref), value, rootSchema, path, errors, {
         depth: state.depth + 1,
         references: new Set([...state.references, referenceKey]),
+        budget: state.budget,
       });
     } catch {
       addError(errors, path, 'invalidSchema');
@@ -70,12 +91,21 @@ function validateNode(schema, value, rootSchema, path, errors, state) {
       addError(errors, path, 'invalidSchema');
       return;
     }
-    const matches = schema.oneOf.filter((candidate) => {
+    let matchCount = 0;
+    for (const candidate of schema.oneOf) {
       const candidateErrors = [];
-      validateNode(candidate, value, rootSchema, path, candidateErrors, {depth: state.depth + 1, references: state.references});
-      return candidateErrors.length === 0;
-    });
-    if (matches.length !== 1) addError(errors, path, 'oneOf');
+      validateNode(candidate, value, rootSchema, path, candidateErrors, {
+        depth: state.depth + 1,
+        references: state.references,
+        budget: state.budget,
+      });
+      if (candidateErrors.some(({keyword}) => keyword === 'resourceLimit')) {
+        addError(errors, path, 'resourceLimit');
+        return;
+      }
+      if (candidateErrors.length === 0) matchCount += 1;
+    }
+    if (matchCount !== 1) addError(errors, path, 'oneOf');
     return;
   }
   if (schema.allOf !== undefined) {
@@ -84,7 +114,11 @@ function validateNode(schema, value, rootSchema, path, errors, state) {
       return;
     }
     for (const candidate of schema.allOf) {
-      validateNode(candidate, value, rootSchema, path, errors, {depth: state.depth + 1, references: state.references});
+      validateNode(candidate, value, rootSchema, path, errors, {
+        depth: state.depth + 1,
+        references: state.references,
+        budget: state.budget,
+      });
     }
   }
   if (schema.type !== undefined) {
@@ -106,11 +140,9 @@ function validateNode(schema, value, rootSchema, path, errors, state) {
       else if (schema.pattern.length > maxPatternLength || value.length > maxPatternInputLength) {
         addError(errors, path, 'resourceLimit');
       } else {
-        try {
-          if (!new RegExp(schema.pattern, 'u').test(value)) addError(errors, path, 'pattern');
-        } catch {
-          addError(errors, path, 'invalidSchema');
-        }
+        const evaluation = evaluatePattern(schema.pattern, value);
+        if (evaluation.status !== 'complete') addError(errors, path, evaluation.status);
+        else if (!evaluation.matches) addError(errors, path, 'pattern');
       }
     }
   }
@@ -128,19 +160,32 @@ function validateNode(schema, value, rootSchema, path, errors, state) {
       value.slice(index + 1).some((candidate) => isDeepStrictEqual(entry, candidate)))) {
       addError(errors, path, 'uniqueItems');
     }
-    if (schema.contains !== undefined && !value.some((entry, index) => {
-      const candidateErrors = [];
-      validateNode(schema.contains, entry, rootSchema, `${path}/${index}`, candidateErrors, {
-        depth: state.depth + 1,
-        references: state.references,
-      });
-      return candidateErrors.length === 0;
-    })) addError(errors, path, 'contains');
+    if (schema.contains !== undefined) {
+      let containsMatch = false;
+      for (const [index, entry] of value.entries()) {
+        const candidateErrors = [];
+        validateNode(schema.contains, entry, rootSchema, `${path}/${index}`, candidateErrors, {
+          depth: state.depth + 1,
+          references: state.references,
+          budget: state.budget,
+        });
+        if (candidateErrors.some(({keyword}) => keyword === 'resourceLimit')) {
+          addError(errors, path, 'resourceLimit');
+          return;
+        }
+        if (candidateErrors.length === 0) {
+          containsMatch = true;
+          break;
+        }
+      }
+      if (!containsMatch) addError(errors, path, 'contains');
+    }
     if (schema.items !== undefined) {
       value.forEach((entry, index) => {
         validateNode(schema.items, entry, rootSchema, `${path}/${index}`, errors, {
           depth: state.depth + 1,
           references: state.references,
+          budget: state.budget,
         });
       });
     }
@@ -157,12 +202,14 @@ function validateNode(schema, value, rootSchema, path, errors, state) {
     const requiredProperties = Array.isArray(schema.required) ? schema.required : [];
     if (schema.required !== undefined && !Array.isArray(schema.required)) addError(errors, path, 'invalidSchema');
     for (const required of requiredProperties) {
+      if (errors.length >= maxErrors) break;
       if (!Object.hasOwn(value, required)) addError(errors, `${path}/${required}`, 'required');
     }
     for (const [key, entry] of Object.entries(value)) {
       if (Object.hasOwn(properties, key)) validateNode(properties[key], entry, rootSchema, `${path}/${key}`, errors, {
         depth: state.depth + 1,
         references: state.references,
+        budget: state.budget,
       });
       else if (schema.additionalProperties === false) addError(errors, `${path}/${key}`, 'additionalProperties');
     }
@@ -171,7 +218,11 @@ function validateNode(schema, value, rootSchema, path, errors, state) {
 
 export function validateJsonSchema(schema, value) {
   const errors = [];
-  validateNode(schema, value, schema, '$', errors, {depth: 0, references: new Set()});
+  validateNode(schema, value, schema, '$', errors, {
+    depth: 0,
+    references: new Set(),
+    budget: {deadline: Date.now() + maxSchemaEvaluationMilliseconds},
+  });
   return errors;
 }
 

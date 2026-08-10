@@ -11,7 +11,7 @@
     "command": "release",
     "actors": [{"principal_id": "person:coordinator-001", "identity_assurance": "canonical_authenticated_human", "roles": ["release_coordinator"], "delegated": false}],
     "base_references": {"package_series": "mdplace-spec/v1", "release_version": "1.0.0", "normative_digest_ref": "package-manifest.yaml#/normative_digest"},
-    "preconditions": {"manifest_ref": "package-manifest.yaml", "artifact_ledger_ref": "package-manifest.yaml#/artifacts", "normative_digest_ref": "package-manifest.yaml#/normative_digest"},
+    "preconditions": {"manifest_ref": "package-manifest.yaml", "state_manifest_ref": "conformance/state-observations/release-ready/package-manifest.yaml", "artifact_ledger_ref": "package-manifest.yaml#/artifacts", "normative_digest_ref": "package-manifest.yaml#/normative_digest"},
     "amendment_evidence": null,
     "release_evidence": null,
     "idempotency_key": "fixture-unproven-release-001",

@@ -6,3 +6,4 @@ import './validator-security-cases.mjs';
 import './validator-boundary-cases.mjs';
 import './validator-meta-schema-cases.mjs';
 import './validator-precondition-cases.mjs';
+import './validator-final-review-cases.mjs';

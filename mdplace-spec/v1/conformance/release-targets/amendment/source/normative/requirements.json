@@ -7,8 +7,14 @@
       "id": "REQ-PKG-001",
       "title": "Authority is explicit and one-way",
       "normative_anchor": "normative/package-contract.md#req-pkg-001-authority-is-explicit-and-one-way",
-      "decision_urls": ["https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"],
-      "canonical_terms": ["Normative Material", "Informative Material", "Specification Package"],
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"
+      ],
+      "canonical_terms": [
+        "Normative Material",
+        "Informative Material",
+        "Specification Package"
+      ],
       "acceptance_gate": "Every listed artifact has exactly one authority and conformance is derived exclusively from normative artifacts.",
       "scope": "foundation"
     },
@@ -16,8 +22,13 @@
       "id": "REQ-PKG-002",
       "title": "Version identity is stable",
       "normative_anchor": "normative/package-contract.md#req-pkg-002-version-identity-is-stable",
-      "decision_urls": ["https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"],
-      "canonical_terms": ["Specification Package", "Traceability Record"],
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"
+      ],
+      "canonical_terms": [
+        "Specification Package",
+        "Traceability Record"
+      ],
       "acceptance_gate": "Series, release version, lifecycle state, validator version, and normative digest are explicit and version-bound.",
       "scope": "foundation"
     },
@@ -25,8 +36,15 @@
       "id": "REQ-PKG-003",
       "title": "Released content is immutable",
       "normative_anchor": "normative/package-contract.md#req-pkg-003-released-content-is-immutable",
-      "decision_urls": ["https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"],
-      "canonical_terms": ["Specification Package", "Package Amendment", "Conformance Fixture", "Traceability Record"],
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"
+      ],
+      "canonical_terms": [
+        "Specification Package",
+        "Package Amendment",
+        "Conformance Fixture",
+        "Traceability Record"
+      ],
       "acceptance_gate": "In-place release mutation and downgrade are denied; a change requires a strictly greater version, new path, and unchanged observed source digest.",
       "scope": "foundation"
     },
@@ -34,17 +52,28 @@
       "id": "REQ-PKG-004",
       "title": "Requirement identifiers are unique and permanent",
       "normative_anchor": "normative/package-contract.md#req-pkg-004-requirement-identifiers-are-unique-and-permanent",
-      "decision_urls": ["https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"],
-      "canonical_terms": ["Specification Package", "Package Amendment", "Traceability Record"],
-      "acceptance_gate": "Requirement identifiers match the shared stable format; amendments compare bound catalogs and exactly mark changed and new identifiers without removal or reassignment.",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"
+      ],
+      "canonical_terms": [
+        "Specification Package",
+        "Package Amendment",
+        "Traceability Record"
+      ],
+      "acceptance_gate": "Requirement identifiers match the stable format and are unique within the released source.",
       "scope": "foundation"
     },
     {
       "id": "REQ-PKG-005",
       "title": "Vocabulary is canonical",
       "normative_anchor": "normative/package-contract.md#req-pkg-005-vocabulary-is-canonical",
-      "decision_urls": ["https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"],
-      "canonical_terms": ["Specification Package", "Traceability Record"],
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"
+      ],
+      "canonical_terms": [
+        "Specification Package",
+        "Traceability Record"
+      ],
       "acceptance_gate": "Every named canonical term resolves to CONTEXT.md and no avoided synonym is accepted.",
       "scope": "foundation"
     },
@@ -52,8 +81,13 @@
       "id": "REQ-PKG-006",
       "title": "Structured contracts are closed",
       "normative_anchor": "normative/package-contract.md#req-pkg-006-structured-contracts-are-closed",
-      "decision_urls": ["https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"],
-      "canonical_terms": ["Specification Package", "Conformance Fixture"],
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"
+      ],
+      "canonical_terms": [
+        "Specification Package",
+        "Conformance Fixture"
+      ],
       "acceptance_gate": "Draft 2020-12 schemas reject unknown fields, enforce identifier and digest boundaries, and terminate within explicit evaluation and error budgets.",
       "scope": "foundation"
     },
@@ -61,8 +95,14 @@
       "id": "REQ-PKG-007",
       "title": "Lifecycle tables are complete",
       "normative_anchor": "normative/package-contract.md#req-pkg-007-lifecycle-tables-are-complete",
-      "decision_urls": ["https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"],
-      "canonical_terms": ["Specification Package", "Conformance Fixture", "Package Amendment"],
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"
+      ],
+      "canonical_terms": [
+        "Specification Package",
+        "Conformance Fixture",
+        "Package Amendment"
+      ],
       "acceptance_gate": "Each state-command pair occurs exactly once with all required transition fields and denied-row coverage.",
       "scope": "foundation"
     },
@@ -70,8 +110,14 @@
       "id": "REQ-PKG-008",
       "title": "Traceability is stable and total",
       "normative_anchor": "normative/package-contract.md#req-pkg-008-traceability-is-stable-and-total",
-      "decision_urls": ["https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"],
-      "canonical_terms": ["Traceability Record", "Conformance Fixture", "Specification Package"],
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"
+      ],
+      "canonical_terms": [
+        "Traceability Record",
+        "Conformance Fixture",
+        "Specification Package"
+      ],
       "acceptance_gate": "Every normative requirement has one resolving traceability record and every reference resolves.",
       "scope": "foundation"
     },
@@ -79,8 +125,13 @@
       "id": "REQ-PKG-009",
       "title": "Conformance observes public effects",
       "normative_anchor": "normative/package-contract.md#req-pkg-009-conformance-observes-public-effects",
-      "decision_urls": ["https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"],
-      "canonical_terms": ["Conformance Fixture", "Specification Package"],
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"
+      ],
+      "canonical_terms": [
+        "Conformance Fixture",
+        "Specification Package"
+      ],
       "acceptance_gate": "Required fixtures bind observable lifecycle state and command evidence, while release assets bind digests, validator version, validation, and traceability reports.",
       "scope": "foundation"
     },
@@ -88,8 +139,14 @@
       "id": "REQ-PKG-010",
       "title": "Package layout is declared",
       "normative_anchor": "normative/package-contract.md#req-pkg-010-package-layout-is-declared",
-      "decision_urls": ["https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"],
-      "canonical_terms": ["Specification Package", "Normative Material", "Informative Material"],
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"
+      ],
+      "canonical_terms": [
+        "Specification Package",
+        "Normative Material",
+        "Informative Material"
+      ],
       "acceptance_gate": "The manifest declares every final release slot and distinguishes candidate foundation contents.",
       "scope": "foundation"
     },
@@ -97,8 +154,13 @@
       "id": "REQ-PKG-011",
       "title": "Release authority is non-ambiguous",
       "normative_anchor": "normative/package-contract.md#req-pkg-011-release-authority-is-non-ambiguous",
-      "decision_urls": ["https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"],
-      "canonical_terms": ["Specification Package", "Normative Material"],
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"
+      ],
+      "canonical_terms": [
+        "Specification Package",
+        "Normative Material"
+      ],
       "acceptance_gate": "Vault-owner and independent-technical approvals bind one digest to different canonical authenticated human principals and cannot be inferred or substituted.",
       "scope": "foundation"
     },
@@ -106,8 +168,19 @@
       "id": "REQ-PKG-012",
       "title": "The package is specification-only",
       "normative_anchor": "normative/package-contract.md#req-pkg-012-the-package-is-specification-only",
-      "decision_urls": ["https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"],
-      "canonical_terms": ["mdplace Agent", "Semantic Kernel", "Control Channel", "Vault Mutation Gate", "Capture Adapter", "Placement Evaluation", "Taxonomy Evolution Cycle", "Folder Projection"],
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"
+      ],
+      "canonical_terms": [
+        "mdplace Agent",
+        "Semantic Kernel",
+        "Control Channel",
+        "Vault Mutation Gate",
+        "Capture Adapter",
+        "Placement Evaluation",
+        "Taxonomy Evolution Cycle",
+        "Folder Projection"
+      ],
       "acceptance_gate": "Only declared specification artifacts and the exact conformance executable inventory exist; no production boundary is implemented or invoked.",
       "scope": "foundation"
     }
