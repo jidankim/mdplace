@@ -1,5 +1,6 @@
 function patternWithinBudget(pattern) {
   const frames = [{alternation: false, quantified: false, unbounded: 0}];
+  let alternations = 0;
   let priorTokenIsRisky = false;
   let variableRepetitions = 0;
   for (let index = 0; index < pattern.length; index += 1) {
@@ -35,6 +36,8 @@ function patternWithinBudget(pattern) {
       continue;
     }
     if (character === '|') {
+      alternations += 1;
+      if (alternations > 3) return false;
       frames.at(-1).alternation = true;
       priorTokenIsRisky = false;
       continue;

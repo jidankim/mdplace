@@ -52,6 +52,7 @@ test('schema validation rejects ambiguous repetition before evaluation', () => {
     '^(a{0,1000}){0,1000}$',
     '^((a{0,1000})){0,1000}$',
     '^(?:a+)(?:a+)(?:a+)(?:a+)(?:a+)(?:a+)b$',
+    `^${'(?:a|aa)'.repeat(30)}b$`,
   ];
   for (const pattern of patterns) {
     const errors = validateJsonSchema({type: 'string', pattern}, `${'a'.repeat(1023)}b`);
