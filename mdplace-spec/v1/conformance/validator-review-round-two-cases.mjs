@@ -67,9 +67,11 @@ test('schema reference and oneOf applicators evaluate sibling keywords', () => {
 
 test('schema validation bounds uniqueItems evaluation', () => {
   const values = Array.from({length: 10_000}, (_, index) => ({index}));
-  const errors = validateJsonSchema({type: 'array', uniqueItems: true}, values);
+  const firstErrors = validateJsonSchema({type: 'array', uniqueItems: true}, values);
+  const secondErrors = validateJsonSchema({type: 'array', uniqueItems: true}, values);
 
-  assert.ok(errors.some(({keyword}) => keyword === 'resourceLimit'));
+  assert.ok(firstErrors.some(({keyword}) => keyword === 'resourceLimit'));
+  assert.deepEqual(secondErrors, firstErrors);
 });
 
 test('evidence output refuses a hard-linked external inode', async () => {

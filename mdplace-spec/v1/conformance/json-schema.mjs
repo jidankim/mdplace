@@ -1,6 +1,6 @@
 import {isDeepStrictEqual} from 'node:util';
-import {runInNewContext} from 'node:vm';
 
+import {evaluatePattern} from './pattern-evaluation.mjs';
 import {readPackageFile} from './safe-path.mjs';
 
 const maxDepth = 128;
@@ -8,8 +8,7 @@ const maxCollectionEntries = 10_000;
 const maxErrors = 256;
 const maxPatternLength = 512;
 const maxPatternInputLength = 1_024;
-const maxPatternEvaluationMilliseconds = 25;
-const maxSchemaEvaluationMilliseconds = 1_000;
+const maxSchemaOperations = 100_000;
 
 function matchesType(value, type) {
   switch (type) {
@@ -39,22 +38,12 @@ function addError(errors, path, keyword) {
 }
 
 function budgetExceeded(state, errors, path) {
-  if (Date.now() <= state.budget.deadline) return false;
+  if (state.budget.remaining > 0) {
+    state.budget.remaining -= 1;
+    return false;
+  }
   addError(errors, path, 'resourceLimit');
   return true;
-}
-
-function evaluatePattern(pattern, value) {
-  try {
-    return {
-      status: 'complete',
-      matches: runInNewContext('new RegExp(pattern, "u").test(value)', {pattern, value}, {
-        timeout: maxPatternEvaluationMilliseconds,
-      }),
-    };
-  } catch (error) {
-    return {status: error?.code === 'ERR_SCRIPT_EXECUTION_TIMEOUT' ? 'resourceLimit' : 'invalidSchema'};
-  }
 }
 
 function validateNode(schema, value, rootSchema, path, errors, state) {
@@ -236,7 +225,7 @@ export function validateJsonSchema(schema, value) {
   validateNode(schema, value, schema, '$', errors, {
     depth: 0,
     references: new Set(),
-    budget: {deadline: Date.now() + maxSchemaEvaluationMilliseconds},
+    budget: {remaining: maxSchemaOperations},
   });
   return errors;
 }

@@ -44,6 +44,7 @@ const conformanceExecutables = new Set([
   'conformance/fixture-observer.mjs',
   'conformance/json-schema.mjs',
   'conformance/package-checks.mjs',
+  'conformance/pattern-evaluation.mjs',
   'conformance/requirement-checks.mjs',
   'conformance/safe-path.mjs',
   'conformance/schema-instances.mjs',

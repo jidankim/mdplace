@@ -27,6 +27,13 @@ function observedPath(root, path) {
   return root === '.' ? path : `${root}/${path}`;
 }
 
+function markdownAnchor(heading) {
+  return heading.trim().toLowerCase()
+    .replace(/[^\p{L}\p{N}\s-]/gu, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+}
+
 async function observedPackage(packageRoot, observationRoot, manifestReference, requiredSlots, requiredArtifacts) {
   const manifestPath = observedPath(observationRoot, manifestReference);
   const manifest = await readJson(packageRoot, manifestPath);
@@ -58,12 +65,13 @@ async function observedPackage(packageRoot, observationRoot, manifestReference, 
 
 async function requirementSection(root, entry) {
   if (typeof entry?.normative_anchor !== 'string') return null;
-  const [path] = entry.normative_anchor.split('#', 1);
+  const [path, fragment = ''] = entry.normative_anchor.split('#', 2);
   const read = await readPackageFile(root, path);
   if (read.status !== 'present') return null;
   const lines = read.content.toString('utf8').split(/\r?\n/);
-  const start = lines.findIndex((line) => line.startsWith(`## ${entry.id}:`));
-  if (start === -1) return null;
+  const expectedHeading = `## ${entry.id}: ${entry.title}`;
+  const start = lines.indexOf(expectedHeading);
+  if (start === -1 || fragment !== markdownAnchor(expectedHeading.replace(/^##\s+/, ''))) return null;
   const next = lines.findIndex((line, index) => index > start && line.startsWith('## '));
   return lines.slice(start, next === -1 ? undefined : next).join('\n').trim();
 }

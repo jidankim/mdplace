@@ -85,6 +85,21 @@ The implementation MUST accept hidden meaning.
   assert.equal(await amendmentEvidenceMatches(fixture.subject, packageRoot), false);
 });
 
+test('amendment evidence rejects a reassigned existing requirement anchor', async () => {
+  const packageRoot = await copyCommittedPackage();
+  let reassignedId;
+  const fixture = await amendedFixture(packageRoot, async (targetRoot, manifest) => {
+    const path = 'normative/requirements.json';
+    const requirements = await readJson(targetRoot, path);
+    reassignedId = requirements.requirements[0].id;
+    requirements.requirements[0].normative_anchor = requirements.requirements[1].normative_anchor;
+    await bindTargetFile(targetRoot, manifest, path, `${JSON.stringify(requirements, null, 2)}\n`);
+  });
+  fixture.subject.amendment_evidence.changed_requirement_ids.push(reassignedId);
+
+  assert.equal(await amendmentEvidenceMatches(fixture.subject, packageRoot), false);
+});
+
 test('amendment evidence rejects an undeclared new normative artifact', async () => {
   const packageRoot = await copyCommittedPackage();
   const fixture = await amendedFixture(packageRoot, async (targetRoot, manifest) => {
