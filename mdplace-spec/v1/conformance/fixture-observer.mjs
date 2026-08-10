@@ -21,7 +21,7 @@ function isGreaterSemver(target, source) {
     targetParts.slice(0, index).every((earlier, earlierIndex) => earlier === sourceParts[earlierIndex]));
 }
 
-export async function observeFixture(fixture, packageRoot) {
+export async function observeFixture(fixture, packageRoot, options = {}) {
   switch (fixture?.subject?.kind) {
     case 'artifact': {
       const schemaName = fixture.subject.schema.split('/').at(-1);
@@ -154,7 +154,7 @@ export async function observeFixture(fixture, packageRoot) {
       };
     }
     case 'transition':
-      return observeTransition(fixture, packageRoot);
+      return observeTransition(fixture, packageRoot, options);
     default:
       return {
         verdict: 'fail',

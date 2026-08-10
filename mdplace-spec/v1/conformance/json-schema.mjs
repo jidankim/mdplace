@@ -25,8 +25,13 @@ function matchesType(value, type) {
 function resolveReference(rootSchema, reference) {
   if (reference === '#') return rootSchema;
   if (!reference.startsWith('#/')) throw new Error(`unsupported schema reference: ${reference}`);
-  return reference.slice(2).split('/').reduce((node, token) =>
-    node[token.replaceAll('~1', '/').replaceAll('~0', '~')], rootSchema);
+  return reference.slice(2).split('/').reduce((node, token) => {
+    const key = token.replaceAll('~1', '/').replaceAll('~0', '~');
+    if ((node === null || typeof node !== 'object') || !Object.hasOwn(node, key)) {
+      throw new Error(`unresolved schema reference: ${reference}`);
+    }
+    return node[key];
+  }, rootSchema);
 }
 
 function addError(errors, path, keyword) {
@@ -65,7 +70,7 @@ function validateNode(schema, value, rootSchema, path, errors, state) {
     addError(errors, path, 'invalidSchema');
     return;
   }
-  if (schema.$ref !== undefined) {
+  if (Object.hasOwn(schema, '$ref')) {
     if (typeof schema.$ref !== 'string') {
       addError(errors, path, 'invalidSchema');
       return;
@@ -84,29 +89,27 @@ function validateNode(schema, value, rootSchema, path, errors, state) {
     } catch {
       addError(errors, path, 'invalidSchema');
     }
-    return;
   }
-  if (schema.oneOf !== undefined) {
+  if (Object.hasOwn(schema, 'oneOf')) {
     if (!Array.isArray(schema.oneOf) || schema.oneOf.length > maxCollectionEntries) {
       addError(errors, path, 'invalidSchema');
-      return;
-    }
-    let matchCount = 0;
-    for (const candidate of schema.oneOf) {
-      const candidateErrors = [];
-      validateNode(candidate, value, rootSchema, path, candidateErrors, {
-        depth: state.depth + 1,
-        references: state.references,
-        budget: state.budget,
-      });
-      if (candidateErrors.some(({keyword}) => keyword === 'resourceLimit')) {
-        addError(errors, path, 'resourceLimit');
-        return;
+    } else {
+      let matchCount = 0;
+      for (const candidate of schema.oneOf) {
+        const candidateErrors = [];
+        validateNode(candidate, value, rootSchema, path, candidateErrors, {
+          depth: state.depth + 1,
+          references: state.references,
+          budget: state.budget,
+        });
+        if (candidateErrors.some(({keyword}) => keyword === 'resourceLimit')) {
+          addError(errors, path, 'resourceLimit');
+          return;
+        }
+        if (candidateErrors.length === 0) matchCount += 1;
       }
-      if (candidateErrors.length === 0) matchCount += 1;
+      if (matchCount !== 1) addError(errors, path, 'oneOf');
     }
-    if (matchCount !== 1) addError(errors, path, 'oneOf');
-    return;
   }
   if (schema.allOf !== undefined) {
     if (!Array.isArray(schema.allOf) || schema.allOf.length > maxCollectionEntries) {

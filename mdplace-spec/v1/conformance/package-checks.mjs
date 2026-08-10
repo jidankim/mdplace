@@ -2,6 +2,7 @@ import {createHash} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 
+import {conformanceDigestForArtifacts} from './digest-bindings.mjs';
 import {listPackageFiles, inspectPackageEntry, readPackageFile} from './safe-path.mjs';
 import {authorityMatches, manifestFields, packageArtifactPathAllowed, transitionFields} from './validator-rules.mjs';
 
@@ -83,7 +84,8 @@ export async function checkManifest(packageRoot, manifest) {
   }
   if (!/^[1-9][0-9]*\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)$/.test(manifest.release_version ?? '') ||
       !/^[1-9][0-9]*\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)$/.test(manifest.validator_version ?? '') ||
-      !/^[a-f0-9]{64}$/.test(manifest.normative_digest ?? '')) {
+      !/^[a-f0-9]{64}$/.test(manifest.normative_digest ?? '') ||
+      !/^[a-f0-9]{64}$/.test(manifest.conformance_digest ?? '')) {
     codes.push('schema.pattern');
   }
   const artifactPaths = Array.isArray(manifest.artifacts) ? manifest.artifacts.map((artifact) => artifact?.path) : [];
@@ -161,7 +163,9 @@ export async function checkArtifactBindings(packageRoot, manifest) {
     .join('');
   const normativeDigest = sha256(normativeBindings);
   if (normativeDigest !== manifest.normative_digest) codes.push('package.normative_digest_mismatch');
-  return {check: result('artifact-bindings', codes), normativeDigest};
+  const conformanceDigest = conformanceDigestForArtifacts(artifacts);
+  if (conformanceDigest !== manifest.conformance_digest) codes.push('package.conformance_digest_mismatch');
+  return {check: result('artifact-bindings', codes), normativeDigest, conformanceDigest};
 }
 
 export async function checkRequirements(packageRoot, requirements) {

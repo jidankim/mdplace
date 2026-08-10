@@ -23,22 +23,12 @@ async function readJson(packageRoot, path) {
 function observedPath(root, path) {
   return root === '.' ? path : `${root}/${path}`;
 }
-
-function isGreaterSemver(target, source) {
-  const semver = /^[1-9][0-9]*\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)$/;
-  if (!semver.test(target) || !semver.test(source)) return false;
-  const targetParts = target.split('.').map(Number);
-  const sourceParts = source.split('.').map(Number);
-  return targetParts.some((part, index) => part > sourceParts[index] &&
-    targetParts.slice(0, index).every((earlier, earlierIndex) => earlier === sourceParts[earlierIndex]));
-}
-
-async function releaseAssetsMatch(evidence, manifest, packageRoot) {
+async function releaseAssetsMatch(evidence, manifest, packageRoot, options) {
   const assets = evidence.release_assets;
   const validationPath = 'conformance/evidence/validation-report.json';
   const traceabilityPath = 'conformance/evidence/traceability-report.json';
   if (assets?.specification_digest_ref !== digestReference ||
-      assets?.conformance_digest_ref !== `package-manifest.yaml#/artifacts/${validationPath}/sha256` ||
+      assets?.conformance_digest_ref !== 'package-manifest.yaml#/conformance_digest' ||
       assets?.validator_version_ref !== 'package-manifest.yaml#/validator_version' ||
       assets?.validation_report_ref !== validationPath ||
       assets?.traceability_report_ref !== traceabilityPath ||
@@ -67,7 +57,8 @@ async function releaseAssetsMatch(evidence, manifest, packageRoot) {
   const reportBindingMatches = (report) => report.package_series === manifest.package_series &&
     report.release_version === manifest.release_version &&
     report.validator_version === manifest.validator_version &&
-    report.normative_digest === manifest.normative_digest && report.verdict === 'pass';
+    report.normative_digest === manifest.normative_digest &&
+    report.conformance_digest === manifest.conformance_digest && report.verdict === 'pass';
   const requirements = await readJson(packageRoot, 'normative/requirements.json');
   const traceability = await readJson(packageRoot, 'traceability.yaml');
   const requirementIds = Array.isArray(requirements?.requirements)
@@ -77,7 +68,20 @@ async function releaseAssetsMatch(evidence, manifest, packageRoot) {
     ? traceability.records.map(({requirement_id: id}) => id)
     : [];
   const unresolvedIds = requirementIds.filter((id) => !tracedIds.includes(id));
-  return validationReport.schema_id === 'mdplace.validation-report/v1' &&
+  const [validationSchemaErrors, traceabilitySchemaErrors] = await Promise.all([
+    validateAgainstSchemaPath(packageRoot, 'contracts/schemas/validation-report.schema.json', validationReport),
+    validateAgainstSchemaPath(packageRoot, 'contracts/schemas/traceability-report.schema.json', traceabilityReport),
+  ]);
+  let validationReportMatches = true;
+  if (options.verifyPublishedReports !== false) {
+    const {buildValidationReport} = await import('./validation-report.mjs');
+    validationReportMatches = isDeepStrictEqual(
+      validationReport,
+      await buildValidationReport(packageRoot, {verifyPublishedReports: false}),
+    );
+  }
+  return validationSchemaErrors.length === 0 && traceabilitySchemaErrors.length === 0 &&
+    validationReportMatches && validationReport.schema_id === 'mdplace.validation-report/v1' &&
     traceabilityReport.schema_id === 'mdplace.traceability-report/v1' &&
     reportBindingMatches(validationReport) && reportBindingMatches(traceabilityReport) &&
     requirementIds.length > 0 && new Set(requirementIds).size === requirementIds.length &&
@@ -88,7 +92,7 @@ async function releaseAssetsMatch(evidence, manifest, packageRoot) {
     equalSets(traceabilityReport.unresolved_requirement_ids, unresolvedIds) && unresolvedIds.length === 0;
 }
 
-export async function releaseEvidenceMatches(subject, packageRoot) {
+export async function releaseEvidenceMatches(subject, packageRoot, options = {}) {
   const evidence = subject.release_evidence;
   if (evidence === null || evidence === undefined) return false;
   const manifest = await readJson(packageRoot, 'package-manifest.yaml');
@@ -139,71 +143,5 @@ export async function releaseEvidenceMatches(subject, packageRoot) {
       observedPath(immutableTarget.observation_root, immutableTarget.path),
     )).status === 'absent';
   return slotObservationMatches && evidence.verified_artifact_digest_ref === digestReference &&
-    approvalsMatch && immutableTargetMatches && await releaseAssetsMatch(evidence, manifest, packageRoot);
-}
-
-export async function amendmentEvidenceMatches(subject, packageRoot) {
-  const evidence = subject.amendment_evidence;
-  if (evidence === null || evidence === undefined) return false;
-  const rootIsSafe = /^conformance\/release-targets\/[a-z][a-z0-9-]{2,63}$/.test(evidence.observation_root ?? '');
-  if (!rootIsSafe || typeof evidence.source_manifest !== 'string' ||
-      !Array.isArray(evidence.changed_requirement_ids) || evidence.changed_requirement_ids.length === 0) return false;
-  const sourceManifest = await readJson(packageRoot, observedPath(evidence.observation_root, evidence.source_manifest));
-  const sourceArtifacts = Array.isArray(sourceManifest?.artifacts) ? sourceManifest.artifacts : [];
-  const sourceDirectory = evidence.source_manifest.split('/').slice(0, -1).join('/');
-  const artifactPaths = sourceArtifacts.map((artifact) => artifact?.path);
-  const artifactBindingsMatch = sourceArtifacts.length > 0 && new Set(artifactPaths).size === artifactPaths.length &&
-    (await Promise.all(sourceArtifacts.map(async (artifact) => {
-      if (artifact === null || typeof artifact !== 'object' || typeof artifact.path !== 'string' ||
-          typeof artifact.sha256 !== 'string' || !['normative', 'informative'].includes(artifact.authority)) return false;
-      const read = await readPackageFile(
-        packageRoot,
-        observedPath(evidence.observation_root, observedPath(sourceDirectory, artifact.path)),
-      );
-      return read.status === 'present' && createHash('sha256').update(read.content).digest('hex') === artifact.sha256;
-    }))).every(Boolean);
-  const observedSourceDigest = createHash('sha256').update(sourceArtifacts
-    .filter((artifact) => artifact?.authority === 'normative' &&
-      typeof artifact.path === 'string' && typeof artifact.sha256 === 'string')
-    .sort((left, right) => left.path.localeCompare(right.path))
-    .map(({path, sha256}) => `${path}\0${sha256}\n`).join('')).digest('hex');
-  const sourceRequirementsPath = sourceArtifacts.find(({path}) => path === 'normative/requirements.json')?.path;
-  const sourceRequirements = sourceRequirementsPath === undefined ? null : await readJson(
-    packageRoot,
-    observedPath(evidence.observation_root, observedPath(sourceDirectory, sourceRequirementsPath)),
-  );
-  const targetRequirements = await readJson(packageRoot, 'normative/requirements.json');
-  const [sourceSchemaErrors, targetSchemaErrors] = sourceRequirements === null || targetRequirements === null
-    ? [[{keyword: 'invalidSchema'}], [{keyword: 'invalidSchema'}]]
-    : await Promise.all([
-      validateAgainstSchemaPath(packageRoot, 'contracts/schemas/requirements.schema.json', sourceRequirements),
-      validateAgainstSchemaPath(packageRoot, 'contracts/schemas/requirements.schema.json', targetRequirements),
-    ]);
-  const sourceEntries = Array.isArray(sourceRequirements?.requirements) ? sourceRequirements.requirements : [];
-  const targetEntries = Array.isArray(targetRequirements?.requirements) ? targetRequirements.requirements : [];
-  const sourceIds = sourceEntries.map(({id}) => id);
-  const targetIds = targetEntries.map(({id}) => id);
-  const targetById = new Map(targetEntries.map((entry) => [entry.id, entry]));
-  const changedIds = sourceEntries
-    .filter((entry) => targetById.has(entry.id) && !isDeepStrictEqual(entry, targetById.get(entry.id)))
-    .map(({id}) => id);
-  const newIds = targetIds.filter((id) => !sourceIds.includes(id));
-  const requirementIdsMatch = sourceSchemaErrors.length === 0 && targetSchemaErrors.length === 0 &&
-    sourceEntries.length > 0 && targetEntries.length > 0 &&
-    new Set(sourceIds).size === sourceIds.length && new Set(targetIds).size === targetIds.length &&
-    sourceIds.every((id) => targetById.has(id)) && equalSets(changedIds, evidence.changed_requirement_ids ?? []) &&
-    equalSets(newIds, evidence.new_requirement_ids ?? []);
-  if (sourceManifest === null || sourceManifest.lifecycle_state !== 'released' ||
-      sourceManifest.package_series !== subject.base_references.package_series ||
-      sourceManifest.release_version !== subject.base_references.release_version ||
-      sourceManifest.normative_digest !== evidence.source_digest ||
-      observedSourceDigest !== sourceManifest.normative_digest || !artifactBindingsMatch || !requirementIdsMatch ||
-      !/^[a-f0-9]{64}$/.test(evidence.source_digest) ||
-      !isGreaterSemver(evidence.target_version, sourceManifest.release_version) ||
-      evidence.target_path !== `releases/${evidence.target_version}`) return false;
-  const target = await inspectAbsentPackageEntry(
-    packageRoot,
-    observedPath(evidence.observation_root, evidence.target_path),
-  );
-  return target.status === 'absent';
+    approvalsMatch && immutableTargetMatches && await releaseAssetsMatch(evidence, manifest, packageRoot, options);
 }

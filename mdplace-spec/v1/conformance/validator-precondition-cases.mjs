@@ -27,6 +27,7 @@ async function transitionRoot({artifactContent = 'changed\n', table}) {
     layout: {required_release_slots: requiredReleaseSlots, candidate_foundation_slots: requiredCandidateFoundationSlots},
     artifacts: [{path: 'normative/contract.md', authority: 'normative', media_type: 'text/markdown', sha256: artifactDigest}],
     normative_digest: normativeDigest,
+    conformance_digest: createHash('sha256').update('').digest('hex'),
     amendment_policy: {immutable_after_release: true, in_place_mutation: 'forbidden', new_version_required: true, previous_release: null},
     conformance: {manifest: 'conformance/manifest.yaml', validator: 'conformance/validator.mjs', report: 'conformance/evidence/validation-report.json'},
   }));

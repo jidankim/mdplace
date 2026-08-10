@@ -118,7 +118,7 @@
       "required": ["specification_digest_ref", "conformance_digest_ref", "validator_version_ref", "validation_report_ref", "traceability_report_ref", "traceability_report_digest_ref"],
       "properties": {
         "specification_digest_ref": {"const": "package-manifest.yaml#/normative_digest"},
-        "conformance_digest_ref": {"const": "package-manifest.yaml#/artifacts/conformance/evidence/validation-report.json/sha256"},
+        "conformance_digest_ref": {"const": "package-manifest.yaml#/conformance_digest"},
         "validator_version_ref": {"const": "package-manifest.yaml#/validator_version"},
         "validation_report_ref": {"const": "conformance/evidence/validation-report.json"},
         "traceability_report_ref": {"const": "conformance/evidence/traceability-report.json"},
@@ -178,14 +178,16 @@
     "amendmentEvidence": {
       "type": ["object", "null"],
       "additionalProperties": false,
-      "required": ["observation_root", "source_manifest", "source_digest", "target_version", "target_path", "changed_requirement_ids", "new_requirement_ids"],
+      "required": ["observation_root", "source_manifest", "source_digest", "target_manifest", "target_version", "target_digest", "target_path", "changed_requirement_ids", "new_requirement_ids"],
       "properties": {
         "observation_root": {"type": "string", "pattern": "^conformance/release-targets/[a-z][a-z0-9-]{2,63}$"},
         "source_manifest": {"type": "string", "pattern": "^[a-z][a-z0-9-]*/package-manifest\\.yaml$"},
         "source_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "target_manifest": {"type": "string", "pattern": "^[a-z][a-z0-9-]*/package-manifest\\.yaml$"},
         "target_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+        "target_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
         "target_path": {"type": "string", "pattern": "^releases/[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
-        "changed_requirement_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^REQ-[A-Z][A-Z0-9]{1,15}-[0-9]{3}$"}},
+        "changed_requirement_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^REQ-[A-Z][A-Z0-9]{1,15}-[0-9]{3}$"}},
         "new_requirement_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^REQ-[A-Z][A-Z0-9]{1,15}-[0-9]{3}$"}}
       }
     },

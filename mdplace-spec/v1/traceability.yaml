@@ -32,7 +32,7 @@
       "schema_or_transition_refs": ["contracts/schemas/package-manifest.schema.json", "contracts/schemas/validation-report.schema.json"],
       "positive_fixture_ids": ["FIX-PKG-POS-001", "FIX-PKG-POS-003", "FIX-PKG-BND-001"],
       "negative_fixture_ids": ["FIX-PKG-BND-002", "FIX-PKG-BND-003", "FIX-PKG-NEG-004", "FIX-PKG-NEG-011"],
-      "acceptance_gate": "Series, release version, lifecycle state, validator version, and normative digest are explicit and version-bound.",
+      "acceptance_gate": "Series, release version, lifecycle state, validator version, normative digest, and conformance-pack digest are explicit and version-bound.",
       "scope": "foundation",
       "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/version-amendment-report.json"]
     },
@@ -131,7 +131,7 @@
         "FIX-PKG-AUTH-001",
         "FIX-PKG-ILLEGAL-001"
       ],
-      "acceptance_gate": "Required fixtures bind observable lifecycle state and command evidence, while release assets bind digests, validator version, validation, and traceability reports.",
+      "acceptance_gate": "Required fixtures bind observable lifecycle state and command evidence, while release assets bind specification and conformance-pack digests, validator version, independently reproduced validation, and traceability reports.",
       "scope": "foundation",
       "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/recovery-report.json"]
     },

@@ -4,7 +4,7 @@
   "title": "mdplace generated traceability report",
   "type": "object",
   "additionalProperties": false,
-  "required": ["$schema", "schema_id", "package_series", "release_version", "validator_version", "normative_digest", "requirements_total", "records_total", "unresolved_requirement_ids", "verdict"],
+  "required": ["$schema", "schema_id", "package_series", "release_version", "validator_version", "normative_digest", "conformance_digest", "requirements_total", "records_total", "unresolved_requirement_ids", "verdict"],
   "properties": {
     "$schema": {"const": "../../contracts/schemas/traceability-report.schema.json"},
     "schema_id": {"const": "mdplace.traceability-report/v1"},
@@ -12,6 +12,7 @@
     "release_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
     "validator_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
     "normative_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "conformance_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
     "requirements_total": {"type": "integer", "minimum": 1},
     "records_total": {"type": "integer", "minimum": 1},
     "unresolved_requirement_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^REQ-[A-Z][A-Z0-9]{1,15}-[0-9]{3}$"}},

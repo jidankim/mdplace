@@ -18,7 +18,7 @@
       "normative_anchor": "normative/package-contract.md#req-pkg-002-version-identity-is-stable",
       "decision_urls": ["https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"],
       "canonical_terms": ["Specification Package", "Traceability Record"],
-      "acceptance_gate": "Series, release version, lifecycle state, validator version, and normative digest are explicit and version-bound.",
+      "acceptance_gate": "Series, release version, lifecycle state, validator version, normative digest, and conformance-pack digest are explicit and version-bound.",
       "scope": "foundation"
     },
     {
@@ -81,7 +81,7 @@
       "normative_anchor": "normative/package-contract.md#req-pkg-009-conformance-observes-public-effects",
       "decision_urls": ["https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"],
       "canonical_terms": ["Conformance Fixture", "Specification Package"],
-      "acceptance_gate": "Required fixtures bind observable lifecycle state and command evidence, while release assets bind digests, validator version, validation, and traceability reports.",
+      "acceptance_gate": "Required fixtures bind observable lifecycle state and command evidence, while release assets bind specification and conformance-pack digests, validator version, independently reproduced validation, and traceability reports.",
       "scope": "foundation"
     },
     {

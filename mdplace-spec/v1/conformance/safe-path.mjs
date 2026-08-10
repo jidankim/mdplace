@@ -20,6 +20,14 @@ function isContained(root, target) {
   return pathFromRoot === '' || (!pathFromRoot.startsWith(`..${sep}`) && pathFromRoot !== '..' && !pathFromRoot.startsWith(sep));
 }
 
+async function packageTarget(packageRoot, relativePath) {
+  const normalized = normalizedRelativePath(relativePath);
+  if (normalized === null) return {status: 'unsafe'};
+  const root = await realpath(packageRoot);
+  const target = resolve(root, normalized);
+  return isContained(root, target) ? {status: 'present', target} : {status: 'unsafe'};
+}
+
 async function inspectExistingPath(packageRoot, relativePath) {
   const normalized = normalizedRelativePath(relativePath);
   if (normalized === null) return {status: 'unsafe'};
@@ -103,12 +111,12 @@ export async function readPackageFile(packageRoot, relativePath, byteLimit = max
 export async function writePackageFile(packageRoot, relativePath, content) {
   const bytes = Buffer.isBuffer(content) ? content : Buffer.from(content);
   if (bytes.length > maxFileBytes) return {status: 'too_large'};
-  const inspected = await inspectPackageEntry(packageRoot, relativePath, 'file');
-  if (inspected.status !== 'present') return inspected;
+  const target = await packageTarget(packageRoot, relativePath);
+  if (target.status !== 'present') return target;
   const noFollow = constants.O_NOFOLLOW ?? 0;
   let handle;
   try {
-    handle = await open(inspected.target, constants.O_WRONLY | noFollow);
+    handle = await open(target.target, constants.O_WRONLY | noFollow);
   } catch (error) {
     if (error.code === 'ENOENT') return {status: 'absent'};
     if (error.code === 'ELOOP' || error.code === 'ENOTDIR') return {status: 'unsafe'};
@@ -116,7 +124,10 @@ export async function writePackageFile(packageRoot, relativePath, content) {
   }
   try {
     const openedStats = await handle.stat();
-    if (!openedStats.isFile() || openedStats.dev !== inspected.stats.dev || openedStats.ino !== inspected.stats.ino) {
+    if (!openedStats.isFile() || openedStats.nlink !== 1) return {status: 'unsafe'};
+    const inspected = await inspectPackageEntry(packageRoot, relativePath, 'file');
+    if (inspected.status !== 'present' || inspected.stats.nlink !== 1 ||
+        openedStats.dev !== inspected.stats.dev || openedStats.ino !== inspected.stats.ino) {
       return {status: 'unsafe'};
     }
     let offset = 0;

@@ -5,6 +5,8 @@ import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 
+import {conformanceDigestForArtifacts} from './digest-bindings.mjs';
+
 const validator = fileURLToPath(new URL('./validator.mjs', import.meta.url));
 const committedPackage = fileURLToPath(new URL('../', import.meta.url));
 
@@ -51,6 +53,7 @@ export async function preparePackage(files) {
     layout: {required_release_slots: ['README.md', 'product.md', 'architecture.md', 'contracts/', 'operations.md', 'security-and-privacy.md', 'performance.md', 'conformance/manifest.yaml', 'conformance/fixtures/', 'conformance/scenarios/', 'conformance/benchmarks/', 'conformance/manual-acceptance.md', 'traceability.yaml', 'claims-and-evidence.yaml', 'package-manifest.yaml'], candidate_foundation_slots: ['README.md', 'normative/package-contract.md', 'normative/requirements.json', 'contracts/schemas/', 'contracts/transitions/', 'conformance/', 'traceability.yaml', 'package-manifest.yaml']},
     artifacts,
     normative_digest: normativeDigest,
+    conformance_digest: conformanceDigestForArtifacts(artifacts),
     amendment_policy: {immutable_after_release: true, in_place_mutation: 'forbidden', new_version_required: true, previous_release: null},
     conformance: {manifest: 'conformance/manifest.yaml', validator: 'conformance/validator.mjs', report: 'conformance/evidence/validation-report.json'},
     ...packageOverrides,

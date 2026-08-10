@@ -17,8 +17,8 @@ test('CLI validates every committed conformance fixture', () => {
   assert.equal(result.status, 0, result.stderr || result.stdout);
   const report = JSON.parse(result.stdout);
 
-  // Then the whole required category matrix is covered by 27 passing fixture results.
-  assert.equal(report.fixture_results.length, 27);
+  // Then the whole required category matrix is covered by 38 passing fixture results.
+  assert.equal(report.fixture_results.length, 38);
   assert.ok(report.fixture_results.every(({verdict}) => verdict === 'pass'));
   assert.deepEqual(report.checks.map(({id}) => id), [
     'package-manifest',
@@ -29,11 +29,9 @@ test('CLI validates every committed conformance fixture', () => {
     'schema-instances',
     'traceability',
     'conformance-manifest',
-    'version-amendment-evidence',
-    'recovery-evidence',
-    'traceability-evidence',
   ]);
   assert.match(report.normative_digest, /^[a-f0-9]{64}$/);
+  assert.match(report.conformance_digest, /^[a-f0-9]{64}$/);
 });
 
 test('CLI writes its passing report when evidence output is requested', async () => {

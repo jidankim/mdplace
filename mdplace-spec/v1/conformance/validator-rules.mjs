@@ -10,6 +10,7 @@ export const manifestFields = new Set([
   'layout',
   'artifacts',
   'normative_digest',
+  'conformance_digest',
   'amendment_policy',
   'conformance',
 ]);
@@ -38,6 +39,8 @@ const authorityByCommand = new Map([
 ]);
 
 const conformanceExecutables = new Set([
+  'conformance/digest-bindings.mjs',
+  'conformance/amendment-evidence.mjs',
   'conformance/fixture-observer.mjs',
   'conformance/json-schema.mjs',
   'conformance/package-checks.mjs',
@@ -49,6 +52,7 @@ const conformanceExecutables = new Set([
   'conformance/validator-boundary-cases.mjs',
   'conformance/validator-contract-cases.mjs',
   'conformance/validator-final-review-cases.mjs',
+  'conformance/validator-review-round-two-cases.mjs',
   'conformance/validator-fixture-cases.mjs',
   'conformance/validator-meta-schema-cases.mjs',
   'conformance/validator-package-cases.mjs',
@@ -57,6 +61,7 @@ const conformanceExecutables = new Set([
   'conformance/validator-security-cases.mjs',
   'conformance/validator-test-support.mjs',
   'conformance/validator-transition-cases.mjs',
+  'conformance/validation-report.mjs',
   'conformance/validator.mjs',
   'conformance/validator.test.mjs',
 ]);

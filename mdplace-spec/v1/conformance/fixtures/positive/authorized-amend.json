@@ -3,27 +3,72 @@
   "schema_id": "mdplace.conformance-fixture/v1",
   "fixture_id": "FIX-PKG-POS-006",
   "category": "positive",
-  "requirement_ids": ["REQ-PKG-003", "REQ-PKG-004", "REQ-PKG-007", "REQ-PKG-009"],
+  "requirement_ids": [
+    "REQ-PKG-003",
+    "REQ-PKG-004",
+    "REQ-PKG-007",
+    "REQ-PKG-009"
+  ],
   "subject": {
     "kind": "transition",
     "table": "contracts/transitions/package-lifecycle.json",
     "from_state": "released",
     "command": "amend",
-    "actors": [{"principal_id": "person:author-001", "identity_assurance": "canonical_authenticated_human", "roles": ["package_author"], "delegated": false}],
-    "base_references": {"package_series": "mdplace-spec/v1", "release_version": "1.0.0", "normative_digest_ref": "package-manifest.yaml#/normative_digest"},
-    "preconditions": {"manifest_ref": "package-manifest.yaml", "state_manifest_ref": "conformance/state-observations/released/package-manifest.yaml", "artifact_ledger_ref": "package-manifest.yaml#/artifacts", "normative_digest_ref": "package-manifest.yaml#/normative_digest"},
+    "actors": [
+      {
+        "principal_id": "person:author-001",
+        "identity_assurance": "canonical_authenticated_human",
+        "roles": [
+          "package_author"
+        ],
+        "delegated": false
+      }
+    ],
+    "base_references": {
+      "package_series": "mdplace-spec/v1",
+      "release_version": "1.0.0",
+      "normative_digest_ref": "package-manifest.yaml#/normative_digest"
+    },
+    "preconditions": {
+      "manifest_ref": "package-manifest.yaml",
+      "state_manifest_ref": "conformance/state-observations/released/package-manifest.yaml",
+      "artifact_ledger_ref": "package-manifest.yaml#/artifacts",
+      "normative_digest_ref": "package-manifest.yaml#/normative_digest"
+    },
     "release_evidence": null,
     "amendment_evidence": {
       "observation_root": "conformance/release-targets/amendment",
       "source_manifest": "source/package-manifest.yaml",
-      "source_digest": "2d9c300eb56ffb803544a69894c3d83c5601e0a1d2c0fe659a1cdf96d05ee445",
+      "source_digest": "677b4a925543095cef832e86969de45cc6cdbb747bbc85be91d40696f0a52855",
+      "target_manifest": "target/package-manifest.yaml",
       "target_version": "1.1.0",
+      "target_digest": "21082db8c466b499a34e4d5033153ccfc2c774618cadcd385d9f753e1ecc6f11",
       "target_path": "releases/1.1.0",
-      "changed_requirement_ids": ["REQ-PKG-004"],
+      "changed_requirement_ids": [
+        "REQ-PKG-004"
+      ],
       "new_requirement_ids": []
     },
     "idempotency_key": "fixture-amend-001",
     "idempotency_status": "new"
   },
-  "expected": {"verdict": "pass", "codes": [], "outputs": ["transition accepted"], "operations": ["amend"], "receipts": ["PackageAmendmentOpened"], "filesystem_effects": ["create a new draft version path", "preserve released source byte-for-byte"], "terminal_state": "released", "illegal_transition": false}
+  "expected": {
+    "verdict": "pass",
+    "codes": [],
+    "outputs": [
+      "transition accepted"
+    ],
+    "operations": [
+      "amend"
+    ],
+    "receipts": [
+      "PackageAmendmentOpened"
+    ],
+    "filesystem_effects": [
+      "create a new draft version path",
+      "preserve released source byte-for-byte"
+    ],
+    "terminal_state": "released",
+    "illegal_transition": false
+  }
 }

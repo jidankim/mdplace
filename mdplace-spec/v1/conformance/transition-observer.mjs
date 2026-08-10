@@ -1,6 +1,7 @@
 import {checkArtifactBindings, checkManifest} from './package-checks.mjs';
 import {readPackageFile} from './safe-path.mjs';
-import {amendmentEvidenceMatches, releaseEvidenceMatches} from './transition-evidence.mjs';
+import {amendmentEvidenceMatches} from './amendment-evidence.mjs';
+import {releaseEvidenceMatches} from './transition-evidence.mjs';
 
 const normativeDigestReference = 'package-manifest.yaml#/normative_digest';
 
@@ -59,14 +60,14 @@ async function candidatePreconditionsMatch(subject, packageRoot) {
   return manifestCheck.verdict === 'pass' && artifactCheck.verdict === 'pass';
 }
 
-async function commandPreconditionsMatch(subject, packageRoot) {
+async function commandPreconditionsMatch(subject, packageRoot, options) {
   if (!await candidatePreconditionsMatch(subject, packageRoot)) return false;
   switch (subject.command) {
     case 'submit':
     case 'approve':
       return true;
     case 'release':
-      return releaseEvidenceMatches(subject, packageRoot);
+      return releaseEvidenceMatches(subject, packageRoot, options);
     case 'amend':
       return amendmentEvidenceMatches(subject, packageRoot);
     default:
@@ -87,7 +88,7 @@ function denied(subject, code, operations, filesystemEffects = ['none'], receipt
   };
 }
 
-export async function observeTransition(fixture, packageRoot) {
+export async function observeTransition(fixture, packageRoot, options = {}) {
   const {subject} = fixture;
   const table = await readJson(packageRoot, subject.table);
   const row = table?.transitions?.find((candidate) =>
@@ -129,7 +130,7 @@ export async function observeTransition(fixture, packageRoot) {
     return denied(subject, 'transition.idempotency_conflict', ['validate idempotency key']);
   }
 
-  if (!await commandPreconditionsMatch(subject, packageRoot)) {
+  if (!await commandPreconditionsMatch(subject, packageRoot, options)) {
     return denied(subject, row.failure_result.code, ['validate transition preconditions'],
       row.failure_result.filesystem_effects, row.failure_result.emitted_records);
   }

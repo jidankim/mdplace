@@ -16,6 +16,7 @@
     "layout",
     "artifacts",
     "normative_digest",
+    "conformance_digest",
     "amendment_policy",
     "conformance"
   ],
@@ -35,6 +36,7 @@
       "items": {"$ref": "#/$defs/artifact"}
     },
     "normative_digest": {"$ref": "#/$defs/sha256"},
+    "conformance_digest": {"$ref": "#/$defs/sha256"},
     "amendment_policy": {"$ref": "#/$defs/amendmentPolicy"},
     "conformance": {"$ref": "#/$defs/conformance"}
   },

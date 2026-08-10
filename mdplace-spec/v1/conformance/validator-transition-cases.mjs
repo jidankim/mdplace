@@ -40,7 +40,7 @@ const releaseEvidence = {
   immutable_target: {observation_root: 'conformance/release-targets/complete', path: 'releases/1.0.0', status: 'absent_available'},
   release_assets: {
     specification_digest_ref: normativeDigestReference,
-    conformance_digest_ref: 'package-manifest.yaml#/artifacts/conformance/evidence/validation-report.json/sha256',
+    conformance_digest_ref: 'package-manifest.yaml#/conformance_digest',
     validator_version_ref: 'package-manifest.yaml#/validator_version',
     validation_report_ref: 'conformance/evidence/validation-report.json',
     traceability_report_ref: 'conformance/evidence/traceability-report.json',

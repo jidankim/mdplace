@@ -30,6 +30,47 @@ function stringList(value) {
   return Array.isArray(value) ? value.filter((entry) => typeof entry === 'string') : [];
 }
 
+function markdownAnchor(heading) {
+  return heading.trim().toLowerCase()
+    .replace(/[^\p{L}\p{N}\s-]/gu, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+}
+
+function fragmentResolves(path, fragment, content) {
+  if (fragment === '') return true;
+  let decoded;
+  try {
+    decoded = decodeURIComponent(fragment);
+  } catch {
+    return false;
+  }
+  if (path.endsWith('.md')) {
+    return content.split(/\r?\n/)
+      .filter((line) => /^#{1,6}\s+/.test(line))
+      .map((line) => markdownAnchor(line.replace(/^#{1,6}\s+/, '')))
+      .includes(decoded);
+  }
+  if (!path.endsWith('.json') && !path.endsWith('.yaml')) return false;
+  let document;
+  try {
+    document = JSON.parse(content);
+  } catch {
+    return false;
+  }
+  if (!decoded.startsWith('/')) return false;
+  try {
+    decoded.slice(1).split('/').reduce((node, token) => {
+      const key = token.replaceAll('~1', '/').replaceAll('~0', '~');
+      if ((node === null || typeof node !== 'object') || !Object.hasOwn(node, key)) throw new Error();
+      return node[key];
+    }, document);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function checkTraceability(packageRoot, requirements, traceability, conformance) {
   const codes = [];
   const records = Array.isArray(traceability?.records) ? traceability.records : [];
@@ -63,9 +104,14 @@ export async function checkTraceability(packageRoot, requirements, traceability,
     if ((record.decision_ids ?? []).some((decisionId) => !decisions.has(decisionId))) {
       codes.push('traceability.decision_unresolved');
     }
-    for (const path of [...stringList(record.normative_anchors), ...stringList(record.schema_or_transition_refs)]) {
-      const read = await readPackageFile(packageRoot, path.split('#')[0]);
-      if (read.status !== 'present') codes.push(read.status === 'unsafe' ? 'traceability.path_invalid' : 'traceability.path_unresolved');
+    for (const reference of [...stringList(record.normative_anchors), ...stringList(record.schema_or_transition_refs)]) {
+      const [path, fragment = ''] = reference.split('#', 2);
+      const read = await readPackageFile(packageRoot, path);
+      if (read.status !== 'present') {
+        codes.push(read.status === 'unsafe' ? 'traceability.path_invalid' : 'traceability.path_unresolved');
+      } else if (!fragmentResolves(path, fragment, read.content.toString('utf8'))) {
+        codes.push('traceability.anchor_unresolved');
+      }
     }
     for (const fixtureId of stringList(record.positive_fixture_ids)) {
       const fixture = fixtures.get(fixtureId);
@@ -103,9 +149,10 @@ async function fixturePaths(packageRoot) {
     .map((path) => path.slice('conformance/'.length));
 }
 
-export async function runConformance(packageRoot, conformance, requirementIds) {
+export async function runConformance(packageRoot, conformance, requirementIds, options = {}) {
   const codes = [];
   const results = [];
+  const coveredIllegalPairs = new Set();
   const entries = Array.isArray(conformance?.fixtures) ? conformance.fixtures : [];
   if (!Array.isArray(conformance?.fixtures)) codes.push('schema.constraint');
   const ids = entries.map((entry) => entry?.fixture_id);
@@ -140,6 +187,10 @@ export async function runConformance(packageRoot, conformance, requirementIds) {
       results.push({id: entry.fixture_id, verdict: 'fail', codes: ['fixture.schema_invalid']});
       continue;
     }
+    if (entry.category === 'illegal_transition' && fixture.category === 'illegal_transition' &&
+        fixture.expected.illegal_transition === true && fixture.subject?.kind === 'transition') {
+      coveredIllegalPairs.add(`${fixture.subject.from_state}:${fixture.subject.command}`);
+    }
     if (entry.fixture_id !== fixture.fixture_id ||
         (entry.category !== undefined && entry.category !== fixture.category) ||
         entry.expected_verdict !== fixture.expected.verdict ||
@@ -157,82 +208,23 @@ export async function runConformance(packageRoot, conformance, requirementIds) {
         entry.observable_assertions.illegal_transition !== fixture.expected.illegal_transition) {
       codes.push('conformance.observable_assertion_mismatch');
     }
-    const observed = await observeFixture(fixture, packageRoot);
+    const observed = await observeFixture(fixture, packageRoot, options);
     const matches = isDeepStrictEqual(observed, fixture.expected);
     results.push({id: fixture.fixture_id, verdict: matches ? 'pass' : 'fail', codes: matches ? [] : ['fixture.oracle_mismatch']});
   }
-  return {check: result('conformance-manifest', codes), fixtureResults: results};
-}
-
-export async function checkEvidence(packageRoot) {
-  const readJson = async (path) => {
-    const read = await readPackageFile(packageRoot, path);
-    if (read.status !== 'present') return null;
+  const tableRead = await readPackageFile(packageRoot, 'contracts/transitions/package-lifecycle.json');
+  if (tableRead.status === 'present') {
     try {
-      return JSON.parse(read.content.toString('utf8'));
+      const table = JSON.parse(tableRead.content.toString('utf8'));
+      const deniedPairs = (Array.isArray(table.transitions) ? table.transitions : [])
+        .filter(({allowed}) => allowed === false)
+        .map(({from_state: state, command_or_event: command}) => `${state}:${command}`);
+      if (deniedPairs.some((pair) => !coveredIllegalPairs.has(pair))) {
+        codes.push('conformance.illegal_transition_uncovered');
+      }
     } catch {
-      return null;
+      codes.push('boundary.invalid_json');
     }
-  };
-  const versionFixture = await readJson('conformance/fixtures/negative/mutable-release-content.json');
-  const versionReport = await readJson('conformance/evidence/version-amendment-report.json');
-  if (versionFixture === null || versionReport === null) {
-    return [
-      result('version-amendment-evidence', ['evidence.version_amendment_mismatch']),
-      result('recovery-evidence', ['evidence.recovery_mismatch']),
-      result('traceability-evidence', ['evidence.traceability_mismatch']),
-    ];
   }
-  const versionMatches = versionReport.fixture_id === versionFixture.fixture_id &&
-    versionReport.source_release.version === versionFixture.subject.source_version &&
-    versionReport.source_release.digest === versionFixture.subject.source_digest &&
-    versionReport.source_release.path === versionFixture.subject.source_path &&
-    versionReport.attempted_change.version === versionFixture.subject.target_version &&
-    versionReport.attempted_change.digest === versionFixture.subject.target_digest &&
-    versionReport.attempted_change.path === versionFixture.subject.target_path &&
-    versionReport.verdict === versionFixture.expected.verdict &&
-    versionReport.code === versionFixture.expected.codes[0] && versionReport.source_preserved === true;
-  const recoveryFixture = await readJson('conformance/scenarios/crash-recovery.json');
-  const recoveryReport = await readJson('conformance/evidence/recovery-report.json');
-  if (recoveryFixture === null || recoveryReport === null) {
-    return [
-      result('version-amendment-evidence', versionMatches ? [] : ['evidence.version_amendment_mismatch']),
-      result('recovery-evidence', ['evidence.recovery_mismatch']),
-      result('traceability-evidence', ['evidence.traceability_mismatch']),
-    ];
-  }
-  const recoveryMatches = recoveryReport.fixture_id === recoveryFixture.fixture_id &&
-    recoveryReport.source_state === recoveryFixture.subject.source_state &&
-    recoveryReport.source_digest === recoveryFixture.subject.source_digest &&
-    recoveryReport.crash_point === recoveryFixture.subject.crash_point &&
-    isDeepStrictEqual(recoveryReport.operations, recoveryFixture.expected.operations) &&
-    isDeepStrictEqual(recoveryReport.receipts, recoveryFixture.expected.receipts) &&
-    isDeepStrictEqual(recoveryReport.filesystem_effects, recoveryFixture.expected.filesystem_effects) &&
-    recoveryReport.terminal_state === recoveryFixture.expected.terminal_state &&
-    recoveryReport.source_preserved === true && recoveryReport.verdict === 'pass';
-  const manifest = await readJson('package-manifest.yaml');
-  const requirements = await readJson('normative/requirements.json');
-  const traceability = await readJson('traceability.yaml');
-  const traceabilityReport = await readJson('conformance/evidence/traceability-report.json');
-  const requirementIds = Array.isArray(requirements?.requirements)
-    ? requirements.requirements.map(({id}) => id)
-    : [];
-  const tracedIds = Array.isArray(traceability?.records)
-    ? traceability.records.map(({requirement_id: id}) => id)
-    : [];
-  const unresolved = requirementIds.filter((id) => !tracedIds.includes(id));
-  const traceabilityMatches = traceabilityReport?.schema_id === 'mdplace.traceability-report/v1' &&
-    traceabilityReport.package_series === manifest?.package_series &&
-    traceabilityReport.release_version === manifest?.release_version &&
-    traceabilityReport.validator_version === manifest?.validator_version &&
-    traceabilityReport.normative_digest === manifest?.normative_digest &&
-    traceabilityReport.requirements_total === requirementIds.length &&
-    traceabilityReport.records_total === tracedIds.length &&
-    isDeepStrictEqual(traceabilityReport.unresolved_requirement_ids, unresolved) &&
-    traceabilityReport.verdict === (unresolved.length === 0 ? 'pass' : 'fail');
-  return [
-    result('version-amendment-evidence', versionMatches ? [] : ['evidence.version_amendment_mismatch']),
-    result('recovery-evidence', recoveryMatches ? [] : ['evidence.recovery_mismatch']),
-    result('traceability-evidence', traceabilityMatches ? [] : ['evidence.traceability_mismatch']),
-  ];
+  return {check: result('conformance-manifest', codes), fixtureResults: results};
 }

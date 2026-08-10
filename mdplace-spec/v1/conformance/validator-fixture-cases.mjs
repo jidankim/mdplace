@@ -227,6 +227,7 @@ test('CLI validates an artifact fixture with its complete named schema', async (
     layout: {required_release_slots: Array.from({length: 15}, (_, index) => `slot-${index}`), candidate_foundation_slots: ['README.md']},
     artifacts: [{path: 'README.md', authority: 'informative', media_type: 'text/markdown', sha256: 'a'.repeat(64)}],
     normative_digest: 'b'.repeat(64),
+    conformance_digest: 'c'.repeat(64),
     amendment_policy: {immutable_after_release: true, in_place_mutation: 'forbidden', new_version_required: true, previous_release: null},
     conformance: {manifest: 'conformance/manifest.yaml', validator: 'conformance/validator.mjs', report: 'conformance/evidence/validation-report.json'},
   };
