@@ -36,10 +36,15 @@ const authorityByCommand = new Map([
   ['approve', {roles: ['vault_owner', 'independent_technical_reviewer'], quorum: 2, distinct_actors: true, delegation: 'forbidden'}],
   ['release', {roles: ['release_coordinator'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
   ['amend', {roles: ['package_author'], quorum: 1, distinct_actors: false, delegation: 'permitted'}],
+  ['record_verdict', {roles: ['conformance_validator'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['readback', {roles: ['conformance_validator'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['mark_stale', {roles: ['conformance_validator'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['supply_fresh_evidence', {roles: ['evidence_supplier'], quorum: 1, distinct_actors: false, delegation: 'permitted'}],
 ]);
 
 const conformanceExecutables = new Set([
   'conformance/digest-bindings.mjs',
+  'conformance/evidence-extension.mjs',
   'conformance/amendment-evidence.mjs',
   'conformance/fixture-observer.mjs',
   'conformance/json-schema.mjs',
@@ -53,6 +58,7 @@ const conformanceExecutables = new Set([
   'conformance/transition-evidence.mjs',
   'conformance/validator-boundary-cases.mjs',
   'conformance/validator-contract-cases.mjs',
+  'conformance/validator-evidence-cases.mjs',
   'conformance/validator-final-review-cases.mjs',
   'conformance/validator-review-round-two-cases.mjs',
   'conformance/validator-review-round-three-cases.mjs',
@@ -63,6 +69,7 @@ const conformanceExecutables = new Set([
   'conformance/validator-rules.mjs',
   'conformance/validator-security-cases.mjs',
   'conformance/validator-test-support.mjs',
+  'conformance/validator-evidence-checks.mjs',
   'conformance/validator-transition-cases.mjs',
   'conformance/validation-report.mjs',
   'conformance/validator.mjs',

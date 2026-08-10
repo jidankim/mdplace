@@ -1,0 +1,23 @@
+{
+  "$schema": "../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-VAL-AUTH-001",
+  "category": "authority_denial",
+  "requirement_ids": ["REQ-VAL-001", "REQ-VAL-002", "REQ-VAL-007"],
+  "subject": {
+    "kind": "extension",
+    "extension_id": "mdplace.validator-extension/ambient/v1",
+    "schema": "contracts/schemas/evidence-envelope.schema.json",
+    "document": {}
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": ["validator.extension_unsupported"],
+    "outputs": ["validator extension rejected"],
+    "operations": ["resolve validator extension"],
+    "receipts": ["EvidenceValidationReceipt"],
+    "filesystem_effects": ["none"],
+    "terminal_state": "rejected",
+    "illegal_transition": false
+  }
+}

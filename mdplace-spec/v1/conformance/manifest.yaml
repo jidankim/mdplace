@@ -4,7 +4,7 @@
   "suite_id": "mdplace.package-foundation-conformance/v1",
   "package_series": "mdplace-spec/v1",
   "release_version": "1.0.0",
-  "validator_version": "1.0.0",
+  "validator_version": "1.1.0",
   "required_categories": [
     "positive",
     "negative",
@@ -155,7 +155,8 @@
       "requirement_ids": [
         "REQ-PKG-002",
         "REQ-PKG-006",
-        "REQ-PKG-009"
+        "REQ-PKG-009",
+        "REQ-VAL-003"
       ],
       "expected_verdict": "pass",
       "observable_assertions": {
@@ -175,7 +176,8 @@
       "requirement_ids": [
         "REQ-PKG-002",
         "REQ-PKG-006",
-        "REQ-PKG-009"
+        "REQ-PKG-009",
+        "REQ-VAL-003"
       ],
       "expected_verdict": "fail",
       "observable_assertions": {
@@ -195,7 +197,8 @@
       "requirement_ids": [
         "REQ-PKG-002",
         "REQ-PKG-006",
-        "REQ-PKG-009"
+        "REQ-PKG-009",
+        "REQ-VAL-003"
       ],
       "expected_verdict": "fail",
       "observable_assertions": {
@@ -780,6 +783,94 @@
         "terminal_state": true,
         "illegal_transition": true
       }
+    },
+    {
+      "fixture_id": "FIX-VAL-POS-001",
+      "path": "fixtures/positive/valid-evidence-envelope.json",
+      "category": "positive",
+      "requirement_ids": ["REQ-VAL-001", "REQ-VAL-002", "REQ-VAL-003", "REQ-VAL-005", "REQ-VAL-007"],
+      "expected_verdict": "pass",
+      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+    },
+    {
+      "fixture_id": "FIX-VAL-NEG-001",
+      "path": "fixtures/negative/mandatory-evidence-nonpass.json",
+      "category": "negative",
+      "requirement_ids": ["REQ-VAL-004", "REQ-VAL-005"],
+      "expected_verdict": "fail",
+      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+    },
+    {
+      "fixture_id": "FIX-VAL-POS-002",
+      "path": "fixtures/positive/valid-claim-manifest.json",
+      "category": "positive",
+      "requirement_ids": ["REQ-VAL-004", "REQ-VAL-005", "REQ-VAL-007"],
+      "expected_verdict": "pass",
+      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+    },
+    {
+      "fixture_id": "FIX-VAL-NEG-002",
+      "path": "fixtures/negative/claim-unknown-field.json",
+      "category": "negative",
+      "requirement_ids": ["REQ-VAL-001", "REQ-VAL-004"],
+      "expected_verdict": "fail",
+      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+    },
+    {
+      "fixture_id": "FIX-VAL-STATE-001",
+      "path": "scenarios/evidence-stale-version.json",
+      "category": "stale_state",
+      "requirement_ids": ["REQ-VAL-002", "REQ-VAL-005", "REQ-VAL-006"],
+      "expected_verdict": "fail",
+      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+    },
+    {
+      "fixture_id": "FIX-VAL-AUTH-001",
+      "path": "scenarios/evidence-authority-denial.json",
+      "category": "authority_denial",
+      "requirement_ids": ["REQ-VAL-001", "REQ-VAL-002", "REQ-VAL-007"],
+      "expected_verdict": "fail",
+      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+    },
+    {
+      "fixture_id": "FIX-VAL-REC-001",
+      "path": "scenarios/evidence-crash-recovery.json",
+      "category": "crash_recovery",
+      "requirement_ids": ["REQ-VAL-002", "REQ-VAL-005", "REQ-VAL-006", "REQ-VAL-007"],
+      "expected_verdict": "pass",
+      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+    },
+    {
+      "fixture_id": "FIX-VAL-ILLEGAL-001",
+      "path": "scenarios/evidence-illegal-awaiting-readback.json",
+      "category": "illegal_transition",
+      "requirement_ids": ["REQ-VAL-006", "REQ-VAL-007"],
+      "expected_verdict": "fail",
+      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": true}
+    },
+    {
+      "fixture_id": "FIX-VAL-ILLEGAL-002",
+      "path": "scenarios/evidence-illegal-awaiting-stale.json",
+      "category": "illegal_transition",
+      "requirement_ids": ["REQ-VAL-006", "REQ-VAL-007"],
+      "expected_verdict": "fail",
+      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": true}
+    },
+    {
+      "fixture_id": "FIX-VAL-ILLEGAL-003",
+      "path": "scenarios/evidence-illegal-replace-verdict.json",
+      "category": "illegal_transition",
+      "requirement_ids": ["REQ-VAL-005", "REQ-VAL-006", "REQ-VAL-007"],
+      "expected_verdict": "fail",
+      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": true}
+    },
+    {
+      "fixture_id": "FIX-VAL-ILLEGAL-004",
+      "path": "scenarios/evidence-illegal-stale-verdict.json",
+      "category": "illegal_transition",
+      "requirement_ids": ["REQ-VAL-005", "REQ-VAL-006", "REQ-VAL-007"],
+      "expected_verdict": "fail",
+      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": true}
     }
   ]
 }

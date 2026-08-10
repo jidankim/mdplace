@@ -315,3 +315,23 @@ _Avoid_: Link list, issue backlink
 **Package Amendment**:
 A new immutable Specification Package release that names the earlier release it changes and preserves the earlier release byte-for-byte. It never edits or replaces released requirements, fixtures, or evidence in place.
 _Avoid_: Patch in place, silent correction
+
+**Validator Extension**:
+A closed, version-bound conformance adapter selected by an explicit registry identifier and subject schema. It observes declared inputs and emits an Evidence Envelope without inferring authority, versions, files, or execution context from ambient state.
+_Avoid_: Plugin hook, dynamic validator, inferred checker
+
+**Evidence Envelope**:
+A deterministic, immutable record that binds one normative requirement and declared subject to one Validator Extension invocation, ordered input and output digests, ordered receipts, artifact digests, explicit execution context, and one Conformance Verdict.
+_Avoid_: Test log, mutable result, inferred evidence
+
+**Claim Manifest**:
+A closed, version-bound assertion for exactly one Conformance Profile and subject that names one requirement, its mandatory or optional evidence, digest-bound Evidence Envelopes, applicability, and one Conformance Verdict.
+_Avoid_: Feature checklist, aggregate status, unbound claim
+
+**Conformance Profile**:
+An isolated claim scope whose verdict depends only on the requirements and Evidence Envelopes declared for that scope. A profile never inherits pass from another profile or from overall product status.
+_Avoid_: Product tier, implicit capability, inherited claim
+
+**Conformance Verdict**:
+One closed result: pass, fail, unsupported, or inconclusive. Pass requires current complete mandatory proof; fail records contradicted, invalid, or denied behavior; unsupported declares absent validator capability; inconclusive declares that available proof cannot determine the requirement.
+_Avoid_: Boolean success, skipped-as-pass, unknown status

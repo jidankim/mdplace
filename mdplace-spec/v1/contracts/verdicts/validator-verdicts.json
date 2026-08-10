@@ -1,0 +1,40 @@
+{
+  "$schema": "../schemas/verdict-table.schema.json",
+  "schema_id": "mdplace.verdict-table/v1",
+  "table_id": "VERDICT-VALIDATOR-EVIDENCE-V1",
+  "package_series": "mdplace-spec/v1",
+  "release_version": "1.0.0",
+  "validator_version": "1.1.0",
+  "default_denial": "missing_stale_skipped_unsupported_or_inconclusive_mandatory_evidence_is_non_pass",
+  "precedence": ["fail", "unsupported", "inconclusive", "pass"],
+  "rows": [
+    {
+      "verdict": "pass",
+      "meaning": "Every applicable mandatory proof is present, current, supported, digest-matched, and passing.",
+      "mandatory_effect": "satisfied",
+      "claim_effect": "eligible_pass",
+      "recovery": "Any stale binding makes the claim non-pass until fresh mandatory evidence is supplied."
+    },
+    {
+      "verdict": "fail",
+      "meaning": "The requirement is contradicted, an artifact or transition is invalid, or authority is denied.",
+      "mandatory_effect": "non_pass",
+      "claim_effect": "deny_pass",
+      "recovery": "Preserve fail until fresh mandatory evidence is supplied and a new invocation records a verdict."
+    },
+    {
+      "verdict": "unsupported",
+      "meaning": "The declared validator cannot evaluate the subject or capability.",
+      "mandatory_effect": "non_pass",
+      "claim_effect": "deny_pass",
+      "recovery": "Declare supported fresh evidence or retain unsupported explicitly."
+    },
+    {
+      "verdict": "inconclusive",
+      "meaning": "Evaluation occurred but current evidence cannot determine the requirement.",
+      "mandatory_effect": "non_pass",
+      "claim_effect": "deny_pass",
+      "recovery": "Preserve inconclusive until fresh mandatory evidence is supplied and a new invocation records a verdict."
+    }
+  ]
+}

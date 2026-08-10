@@ -1,0 +1,41 @@
+{
+  "$schema": "../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-VAL-REC-001",
+  "category": "crash_recovery",
+  "requirement_ids": ["REQ-VAL-002", "REQ-VAL-005", "REQ-VAL-006", "REQ-VAL-007"],
+  "subject": {
+    "kind": "extension",
+    "extension_id": "mdplace.validator-extension/evidence/v1",
+    "schema": "contracts/schemas/evidence-recovery-report.schema.json",
+    "document": {
+      "$schema": "../../contracts/schemas/evidence-recovery-report.schema.json",
+      "schema_id": "mdplace.evidence-recovery-report/v1",
+      "report_id": "evidence-recovery:inconclusive-readback",
+      "package_series": "mdplace-spec/v1",
+      "release_version": "1.0.0",
+      "validator_id": "mdplace.package-validator",
+      "validator_version": "1.1.0",
+      "claim_id": "CLAIM-CORE-001",
+      "prior_verdict": "inconclusive",
+      "crash_point": "after_binding_recompute",
+      "fresh_evidence_supplied": false,
+      "recomputed_bindings": [{"path": "conformance/evidence/envelopes/validator-evidence-example.json", "expected_sha256": "c49169c064c58a9f0d1fe4d9935b21f2294f2bbd997d54c498684fc37f30c17a", "observed_sha256": "c49169c064c58a9f0d1fe4d9935b21f2294f2bbd997d54c498684fc37f30c17a", "matches": true}],
+      "operations": ["reopen declared artifact", "recompute sha256", "preserve inconclusive verdict"],
+      "receipts": ["EvidenceRecoveryReport"],
+      "filesystem_effects": ["none"],
+      "terminal_state": "verdict_recorded",
+      "effective_verdict": "inconclusive"
+    }
+  },
+  "expected": {
+    "verdict": "pass",
+    "codes": [],
+    "outputs": ["recovery report accepted"],
+    "operations": ["resolve validator extension", "validate extension document", "verify specification and validator bindings", "recompute evidence bindings", "preserve non-pass verdict"],
+    "receipts": ["EvidenceValidationReceipt"],
+    "filesystem_effects": ["none"],
+    "terminal_state": "inconclusive",
+    "illegal_transition": false
+  }
+}

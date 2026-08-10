@@ -34,6 +34,14 @@ export const requiredSchemaPaths = [
   'contracts/schemas/validation-report.schema.json',
   'contracts/schemas/version-amendment-report.schema.json',
   'contracts/schemas/recovery-report.schema.json',
+  'contracts/schemas/validator-extension-registry.schema.json',
+  'contracts/schemas/validator-invocation.schema.json',
+  'contracts/schemas/evidence-envelope.schema.json',
+  'contracts/schemas/claim-manifest.schema.json',
+  'contracts/schemas/claims-and-evidence.schema.json',
+  'contracts/schemas/verdict-table.schema.json',
+  'contracts/schemas/evidence-recovery-report.schema.json',
+  'contracts/schemas/evidence-transition-attempt.schema.json',
 ];
 
 export const requiredCandidateFoundationSlots = [
@@ -166,7 +174,7 @@ export async function checkArtifactBindings(packageRoot, manifest) {
   return {check: result('artifact-bindings', codes), normativeDigest, conformanceDigest};
 }
 
-export function checkTransitionTable(table) {
+export function checkTransitionTable(table, id = 'package-lifecycle') {
   const codes = [];
   const rows = Array.isArray(table?.transitions) ? table.transitions : [];
   const states = Array.isArray(table?.states) ? table.states : [];
@@ -187,7 +195,7 @@ export function checkTransitionTable(table) {
   }
   const transitionIds = rows.map((row) => row?.transition_id);
   if (new Set(transitionIds).size !== transitionIds.length) codes.push('transition.duplicate_id');
-  return result('package-lifecycle', codes);
+  return result(id, codes);
 }
 
 export {checkRequirements} from './requirement-checks.mjs';

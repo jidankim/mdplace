@@ -49,7 +49,8 @@ test('conformance schemas accept downstream suite fixture and schema identifiers
     schema_id: 'mdplace.conformance-fixture/v1', fixture_id: 'FIX-SK-POS-001', category: 'positive',
     requirement_ids: ['REQ-SK-001'],
     subject: {
-      kind: 'extension', schema: 'contracts/schemas/semantic-operation.schema.json',
+      kind: 'extension', extension_id: 'mdplace.validator-extension/semantic-operation/v1',
+      schema: 'contracts/schemas/semantic-operation.schema.json',
       document: {command: 'append', from_state: 'ready', actor_role: 'semantic_writer'},
     },
     expected: {verdict: 'pass', codes: [], outputs: [], operations: [], receipts: [], filesystem_effects: [], terminal_state: 'accepted', illegal_transition: false},

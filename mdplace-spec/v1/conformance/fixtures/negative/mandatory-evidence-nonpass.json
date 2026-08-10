@@ -1,0 +1,49 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-VAL-NEG-001",
+  "category": "negative",
+  "requirement_ids": ["REQ-VAL-004", "REQ-VAL-005"],
+  "subject": {
+    "kind": "extension",
+    "extension_id": "mdplace.validator-extension/evidence/v1",
+    "schema": "contracts/schemas/claim-manifest.schema.json",
+    "document": {
+      "$schema": "../../contracts/schemas/claim-manifest.schema.json",
+      "schema_id": "mdplace.claim-manifest/v1",
+      "manifest_kind": "conformance_example",
+      "claim_id": "CLAIM-NONPASS-001",
+      "profile": "core",
+      "package_series": "mdplace-spec/v1",
+      "release_version": "1.0.0",
+      "validator_id": "mdplace.package-validator",
+      "validator_version": "1.1.0",
+      "subject": {"kind": "conformance_fixture", "subject_id": "fixture:mandatory-evidence-nonpass", "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+      "requirement_id": "REQ-VAL-005",
+      "evidence_requirements": [
+        {"evidence_kind": "missing_proof", "mandatory": true},
+        {"evidence_kind": "stale_proof", "mandatory": true},
+        {"evidence_kind": "skipped_proof", "mandatory": true},
+        {"evidence_kind": "unsupported_proof", "mandatory": true}
+      ],
+      "evidence_bindings": [
+        {"evidence_kind": "missing_proof", "mandatory": true, "availability": "missing", "applicability": "applicable", "evidence_ref": null, "evidence_digest": null, "verdict": "inconclusive"},
+        {"evidence_kind": "stale_proof", "mandatory": true, "availability": "stale", "applicability": "applicable", "evidence_ref": null, "evidence_digest": null, "verdict": "inconclusive"},
+        {"evidence_kind": "skipped_proof", "mandatory": true, "availability": "skipped", "applicability": "applicable", "evidence_ref": null, "evidence_digest": null, "verdict": "inconclusive"},
+        {"evidence_kind": "unsupported_proof", "mandatory": true, "availability": "unsupported", "applicability": "applicable", "evidence_ref": null, "evidence_digest": null, "verdict": "unsupported"}
+      ],
+      "applicability": "applicable",
+      "verdict": "pass"
+    }
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": ["claim.mandatory_evidence_missing", "claim.mandatory_evidence_stale", "claim.mandatory_evidence_skipped", "claim.mandatory_evidence_unsupported"],
+    "outputs": ["claim manifest rejected"],
+    "operations": ["resolve validator extension", "validate extension document", "verify specification and validator bindings", "evaluate mandatory evidence"],
+    "receipts": ["EvidenceValidationReceipt"],
+    "filesystem_effects": ["none"],
+    "terminal_state": "rejected",
+    "illegal_transition": false
+  }
+}

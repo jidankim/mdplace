@@ -196,7 +196,12 @@ export async function runConformance(packageRoot, conformance, requirementIds, o
     }
     if (entry.category === 'illegal_transition' && fixture.category === 'illegal_transition' &&
         fixture.expected.illegal_transition === true && fixture.subject?.kind === 'transition') {
-      coveredIllegalPairs.add(`${fixture.subject.from_state}:${fixture.subject.command}`);
+      coveredIllegalPairs.add(`${fixture.subject.table}:${fixture.subject.from_state}:${fixture.subject.command}`);
+    }
+    if (entry.category === 'illegal_transition' && fixture.category === 'illegal_transition' &&
+        fixture.expected.illegal_transition === true && fixture.subject?.kind === 'extension' &&
+        fixture.subject.schema === 'contracts/schemas/evidence-transition-attempt.schema.json') {
+      coveredIllegalPairs.add(`${fixture.subject.document?.table_ref}:${fixture.subject.document?.from_state}:${fixture.subject.document?.command}`);
     }
     if (entry.fixture_id !== fixture.fixture_id ||
         (entry.category !== undefined && entry.category !== fixture.category) ||
@@ -219,13 +224,14 @@ export async function runConformance(packageRoot, conformance, requirementIds, o
     const matches = isDeepStrictEqual(observed, fixture.expected);
     results.push({id: fixture.fixture_id, verdict: matches ? 'pass' : 'fail', codes: matches ? [] : ['fixture.oracle_mismatch']});
   }
-  const tableRead = await readPackageFile(packageRoot, 'contracts/transitions/package-lifecycle.json');
-  if (tableRead.status === 'present') {
+  for (const tablePath of ['contracts/transitions/package-lifecycle.json', 'contracts/transitions/evidence-lifecycle.json']) {
+    const tableRead = await readPackageFile(packageRoot, tablePath);
+    if (tableRead.status !== 'present') continue;
     try {
       const table = JSON.parse(tableRead.content.toString('utf8'));
       const deniedPairs = (Array.isArray(table.transitions) ? table.transitions : [])
         .filter(({allowed}) => allowed === false)
-        .map(({from_state: state, command_or_event: command}) => `${state}:${command}`);
+        .map(({from_state: state, command_or_event: command}) => `${tablePath}:${state}:${command}`);
       if (deniedPairs.some((pair) => !coveredIllegalPairs.has(pair))) {
         codes.push('conformance.illegal_transition_uncovered');
       }

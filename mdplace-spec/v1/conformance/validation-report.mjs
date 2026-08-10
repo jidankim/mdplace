@@ -8,6 +8,7 @@ import {
 import {readPackageFile} from './safe-path.mjs';
 import {checkSchemaInstances} from './schema-instances.mjs';
 import {checkTraceability, runConformance} from './traceability-checks.mjs';
+import {checkValidatorEvidence} from './validator-evidence-checks.mjs';
 
 function check(id, codes) {
   const uniqueCodes = [...new Set(codes)];
@@ -37,6 +38,7 @@ export async function buildValidationReport(packageRoot, options = {}) {
   const manifest = await readJson('package-manifest.yaml', true) ?? {};
   const requirements = await readJson('normative/requirements.json', true);
   const table = await readJson('contracts/transitions/package-lifecycle.json', true);
+  const evidenceTable = await readJson('contracts/transitions/evidence-lifecycle.json', true);
   const conformance = await readJson('conformance/manifest.yaml', true);
   const traceability = await readJson('traceability.yaml', true);
   const checks = [];
@@ -45,8 +47,10 @@ export async function buildValidationReport(packageRoot, options = {}) {
   checks.push((await checkArtifactBindings(packageRoot, manifest)).check);
   if (requirements !== null) checks.push(await checkRequirements(packageRoot, requirements));
   if (table !== null) checks.push(checkTransitionTable(table));
+  if (evidenceTable !== null) checks.push(checkTransitionTable(evidenceTable, 'evidence-lifecycle'));
   checks.push(await checkSchemas(packageRoot));
   checks.push(await checkSchemaInstances(packageRoot, conformance ?? {fixtures: []}));
+  checks.push(await checkValidatorEvidence(packageRoot));
   if (traceability !== null) {
     checks.push(await checkTraceability(
       packageRoot,

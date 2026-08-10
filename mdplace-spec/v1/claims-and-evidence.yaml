@@ -1,0 +1,19 @@
+{
+  "$schema": "contracts/schemas/claims-and-evidence.schema.json",
+  "schema_id": "mdplace.claims-and-evidence/v1",
+  "index_kind": "conformance_examples",
+  "package_series": "mdplace-spec/v1",
+  "release_version": "1.0.0",
+  "validator_id": "mdplace.package-validator",
+  "validator_version": "1.1.0",
+  "claims": [
+    {"claim_id": "CLAIM-CORE-001", "profile": "core", "manifest_ref": "conformance/claim-manifests/core.json", "sha256": "1edd503c41324b5605c4ea1416b986207d37dad09387a4d831b755c3c1b91f55"},
+    {"claim_id": "CLAIM-WEBCLIPPER-001", "profile": "web_clipper_product_readiness", "manifest_ref": "conformance/claim-manifests/web-clipper-product-readiness.json", "sha256": "baa5e5cf597acfa2735558758dad4bca820c6e4579865cee269eeaeed8d0c74c"},
+    {"claim_id": "CLAIM-LOCALADAPTER-001", "profile": "local_intelligence_adapter", "manifest_ref": "conformance/claim-manifests/local-intelligence-adapter.json", "sha256": "54db33c3214da03b2a45e22e0c5752fb1e37e1c10835dc122bc71522a66d295f"},
+    {"claim_id": "CLAIM-REMOTEADAPTER-001", "profile": "remote_intelligence_adapter", "manifest_ref": "conformance/claim-manifests/remote-intelligence-adapter.json", "sha256": "5819a321dd20c12774a165762ebbb47fa20f83a6c09b389ed46ca732bfdbe29f"},
+    {"claim_id": "CLAIM-CODEXADAPTER-001", "profile": "codex_intelligence_adapter", "manifest_ref": "conformance/claim-manifests/codex-intelligence-adapter.json", "sha256": "246b082104b135011691e8dc8a652d798e0aa0cccc003a816ee5618750c5689d"},
+    {"claim_id": "CLAIM-PLACEMENTAUTO-001", "profile": "placement_automation", "manifest_ref": "conformance/claim-manifests/placement-automation.json", "sha256": "5433f1acc45320a64f2cc22362e0b000b8540b3f2c27ce72ad077b2904bd6798"},
+    {"claim_id": "CLAIM-NEWLEAFPROMO-001", "profile": "new_leaf_automatic_promotion", "manifest_ref": "conformance/claim-manifests/new-leaf-automatic-promotion.json", "sha256": "f3a115e5e90f7c9b8d70135fd2ee6c286ba5373b9f46227a11af0daeabe1dfc6"},
+    {"claim_id": "CLAIM-ALIASPROMO-001", "profile": "alias_automatic_promotion", "manifest_ref": "conformance/claim-manifests/alias-automatic-promotion.json", "sha256": "6ecd4da10f3c0d47685c3b5952682a674b71473ce3fd0e0086744e6a1774cf62"}
+  ]
+}
