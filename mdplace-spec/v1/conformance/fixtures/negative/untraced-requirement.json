@@ -1,0 +1,31 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-PKG-NEG-007",
+  "category": "negative",
+  "requirement_ids": ["REQ-PKG-004", "REQ-PKG-008", "REQ-PKG-009"],
+  "subject": {
+    "kind": "artifact",
+    "schema": "contracts/schemas/traceability.schema.json",
+    "document": {
+      "$schema": "contracts/schemas/traceability.schema.json",
+      "schema_id": "mdplace.traceability/v1",
+      "package_series": "mdplace-spec/v1",
+      "release_version": "1.0.0",
+      "decisions": [{"decision_id": "DEC-010", "url": "https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153", "status": "accepted", "use": "input_without_reopening"}],
+      "records": [{
+        "requirement_id": "REQ-PKG-001",
+        "decision_ids": ["DEC-010"],
+        "canonical_terms": ["Specification Package"],
+        "normative_anchors": ["normative/package-contract.md#req-pkg-001-authority-is-explicit-and-one-way"],
+        "schema_or_transition_refs": ["contracts/schemas/package-manifest.schema.json"],
+        "positive_fixture_ids": ["FIX-PKG-POS-001"],
+        "negative_fixture_ids": ["FIX-PKG-NEG-001"],
+        "acceptance_gate": "authority is explicit",
+        "scope": "foundation",
+        "evidence_refs": ["conformance/evidence/validation-report.json"]
+      }]
+    }
+  },
+  "expected": {"verdict": "fail", "codes": ["traceability.untraced_requirement"], "outputs": ["artifact rejected"], "operations": ["parse boundary document", "validate total traceability"], "receipts": ["ValidationReceipt"], "filesystem_effects": ["none"], "terminal_state": "rejected", "illegal_transition": false}
+}

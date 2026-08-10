@@ -1,0 +1,31 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-PKG-NEG-008",
+  "category": "negative",
+  "requirement_ids": ["REQ-PKG-010", "REQ-PKG-012"],
+  "subject": {
+    "kind": "artifact",
+    "schema": "contracts/schemas/package-manifest.schema.json",
+    "document": {
+      "$schema": "contracts/schemas/package-manifest.schema.json",
+      "schema_id": "mdplace.package-manifest/v1",
+      "package_series": "mdplace-spec/v1",
+      "release_version": "1.0.0",
+      "lifecycle_state": "candidate",
+      "validator_version": "1.0.0",
+      "normative_vocabulary": "../../CONTEXT.md",
+      "authority": {"normative_rule": "binding", "informative_rule": "nonbinding", "conflict_result": "informative_ignored_for_conformance"},
+      "layout": {
+        "required_release_slots": ["README.md", "product.md", "architecture.md", "contracts/", "operations.md", "security-and-privacy.md", "performance.md", "conformance/manifest.yaml", "conformance/fixtures/", "conformance/scenarios/", "conformance/benchmarks/", "conformance/manual-acceptance.md", "traceability.yaml", "claims-and-evidence.yaml", "package-manifest.yaml"],
+        "candidate_foundation_slots": ["README.md", "normative/package-contract.md", "normative/requirements.json", "contracts/schemas/", "contracts/transitions/", "conformance/", "traceability.yaml", "package-manifest.yaml"]
+      },
+      "artifacts": [{"path": "runtime/semantic-kernel.mjs", "authority": "normative", "media_type": "text/javascript", "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}],
+      "normative_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "conformance_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "amendment_policy": {"immutable_after_release": true, "in_place_mutation": "forbidden", "new_version_required": true, "previous_release": null},
+      "conformance": {"manifest": "conformance/manifest.yaml", "validator": "conformance/validator.mjs", "report": "conformance/evidence/validation-report.json"}
+    }
+  },
+  "expected": {"verdict": "fail", "codes": ["package.production_code_forbidden"], "outputs": ["artifact rejected"], "operations": ["parse boundary document", "validate closed package manifest"], "receipts": ["ValidationReceipt"], "filesystem_effects": ["none"], "terminal_state": "rejected", "illegal_transition": false}
+}

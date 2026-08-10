@@ -1,0 +1,36 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-PKG-NEG-005",
+  "category": "negative",
+  "requirement_ids": ["REQ-PKG-006", "REQ-PKG-007", "REQ-PKG-011"],
+  "subject": {
+    "kind": "artifact",
+    "schema": "contracts/schemas/transition-table.schema.json",
+    "document": {
+      "$schema": "../schemas/transition-table.schema.json",
+      "schema_id": "mdplace.transition-table/v1",
+      "table_id": "TRANS-AMBIGUOUS-AUTHORITY",
+      "lifecycle": "ambiguous authority fixture",
+      "version": "1.0.0",
+      "states": ["candidate", "release_ready"],
+      "commands": ["approve"],
+      "transitions": [{
+        "transition_id": "TR-PKG-001",
+        "command_or_event": "approve",
+        "from_state": "candidate",
+        "allowed": true,
+        "actor_authority": {"roles": ["vault_owner_or_reviewer"], "quorum": 1, "distinct_actors": false, "delegation": "permitted"},
+        "preconditions": ["someone approves"],
+        "base_references": ["normative_digest"],
+        "emitted_records": ["PackageReleaseReady"],
+        "filesystem_effects": ["none"],
+        "idempotency": {"key_fields": ["idempotency_key"], "retry_result": "return original receipt"},
+        "terminal_state": "release_ready",
+        "failure_result": {"code": "transition.authority_denied", "state_effect": "unchanged", "emitted_records": ["PackageTransitionDenied"], "filesystem_effects": ["none"]},
+        "recovery": "Collect exact distinct approvals."
+      }]
+    }
+  },
+  "expected": {"verdict": "fail", "codes": ["transition.ambiguous_authority"], "outputs": ["artifact rejected"], "operations": ["parse boundary document", "validate complete transition table"], "receipts": ["ValidationReceipt"], "filesystem_effects": ["none"], "terminal_state": "rejected", "illegal_transition": true}
+}

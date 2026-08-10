@@ -1,0 +1,17 @@
+{
+  "$schema": "../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-PKG-REC-001",
+  "category": "crash_recovery",
+  "requirement_ids": ["REQ-PKG-003", "REQ-PKG-007", "REQ-PKG-009", "REQ-PKG-012"],
+  "subject": {
+    "kind": "recovery",
+    "source_state": "released",
+    "source_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "crash_point": "after_target_directory_created",
+    "target_artifacts_verified": false,
+    "target_published": false,
+    "partial_target_exists": true
+  },
+  "expected": {"verdict": "pass", "codes": [], "outputs": ["source release preserved", "partial target removed"], "operations": ["verify source digest", "inspect staged target", "discard unverified partial target"], "receipts": ["PackageRecoveryReport"], "filesystem_effects": ["preserve released source byte-for-byte", "remove unverified partial target"], "terminal_state": "released", "illegal_transition": false}
+}

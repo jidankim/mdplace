@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:version-amendment-report:v1",
+  "title": "mdplace version and amendment evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_id", "fixture_id", "source_release", "attempted_change", "verdict", "code", "source_preserved", "required_recovery"],
+  "properties": {
+    "schema_id": {"const": "mdplace.version-amendment-report/v1"},
+    "fixture_id": {"type": "string", "minLength": 1},
+    "source_release": {"$ref": "#/$defs/release"},
+    "attempted_change": {"$ref": "#/$defs/release"},
+    "verdict": {"enum": ["pass", "fail"]},
+    "code": {"type": "string", "minLength": 1},
+    "source_preserved": {"type": "boolean"},
+    "required_recovery": {"type": "string", "minLength": 1}
+  },
+  "$defs": {
+    "release": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "digest", "path"],
+      "properties": {
+        "version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+        "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "path": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

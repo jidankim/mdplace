@@ -1,0 +1,248 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:conformance-fixture:v1",
+  "title": "mdplace package conformance fixture",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "fixture_id", "category", "requirement_ids", "subject", "expected"],
+  "properties": {
+    "$schema": {"enum": ["../../contracts/schemas/conformance-fixture.schema.json", "../../../contracts/schemas/conformance-fixture.schema.json"]},
+    "schema_id": {"const": "mdplace.conformance-fixture/v1"},
+    "fixture_id": {"type": "string", "pattern": "^FIX-[A-Z][A-Z0-9]{1,15}-[A-Z][A-Z0-9_]{1,31}-[0-9]{3}$"},
+    "category": {"type": "string", "pattern": "^[a-z][a-z0-9_]{1,63}$"},
+    "requirement_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^REQ-[A-Z][A-Z0-9]{1,15}-[0-9]{3}$"}},
+    "subject": {
+      "oneOf": [
+        {"$ref": "#/$defs/artifactSubject"},
+        {"$ref": "#/$defs/transitionSubject"},
+        {"$ref": "#/$defs/extensionSubject"},
+        {"$ref": "#/$defs/releaseMutationSubject"},
+        {"$ref": "#/$defs/digestSubject"},
+        {"$ref": "#/$defs/recoverySubject"}
+      ]
+    },
+    "expected": {"$ref": "#/$defs/expected"}
+  },
+  "$defs": {
+    "stringList": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "artifactSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "schema", "document"],
+      "properties": {
+        "kind": {"const": "artifact"},
+        "schema": {"type": "string", "pattern": "^contracts/schemas/[a-z][a-z0-9-]*\\.schema\\.json$"},
+        "document": {"description": "Opaque boundary value validated by the schema named in subject.schema."}
+      }
+    },
+    "extensionSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "schema", "document"],
+      "properties": {
+        "kind": {"const": "extension"},
+        "schema": {"type": "string", "pattern": "^contracts/schemas/[a-z][a-z0-9-]*\\.schema\\.json$"},
+        "document": {"description": "Opaque downstream subject validated and observed by the validator named by its conformance suite."}
+      }
+    },
+    "transitionSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "table", "from_state", "command", "actors", "base_references", "preconditions", "release_evidence", "amendment_evidence", "idempotency_key", "idempotency_status"],
+      "properties": {
+        "kind": {"const": "transition"},
+        "table": {"type": "string", "pattern": "^contracts/transitions/[a-z][a-z0-9-]*\\.json$"},
+        "from_state": {"type": "string", "minLength": 1},
+        "command": {"type": "string", "minLength": 1},
+        "actors": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/actor"}},
+        "base_references": {"$ref": "#/$defs/transitionBaseReferences"},
+        "preconditions": {"$ref": "#/$defs/transitionPreconditions"},
+        "release_evidence": {"$ref": "#/$defs/releaseEvidence"},
+        "amendment_evidence": {"$ref": "#/$defs/amendmentEvidence"},
+        "idempotency_key": {"type": "string", "minLength": 1},
+        "idempotency_status": {"enum": ["new", "matching_receipt", "conflict"]}
+      }
+    },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["principal_id", "identity_assurance", "roles", "delegated"],
+      "properties": {
+        "principal_id": {"type": "string", "pattern": "^person:[a-z][a-z0-9-]{2,63}$"},
+        "identity_assurance": {"const": "canonical_authenticated_human"},
+        "roles": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]{1,63}$"}
+        },
+        "delegated": {"type": "boolean"}
+      }
+    },
+    "transitionPreconditions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["manifest_ref", "state_manifest_ref", "artifact_ledger_ref", "normative_digest_ref"],
+      "properties": {
+        "manifest_ref": {"type": "string", "pattern": "^(package-manifest\\.yaml|conformance/release-targets/[a-z][a-z0-9-]{2,63}/(?:source|target)/package-manifest\\.yaml)$"},
+        "state_manifest_ref": {"type": "string", "pattern": "^(package-manifest\\.yaml|conformance/state-observations/[a-z][a-z0-9-]{2,63}/package-manifest\\.yaml|conformance/release-targets/[a-z][a-z0-9-]{2,63}/(?:source|target)/package-manifest\\.yaml)$"},
+        "artifact_ledger_ref": {"type": "string", "pattern": "^(package-manifest\\.yaml|conformance/release-targets/[a-z][a-z0-9-]{2,63}/(?:source|target)/package-manifest\\.yaml)#/artifacts$"},
+        "normative_digest_ref": {"type": "string", "pattern": "^(package-manifest\\.yaml|conformance/release-targets/[a-z][a-z0-9-]{2,63}/(?:source|target)/package-manifest\\.yaml)#/normative_digest$"}
+      }
+    },
+    "transitionBaseReferences": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["package_series", "release_version", "normative_digest_ref"],
+      "properties": {
+        "package_series": {"const": "mdplace-spec/v1"},
+        "release_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+        "normative_digest_ref": {"type": "string", "pattern": "^(package-manifest\\.yaml|conformance/release-targets/[a-z][a-z0-9-]{2,63}/(?:source|target)/package-manifest\\.yaml)#/normative_digest$"}
+      }
+    },
+    "releaseEvidence": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["required_release_slots_observation", "verified_artifact_digest_ref", "approval_receipts", "immutable_target", "release_assets"],
+      "properties": {
+        "required_release_slots_observation": {"$ref": "#/$defs/releaseSlotObservation"},
+        "verified_artifact_digest_ref": {"const": "package-manifest.yaml#/normative_digest"},
+        "approval_receipts": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"$ref": "#/$defs/approvalReceipt"}},
+        "immutable_target": {"$ref": "#/$defs/immutableTarget"},
+        "release_assets": {"$ref": "#/$defs/releaseAssets"}
+      }
+    },
+    "releaseAssets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["specification_digest_ref", "conformance_digest_ref", "validator_version_ref", "validation_report_ref", "traceability_report_ref", "traceability_report_digest_ref"],
+      "properties": {
+        "specification_digest_ref": {"const": "package-manifest.yaml#/normative_digest"},
+        "conformance_digest_ref": {"const": "package-manifest.yaml#/conformance_digest"},
+        "validator_version_ref": {"const": "package-manifest.yaml#/validator_version"},
+        "validation_report_ref": {"const": "conformance/evidence/validation-report.json"},
+        "traceability_report_ref": {"const": "conformance/evidence/traceability-report.json"},
+        "traceability_report_digest_ref": {"type": "string", "pattern": "^package-manifest\\.yaml#/artifacts/[0-9]+/sha256$"}
+      }
+    },
+    "releaseSlotObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["receipt_id", "observer_id", "identity_assurance", "verification_method", "observation_root", "package_series", "release_version", "normative_digest_ref", "required_release_slots_digest", "observed_slots"],
+      "properties": {
+        "receipt_id": {"type": "string", "pattern": "^slot-observation:[a-z0-9-]{3,64}$"},
+        "observer_id": {"const": "mdplace.package-validator/v1"},
+        "identity_assurance": {"const": "trusted_local_validator"},
+        "verification_method": {"const": "filesystem_lstat"},
+        "observation_root": {"type": "string", "pattern": "^(\\.|conformance/release-targets/[a-z][a-z0-9-]{2,63})$"},
+        "package_series": {"const": "mdplace-spec/v1"},
+        "release_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+        "normative_digest_ref": {"const": "package-manifest.yaml#/normative_digest"},
+        "required_release_slots_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "observed_slots": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/releaseSlotPresence"}}
+      }
+    },
+    "releaseSlotPresence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "presence"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "presence": {"enum": ["present", "absent"]}
+      }
+    },
+    "approvalReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["receipt_id", "approval_kind", "principal_id", "identity_assurance", "role", "normative_digest_ref", "delegated"],
+      "properties": {
+        "receipt_id": {"type": "string", "pattern": "^approval:[a-z0-9-]{3,64}$"},
+        "approval_kind": {"enum": ["semantic", "technical"]},
+        "principal_id": {"type": "string", "pattern": "^person:[a-z][a-z0-9-]{2,63}$"},
+        "identity_assurance": {"const": "canonical_authenticated_human"},
+        "role": {"enum": ["vault_owner", "independent_technical_reviewer"]},
+        "normative_digest_ref": {"const": "package-manifest.yaml#/normative_digest"},
+        "delegated": {"const": false}
+      }
+    },
+    "immutableTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observation_root", "path", "status"],
+      "properties": {
+        "observation_root": {"type": "string", "pattern": "^conformance/release-targets/[a-z][a-z0-9-]{2,63}$"},
+        "path": {"type": "string", "pattern": "^releases/[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+        "status": {"const": "absent_available"}
+      }
+    },
+    "amendmentEvidence": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["observation_root", "source_manifest", "source_digest", "target_manifest", "target_version", "target_digest", "target_path", "changed_requirement_ids", "new_requirement_ids"],
+      "properties": {
+        "observation_root": {"type": "string", "pattern": "^conformance/release-targets/[a-z][a-z0-9-]{2,63}$"},
+        "source_manifest": {"type": "string", "pattern": "^[a-z][a-z0-9-]*/package-manifest\\.yaml$"},
+        "source_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "target_manifest": {"type": "string", "pattern": "^[a-z][a-z0-9-]*/package-manifest\\.yaml$"},
+        "target_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+        "target_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "target_path": {"type": "string", "pattern": "^releases/[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+        "changed_requirement_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^REQ-[A-Z][A-Z0-9]{1,15}-[0-9]{3}$"}},
+        "new_requirement_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^REQ-[A-Z][A-Z0-9]{1,15}-[0-9]{3}$"}}
+      }
+    },
+    "releaseMutationSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "source_version", "source_digest", "source_digest_after_attempt", "source_path", "target_version", "target_digest", "target_path"],
+      "properties": {
+        "kind": {"const": "release_mutation"},
+        "source_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+        "source_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "source_digest_after_attempt": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "source_path": {"type": "string", "minLength": 1},
+        "target_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+        "target_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "target_path": {"type": "string", "minLength": 1}
+      }
+    },
+    "digestSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "value"],
+      "properties": {
+        "kind": {"const": "sha256_boundary"},
+        "value": {"type": "string"}
+      }
+    },
+    "recoverySubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "source_state", "source_digest", "crash_point", "target_artifacts_verified", "target_published", "partial_target_exists"],
+      "properties": {
+        "kind": {"const": "recovery"},
+        "source_state": {"enum": ["released"]},
+        "source_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "crash_point": {"enum": ["after_target_directory_created", "after_artifacts_staged", "before_target_publish"]},
+        "target_artifacts_verified": {"type": "boolean"},
+        "target_published": {"type": "boolean"},
+        "partial_target_exists": {"type": "boolean"}
+      }
+    },
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verdict", "codes", "outputs", "operations", "receipts", "filesystem_effects", "terminal_state", "illegal_transition"],
+      "properties": {
+        "verdict": {"enum": ["pass", "fail"]},
+        "codes": {"$ref": "#/$defs/stringList"},
+        "outputs": {"$ref": "#/$defs/stringList"},
+        "operations": {"$ref": "#/$defs/stringList"},
+        "receipts": {"$ref": "#/$defs/stringList"},
+        "filesystem_effects": {"$ref": "#/$defs/stringList"},
+        "terminal_state": {"type": "string", "minLength": 1},
+        "illegal_transition": {"type": "boolean"}
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-PKG-NEG-003",
+  "category": "negative",
+  "requirement_ids": ["REQ-PKG-004", "REQ-PKG-006", "REQ-PKG-008"],
+  "subject": {
+    "kind": "artifact",
+    "schema": "contracts/schemas/requirements.schema.json",
+    "document": {
+      "$schema": "../contracts/schemas/requirements.schema.json",
+      "schema_id": "mdplace.requirements/v1",
+      "package_series": "mdplace-spec/v1",
+      "requirements": [
+        {"id": "REQ-PKG-001", "title": "First", "normative_anchor": "normative/package-contract.md#req-pkg-001-first", "decision_urls": ["https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"], "canonical_terms": ["Specification Package"], "acceptance_gate": "first gate", "scope": "foundation"},
+        {"id": "REQ-PKG-001", "title": "Reused", "normative_anchor": "normative/package-contract.md#req-pkg-001-reused", "decision_urls": ["https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"], "canonical_terms": ["Specification Package"], "acceptance_gate": "second gate", "scope": "foundation"}
+      ]
+    }
+  },
+  "expected": {"verdict": "fail", "codes": ["requirements.duplicate_id"], "outputs": ["artifact rejected"], "operations": ["parse boundary document", "validate stable requirement identifiers"], "receipts": ["ValidationReceipt"], "filesystem_effects": ["none"], "terminal_state": "rejected", "illegal_transition": false}
+}

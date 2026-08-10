@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:package-manifest:v1",
+  "title": "mdplace specification package manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_id",
+    "package_series",
+    "release_version",
+    "lifecycle_state",
+    "validator_version",
+    "normative_vocabulary",
+    "authority",
+    "layout",
+    "artifacts",
+    "normative_digest",
+    "conformance_digest",
+    "amendment_policy",
+    "conformance"
+  ],
+  "properties": {
+    "$schema": {"const": "contracts/schemas/package-manifest.schema.json"},
+    "schema_id": {"const": "mdplace.package-manifest/v1"},
+    "package_series": {"const": "mdplace-spec/v1"},
+    "release_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "lifecycle_state": {"enum": ["draft", "candidate", "release_ready", "released"]},
+    "validator_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "normative_vocabulary": {"const": "../../CONTEXT.md"},
+    "authority": {"$ref": "#/$defs/authority"},
+    "layout": {"$ref": "#/$defs/layout"},
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/artifact"}
+    },
+    "normative_digest": {"$ref": "#/$defs/sha256"},
+    "conformance_digest": {"$ref": "#/$defs/sha256"},
+    "amendment_policy": {"$ref": "#/$defs/amendmentPolicy"},
+    "conformance": {"$ref": "#/$defs/conformance"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["normative_rule", "informative_rule", "conflict_result"],
+      "properties": {
+        "normative_rule": {"const": "binding"},
+        "informative_rule": {"const": "nonbinding"},
+        "conflict_result": {"const": "informative_ignored_for_conformance"}
+      }
+    },
+    "layout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required_release_slots", "candidate_foundation_slots"],
+      "properties": {
+        "required_release_slots": {
+          "type": "array",
+          "minItems": 15,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "candidate_foundation_slots": {
+          "type": "array",
+          "minItems": 8,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1},
+          "allOf": [
+            {"contains": {"const": "README.md"}},
+            {"contains": {"const": "normative/package-contract.md"}},
+            {"contains": {"const": "normative/requirements.json"}},
+            {"contains": {"const": "contracts/schemas/"}},
+            {"contains": {"const": "contracts/transitions/"}},
+            {"contains": {"const": "conformance/"}},
+            {"contains": {"const": "traceability.yaml"}},
+            {"contains": {"const": "package-manifest.yaml"}}
+          ]
+        }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "authority", "media_type", "sha256"],
+      "properties": {
+        "path": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"},
+        "authority": {"enum": ["normative", "informative"]},
+          "media_type": {"enum": ["application/json", "text/markdown", "text/javascript", "text/plain"]},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "amendmentPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["immutable_after_release", "in_place_mutation", "new_version_required", "previous_release"],
+      "properties": {
+        "immutable_after_release": {"const": true},
+        "in_place_mutation": {"const": "forbidden"},
+        "new_version_required": {"const": true},
+        "previous_release": {"type": ["string", "null"], "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"}
+      }
+    },
+    "conformance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["manifest", "validator", "report"],
+      "properties": {
+        "manifest": {"const": "conformance/manifest.yaml"},
+        "validator": {"const": "conformance/validator.mjs"},
+        "report": {"const": "conformance/evidence/validation-report.json"}
+      }
+    }
+  }
+}

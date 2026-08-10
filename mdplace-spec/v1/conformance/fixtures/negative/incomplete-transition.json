@@ -1,0 +1,35 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-PKG-NEG-002",
+  "category": "negative",
+  "requirement_ids": ["REQ-PKG-006", "REQ-PKG-007", "REQ-PKG-009"],
+  "subject": {
+    "kind": "artifact",
+    "schema": "contracts/schemas/transition-table.schema.json",
+    "document": {
+      "$schema": "../schemas/transition-table.schema.json",
+      "schema_id": "mdplace.transition-table/v1",
+      "table_id": "TRANS-INCOMPLETE",
+      "lifecycle": "incomplete fixture",
+      "version": "1.0.0",
+      "states": ["draft"],
+      "commands": ["submit"],
+      "transitions": [{
+        "transition_id": "TR-PKG-001",
+        "command_or_event": "submit",
+        "from_state": "draft",
+        "allowed": true,
+        "actor_authority": {"roles": ["package_author"], "quorum": 1, "distinct_actors": false, "delegation": "permitted"},
+        "preconditions": ["package validates"],
+        "base_references": ["normative_digest"],
+        "emitted_records": ["PackageCandidateSubmitted"],
+        "filesystem_effects": ["none"],
+        "idempotency": {"key_fields": ["idempotency_key"], "retry_result": "return original receipt"},
+        "terminal_state": "candidate",
+        "failure_result": {"code": "transition.precondition_failed", "state_effect": "unchanged", "emitted_records": ["PackageTransitionDenied"], "filesystem_effects": ["none"]}
+      }]
+    }
+  },
+  "expected": {"verdict": "fail", "codes": ["schema.required_field"], "outputs": ["artifact rejected"], "operations": ["parse boundary document", "validate complete transition table"], "receipts": ["ValidationReceipt"], "filesystem_effects": ["none"], "terminal_state": "rejected", "illegal_transition": true}
+}

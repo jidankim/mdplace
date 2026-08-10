@@ -1,0 +1,9 @@
+{
+  "$schema": "../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-PKG-STATE-001",
+  "category": "stale_state",
+  "requirement_ids": ["REQ-PKG-002", "REQ-PKG-007", "REQ-PKG-009"],
+  "subject": {"kind": "transition", "table": "contracts/transitions/package-lifecycle.json", "from_state": "draft", "command": "submit", "actors": [{"principal_id": "person:author-001", "identity_assurance": "canonical_authenticated_human", "roles": ["package_author"], "delegated": false}], "base_references": {"package_series": "mdplace-spec/v1", "release_version": "1.1.0", "normative_digest_ref": "package-manifest.yaml#/normative_digest"}, "preconditions": {"manifest_ref": "package-manifest.yaml", "state_manifest_ref": "conformance/state-observations/draft/package-manifest.yaml", "artifact_ledger_ref": "package-manifest.yaml#/artifacts", "normative_digest_ref": "package-manifest.yaml#/normative_digest"}, "release_evidence": null, "amendment_evidence": null, "idempotency_key": "fixture-stale-001", "idempotency_status": "new"},
+  "expected": {"verdict": "fail", "codes": ["transition.stale_base"], "outputs": ["transition rejected"], "operations": ["validate base references"], "receipts": ["PackageTransitionDenied"], "filesystem_effects": ["none"], "terminal_state": "draft", "illegal_transition": false}
+}

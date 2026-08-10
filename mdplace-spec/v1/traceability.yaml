@@ -1,0 +1,175 @@
+{
+  "$schema": "contracts/schemas/traceability.schema.json",
+  "schema_id": "mdplace.traceability/v1",
+  "package_series": "mdplace-spec/v1",
+  "release_version": "1.0.0",
+  "decisions": [
+    {
+      "decision_id": "DEC-010",
+      "url": "https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153",
+      "status": "accepted",
+      "use": "input_without_reopening"
+    }
+  ],
+  "records": [
+    {
+      "requirement_id": "REQ-PKG-001",
+      "decision_ids": ["DEC-010"],
+      "canonical_terms": ["Normative Material", "Informative Material", "Specification Package"],
+      "normative_anchors": ["normative/package-contract.md#req-pkg-001-authority-is-explicit-and-one-way"],
+      "schema_or_transition_refs": ["contracts/schemas/package-manifest.schema.json"],
+      "positive_fixture_ids": ["FIX-PKG-POS-001"],
+      "negative_fixture_ids": ["FIX-PKG-NEG-001"],
+      "acceptance_gate": "Every listed artifact has exactly one authority and conformance is derived exclusively from normative artifacts.",
+      "scope": "foundation",
+      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/traceability-report.json"]
+    },
+    {
+      "requirement_id": "REQ-PKG-002",
+      "decision_ids": ["DEC-010"],
+      "canonical_terms": ["Specification Package", "Traceability Record"],
+      "normative_anchors": ["normative/package-contract.md#req-pkg-002-version-identity-is-stable"],
+      "schema_or_transition_refs": ["contracts/schemas/package-manifest.schema.json", "contracts/schemas/validation-report.schema.json"],
+      "positive_fixture_ids": ["FIX-PKG-POS-001", "FIX-PKG-POS-003", "FIX-PKG-BND-001"],
+      "negative_fixture_ids": ["FIX-PKG-BND-002", "FIX-PKG-BND-003", "FIX-PKG-NEG-004", "FIX-PKG-NEG-011"],
+      "acceptance_gate": "Series, release version, lifecycle state, validator version, normative digest, and conformance-pack digest are explicit and version-bound.",
+      "scope": "foundation",
+      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/version-amendment-report.json"]
+    },
+    {
+      "requirement_id": "REQ-PKG-003",
+      "decision_ids": ["DEC-010"],
+      "canonical_terms": ["Specification Package", "Package Amendment", "Conformance Fixture", "Traceability Record"],
+      "normative_anchors": ["normative/package-contract.md#req-pkg-003-released-content-is-immutable"],
+      "schema_or_transition_refs": ["contracts/schemas/version-amendment-report.schema.json", "contracts/transitions/package-lifecycle.json"],
+      "positive_fixture_ids": ["FIX-PKG-POS-003", "FIX-PKG-POS-005", "FIX-PKG-REC-001"],
+      "negative_fixture_ids": ["FIX-PKG-NEG-004", "FIX-PKG-NEG-009", "FIX-PKG-NEG-011", "FIX-PKG-NEG-012", "FIX-PKG-ILLEGAL-001"],
+      "acceptance_gate": "In-place release mutation and downgrade are denied; a change requires a strictly greater version, new path, and unchanged observed source digest.",
+      "scope": "foundation",
+      "evidence_refs": ["conformance/evidence/version-amendment-report.json", "conformance/evidence/recovery-report.json"]
+    },
+    {
+      "requirement_id": "REQ-PKG-004",
+      "decision_ids": ["DEC-010"],
+      "canonical_terms": ["Specification Package", "Package Amendment", "Traceability Record"],
+      "normative_anchors": ["normative/package-contract.md#req-pkg-004-requirement-identifiers-are-unique-and-permanent"],
+      "schema_or_transition_refs": ["contracts/schemas/requirements.schema.json", "contracts/schemas/traceability.schema.json"],
+      "positive_fixture_ids": ["FIX-PKG-POS-001", "FIX-PKG-POS-003", "FIX-PKG-POS-006"],
+      "negative_fixture_ids": ["FIX-PKG-NEG-003", "FIX-PKG-NEG-007", "FIX-PKG-NEG-011", "FIX-PKG-NEG-015"],
+      "acceptance_gate": "Requirement identifiers match the shared stable format; amendments compare bound catalogs and exactly mark changed and new identifiers without removal or reassignment.",
+      "scope": "foundation",
+      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/version-amendment-report.json"]
+    },
+    {
+      "requirement_id": "REQ-PKG-005",
+      "decision_ids": ["DEC-010"],
+      "canonical_terms": ["Specification Package", "Traceability Record"],
+      "normative_anchors": ["normative/package-contract.md#req-pkg-005-vocabulary-is-canonical"],
+      "schema_or_transition_refs": ["contracts/schemas/requirements.schema.json", "contracts/schemas/traceability.schema.json"],
+      "positive_fixture_ids": ["FIX-PKG-POS-001"],
+      "negative_fixture_ids": ["FIX-PKG-NEG-006"],
+      "acceptance_gate": "Every named canonical term resolves to CONTEXT.md and no avoided synonym is accepted.",
+      "scope": "foundation",
+      "evidence_refs": ["conformance/evidence/validation-report.json"]
+    },
+    {
+      "requirement_id": "REQ-PKG-006",
+      "decision_ids": ["DEC-010"],
+      "canonical_terms": ["Specification Package", "Conformance Fixture"],
+      "normative_anchors": ["normative/package-contract.md#req-pkg-006-structured-contracts-are-closed"],
+      "schema_or_transition_refs": ["contracts/schemas/package-manifest.schema.json", "contracts/schemas/conformance-fixture.schema.json", "contracts/schemas/transition-table.schema.json"],
+      "positive_fixture_ids": ["FIX-PKG-POS-001", "FIX-PKG-BND-001"],
+      "negative_fixture_ids": ["FIX-PKG-NEG-001", "FIX-PKG-NEG-002", "FIX-PKG-NEG-013", "FIX-PKG-BND-002", "FIX-PKG-BND-003"],
+      "acceptance_gate": "Draft 2020-12 schemas reject unknown fields, enforce identifier and digest boundaries, and terminate within explicit evaluation and error budgets.",
+      "scope": "foundation",
+      "evidence_refs": ["conformance/evidence/validation-report.json"]
+    },
+    {
+      "requirement_id": "REQ-PKG-007",
+      "decision_ids": ["DEC-010"],
+      "canonical_terms": ["Specification Package", "Conformance Fixture", "Package Amendment"],
+      "normative_anchors": ["normative/package-contract.md#req-pkg-007-lifecycle-tables-are-complete"],
+      "schema_or_transition_refs": ["contracts/schemas/transition-table.schema.json", "contracts/transitions/package-lifecycle.json"],
+      "positive_fixture_ids": ["FIX-PKG-POS-002", "FIX-PKG-POS-003", "FIX-PKG-POS-004", "FIX-PKG-POS-005"],
+      "negative_fixture_ids": ["FIX-PKG-NEG-002", "FIX-PKG-NEG-005", "FIX-PKG-NEG-009", "FIX-PKG-NEG-010", "FIX-PKG-NEG-011", "FIX-PKG-NEG-012", "FIX-PKG-ILLEGAL-001", "FIX-PKG-STATE-001"],
+      "acceptance_gate": "Each state-command pair occurs exactly once with all required transition fields and denied-row coverage.",
+      "scope": "foundation",
+      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/recovery-report.json"]
+    },
+    {
+      "requirement_id": "REQ-PKG-008",
+      "decision_ids": ["DEC-010"],
+      "canonical_terms": ["Traceability Record", "Conformance Fixture", "Specification Package"],
+      "normative_anchors": ["normative/package-contract.md#req-pkg-008-traceability-is-stable-and-total"],
+      "schema_or_transition_refs": ["contracts/schemas/requirements.schema.json", "contracts/schemas/traceability.schema.json", "contracts/schemas/traceability-report.schema.json"],
+      "positive_fixture_ids": ["FIX-PKG-POS-001"],
+      "negative_fixture_ids": ["FIX-PKG-NEG-003", "FIX-PKG-NEG-007"],
+      "acceptance_gate": "Every normative requirement has one resolving traceability record and every reference resolves.",
+      "scope": "foundation",
+      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/traceability-report.json"]
+    },
+    {
+      "requirement_id": "REQ-PKG-009",
+      "decision_ids": ["DEC-010"],
+      "canonical_terms": ["Conformance Fixture", "Specification Package"],
+      "normative_anchors": ["normative/package-contract.md#req-pkg-009-conformance-observes-public-effects"],
+      "schema_or_transition_refs": ["contracts/schemas/conformance-manifest.schema.json", "contracts/schemas/conformance-fixture.schema.json", "contracts/schemas/package-state-observation.schema.json"],
+      "positive_fixture_ids": [
+        "FIX-PKG-POS-002",
+        "FIX-PKG-POS-004",
+        "FIX-PKG-POS-005",
+        "FIX-PKG-POS-006",
+        "FIX-PKG-REC-001"
+      ],
+      "negative_fixture_ids": [
+        "FIX-PKG-NEG-009",
+        "FIX-PKG-NEG-010",
+        "FIX-PKG-NEG-012",
+        "FIX-PKG-NEG-013",
+        "FIX-PKG-NEG-015",
+        "FIX-PKG-STATE-001",
+        "FIX-PKG-AUTH-001",
+        "FIX-PKG-ILLEGAL-001"
+      ],
+      "acceptance_gate": "Required fixtures bind observable lifecycle state and command evidence, while release assets bind specification and conformance-pack digests, validator version, independently reproduced validation, and traceability reports.",
+      "scope": "foundation",
+      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/recovery-report.json"]
+    },
+    {
+      "requirement_id": "REQ-PKG-010",
+      "decision_ids": ["DEC-010"],
+      "canonical_terms": ["Specification Package", "Normative Material", "Informative Material"],
+      "normative_anchors": ["normative/package-contract.md#req-pkg-010-package-layout-is-declared"],
+      "schema_or_transition_refs": ["contracts/schemas/package-manifest.schema.json"],
+      "positive_fixture_ids": ["FIX-PKG-POS-001", "FIX-PKG-POS-005"],
+      "negative_fixture_ids": ["FIX-PKG-NEG-001", "FIX-PKG-NEG-008", "FIX-PKG-NEG-009", "FIX-PKG-NEG-012"],
+      "acceptance_gate": "The manifest declares every final release slot and distinguishes candidate foundation contents.",
+      "scope": "foundation",
+      "evidence_refs": ["conformance/evidence/validation-report.json"]
+    },
+    {
+      "requirement_id": "REQ-PKG-011",
+      "decision_ids": ["DEC-010"],
+      "canonical_terms": ["Specification Package", "Normative Material"],
+      "normative_anchors": ["normative/package-contract.md#req-pkg-011-release-authority-is-non-ambiguous"],
+      "schema_or_transition_refs": ["contracts/schemas/transition-table.schema.json", "contracts/transitions/package-lifecycle.json"],
+      "positive_fixture_ids": ["FIX-PKG-POS-004", "FIX-PKG-POS-005"],
+      "negative_fixture_ids": ["FIX-PKG-NEG-005", "FIX-PKG-NEG-012", "FIX-PKG-AUTH-001"],
+      "acceptance_gate": "Vault-owner and independent-technical approvals bind one digest to different canonical authenticated human principals and cannot be inferred or substituted.",
+      "scope": "foundation",
+      "evidence_refs": ["conformance/evidence/validation-report.json"]
+    },
+    {
+      "requirement_id": "REQ-PKG-012",
+      "decision_ids": ["DEC-010"],
+      "canonical_terms": ["mdplace Agent", "Semantic Kernel", "Control Channel", "Vault Mutation Gate", "Capture Adapter", "Placement Evaluation", "Taxonomy Evolution Cycle", "Folder Projection"],
+      "normative_anchors": ["normative/package-contract.md#req-pkg-012-the-package-is-specification-only"],
+      "schema_or_transition_refs": ["contracts/schemas/package-manifest.schema.json"],
+      "positive_fixture_ids": ["FIX-PKG-POS-001", "FIX-PKG-REC-001"],
+      "negative_fixture_ids": ["FIX-PKG-NEG-008"],
+      "acceptance_gate": "Only declared specification artifacts and the exact conformance executable inventory exist; no production boundary is implemented or invoked.",
+      "scope": "foundation",
+      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/recovery-report.json"]
+    }
+  ]
+}

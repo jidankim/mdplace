@@ -1,0 +1,74 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-PKG-POS-006",
+  "category": "positive",
+  "requirement_ids": [
+    "REQ-PKG-003",
+    "REQ-PKG-004",
+    "REQ-PKG-007",
+    "REQ-PKG-009"
+  ],
+  "subject": {
+    "kind": "transition",
+    "table": "contracts/transitions/package-lifecycle.json",
+    "from_state": "released",
+    "command": "amend",
+    "actors": [
+      {
+        "principal_id": "person:author-001",
+        "identity_assurance": "canonical_authenticated_human",
+        "roles": [
+          "package_author"
+        ],
+        "delegated": false
+      }
+    ],
+    "base_references": {
+      "package_series": "mdplace-spec/v1",
+      "release_version": "1.0.0",
+      "normative_digest_ref": "conformance/release-targets/amendment/source/package-manifest.yaml#/normative_digest"
+    },
+    "preconditions": {
+      "manifest_ref": "conformance/release-targets/amendment/source/package-manifest.yaml",
+      "state_manifest_ref": "conformance/release-targets/amendment/source/package-manifest.yaml",
+      "artifact_ledger_ref": "conformance/release-targets/amendment/source/package-manifest.yaml#/artifacts",
+      "normative_digest_ref": "conformance/release-targets/amendment/source/package-manifest.yaml#/normative_digest"
+    },
+    "release_evidence": null,
+    "amendment_evidence": {
+      "observation_root": "conformance/release-targets/amendment",
+      "source_manifest": "source/package-manifest.yaml",
+      "source_digest": "e374c6021217f26cc8f46c55362758d9987b9685020ea2b7c915c9927ea03480",
+      "target_manifest": "target/package-manifest.yaml",
+      "target_version": "1.1.0",
+      "target_digest": "bae442db593311382a847ad4d7461a5947306843e579d2449ba0a0b464e6a75a",
+      "target_path": "releases/1.1.0",
+      "changed_requirement_ids": [
+        "REQ-PKG-004"
+      ],
+      "new_requirement_ids": []
+    },
+    "idempotency_key": "fixture-amend-001",
+    "idempotency_status": "new"
+  },
+  "expected": {
+    "verdict": "pass",
+    "codes": [],
+    "outputs": [
+      "transition accepted"
+    ],
+    "operations": [
+      "amend"
+    ],
+    "receipts": [
+      "PackageAmendmentOpened"
+    ],
+    "filesystem_effects": [
+      "create a new draft version path",
+      "preserve released source byte-for-byte"
+    ],
+    "terminal_state": "released",
+    "illegal_transition": false
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-PKG-NEG-006",
+  "category": "negative",
+  "requirement_ids": ["REQ-PKG-005", "REQ-PKG-006", "REQ-PKG-008"],
+  "subject": {
+    "kind": "artifact",
+    "schema": "contracts/schemas/requirements.schema.json",
+    "document": {
+      "$schema": "../contracts/schemas/requirements.schema.json",
+      "schema_id": "mdplace.requirements/v1",
+      "package_series": "mdplace-spec/v1",
+      "requirements": [{
+        "id": "REQ-PKG-005",
+        "title": "Unknown vocabulary fixture",
+        "normative_anchor": "normative/package-contract.md#req-pkg-005-unknown-vocabulary-fixture",
+        "decision_urls": ["https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"],
+        "canonical_terms": ["Mutable Specification Folder"],
+        "acceptance_gate": "unknown vocabulary is rejected",
+        "scope": "foundation"
+      }]
+    }
+  },
+  "expected": {"verdict": "fail", "codes": ["vocabulary.unknown_term"], "outputs": ["artifact rejected"], "operations": ["parse boundary document", "validate stable requirement identifiers"], "receipts": ["ValidationReceipt"], "filesystem_effects": ["none"], "terminal_state": "rejected", "illegal_transition": false}
+}
