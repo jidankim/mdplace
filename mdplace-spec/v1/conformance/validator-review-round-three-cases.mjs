@@ -47,13 +47,22 @@ async function amendedFixture(packageRoot, mutate) {
   return fixture;
 }
 
-test('schema validation rejects nested bounded repetition before evaluation', () => {
-  const errors = validateJsonSchema(
-    {type: 'string', pattern: '^(a{0,1000}){0,1000}$'},
-    `${'a'.repeat(1023)}b`,
-  );
+test('schema validation rejects ambiguous repetition before evaluation', () => {
+  const patterns = [
+    '^(a{0,1000}){0,1000}$',
+    '^((a{0,1000})){0,1000}$',
+    '^(?:a+)(?:a+)(?:a+)(?:a+)(?:a+)(?:a+)b$',
+  ];
+  for (const pattern of patterns) {
+    const errors = validateJsonSchema({type: 'string', pattern}, `${'a'.repeat(1023)}b`);
+    assert.ok(errors.some(({keyword}) => keyword === 'resourceLimit'));
+  }
+});
 
-  assert.ok(errors.some(({keyword}) => keyword === 'resourceLimit'));
+test('schema validation distinguishes malformed repeated quantifiers', () => {
+  const errors = validateJsonSchema({type: 'string', pattern: 'a**'}, 'a');
+
+  assert.ok(errors.some(({keyword}) => keyword === 'invalidSchema'));
 });
 
 test('transition preconditions apply the complete package-manifest schema', async () => {

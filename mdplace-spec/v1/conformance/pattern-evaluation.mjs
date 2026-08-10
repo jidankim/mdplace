@@ -1,6 +1,7 @@
 function patternWithinBudget(pattern) {
   const frames = [{alternation: false, quantified: false, unbounded: 0}];
   let priorTokenIsRisky = false;
+  let variableRepetitions = 0;
   for (let index = 0; index < pattern.length; index += 1) {
     const character = pattern[index];
     if (character === '\\') {
@@ -30,6 +31,7 @@ function patternWithinBudget(pattern) {
       if (frames.length === 1) continue;
       const frame = frames.pop();
       priorTokenIsRisky = frame?.alternation === true || frame?.quantified === true;
+      if (priorTokenIsRisky) frames.at(-1).quantified = true;
       continue;
     }
     if (character === '|') {
@@ -39,12 +41,18 @@ function patternWithinBudget(pattern) {
     }
     const braceQuantifier = character === '{' ? /^\{(\d+)(?:,(\d*))?\}/.exec(pattern.slice(index)) : null;
     if (character === '*' || character === '+' || character === '?' || braceQuantifier !== null) {
+      const repetitionMinimum = character === '*' || character === '?' ? 0
+        : character === '+' ? 1 : Number(braceQuantifier[1]);
       const repetitionMaximum = character === '*' || character === '+' ? Number.POSITIVE_INFINITY
         : character === '?' ? 1
           : braceQuantifier[2] === '' ? Number.POSITIVE_INFINITY
             : Number(braceQuantifier[2] ?? braceQuantifier[1]);
       const unbounded = repetitionMaximum === Number.POSITIVE_INFINITY;
       if (priorTokenIsRisky && repetitionMaximum > 1) return false;
+      if (repetitionMinimum !== repetitionMaximum) {
+        variableRepetitions += 1;
+        if (variableRepetitions > 3) return false;
+      }
       const frame = frames.at(-1);
       if (unbounded && frame.unbounded >= 2) return false;
       if (unbounded) frame.unbounded += 1;
@@ -58,10 +66,12 @@ function patternWithinBudget(pattern) {
 }
 
 export function evaluatePattern(pattern, value) {
-  if (!patternWithinBudget(pattern)) return {status: 'resourceLimit'};
+  let expression;
   try {
-    return {status: 'complete', matches: new RegExp(pattern, 'u').test(value)};
+    expression = new RegExp(pattern, 'u');
   } catch {
     return {status: 'invalidSchema'};
   }
+  if (!patternWithinBudget(pattern)) return {status: 'resourceLimit'};
+  return {status: 'complete', matches: expression.test(value)};
 }
