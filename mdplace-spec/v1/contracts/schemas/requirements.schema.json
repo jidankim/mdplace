@@ -29,7 +29,7 @@
         "scope"
       ],
       "properties": {
-        "id": {"type": "string", "pattern": "^REQ-[A-Z][A-Z0-9]{1,7}-[0-9]{3}$"},
+        "id": {"type": "string", "pattern": "^REQ-[A-Z][A-Z0-9]{1,15}-[0-9]{3}$"},
         "title": {"type": "string", "minLength": 1},
         "normative_anchor": {"type": "string", "pattern": "^normative/[a-z0-9-]+\\.md#req-[a-z0-9-]+$"},
         "decision_urls": {
@@ -45,7 +45,7 @@
           "items": {"type": "string", "minLength": 1}
         },
         "acceptance_gate": {"type": "string", "minLength": 1},
-        "scope": {"enum": ["foundation"]}
+        "scope": {"type": "string", "pattern": "^[a-z][a-z0-9-]{1,63}$"}
       }
     }
   }

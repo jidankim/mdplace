@@ -4,7 +4,9 @@ import test from 'node:test';
 import {completeTransition, validatePackage} from './validator-test-support.mjs';
 
 const satisfiedPreconditions = {
-  declared_conditions_met: true,
+  manifest_ref: 'package-manifest.yaml',
+  artifact_ledger_ref: 'package-manifest.yaml#/artifacts',
+  normative_digest_ref: 'package-manifest.yaml#/normative_digest',
 };
 const normativeDigestReference = 'package-manifest.yaml#/normative_digest';
 const baseReferences = {
@@ -34,8 +36,15 @@ const releaseEvidence = {
     {receipt_id: 'approval:semantic-001', approval_kind: 'semantic', principal_id: 'person:owner-001', identity_assurance: 'canonical_authenticated_human', role: 'vault_owner', normative_digest_ref: normativeDigestReference, delegated: false},
     {receipt_id: 'approval:technical-001', approval_kind: 'technical', principal_id: 'person:reviewer-001', identity_assurance: 'canonical_authenticated_human', role: 'independent_technical_reviewer', normative_digest_ref: normativeDigestReference, delegated: false},
   ],
-  immutable_target: {path: 'releases/1.0.0', status: 'reserved_empty'},
+  immutable_target: {observation_root: 'conformance/release-targets/complete', path: 'releases/1.0.0', status: 'absent_available'},
 };
+
+function partialPackageReport(result) {
+  const report = JSON.parse(result.stdout);
+  assert.equal(result.status, 1, result.stderr || result.stdout);
+  assert.ok(report.checks.some(({codes}) => codes.includes('schema.required_artifact')));
+  return report;
+}
 
 test('CLI rejects a non-current digest reference without side effects', async () => {
   // Given an otherwise authorized transition bound to an arbitrary digest reference.
@@ -50,6 +59,7 @@ test('CLI rejects a non-current digest reference without side effects', async ()
       base_references: {...baseReferences, normative_digest_ref: `literal:${'c'.repeat(64)}`},
       preconditions: satisfiedPreconditions,
       release_evidence: null,
+      amendment_evidence: null,
       idempotency_key: 'fixture-stale-001',
       idempotency_status: 'new',
     },
@@ -76,8 +86,7 @@ test('CLI rejects a non-current digest reference without side effects', async ()
   });
 
   // Then the fixture oracle passes because the stale attempt is denied cleanly.
-  assert.equal(result.status, 0);
-  const report = JSON.parse(result.stdout);
+  const report = partialPackageReport(result);
   assert.deepEqual(report.fixture_results, [{id: 'FIX-PKG-STATE-001', verdict: 'pass', codes: []}]);
 });
 
@@ -94,6 +103,7 @@ test('CLI denies an approval without both distinct authorities', async () => {
       base_references: baseReferences,
       preconditions: satisfiedPreconditions,
       release_evidence: null,
+      amendment_evidence: null,
       idempotency_key: 'fixture-authority-001',
       idempotency_status: 'new',
     },
@@ -129,8 +139,7 @@ test('CLI denies an approval without both distinct authorities', async () => {
   });
 
   // Then the fixture proves denial, no filesystem effect, and unchanged state.
-  assert.equal(result.status, 0);
-  const report = JSON.parse(result.stdout);
+  const report = partialPackageReport(result);
   assert.deepEqual(report.fixture_results, [{id: 'FIX-PKG-AUTH-001', verdict: 'pass', codes: []}]);
 });
 
@@ -138,7 +147,7 @@ test('CLI emits the declared observable result for an allowed transition', async
   // Given an authorized submit against the current package references.
   const fixture = {
     fixture_id: 'FIX-PKG-POS-002',
-    subject: {kind: 'transition', table: 'contracts/transitions/package-lifecycle.json', from_state: 'draft', command: 'submit', actors: [actor('author-001', ['package_author'])], base_references: baseReferences, preconditions: satisfiedPreconditions, release_evidence: null, idempotency_key: 'fixture-submit-001', idempotency_status: 'new'},
+    subject: {kind: 'transition', table: 'contracts/transitions/package-lifecycle.json', from_state: 'draft', command: 'submit', actors: [actor('author-001', ['package_author'])], base_references: baseReferences, preconditions: satisfiedPreconditions, release_evidence: null, amendment_evidence: null, idempotency_key: 'fixture-submit-001', idempotency_status: 'new'},
     expected: {verdict: 'pass', codes: [], outputs: ['transition accepted'], operations: ['submit'], receipts: ['PackageCandidateSubmitted'], filesystem_effects: ['none'], terminal_state: 'candidate', illegal_transition: false},
   };
   const conformance = {fixtures: [{fixture_id: fixture.fixture_id, path: 'fixtures/submit.json', expected_verdict: 'pass'}]};
@@ -153,8 +162,7 @@ test('CLI emits the declared observable result for an allowed transition', async
   });
 
   // Then the emitted receipt, effects, and terminal state match the normative row.
-  assert.equal(result.status, 0);
-  const report = JSON.parse(result.stdout);
+  const report = partialPackageReport(result);
   assert.deepEqual(report.fixture_results, [{id: 'FIX-PKG-POS-002', verdict: 'pass', codes: []}]);
 });
 
@@ -177,6 +185,7 @@ test('CLI rejects release when an observable release precondition is unmet', asy
           observed_slots: releaseSlots.map((path) => ({path, presence: 'present'})),
         },
       },
+      amendment_evidence: null,
       idempotency_key: 'fixture-release-missing-slot-001',
       idempotency_status: 'new',
     },
@@ -202,8 +211,7 @@ test('CLI rejects release when an observable release precondition is unmet', asy
   });
 
   // Then no release effect occurs and the release-ready state is preserved.
-  assert.equal(result.status, 0, result.stderr || result.stdout);
-  const report = JSON.parse(result.stdout);
+  const report = partialPackageReport(result);
   assert.deepEqual(report.fixture_results, [{id: fixture.fixture_id, verdict: 'pass', codes: []}]);
 });
 
@@ -215,7 +223,7 @@ test('CLI rejects release without digest-bound approval and target evidence', as
       kind: 'transition', table: 'contracts/transitions/package-lifecycle.json',
       from_state: 'release_ready', command: 'release',
       actors: [actor('coordinator-001', ['release_coordinator'])],
-      base_references: baseReferences, preconditions: satisfiedPreconditions, release_evidence: null,
+      base_references: baseReferences, preconditions: satisfiedPreconditions, release_evidence: null, amendment_evidence: null,
       idempotency_key: 'fixture-unproven-release-001', idempotency_status: 'new',
     },
     expected: {verdict: 'fail', codes: ['transition.precondition_failed'], outputs: ['transition rejected'], operations: ['validate transition preconditions'], receipts: ['PackageTransitionDenied'], filesystem_effects: ['remove unverified staged target and preserve candidate'], terminal_state: 'release_ready', illegal_transition: false},
@@ -237,8 +245,7 @@ test('CLI rejects release without digest-bound approval and target evidence', as
   });
 
   // Then assertions alone cannot stand in for receipts or digest bindings.
-  assert.equal(result.status, 0, result.stderr || result.stdout);
-  const report = JSON.parse(result.stdout);
+  const report = partialPackageReport(result);
   assert.deepEqual(report.fixture_results, [{id: fixture.fixture_id, verdict: 'pass', codes: []}]);
 });
 
@@ -246,7 +253,7 @@ test('CLI rejects an idempotency-key conflict before transition effects', async 
   // Given an otherwise valid submit that reuses a key for a different command input.
   const fixture = {
     fixture_id: 'FIX-PKG-NEG-010',
-    subject: {kind: 'transition', table: 'contracts/transitions/package-lifecycle.json', from_state: 'draft', command: 'submit', actors: [actor('author-001', ['package_author'])], base_references: baseReferences, preconditions: satisfiedPreconditions, release_evidence: null, idempotency_key: 'fixture-conflict-001', idempotency_status: 'conflict'},
+    subject: {kind: 'transition', table: 'contracts/transitions/package-lifecycle.json', from_state: 'draft', command: 'submit', actors: [actor('author-001', ['package_author'])], base_references: baseReferences, preconditions: satisfiedPreconditions, release_evidence: null, amendment_evidence: null, idempotency_key: 'fixture-conflict-001', idempotency_status: 'conflict'},
     expected: {verdict: 'fail', codes: ['transition.idempotency_conflict'], outputs: ['transition rejected'], operations: ['validate idempotency key'], receipts: ['PackageTransitionDenied'], filesystem_effects: ['none'], terminal_state: 'draft', illegal_transition: false},
   };
   const conformance = {fixtures: [{fixture_id: fixture.fixture_id, path: 'scenarios/idempotency-conflict.json', expected_verdict: 'fail'}]};
@@ -261,7 +268,6 @@ test('CLI rejects an idempotency-key conflict before transition effects', async 
   });
 
   // Then the transition is denied before emitting the submit receipt or effects.
-  assert.equal(result.status, 0, result.stderr || result.stdout);
-  const report = JSON.parse(result.stdout);
+  const report = partialPackageReport(result);
   assert.deepEqual(report.fixture_results, [{id: fixture.fixture_id, verdict: 'pass', codes: []}]);
 });

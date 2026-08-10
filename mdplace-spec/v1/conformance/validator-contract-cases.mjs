@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import test from 'node:test';
 
-import {runPackage} from './validator-test-support.mjs';
+import {copyCommittedPackage, runPreparedPackage} from './validator-test-support.mjs';
 
 const packageRoot = fileURLToPath(new URL('../', import.meta.url));
 const validator = fileURLToPath(new URL('./validator.mjs', import.meta.url));
@@ -17,8 +17,8 @@ test('CLI validates every committed conformance fixture', () => {
   assert.equal(result.status, 0, result.stderr || result.stdout);
   const report = JSON.parse(result.stdout);
 
-  // Then the whole required category matrix is covered by 25 passing fixture results.
-  assert.equal(report.fixture_results.length, 25);
+  // Then the whole required category matrix is covered by 27 passing fixture results.
+  assert.equal(report.fixture_results.length, 27);
   assert.ok(report.fixture_results.every(({verdict}) => verdict === 'pass'));
   assert.deepEqual(report.checks.map(({id}) => id), [
     'package-manifest',
@@ -35,21 +35,12 @@ test('CLI validates every committed conformance fixture', () => {
   assert.match(report.normative_digest, /^[a-f0-9]{64}$/);
 });
 
-test('CLI writes its passing report only when evidence output is requested', async () => {
-  // Given a valid one-fixture package with no pre-existing validation report.
-  const fixture = {
-    fixture_id: 'FIX-PKG-BND-001',
-    subject: {kind: 'sha256_boundary', value: 'a'.repeat(64)},
-    expected: {verdict: 'pass', codes: [], outputs: ['digest accepted'], operations: ['validate sha256 boundary'], receipts: ['ValidationReceipt'], filesystem_effects: ['none'], terminal_state: 'validated', illegal_transition: false},
-  };
-  const conformance = {fixtures: [{fixture_id: fixture.fixture_id, path: 'fixtures/exact.json', expected_verdict: 'pass'}]};
+test('CLI writes its passing report when evidence output is requested', async () => {
+  // Given a complete specification package in an isolated workspace.
+  const temporaryRoot = await copyCommittedPackage();
 
   // When the documented write flag is passed to the public validator.
-  const {packageRoot: temporaryRoot, result} = await runPackage({
-    'package-manifest.yaml': {},
-    'conformance/manifest.yaml': conformance,
-    'conformance/fixtures/exact.json': fixture,
-  }, ['--write-evidence']);
+  const result = runPreparedPackage(temporaryRoot, ['--write-evidence']);
 
   // Then the committed-format evidence bytes equal the deterministic stdout report.
   assert.equal(result.status, 0, result.stderr || result.stdout);

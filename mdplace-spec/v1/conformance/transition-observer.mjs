@@ -1,13 +1,14 @@
 import {createHash} from 'node:crypto';
-import {lstat, readFile} from 'node:fs/promises';
-import {resolve} from 'node:path';
+
+import {checkArtifactBindings, checkManifest} from './package-checks.mjs';
+import {inspectAbsentPackageEntry, inspectPackageEntry, readPackageFile} from './safe-path.mjs';
 
 const normativeDigestReference = 'package-manifest.yaml#/normative_digest';
 
 function rolesHaveDistinctActors(roles, actors, index = 0, usedActorIds = new Set()) {
   if (index === roles.length) return true;
   return actors.some((actor) =>
-    actor.roles.includes(roles[index]) &&
+    Array.isArray(actor?.roles) && actor.roles.includes(roles[index]) &&
     !usedActorIds.has(actor.principal_id) &&
     rolesHaveDistinctActors(roles, actors, index + 1, new Set([...usedActorIds, actor.principal_id])));
 }
@@ -16,20 +17,34 @@ function equalSets(left, right) {
   return left.length === right.length && left.every((value) => right.includes(value));
 }
 
-async function entryExists(path) {
+async function readJson(packageRoot, path) {
+  const read = await readPackageFile(packageRoot, path);
+  if (read.status !== 'present') return null;
   try {
-    await lstat(path);
-    return true;
-  } catch (error) {
-    if (error.code === 'ENOENT') return false;
-    throw error;
+    return JSON.parse(read.content.toString('utf8'));
+  } catch {
+    return null;
   }
+}
+
+function observedPath(root, path) {
+  return root === '.' ? path : `${root}/${path}`;
+}
+
+function isGreaterSemver(target, source) {
+  const semver = /^[1-9][0-9]*\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)$/;
+  if (!semver.test(target) || !semver.test(source)) return false;
+  const targetParts = target.split('.').map(Number);
+  const sourceParts = source.split('.').map(Number);
+  return targetParts.some((part, index) => part > sourceParts[index] &&
+    targetParts.slice(0, index).every((earlier, earlierIndex) => earlier === sourceParts[earlierIndex]));
 }
 
 async function releaseEvidenceMatches(subject, packageRoot) {
   const evidence = subject.release_evidence;
   if (evidence === null || evidence === undefined) return false;
-  const manifest = JSON.parse(await readFile(resolve(packageRoot, 'package-manifest.yaml'), 'utf8'));
+  const manifest = await readJson(packageRoot, 'package-manifest.yaml');
+  if (manifest === null) return false;
   const requiredSlots = manifest.layout?.required_release_slots ?? [];
   const observation = evidence.required_release_slots_observation ?? {};
   const observedSlots = observation.observed_slots ?? [];
@@ -42,12 +57,16 @@ async function releaseEvidenceMatches(subject, packageRoot) {
   ).digest('hex');
   const observationRootIsSafe = observation.observation_root === '.' ||
     /^conformance\/release-targets\/[a-z][a-z0-9-]{2,63}$/.test(observation.observation_root ?? '');
-  const observationRoot = observationRootIsSafe
-    ? resolve(packageRoot, observation.observation_root)
-    : packageRoot;
   const observedPresenceMatches = observationRootIsSafe && (await Promise.all(
-    observedSlots.map(async ({path, presence}) =>
-      await entryExists(resolve(observationRoot, path)) === (presence === 'present')),
+    observedSlots.map(async ({path, presence}) => {
+      if (typeof path !== 'string') return false;
+      const inspected = await inspectPackageEntry(
+        packageRoot,
+        observedPath(observation.observation_root, path),
+        path.endsWith('/') ? 'directory' : 'file',
+      );
+      return inspected.status === (presence === 'present' ? 'present' : 'absent');
+    }),
   )).every(Boolean);
   const approvalsMatch = approvals.length === 2 && semantic !== undefined && technical !== undefined &&
     semantic.role === 'vault_owner' && technical.role === 'independent_technical_reviewer' &&
@@ -64,18 +83,99 @@ async function releaseEvidenceMatches(subject, packageRoot) {
     new Set(observedPaths).size === observedPaths.length &&
     equalSets(observedPaths, requiredSlots) &&
     observedSlots.every(({presence}) => presence === 'present') && observedPresenceMatches;
+  const immutableTarget = evidence.immutable_target;
+  const immutableTargetMatches = /^conformance\/release-targets\/[a-z][a-z0-9-]{2,63}$/.test(immutableTarget?.observation_root ?? '') &&
+    immutableTarget?.path === `releases/${manifest.release_version}` &&
+    immutableTarget?.status === 'absent_available' &&
+    (await inspectAbsentPackageEntry(
+      packageRoot,
+      observedPath(immutableTarget.observation_root, immutableTarget.path),
+    )).status === 'absent';
   return slotObservationMatches &&
     evidence.verified_artifact_digest_ref === normativeDigestReference && approvalsMatch &&
-    evidence.immutable_target?.path === `releases/${manifest.release_version}` &&
-    evidence.immutable_target?.status === 'reserved_empty';
+    immutableTargetMatches;
 }
 
 async function baseReferencesMatch(subject, packageRoot) {
-  const manifest = JSON.parse(await readFile(resolve(packageRoot, 'package-manifest.yaml'), 'utf8'));
-  return subject.base_references.package_series === manifest.package_series &&
+  const manifest = await readJson(packageRoot, 'package-manifest.yaml');
+  return manifest !== null && subject.base_references?.package_series === manifest.package_series &&
     subject.base_references.release_version === manifest.release_version &&
     subject.base_references.normative_digest_ref === normativeDigestReference &&
     /^[a-f0-9]{64}$/.test(manifest.normative_digest);
+}
+
+async function candidatePreconditionsMatch(subject, packageRoot) {
+  const preconditions = subject.preconditions;
+  if (preconditions?.manifest_ref !== 'package-manifest.yaml' ||
+      preconditions?.artifact_ledger_ref !== 'package-manifest.yaml#/artifacts' ||
+      preconditions?.normative_digest_ref !== normativeDigestReference) return false;
+  const manifest = await readJson(packageRoot, 'package-manifest.yaml');
+  if (manifest === null) return false;
+  const [manifestCheck, artifactCheck] = await Promise.all([
+    checkManifest(packageRoot, manifest),
+    checkArtifactBindings(packageRoot, manifest).then(({check}) => check),
+  ]);
+  return manifestCheck.verdict === 'pass' && artifactCheck.verdict === 'pass';
+}
+
+async function amendmentEvidenceMatches(subject, packageRoot) {
+  const evidence = subject.amendment_evidence;
+  if (evidence === null || evidence === undefined) return false;
+  const rootIsSafe = /^conformance\/release-targets\/[a-z][a-z0-9-]{2,63}$/.test(evidence.observation_root ?? '');
+  if (!rootIsSafe || typeof evidence.source_manifest !== 'string' ||
+      !Array.isArray(evidence.changed_requirement_ids) || evidence.changed_requirement_ids.length === 0) {
+    return false;
+  }
+  const sourceManifest = await readJson(packageRoot, observedPath(evidence.observation_root, evidence.source_manifest));
+  const sourceArtifacts = Array.isArray(sourceManifest?.artifacts) ? sourceManifest.artifacts : [];
+  const sourceDirectory = evidence.source_manifest.split('/').slice(0, -1).join('/');
+  const artifactPaths = sourceArtifacts.map((artifact) => artifact?.path);
+  const artifactBindingsMatch = sourceArtifacts.length > 0 && new Set(artifactPaths).size === artifactPaths.length &&
+    (await Promise.all(sourceArtifacts.map(async (artifact) => {
+      if (artifact === null || typeof artifact !== 'object' || typeof artifact.path !== 'string' ||
+          typeof artifact.sha256 !== 'string' || !['normative', 'informative'].includes(artifact.authority)) return false;
+      const read = await readPackageFile(
+        packageRoot,
+        observedPath(evidence.observation_root, observedPath(sourceDirectory, artifact.path)),
+      );
+      return read.status === 'present' && createHash('sha256').update(read.content).digest('hex') === artifact.sha256;
+    }))).every(Boolean);
+  const observedSourceDigest = createHash('sha256').update(
+    sourceArtifacts
+      .filter((artifact) => artifact?.authority === 'normative' &&
+        typeof artifact.path === 'string' && typeof artifact.sha256 === 'string')
+      .sort((left, right) => left.path.localeCompare(right.path))
+      .map(({path, sha256}) => `${path}\0${sha256}\n`)
+      .join(''),
+  ).digest('hex');
+  if (sourceManifest === null || sourceManifest.lifecycle_state !== 'released' ||
+      sourceManifest.package_series !== subject.base_references.package_series ||
+      sourceManifest.release_version !== subject.base_references.release_version ||
+      sourceManifest.normative_digest !== evidence.source_digest ||
+      observedSourceDigest !== sourceManifest.normative_digest || !artifactBindingsMatch ||
+      !/^[a-f0-9]{64}$/.test(evidence.source_digest) ||
+      !isGreaterSemver(evidence.target_version, sourceManifest.release_version) ||
+      evidence.target_path !== `releases/${evidence.target_version}`) return false;
+  const target = await inspectAbsentPackageEntry(
+    packageRoot,
+    observedPath(evidence.observation_root, evidence.target_path),
+  );
+  return target.status === 'absent';
+}
+
+async function commandPreconditionsMatch(subject, packageRoot) {
+  if (!await candidatePreconditionsMatch(subject, packageRoot)) return false;
+  switch (subject.command) {
+    case 'submit':
+    case 'approve':
+      return true;
+    case 'release':
+      return releaseEvidenceMatches(subject, packageRoot);
+    case 'amend':
+      return amendmentEvidenceMatches(subject, packageRoot);
+    default:
+      return false;
+  }
 }
 
 function denied(subject, code, operations, filesystemEffects = ['none'], receipts = ['PackageTransitionDenied']) {
@@ -93,8 +193,8 @@ function denied(subject, code, operations, filesystemEffects = ['none'], receipt
 
 export async function observeTransition(fixture, packageRoot) {
   const {subject} = fixture;
-  const table = JSON.parse(await readFile(resolve(packageRoot, subject.table), 'utf8'));
-  const row = table.transitions.find((candidate) =>
+  const table = await readJson(packageRoot, subject.table);
+  const row = table?.transitions?.find((candidate) =>
     candidate.from_state === subject.from_state && candidate.command_or_event === subject.command);
   if (!await baseReferencesMatch(subject, packageRoot)) {
     return denied(subject, 'transition.stale_base', ['validate base references']);
@@ -104,17 +204,18 @@ export async function observeTransition(fixture, packageRoot) {
   }
 
   const expectedRoles = row.actor_authority.roles;
-  const actorIds = subject.actors.map(({principal_id: principalId}) => principalId);
-  const actualRoles = [...new Set(subject.actors.flatMap(({roles}) => roles))];
+  const actors = Array.isArray(subject.actors) ? subject.actors : [];
+  const actorIds = actors.map(({principal_id: principalId}) => principalId);
+  const actualRoles = [...new Set(actors.flatMap(({roles}) => Array.isArray(roles) ? roles : []))];
   const actorRolesMatch = actualRoles.length === expectedRoles.length &&
     expectedRoles.every((role) => actualRoles.includes(role));
   const actorCountMatches = new Set(actorIds).size === actorIds.length &&
     actorIds.length >= row.actor_authority.quorum;
   const distinctActorsMatch = !row.actor_authority.distinct_actors ||
-    rolesHaveDistinctActors(expectedRoles, subject.actors);
+    rolesHaveDistinctActors(expectedRoles, actors);
   const delegationMatches = row.actor_authority.delegation !== 'forbidden' ||
-    subject.actors.every(({delegated}) => delegated === false);
-  const identityAssuranceMatches = subject.actors.every(({identity_assurance: assurance}) =>
+    actors.every(({delegated}) => delegated === false);
+  const identityAssuranceMatches = actors.every(({identity_assurance: assurance}) =>
     assurance === 'canonical_authenticated_human');
   if (!actorRolesMatch || !actorCountMatches || !distinctActorsMatch || !delegationMatches ||
       !identityAssuranceMatches) {
@@ -132,9 +233,7 @@ export async function observeTransition(fixture, packageRoot) {
     return denied(subject, 'transition.idempotency_conflict', ['validate idempotency key']);
   }
 
-  const releasePreconditionsMet = subject.command !== 'release' ||
-    await releaseEvidenceMatches(subject, packageRoot);
-  if (!subject.preconditions.declared_conditions_met || !releasePreconditionsMet) {
+  if (!await commandPreconditionsMatch(subject, packageRoot)) {
     return denied(subject, row.failure_result.code, ['validate transition preconditions'],
       row.failure_result.filesystem_effects, row.failure_result.emitted_records);
   }

@@ -8,12 +8,12 @@
     "kind": "artifact",
     "schema": "contracts/schemas/transition-table.schema.json",
     "document": {
-      "$schema": "contracts/schemas/transition-table.schema.json",
+      "$schema": "../schemas/transition-table.schema.json",
       "schema_id": "mdplace.transition-table/v1",
       "table_id": "TRANS-AMBIGUOUS-AUTHORITY",
       "lifecycle": "ambiguous authority fixture",
       "version": "1.0.0",
-      "states": ["candidate"],
+      "states": ["candidate", "release_ready"],
       "commands": ["approve"],
       "transitions": [{
         "transition_id": "TR-PKG-001",

@@ -1,4 +1,4 @@
-import {mkdir, mkdtemp, writeFile} from 'node:fs/promises';
+import {cp, mkdir, mkdtemp, readFile, writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {dirname, join} from 'node:path';
 import {spawnSync} from 'node:child_process';
@@ -6,8 +6,9 @@ import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 
 const validator = fileURLToPath(new URL('./validator.mjs', import.meta.url));
+const committedPackage = fileURLToPath(new URL('../', import.meta.url));
 
-export async function runPackage(files, arguments_ = []) {
+export async function preparePackage(files) {
   const workspace = await mkdtemp(join(tmpdir(), 'mdplace-spec-validator-'));
   const packageRoot = join(workspace, 'mdplace-spec/v1');
   await mkdir(packageRoot, {recursive: true});
@@ -15,6 +16,12 @@ export async function runPackage(files, arguments_ = []) {
   const packageOverrides = files['package-manifest.yaml'] ?? {};
   const packageFiles = Object.fromEntries(Object.entries(files).filter(([path]) => path !== 'package-manifest.yaml'));
   if (!('normative/package-contract.md' in packageFiles)) packageFiles['normative/package-contract.md'] = 'Fixture contract.\n';
+  for (const document of Object.values(packageFiles)) {
+    const schemaPath = document?.subject?.kind === 'artifact' ? document.subject.schema : null;
+    if (typeof schemaPath === 'string' && !(schemaPath in packageFiles)) {
+      packageFiles[schemaPath] = await readFile(join(committedPackage, schemaPath), 'utf8');
+    }
+  }
   const contents = Object.fromEntries(Object.entries(packageFiles).map(([path, document]) => [
     path,
     typeof document === 'string' ? document : `${JSON.stringify(document, null, 2)}\n`,
@@ -41,7 +48,7 @@ export async function runPackage(files, arguments_ = []) {
     validator_version: '1.0.0',
     normative_vocabulary: '../../CONTEXT.md',
     authority: {normative_rule: 'binding', informative_rule: 'nonbinding', conflict_result: 'informative_ignored_for_conformance'},
-    layout: {required_release_slots: ['README.md', 'product.md', 'architecture.md', 'contracts/', 'operations.md', 'security-and-privacy.md', 'performance.md', 'conformance/manifest.yaml', 'conformance/fixtures/', 'conformance/scenarios/', 'conformance/benchmarks/', 'conformance/manual-acceptance.md', 'traceability.yaml', 'claims-and-evidence.yaml', 'package-manifest.yaml'], candidate_foundation_slots: ['normative/package-contract.md', 'package-manifest.yaml']},
+    layout: {required_release_slots: ['README.md', 'product.md', 'architecture.md', 'contracts/', 'operations.md', 'security-and-privacy.md', 'performance.md', 'conformance/manifest.yaml', 'conformance/fixtures/', 'conformance/scenarios/', 'conformance/benchmarks/', 'conformance/manual-acceptance.md', 'traceability.yaml', 'claims-and-evidence.yaml', 'package-manifest.yaml'], candidate_foundation_slots: ['README.md', 'normative/package-contract.md', 'normative/requirements.json', 'contracts/schemas/', 'contracts/transitions/', 'conformance/', 'traceability.yaml', 'package-manifest.yaml']},
     artifacts,
     normative_digest: normativeDigest,
     amendment_policy: {immutable_after_release: true, in_place_mutation: 'forbidden', new_version_required: true, previous_release: null},
@@ -54,8 +61,24 @@ export async function runPackage(files, arguments_ = []) {
     await mkdir(dirname(target), {recursive: true});
     await writeFile(target, content);
   }
-  const result = spawnSync(process.execPath, [validator, packageRoot, ...arguments_], {encoding: 'utf8'});
-  return {packageRoot, result};
+  return packageRoot;
+}
+
+export function runPreparedPackage(packageRoot, arguments_ = []) {
+  return spawnSync(process.execPath, [validator, packageRoot, ...arguments_], {encoding: 'utf8'});
+}
+
+export async function runPackage(files, arguments_ = []) {
+  const packageRoot = await preparePackage(files);
+  return {packageRoot, result: runPreparedPackage(packageRoot, arguments_)};
+}
+
+export async function copyCommittedPackage() {
+  const workspace = await mkdtemp(join(tmpdir(), 'mdplace-spec-validator-copy-'));
+  const packageRoot = join(workspace, 'mdplace-spec/v1');
+  await cp(committedPackage, packageRoot, {recursive: true});
+  await cp(fileURLToPath(new URL('../../../CONTEXT.md', import.meta.url)), join(workspace, 'CONTEXT.md'));
+  return packageRoot;
 }
 
 export async function validatePackage(files) {

@@ -63,9 +63,19 @@
         },
         "candidate_foundation_slots": {
           "type": "array",
-          "minItems": 1,
+          "minItems": 8,
           "uniqueItems": true,
-          "items": {"type": "string", "minLength": 1}
+          "items": {"type": "string", "minLength": 1},
+          "allOf": [
+            {"contains": {"const": "README.md"}},
+            {"contains": {"const": "normative/package-contract.md"}},
+            {"contains": {"const": "normative/requirements.json"}},
+            {"contains": {"const": "contracts/schemas/"}},
+            {"contains": {"const": "contracts/transitions/"}},
+            {"contains": {"const": "conformance/"}},
+            {"contains": {"const": "traceability.yaml"}},
+            {"contains": {"const": "package-manifest.yaml"}}
+          ]
         }
       }
     },

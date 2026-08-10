@@ -31,7 +31,7 @@
       "additionalProperties": false,
       "required": ["requirement_id", "decision_ids", "canonical_terms", "normative_anchors", "schema_or_transition_refs", "positive_fixture_ids", "negative_fixture_ids", "acceptance_gate", "scope", "evidence_refs"],
       "properties": {
-        "requirement_id": {"type": "string", "pattern": "^REQ-PKG-[0-9]{3}$"},
+        "requirement_id": {"type": "string", "pattern": "^REQ-[A-Z][A-Z0-9]{1,15}-[0-9]{3}$"},
         "decision_ids": {"$ref": "#/$defs/stringList"},
         "canonical_terms": {"$ref": "#/$defs/stringList"},
         "normative_anchors": {"$ref": "#/$defs/stringList"},
@@ -39,7 +39,7 @@
         "positive_fixture_ids": {"$ref": "#/$defs/stringList"},
         "negative_fixture_ids": {"$ref": "#/$defs/stringList"},
         "acceptance_gate": {"type": "string", "minLength": 1},
-        "scope": {"const": "foundation"},
+        "scope": {"type": "string", "pattern": "^[a-z][a-z0-9-]{1,63}$"},
         "evidence_refs": {"$ref": "#/$defs/stringList"}
       }
     }

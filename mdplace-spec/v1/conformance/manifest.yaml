@@ -48,6 +48,14 @@
       "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
     },
     {
+      "fixture_id": "FIX-PKG-POS-006",
+      "path": "fixtures/positive/authorized-amend.json",
+      "category": "positive",
+      "requirement_ids": ["REQ-PKG-003", "REQ-PKG-004", "REQ-PKG-007", "REQ-PKG-009"],
+      "expected_verdict": "pass",
+      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+    },
+    {
       "fixture_id": "FIX-PKG-BND-001",
       "path": "fixtures/boundary/exact-sha256.json",
       "category": "exact_boundary",
@@ -172,6 +180,14 @@
       "path": "fixtures/negative/invalid-schema-declaration.json",
       "category": "negative",
       "requirement_ids": ["REQ-PKG-006", "REQ-PKG-009"],
+      "expected_verdict": "fail",
+      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+    },
+    {
+      "fixture_id": "FIX-PKG-NEG-015",
+      "path": "fixtures/negative/unproven-amendment.json",
+      "category": "negative",
+      "requirement_ids": ["REQ-PKG-003", "REQ-PKG-004", "REQ-PKG-007", "REQ-PKG-009"],
       "expected_verdict": "fail",
       "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
     },

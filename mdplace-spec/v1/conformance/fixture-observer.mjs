@@ -3,7 +3,14 @@ import {resolve} from 'node:path';
 
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {observeTransition} from './transition-observer.mjs';
-import {authorityMatches, manifestFields, transitionFields} from './validator-rules.mjs';
+import {authorityMatches, manifestFields, packageArtifactPathAllowed, transitionFields} from './validator-rules.mjs';
+
+const operationBySchema = new Map([
+  ['package-manifest.schema.json', 'validate closed package manifest'],
+  ['requirements.schema.json', 'validate stable requirement identifiers'],
+  ['transition-table.schema.json', 'validate complete transition table'],
+  ['traceability.schema.json', 'validate total traceability'],
+]);
 
 function isGreaterSemver(target, source) {
   const semver = /^[1-9][0-9]*\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)$/;
@@ -15,28 +22,37 @@ function isGreaterSemver(target, source) {
 }
 
 export async function observeFixture(fixture, packageRoot) {
-  switch (fixture.subject.kind) {
+  switch (fixture?.subject?.kind) {
     case 'artifact': {
       const schemaName = fixture.subject.schema.split('/').at(-1);
       const document = fixture.subject.document;
       let codes = [];
       const operations = ['parse boundary document'];
-      let illegalTransition = false;
+      const operation = operationBySchema.get(schemaName);
+      if (operation !== undefined) operations.push(operation);
+      const illegalTransition = schemaName === 'transition-table.schema.json';
       let contractCode;
       try {
         const schemaErrors = await validateAgainstSchemaPath(packageRoot, fixture.subject.schema, document);
         contractCode = schemaErrorCode(schemaErrors);
-      } catch {
+      } catch (error) {
+        if (!(error instanceof Error)) throw error;
         contractCode = 'fixture.schema_unresolved';
+      }
+      if (contractCode !== null) {
+        return {
+          verdict: 'fail', codes: [contractCode], outputs: ['artifact rejected'], operations,
+          receipts: ['ValidationReceipt'], filesystem_effects: ['none'], terminal_state: 'rejected',
+          illegal_transition: illegalTransition,
+        };
       }
       switch (schemaName) {
         case 'package-manifest.schema.json': {
-          operations.push('validate closed package manifest');
           if (Object.keys(document).some((field) => !manifestFields.has(field))) {
             codes = ['schema.unknown_field'];
-          } else if (document.artifacts?.some(({path}) => /^(?:production|runtime|src)\//.test(path))) {
+          } else if (document.artifacts?.some(({path}) => !packageArtifactPathAllowed(path))) {
             codes = ['package.production_code_forbidden'];
-          } else if ([...manifestFields].some((field) => !(field in document))) {
+          } else if ([...manifestFields].some((field) => !Object.hasOwn(document, field))) {
             codes = ['schema.required_field'];
           } else if (!/^[a-f0-9]{64}$/.test(document.normative_digest)) {
             codes = ['schema.pattern'];
@@ -44,7 +60,6 @@ export async function observeFixture(fixture, packageRoot) {
           break;
         }
         case 'requirements.schema.json': {
-          operations.push('validate stable requirement identifiers');
           const ids = document.requirements.map(({id}) => id);
           if (new Set(ids).size !== ids.length) {
             codes = ['requirements.duplicate_id'];
@@ -57,9 +72,7 @@ export async function observeFixture(fixture, packageRoot) {
           break;
         }
         case 'transition-table.schema.json': {
-          operations.push('validate complete transition table');
-          illegalTransition = true;
-          if (document.transitions.some((row) => [...transitionFields].some((field) => !(field in row)))) {
+          if (document.transitions.some((row) => [...transitionFields].some((field) => !Object.hasOwn(row, field)))) {
             codes = ['schema.required_field'];
           } else if (document.transitions.some((row) => !authorityMatches(row.command_or_event, row.actor_authority))) {
             codes = ['transition.ambiguous_authority'];
@@ -67,7 +80,6 @@ export async function observeFixture(fixture, packageRoot) {
           break;
         }
         case 'traceability.schema.json': {
-          operations.push('validate total traceability');
           const requirements = JSON.parse(await readFile(resolve(packageRoot, 'normative/requirements.json'), 'utf8'));
           const tracedIds = document.records.map(({requirement_id: requirementId}) => requirementId);
           if (requirements.requirements.some(({id}) => !tracedIds.includes(id)) || new Set(tracedIds).size !== tracedIds.length) {
@@ -78,7 +90,6 @@ export async function observeFixture(fixture, packageRoot) {
         default:
           codes = ['fixture.unsupported_schema'];
       }
-      if (codes.length === 0 && contractCode !== null) codes = [contractCode];
       const accepted = codes.length === 0;
       return {
         verdict: accepted ? 'pass' : 'fail',

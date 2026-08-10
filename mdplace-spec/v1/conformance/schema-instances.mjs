@@ -1,8 +1,5 @@
-import {existsSync} from 'node:fs';
-import {readFile} from 'node:fs/promises';
-import {resolve} from 'node:path';
-
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
+import {readPackageFile} from './safe-path.mjs';
 
 function result(codes) {
   const uniqueCodes = [...new Set(codes)];
@@ -21,13 +18,32 @@ export async function checkSchemaInstances(packageRoot, conformance) {
     ['conformance/evidence/version-amendment-report.json', 'contracts/schemas/version-amendment-report.schema.json'],
     ['conformance/evidence/recovery-report.json', 'contracts/schemas/recovery-report.schema.json'],
   ];
-  for (const entry of conformance.fixtures ?? []) {
-    bindings.push([`conformance/${entry.path}`, 'contracts/schemas/conformance-fixture.schema.json']);
+  const fixtureEntries = Array.isArray(conformance?.fixtures) ? conformance.fixtures : [];
+  for (const entry of fixtureEntries) {
+    if (typeof entry?.path === 'string') {
+      bindings.push([`conformance/${entry.path}`, 'contracts/schemas/conformance-fixture.schema.json']);
+    }
   }
   for (const [instancePath, schemaPath] of bindings) {
-    const target = resolve(packageRoot, instancePath);
-    if (!existsSync(target) || !existsSync(resolve(packageRoot, schemaPath))) continue;
-    const value = JSON.parse(await readFile(target, 'utf8'));
+    const [instanceRead, schemaRead] = await Promise.all([
+      readPackageFile(packageRoot, instancePath),
+      readPackageFile(packageRoot, schemaPath),
+    ]);
+    if (schemaRead.status !== 'present') {
+      codes.push('schema.required_artifact');
+      continue;
+    }
+    if (instanceRead.status !== 'present') {
+      codes.push(instanceRead.status === 'too_large' ? 'schema.resource_limit' : 'schema.instance_missing');
+      continue;
+    }
+    let value;
+    try {
+      value = JSON.parse(instanceRead.content.toString('utf8'));
+    } catch {
+      codes.push('boundary.invalid_json');
+      continue;
+    }
     const errors = await validateAgainstSchemaPath(packageRoot, schemaPath, value);
     const code = schemaErrorCode(errors);
     if (code !== null) codes.push(code);

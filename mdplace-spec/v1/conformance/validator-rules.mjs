@@ -39,9 +39,19 @@ const authorityByCommand = new Map([
 
 export function authorityMatches(command, actual) {
   const expected = authorityByCommand.get(command);
-  return expected !== undefined &&
+  return expected !== undefined && actual !== null && typeof actual === 'object' &&
+    Array.isArray(actual.roles) &&
     JSON.stringify(actual.roles) === JSON.stringify(expected.roles) &&
     actual.quorum === expected.quorum &&
     actual.distinct_actors === expected.distinct_actors &&
     actual.delegation === expected.delegation;
+}
+
+export function packageArtifactPathAllowed(path) {
+  if (typeof path !== 'string') return false;
+  if (/^(?:README|product|architecture|operations|security-and-privacy|performance)\.md$/.test(path)) return true;
+  if (/^(?:package-manifest|traceability|claims-and-evidence)\.yaml$/.test(path)) return true;
+  if (/^normative\/[a-z0-9][a-z0-9./-]*\.(?:md|json|yaml)$/.test(path)) return true;
+  if (/^contracts\/[a-z0-9][a-z0-9./-]*\.json$/.test(path)) return true;
+  return /^conformance\/[A-Za-z0-9][A-Za-z0-9./-]*\.(?:md|json|yaml|txt|mjs)$/.test(path);
 }

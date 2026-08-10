@@ -4,6 +4,13 @@ import test from 'node:test';
 
 import {validatePackage} from './validator-test-support.mjs';
 
+function partialPackageReport(result) {
+  const report = JSON.parse(result.stdout);
+  assert.equal(result.status, 1, result.stderr || result.stdout);
+  assert.ok(report.checks.some(({codes}) => codes.includes('schema.required_artifact')));
+  return report;
+}
+
 test('CLI executes a boundary fixture and compares every observable', async () => {
   // Given a deterministic fixture at the exact SHA-256 boundary.
   const fixture = {
@@ -32,8 +39,7 @@ test('CLI executes a boundary fixture and compares every observable', async () =
   });
 
   // Then the fixture passes only when the complete observable oracle matches.
-  assert.equal(result.status, 0);
-  const report = JSON.parse(result.stdout);
+  const report = partialPackageReport(result);
   assert.deepEqual(report.fixture_results, [{id: 'FIX-PKG-BND-001', verdict: 'pass', codes: []}]);
 });
 
@@ -54,8 +60,7 @@ test('CLI treats a closed-schema rejection as a passing negative fixture', async
   });
 
   // Then conformance passes because the boundary rejection matches the oracle.
-  assert.equal(result.status, 0);
-  const report = JSON.parse(result.stdout);
+  const report = partialPackageReport(result);
   assert.deepEqual(report.fixture_results, [{id: 'FIX-PKG-NEG-001', verdict: 'pass', codes: []}]);
 });
 
@@ -76,8 +81,7 @@ test('CLI rejects in-place mutation of released content', async () => {
   });
 
   // Then the source is preserved and the negative fixture passes.
-  assert.equal(result.status, 0);
-  const report = JSON.parse(result.stdout);
+  const report = partialPackageReport(result);
   assert.deepEqual(report.fixture_results, [{id: 'FIX-PKG-NEG-004', verdict: 'pass', codes: []}]);
 });
 
@@ -98,8 +102,7 @@ test('CLI rejects an amendment version downgrade', async () => {
   });
 
   // Then only a strictly greater version can open a Package Amendment.
-  assert.equal(result.status, 0, result.stderr || result.stdout);
-  const report = JSON.parse(result.stdout);
+  const report = partialPackageReport(result);
   assert.deepEqual(report.fixture_results, [{id: fixture.fixture_id, verdict: 'pass', codes: []}]);
 });
 
@@ -120,8 +123,7 @@ test('CLI rejects an amendment version with a leading-zero component', async () 
   });
 
   // Then noncanonical SemVer cannot open a Package Amendment.
-  assert.equal(result.status, 0, result.stderr || result.stdout);
-  const report = JSON.parse(result.stdout);
+  const report = partialPackageReport(result);
   assert.deepEqual(report.fixture_results, [{id: fixture.fixture_id, verdict: 'pass', codes: []}]);
 });
 
@@ -142,18 +144,16 @@ test('CLI recovers an unverified partial amendment without changing its source',
   });
 
   // Then recovery preserves the immutable source and removes only the partial target.
-  assert.equal(result.status, 0);
-  const report = JSON.parse(result.stdout);
+  const report = partialPackageReport(result);
   assert.deepEqual(report.fixture_results, [{id: 'FIX-PKG-REC-001', verdict: 'pass', codes: []}]);
 });
 
 test('CLI rejects requirement vocabulary absent from the canonical glossary', async () => {
   // Given a schema-valid requirement that names a noncanonical term.
-  const fixture = {
-    fixture_id: 'FIX-PKG-NEG-006',
-    subject: {kind: 'artifact', schema: 'contracts/schemas/requirements.schema.json', document: {requirements: [{id: 'REQ-PKG-005', canonical_terms: ['Mutable Specification Folder']}]}},
-    expected: {verdict: 'fail', codes: ['vocabulary.unknown_term'], outputs: ['artifact rejected'], operations: ['parse boundary document', 'validate stable requirement identifiers'], receipts: ['ValidationReceipt'], filesystem_effects: ['none'], terminal_state: 'rejected', illegal_transition: false},
-  };
+  const fixture = JSON.parse(await readFile(
+    new URL('./fixtures/negative/unknown-canonical-term.json', import.meta.url),
+    'utf8',
+  ));
   const conformance = {fixtures: [{fixture_id: fixture.fixture_id, path: 'fixtures/vocabulary.json', expected_verdict: 'fail'}]};
 
   // When the public validator CLI resolves terms against CONTEXT.md.
@@ -164,18 +164,16 @@ test('CLI rejects requirement vocabulary absent from the canonical glossary', as
   });
 
   // Then the unknown term is rejected and the negative fixture passes.
-  assert.equal(result.status, 0);
-  const report = JSON.parse(result.stdout);
+  const report = partialPackageReport(result);
   assert.deepEqual(report.fixture_results, [{id: 'FIX-PKG-NEG-006', verdict: 'pass', codes: []}]);
 });
 
 test('CLI rejects a traceability map that omits a normative requirement', async () => {
   // Given two declared requirements but a traceability map containing only one record.
-  const fixture = {
-    fixture_id: 'FIX-PKG-NEG-007',
-    subject: {kind: 'artifact', schema: 'contracts/schemas/traceability.schema.json', document: {records: [{requirement_id: 'REQ-PKG-001'}]}},
-    expected: {verdict: 'fail', codes: ['traceability.untraced_requirement'], outputs: ['artifact rejected'], operations: ['parse boundary document', 'validate total traceability'], receipts: ['ValidationReceipt'], filesystem_effects: ['none'], terminal_state: 'rejected', illegal_transition: false},
-  };
+  const fixture = JSON.parse(await readFile(
+    new URL('./fixtures/negative/untraced-requirement.json', import.meta.url),
+    'utf8',
+  ));
   const conformance = {fixtures: [{fixture_id: fixture.fixture_id, path: 'fixtures/traceability.json', expected_verdict: 'fail'}]};
 
   // When the public validator CLI compares the map with the requirement index.
@@ -187,33 +185,16 @@ test('CLI rejects a traceability map that omits a normative requirement', async 
   });
 
   // Then the missing binding is rejected and the negative fixture passes.
-  assert.equal(result.status, 0);
-  const report = JSON.parse(result.stdout);
+  const report = partialPackageReport(result);
   assert.deepEqual(report.fixture_results, [{id: 'FIX-PKG-NEG-007', verdict: 'pass', codes: []}]);
 });
 
 test('CLI rejects production runtime code from the specification package', async () => {
   // Given an otherwise closed package manifest that declares a runtime implementation artifact.
-  const document = {
-    $schema: 'contracts/schemas/package-manifest.schema.json',
-    schema_id: 'mdplace.package-manifest/v1',
-    package_series: 'mdplace-spec/v1',
-    release_version: '1.0.0',
-    lifecycle_state: 'candidate',
-    validator_version: '1.0.0',
-    normative_vocabulary: '../../CONTEXT.md',
-    authority: {},
-    layout: {},
-    artifacts: [{path: 'runtime/semantic-kernel.mjs'}],
-    normative_digest: 'a'.repeat(64),
-    amendment_policy: {},
-    conformance: {},
-  };
-  const fixture = {
-    fixture_id: 'FIX-PKG-NEG-008',
-    subject: {kind: 'artifact', schema: 'contracts/schemas/package-manifest.schema.json', document},
-    expected: {verdict: 'fail', codes: ['package.production_code_forbidden'], outputs: ['artifact rejected'], operations: ['parse boundary document', 'validate closed package manifest'], receipts: ['ValidationReceipt'], filesystem_effects: ['none'], terminal_state: 'rejected', illegal_transition: false},
-  };
+  const fixture = JSON.parse(await readFile(
+    new URL('./fixtures/negative/production-code-boundary.json', import.meta.url),
+    'utf8',
+  ));
   const conformance = {fixtures: [{fixture_id: fixture.fixture_id, path: 'fixtures/production.json', expected_verdict: 'fail'}]};
 
   // When the public validator CLI validates package scope.
@@ -224,8 +205,7 @@ test('CLI rejects production runtime code from the specification package', async
   });
 
   // Then conformance rejects the runtime artifact without invoking it.
-  assert.equal(result.status, 0);
-  const report = JSON.parse(result.stdout);
+  const report = partialPackageReport(result);
   assert.deepEqual(report.fixture_results, [{id: 'FIX-PKG-NEG-008', verdict: 'pass', codes: []}]);
 });
 
@@ -266,7 +246,6 @@ test('CLI validates an artifact fixture with its complete named schema', async (
   });
 
   // Then valid field names cannot bypass invalid constants.
-  assert.equal(result.status, 0, result.stderr || result.stdout);
-  const report = JSON.parse(result.stdout);
+  const report = partialPackageReport(result);
   assert.deepEqual(report.fixture_results, [{id: 'FIX-PKG-NEG-099', verdict: 'pass', codes: []}]);
 });

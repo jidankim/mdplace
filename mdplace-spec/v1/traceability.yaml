@@ -54,8 +54,8 @@
       "canonical_terms": ["Specification Package", "Package Amendment", "Traceability Record"],
       "normative_anchors": ["normative/package-contract.md#req-pkg-004-requirement-identifiers-are-unique-and-permanent"],
       "schema_or_transition_refs": ["contracts/schemas/requirements.schema.json", "contracts/schemas/traceability.schema.json"],
-      "positive_fixture_ids": ["FIX-PKG-POS-001", "FIX-PKG-POS-003"],
-      "negative_fixture_ids": ["FIX-PKG-NEG-003", "FIX-PKG-NEG-007", "FIX-PKG-NEG-011"],
+      "positive_fixture_ids": ["FIX-PKG-POS-001", "FIX-PKG-POS-003", "FIX-PKG-POS-006"],
+      "negative_fixture_ids": ["FIX-PKG-NEG-003", "FIX-PKG-NEG-007", "FIX-PKG-NEG-011", "FIX-PKG-NEG-015"],
       "acceptance_gate": "Requirement identifiers match the stable format, are unique, and are not reassigned by amendments.",
       "scope": "foundation",
       "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/version-amendment-report.json"]
@@ -114,8 +114,23 @@
       "canonical_terms": ["Conformance Fixture", "Specification Package"],
       "normative_anchors": ["normative/package-contract.md#req-pkg-009-conformance-observes-public-effects"],
       "schema_or_transition_refs": ["contracts/schemas/conformance-manifest.schema.json", "contracts/schemas/conformance-fixture.schema.json"],
-      "positive_fixture_ids": ["FIX-PKG-POS-002", "FIX-PKG-POS-004", "FIX-PKG-POS-005", "FIX-PKG-REC-001"],
-      "negative_fixture_ids": ["FIX-PKG-NEG-009", "FIX-PKG-NEG-010", "FIX-PKG-NEG-012", "FIX-PKG-NEG-013", "FIX-PKG-STATE-001", "FIX-PKG-AUTH-001", "FIX-PKG-ILLEGAL-001"],
+      "positive_fixture_ids": [
+        "FIX-PKG-POS-002",
+        "FIX-PKG-POS-004",
+        "FIX-PKG-POS-005",
+        "FIX-PKG-POS-006",
+        "FIX-PKG-REC-001"
+      ],
+      "negative_fixture_ids": [
+        "FIX-PKG-NEG-009",
+        "FIX-PKG-NEG-010",
+        "FIX-PKG-NEG-012",
+        "FIX-PKG-NEG-013",
+        "FIX-PKG-NEG-015",
+        "FIX-PKG-STATE-001",
+        "FIX-PKG-AUTH-001",
+        "FIX-PKG-ILLEGAL-001"
+      ],
       "acceptance_gate": "Required fixture categories assert observable results without private implementation assertions.",
       "scope": "foundation",
       "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/recovery-report.json"]
