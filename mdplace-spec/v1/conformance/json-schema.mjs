@@ -38,6 +38,12 @@ function addError(errors, path, keyword) {
   if (errors.length < maxErrors) errors.push({path, keyword});
 }
 
+function budgetExceeded(state, errors, path) {
+  if (Date.now() <= state.budget.deadline) return false;
+  addError(errors, path, 'resourceLimit');
+  return true;
+}
+
 function evaluatePattern(pattern, value) {
   try {
     return {
@@ -53,10 +59,7 @@ function evaluatePattern(pattern, value) {
 
 function validateNode(schema, value, rootSchema, path, errors, state) {
   if (errors.length >= maxErrors) return;
-  if (Date.now() > state.budget.deadline) {
-    addError(errors, path, 'resourceLimit');
-    return;
-  }
+  if (budgetExceeded(state, errors, path)) return;
   if (state.depth > maxDepth) {
     addError(errors, path, 'resourceLimit');
     return;
@@ -159,9 +162,18 @@ function validateNode(schema, value, rootSchema, path, errors, state) {
       return;
     }
     if (schema.minItems !== undefined && value.length < schema.minItems) addError(errors, path, 'minItems');
-    if (schema.uniqueItems && value.some((entry, index) =>
-      value.slice(index + 1).some((candidate) => isDeepStrictEqual(entry, candidate)))) {
-      addError(errors, path, 'uniqueItems');
+    if (schema.uniqueItems) {
+      let duplicate = false;
+      for (let index = 0; index < value.length && !duplicate; index += 1) {
+        for (let candidateIndex = index + 1; candidateIndex < value.length; candidateIndex += 1) {
+          if (budgetExceeded(state, errors, path)) return;
+          if (isDeepStrictEqual(value[index], value[candidateIndex])) {
+            duplicate = true;
+            break;
+          }
+        }
+      }
+      if (duplicate) addError(errors, path, 'uniqueItems');
     }
     if (schema.contains !== undefined) {
       let containsMatch = false;

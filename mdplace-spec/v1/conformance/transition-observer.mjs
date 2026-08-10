@@ -1,9 +1,16 @@
+import {dirname, resolve} from 'node:path';
+
 import {checkArtifactBindings, checkManifest} from './package-checks.mjs';
 import {readPackageFile} from './safe-path.mjs';
 import {amendmentEvidenceMatches} from './amendment-evidence.mjs';
 import {releaseEvidenceMatches} from './transition-evidence.mjs';
 
-const normativeDigestReference = 'package-manifest.yaml#/normative_digest';
+const rootManifestReference = 'package-manifest.yaml';
+const observedManifestPattern = /^conformance\/release-targets\/[a-z][a-z0-9-]{2,63}\/(?:source|target)\/package-manifest\.yaml$/;
+
+function manifestReferenceIsSafe(reference) {
+  return reference === rootManifestReference || observedManifestPattern.test(reference ?? '');
+}
 
 function rolesHaveDistinctActors(roles, actors, index = 0, usedActorIds = new Set()) {
   if (index === roles.length) return true;
@@ -24,22 +31,25 @@ async function readJson(packageRoot, path) {
 }
 
 async function baseReferencesMatch(subject, packageRoot) {
-  const manifest = await readJson(packageRoot, 'package-manifest.yaml');
+  const manifestReference = subject.preconditions?.manifest_ref;
+  if (!manifestReferenceIsSafe(manifestReference)) return false;
+  const manifest = await readJson(packageRoot, manifestReference);
   return manifest !== null && subject.base_references?.package_series === manifest.package_series &&
     subject.base_references.release_version === manifest.release_version &&
-    subject.base_references.normative_digest_ref === normativeDigestReference &&
+    subject.base_references.normative_digest_ref === `${manifestReference}#/normative_digest` &&
     /^[a-f0-9]{64}$/.test(manifest.normative_digest);
 }
 
 async function candidatePreconditionsMatch(subject, packageRoot) {
   const preconditions = subject.preconditions;
-  if (preconditions?.manifest_ref !== 'package-manifest.yaml' ||
-      preconditions?.artifact_ledger_ref !== 'package-manifest.yaml#/artifacts' ||
-      preconditions?.normative_digest_ref !== normativeDigestReference) return false;
-  const manifest = await readJson(packageRoot, 'package-manifest.yaml');
+  const manifestReference = preconditions?.manifest_ref;
+  if (!manifestReferenceIsSafe(manifestReference) ||
+      preconditions?.artifact_ledger_ref !== `${manifestReference}#/artifacts` ||
+      preconditions?.normative_digest_ref !== `${manifestReference}#/normative_digest`) return false;
+  const manifest = await readJson(packageRoot, manifestReference);
   if (manifest === null) return false;
   const stateManifestReference = preconditions.state_manifest_ref;
-  const stateManifestReferenceIsSafe = stateManifestReference === 'package-manifest.yaml' ||
+  const stateManifestReferenceIsSafe = stateManifestReference === manifestReference ||
     /^conformance\/state-observations\/[a-z][a-z0-9-]{2,63}\/package-manifest\.yaml$/.test(stateManifestReference ?? '');
   if (!stateManifestReferenceIsSafe) return false;
   const stateManifest = await readJson(packageRoot, stateManifestReference);
@@ -48,14 +58,15 @@ async function candidatePreconditionsMatch(subject, packageRoot) {
       stateManifest.validator_version !== manifest.validator_version ||
       stateManifest.normative_digest !== manifest.normative_digest ||
       stateManifest.lifecycle_state !== subject.from_state) return false;
-  if (stateManifestReference !== 'package-manifest.yaml' &&
+  if (stateManifestReference !== manifestReference &&
       (stateManifest.schema_id !== 'mdplace.package-state-observation/v1' ||
        stateManifest.observer_id !== 'mdplace.package-validator/v1' ||
        stateManifest.identity_assurance !== 'trusted_local_validator' ||
        stateManifest.verification_method !== 'manifest_snapshot')) return false;
+  const observedRoot = resolve(packageRoot, dirname(manifestReference));
   const [manifestCheck, artifactCheck] = await Promise.all([
-    checkManifest(packageRoot, manifest),
-    checkArtifactBindings(packageRoot, manifest).then(({check}) => check),
+    checkManifest(observedRoot, manifest),
+    checkArtifactBindings(observedRoot, manifest).then(({check}) => check),
   ]);
   return manifestCheck.verdict === 'pass' && artifactCheck.verdict === 'pass';
 }

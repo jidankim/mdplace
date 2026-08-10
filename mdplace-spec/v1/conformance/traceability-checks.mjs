@@ -96,8 +96,15 @@ export async function checkTraceability(packageRoot, requirements, traceability,
       codes.push('traceability.unknown_requirement');
       continue;
     }
+    const [, requirementFragment = ''] = typeof requirement.normative_anchor === 'string'
+      ? requirement.normative_anchor.split('#', 2)
+      : [];
+    const expectedRequirementFragment = typeof requirement.title === 'string'
+      ? markdownAnchor(`${requirement.id}: ${requirement.title}`)
+      : '';
     if (!equalSets(record.canonical_terms ?? [], requirement.canonical_terms ?? []) ||
         !(record.normative_anchors ?? []).includes(requirement.normative_anchor) ||
+        requirementFragment !== expectedRequirementFragment ||
         record.acceptance_gate !== requirement.acceptance_gate || record.scope !== requirement.scope) {
       codes.push('traceability.requirement_mismatch');
     }

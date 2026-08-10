@@ -1,5 +1,6 @@
+import {randomUUID} from 'node:crypto';
 import {constants} from 'node:fs';
-import {lstat, open, readdir, realpath} from 'node:fs/promises';
+import {lstat, open, readdir, realpath, rename, unlink} from 'node:fs/promises';
 import {dirname, relative, resolve, sep} from 'node:path';
 
 export const maxFileBytes = 1_048_576;
@@ -89,7 +90,8 @@ export async function readPackageFile(packageRoot, relativePath, byteLimit = max
   }
   try {
     const openedStats = await handle.stat();
-    if (!openedStats.isFile() || openedStats.dev !== inspected.stats.dev || openedStats.ino !== inspected.stats.ino) {
+    if (!openedStats.isFile() || openedStats.nlink !== 1 || openedStats.dev !== inspected.stats.dev ||
+        openedStats.ino !== inspected.stats.ino) {
       return {status: 'unsafe'};
     }
     if (openedStats.size > byteLimit) return {status: 'too_large'};
@@ -111,35 +113,66 @@ export async function readPackageFile(packageRoot, relativePath, byteLimit = max
 export async function writePackageFile(packageRoot, relativePath, content) {
   const bytes = Buffer.isBuffer(content) ? content : Buffer.from(content);
   if (bytes.length > maxFileBytes) return {status: 'too_large'};
-  const target = await packageTarget(packageRoot, relativePath);
+  const target = await inspectPackageEntry(packageRoot, relativePath, 'file');
   if (target.status !== 'present') return target;
+  if (target.stats.nlink !== 1) return {status: 'unsafe'};
+  const parentStats = await lstat(dirname(target.target));
+  const temporaryRelativePath = `${relativePath}.mdplace-${randomUUID()}.tmp`;
+  const temporary = await packageTarget(packageRoot, temporaryRelativePath);
+  if (temporary.status !== 'present') return temporary;
   const noFollow = constants.O_NOFOLLOW ?? 0;
   let handle;
+  let temporaryStats;
+  let temporaryExists = false;
   try {
-    handle = await open(target.target, constants.O_WRONLY | noFollow);
+    handle = await open(
+      temporary.target,
+      constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | noFollow,
+      0o600,
+    );
+    temporaryExists = true;
   } catch (error) {
     if (error.code === 'ENOENT') return {status: 'absent'};
     if (error.code === 'ELOOP' || error.code === 'ENOTDIR') return {status: 'unsafe'};
     throw error;
   }
   try {
-    const openedStats = await handle.stat();
-    if (!openedStats.isFile() || openedStats.nlink !== 1) return {status: 'unsafe'};
-    const inspected = await inspectPackageEntry(packageRoot, relativePath, 'file');
-    if (inspected.status !== 'present' || inspected.stats.nlink !== 1 ||
-        openedStats.dev !== inspected.stats.dev || openedStats.ino !== inspected.stats.ino) {
-      return {status: 'unsafe'};
+    try {
+      temporaryStats = await handle.stat();
+      if (!temporaryStats.isFile() || temporaryStats.nlink !== 1) return {status: 'unsafe'};
+      let offset = 0;
+      while (offset < bytes.length) {
+        const {bytesWritten} = await handle.write(bytes, offset, bytes.length - offset, offset);
+        offset += bytesWritten;
+      }
+      await handle.sync();
+      if ((await handle.stat()).nlink !== 1) return {status: 'unsafe'};
+    } finally {
+      await handle.close();
     }
-    let offset = 0;
-    while (offset < bytes.length) {
-      const {bytesWritten} = await handle.write(bytes, offset, bytes.length - offset, offset);
-      offset += bytesWritten;
-    }
-    await handle.truncate(bytes.length);
-    await handle.sync();
-    return {status: 'written'};
+    const [currentTarget, currentTemporary, currentParent] = await Promise.all([
+      inspectPackageEntry(packageRoot, relativePath, 'file'),
+      inspectPackageEntry(packageRoot, temporaryRelativePath, 'file'),
+      lstat(dirname(target.target)),
+    ]);
+    if (currentTarget.status !== 'present' || currentTarget.stats.nlink !== 1 ||
+        currentTarget.stats.dev !== target.stats.dev || currentTarget.stats.ino !== target.stats.ino ||
+        currentTemporary.status !== 'present' || currentTemporary.stats.nlink !== 1 ||
+        currentTemporary.stats.dev !== temporaryStats.dev || currentTemporary.stats.ino !== temporaryStats.ino ||
+        currentParent.dev !== parentStats.dev || currentParent.ino !== parentStats.ino) return {status: 'unsafe'};
+    await rename(temporary.target, target.target);
+    temporaryExists = false;
+    const committed = await inspectPackageEntry(packageRoot, relativePath, 'file');
+    return committed.status === 'present' && committed.stats.nlink === 1 &&
+      committed.stats.dev === temporaryStats.dev && committed.stats.ino === temporaryStats.ino
+      ? {status: 'written'}
+      : {status: 'unsafe'};
   } finally {
-    await handle.close();
+    if (temporaryExists && temporaryStats !== undefined) {
+      const inspected = await inspectPackageEntry(packageRoot, temporaryRelativePath, 'file');
+      if (inspected.status === 'present' && inspected.stats.dev === temporaryStats.dev &&
+          inspected.stats.ino === temporaryStats.ino) await unlink(temporary.target);
+    }
   }
 }
 

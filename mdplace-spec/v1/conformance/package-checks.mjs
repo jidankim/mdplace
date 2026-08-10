@@ -1,6 +1,4 @@
 import {createHash} from 'node:crypto';
-import {readFile} from 'node:fs/promises';
-import {resolve} from 'node:path';
 
 import {conformanceDigestForArtifacts} from './digest-bindings.mjs';
 import {listPackageFiles, inspectPackageEntry, readPackageFile} from './safe-path.mjs';
@@ -168,31 +166,6 @@ export async function checkArtifactBindings(packageRoot, manifest) {
   return {check: result('artifact-bindings', codes), normativeDigest, conformanceDigest};
 }
 
-export async function checkRequirements(packageRoot, requirements) {
-  const codes = [];
-  const entries = Array.isArray(requirements?.requirements) ? requirements.requirements : [];
-  if (!Array.isArray(requirements?.requirements)) codes.push('schema.constraint');
-  const ids = entries.map((entry) => entry?.id);
-  if (new Set(ids).size !== ids.length) codes.push('requirements.duplicate_id');
-  if (ids.some((id) => !/^REQ-[A-Z][A-Z0-9]{1,15}-[0-9]{3}$/.test(id))) codes.push('requirements.invalid_id');
-  const glossary = await readFile(resolve(packageRoot, '../../CONTEXT.md'), 'utf8');
-  const canonicalTerms = new Set([...glossary.matchAll(/^\*\*(.+)\*\*:/gm)].map((match) => match[1]));
-  if (entries.flatMap((entry) => Array.isArray(entry?.canonical_terms) ? entry.canonical_terms : [])
-    .some((term) => !canonicalTerms.has(term))) {
-    codes.push('vocabulary.unknown_term');
-  }
-  for (const requirement of entries) {
-    if (typeof requirement?.normative_anchor === 'string') {
-      const [path] = requirement.normative_anchor.split('#');
-      const prose = await readPackageFile(packageRoot, path);
-      if (prose.status !== 'present' || !prose.content.toString('utf8').includes(`## ${requirement.id}:`)) {
-        codes.push('requirements.anchor_unresolved');
-      }
-    }
-  }
-  return result('requirements', codes);
-}
-
 export function checkTransitionTable(table) {
   const codes = [];
   const rows = Array.isArray(table?.transitions) ? table.transitions : [];
@@ -216,6 +189,8 @@ export function checkTransitionTable(table) {
   if (new Set(transitionIds).size !== transitionIds.length) codes.push('transition.duplicate_id');
   return result('package-lifecycle', codes);
 }
+
+export {checkRequirements} from './requirement-checks.mjs';
 
 export async function checkSchemas(packageRoot) {
   const codes = [];

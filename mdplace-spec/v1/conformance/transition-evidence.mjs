@@ -27,15 +27,17 @@ async function releaseAssetsMatch(evidence, manifest, packageRoot, options) {
   const assets = evidence.release_assets;
   const validationPath = 'conformance/evidence/validation-report.json';
   const traceabilityPath = 'conformance/evidence/traceability-report.json';
+  const artifacts = Array.isArray(manifest.artifacts) ? manifest.artifacts : [];
+  const traceabilityIndex = artifacts.findIndex(({path}) => path === traceabilityPath);
   if (assets?.specification_digest_ref !== digestReference ||
       assets?.conformance_digest_ref !== 'package-manifest.yaml#/conformance_digest' ||
       assets?.validator_version_ref !== 'package-manifest.yaml#/validator_version' ||
       assets?.validation_report_ref !== validationPath ||
       assets?.traceability_report_ref !== traceabilityPath ||
-      assets?.traceability_report_digest_ref !== `package-manifest.yaml#/artifacts/${traceabilityPath}/sha256`) {
+      traceabilityIndex < 0 ||
+      assets?.traceability_report_digest_ref !== `package-manifest.yaml#/artifacts/${traceabilityIndex}/sha256`) {
     return false;
   }
-  const artifacts = Array.isArray(manifest.artifacts) ? manifest.artifacts : [];
   const validationBinding = artifacts.find(({path}) => path === validationPath);
   const traceabilityBinding = artifacts.find(({path}) => path === traceabilityPath);
   const [validationRead, traceabilityRead] = await Promise.all([

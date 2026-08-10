@@ -27,22 +27,22 @@
     "base_references": {
       "package_series": "mdplace-spec/v1",
       "release_version": "1.0.0",
-      "normative_digest_ref": "package-manifest.yaml#/normative_digest"
+      "normative_digest_ref": "conformance/release-targets/amendment/source/package-manifest.yaml#/normative_digest"
     },
     "preconditions": {
-      "manifest_ref": "package-manifest.yaml",
-      "state_manifest_ref": "conformance/state-observations/released/package-manifest.yaml",
-      "artifact_ledger_ref": "package-manifest.yaml#/artifacts",
-      "normative_digest_ref": "package-manifest.yaml#/normative_digest"
+      "manifest_ref": "conformance/release-targets/amendment/source/package-manifest.yaml",
+      "state_manifest_ref": "conformance/release-targets/amendment/source/package-manifest.yaml",
+      "artifact_ledger_ref": "conformance/release-targets/amendment/source/package-manifest.yaml#/artifacts",
+      "normative_digest_ref": "conformance/release-targets/amendment/source/package-manifest.yaml#/normative_digest"
     },
     "release_evidence": null,
     "amendment_evidence": {
       "observation_root": "conformance/release-targets/amendment",
       "source_manifest": "source/package-manifest.yaml",
-      "source_digest": "677b4a925543095cef832e86969de45cc6cdbb747bbc85be91d40696f0a52855",
+      "source_digest": "e374c6021217f26cc8f46c55362758d9987b9685020ea2b7c915c9927ea03480",
       "target_manifest": "target/package-manifest.yaml",
       "target_version": "1.1.0",
-      "target_digest": "21082db8c466b499a34e4d5033153ccfc2c774618cadcd385d9f753e1ecc6f11",
+      "target_digest": "bae442db593311382a847ad4d7461a5947306843e579d2449ba0a0b464e6a75a",
       "target_path": "releases/1.1.0",
       "changed_requirement_ids": [
         "REQ-PKG-004"

@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {link, mkdir, mkdtemp, readFile, writeFile} from 'node:fs/promises';
+import {link, mkdir, mkdtemp, readFile, unlink, writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import test from 'node:test';
 
 import {validateJsonSchema} from './json-schema.mjs';
-import {checkArtifactBindings} from './package-checks.mjs';
+import {checkArtifactBindings, checkRequirements} from './package-checks.mjs';
 import {writePackageFile} from './safe-path.mjs';
 import {checkTraceability, runConformance} from './traceability-checks.mjs';
 import {amendmentEvidenceMatches} from './amendment-evidence.mjs';
@@ -65,6 +65,13 @@ test('schema reference and oneOf applicators evaluate sibling keywords', () => {
   assert.ok(oneOfErrors.some(({keyword}) => keyword === 'minLength'));
 });
 
+test('schema validation bounds uniqueItems evaluation', () => {
+  const values = Array.from({length: 10_000}, (_, index) => ({index}));
+  const errors = validateJsonSchema({type: 'array', uniqueItems: true}, values);
+
+  assert.ok(errors.some(({keyword}) => keyword === 'resourceLimit'));
+});
+
 test('evidence output refuses a hard-linked external inode', async () => {
   const packageRoot = await mkdtemp(join(tmpdir(), 'mdplace-safe-hardlink-'));
   const externalRoot = await mkdtemp(join(tmpdir(), 'mdplace-external-hardlink-'));
@@ -83,6 +90,22 @@ test('evidence output refuses a hard-linked external inode', async () => {
   assert.equal(await readFile(external, 'utf8'), 'preserve hard link\n');
 });
 
+test('package and amendment artifact readers refuse hard-linked files', async () => {
+  const packageRoot = await copyCommittedPackage();
+  const relativePath = 'conformance/release-targets/amendment/target/normative/requirements.json';
+  const target = join(packageRoot, relativePath);
+  const externalRoot = await mkdtemp(join(tmpdir(), 'mdplace-external-artifact-'));
+  const external = join(externalRoot, 'requirements.json');
+  await writeFile(external, await readFile(target));
+  await unlink(target);
+  await link(external, target);
+
+  const manifest = await readJson(packageRoot, 'package-manifest.yaml');
+  const amendment = await fixture(packageRoot, 'authorized-amend');
+  assert.ok((await checkArtifactBindings(packageRoot, manifest)).check.codes.includes('artifact.path_unsafe'));
+  assert.equal(await amendmentEvidenceMatches(amendment.subject, packageRoot), false);
+});
+
 test('traceability rejects a nonexistent normative fragment', async () => {
   const packageRoot = await copyCommittedPackage();
   const requirements = await readJson(packageRoot, 'normative/requirements.json');
@@ -95,6 +118,16 @@ test('traceability rejects a nonexistent normative fragment', async () => {
   const result = await checkTraceability(packageRoot, requirements, traceability, conformance);
 
   assert.ok(result.codes.includes('traceability.anchor_unresolved'));
+});
+
+test('requirement anchors reject another requirement existing fragment', async () => {
+  const packageRoot = await copyCommittedPackage();
+  const requirements = await readJson(packageRoot, 'normative/requirements.json');
+  requirements.requirements[0].normative_anchor = requirements.requirements[1].normative_anchor;
+
+  const result = await checkRequirements(packageRoot, requirements);
+
+  assert.ok(result.codes.includes('requirements.anchor_unresolved'));
 });
 
 test('artifact verification independently recomputes the conformance-pack digest', async () => {
@@ -172,6 +205,14 @@ test('amendment evidence binds the declared target version to a target manifest'
   assert.equal(await amendmentEvidenceMatches(amendment.subject, packageRoot), false);
 });
 
+test('amendment evidence binds its source manifest as the transition base', async () => {
+  const packageRoot = await copyCommittedPackage();
+  const amendment = await fixture(packageRoot, 'authorized-amend');
+  amendment.subject.preconditions.manifest_ref = 'package-manifest.yaml';
+
+  assert.equal(await amendmentEvidenceMatches(amendment.subject, packageRoot), false);
+});
+
 test('amendment evidence derives changed IDs from anchored normative sections', async () => {
   const packageRoot = await copyCommittedPackage();
   const amendment = await fixture(packageRoot, 'authorized-amend');
@@ -188,6 +229,25 @@ test('amendment evidence derives changed IDs from anchored normative sections', 
   amendment.subject.amendment_evidence.source_digest = await rewriteSourceManifest(packageRoot, (source) => {
     source.artifacts = manifest.artifacts;
   });
+
+  assert.equal(await amendmentEvidenceMatches(amendment.subject, packageRoot), false);
+});
+
+test('amendment evidence rejects changed unanchored normative material', async () => {
+  const packageRoot = await copyCommittedPackage();
+  const amendment = await fixture(packageRoot, 'authorized-amend');
+  const targetRoot = join(packageRoot, 'conformance/release-targets/amendment/target');
+  const contractPath = 'normative/package-contract.md';
+  const contract = await readFile(join(targetRoot, contractPath), 'utf8');
+  await writeFile(join(targetRoot, contractPath), contract.replace('Every release is immutable', 'Every release is conditionally mutable'));
+  const manifest = await readJson(targetRoot, 'package-manifest.yaml');
+  manifest.artifacts.find(({path}) => path === contractPath).sha256 = createHash('sha256')
+    .update(await readFile(join(targetRoot, contractPath))).digest('hex');
+  manifest.normative_digest = createHash('sha256').update(manifest.artifacts
+    .filter(({authority}) => authority === 'normative').sort((left, right) => left.path.localeCompare(right.path))
+    .map(({path, sha256}) => `${path}\0${sha256}\n`).join('')).digest('hex');
+  await writeJson(targetRoot, 'package-manifest.yaml', manifest);
+  amendment.subject.amendment_evidence.target_digest = manifest.normative_digest;
 
   assert.equal(await amendmentEvidenceMatches(amendment.subject, packageRoot), false);
 });
@@ -219,6 +279,15 @@ test('release evidence binds the conformance pack rather than a result artifact'
   const release = await fixture(packageRoot, 'authorized-release');
   release.subject.release_evidence.release_assets.conformance_digest_ref =
     'package-manifest.yaml#/artifacts/conformance/evidence/validation-report.json/sha256';
+
+  assert.equal(await releaseEvidenceMatches(release.subject, packageRoot), false);
+});
+
+test('release evidence rejects a non-resolving artifact digest reference', async () => {
+  const packageRoot = await copyCommittedPackage();
+  const release = await fixture(packageRoot, 'authorized-release');
+  release.subject.release_evidence.release_assets.traceability_report_digest_ref =
+    'package-manifest.yaml#/artifacts/conformance/evidence/traceability-report.json/sha256';
 
   assert.equal(await releaseEvidenceMatches(release.subject, packageRoot), false);
 });

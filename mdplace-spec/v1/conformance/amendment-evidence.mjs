@@ -74,6 +74,28 @@ async function requirementSection(root, entry) {
   return lines.slice(start, next === -1 ? undefined : next).join('\n').trim();
 }
 
+async function unanchoredNormativeMaterial(root, entries) {
+  const paths = [...new Set(entries.map((entry) => entry?.normative_anchor?.split('#', 1)[0])
+    .filter((path) => typeof path === 'string'))].sort();
+  const documents = [];
+  for (const path of paths) {
+    const read = await readPackageFile(root, path);
+    if (read.status !== 'present') return null;
+    let insideRequirement = false;
+    const unanchoredLines = [];
+    for (const line of read.content.toString('utf8').split(/\r?\n/)) {
+      if (/^## REQ-[A-Z][A-Z0-9]{1,15}-[0-9]{3}:/.test(line)) {
+        insideRequirement = true;
+        continue;
+      }
+      if (line.startsWith('## ')) insideRequirement = false;
+      if (!insideRequirement) unanchoredLines.push(line);
+    }
+    documents.push(`${path}\0${unanchoredLines.join('\n')}`);
+  }
+  return documents;
+}
+
 function isGreaterSemver(target, source) {
   const semver = /^[1-9][0-9]*\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)$/;
   if (!semver.test(target) || !semver.test(source)) return false;
@@ -91,6 +113,11 @@ export async function amendmentEvidenceMatches(subject, packageRoot) {
       typeof evidence.target_manifest !== 'string' || !Array.isArray(evidence.changed_requirement_ids) ||
       !Array.isArray(evidence.new_requirement_ids) ||
       evidence.changed_requirement_ids.length + evidence.new_requirement_ids.length === 0) return false;
+  const sourceManifestPath = observedPath(evidence.observation_root, evidence.source_manifest);
+  if (subject.preconditions?.manifest_ref !== sourceManifestPath ||
+      subject.preconditions?.artifact_ledger_ref !== `${sourceManifestPath}#/artifacts` ||
+      subject.preconditions?.normative_digest_ref !== `${sourceManifestPath}#/normative_digest` ||
+      subject.base_references?.normative_digest_ref !== `${sourceManifestPath}#/normative_digest`) return false;
   const [sourcePackage, targetPackage] = await Promise.all([
     observedPackage(packageRoot, evidence.observation_root, evidence.source_manifest, requiredReleaseSlots, [
       'normative/package-contract.md',
@@ -129,6 +156,10 @@ export async function amendmentEvidenceMatches(subject, packageRoot) {
   const targetById = new Map(targetEntries.map((entry) => [entry.id, entry]));
   const sourceSections = await Promise.all(sourceEntries.map((entry) => requirementSection(sourcePackage.root, entry)));
   const targetSections = await Promise.all(targetEntries.map((entry) => requirementSection(targetPackage.root, entry)));
+  const [sourceUnanchored, targetUnanchored] = await Promise.all([
+    unanchoredNormativeMaterial(sourcePackage.root, sourceEntries),
+    unanchoredNormativeMaterial(targetPackage.root, targetEntries),
+  ]);
   const targetSectionsById = new Map(targetEntries.map((entry, index) => [entry.id, targetSections[index]]));
   const changedIds = sourceEntries.filter((entry, index) => targetById.has(entry.id) &&
     (!isDeepStrictEqual(entry, targetById.get(entry.id)) || sourceSections[index] !== targetSectionsById.get(entry.id)))
@@ -137,6 +168,7 @@ export async function amendmentEvidenceMatches(subject, packageRoot) {
   const requirementIdsMatch = sourceSchemaErrors.length === 0 && targetSchemaErrors.length === 0 &&
     sourceEntries.length > 0 && targetEntries.length > 0 &&
     sourceSections.every((section) => section !== null) && targetSections.every((section) => section !== null) &&
+    sourceUnanchored !== null && targetUnanchored !== null && isDeepStrictEqual(sourceUnanchored, targetUnanchored) &&
     new Set(sourceIds).size === sourceIds.length && new Set(targetIds).size === targetIds.length &&
     sourceIds.every((id) => targetById.has(id)) && equalSets(changedIds, evidence.changed_requirement_ids ?? []) &&
     equalSets(newIds, evidence.new_requirement_ids ?? []);

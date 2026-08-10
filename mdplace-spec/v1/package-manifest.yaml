@@ -57,7 +57,7 @@
       "path": "conformance/amendment-evidence.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "f4a5d882bd2c19b4dbdbcb36ec3ea6b8ebdd5bd0e6d2351adb9b183de8dc58b1"
+      "sha256": "806cc62676a64806e73c0659699d294bc3105f1a893944f145443101560dc09b"
     },
     {
       "path": "conformance/digest-bindings.mjs",
@@ -75,13 +75,13 @@
       "path": "conformance/evidence/traceability-report.json",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "09b652aa04440a651d67d4d5bd86855fd956344a12e5de9ef26e8d2ca7933cc3"
+      "sha256": "8e179ca25b675f84badc9304ecf7bb9f6e1a2e2d239d9ed9ae06b0deab4fddc5"
     },
     {
       "path": "conformance/evidence/validation-report.json",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "40f747a83a3587bf0722f27c5ca2e96ae8686767bf249e157ea07389173eac8b"
+      "sha256": "7bb1cbb83fcdff22693d6bd8d711cfaab626157bfe11c8aa3a38d0d007b2a0ed"
     },
     {
       "path": "conformance/evidence/version-amendment-report.json",
@@ -153,7 +153,7 @@
       "path": "conformance/fixtures/negative/missing-release-slot.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "fa04838e10de5526fadb6f9b6892ff7064f78545241921c932aadc9d16f6f22f"
+      "sha256": "f20532f62f95be810f8a28c9f4d6d09e9e7c8bd650114b231c93601bd69eb4ed"
     },
     {
       "path": "conformance/fixtures/negative/mutable-release-content.json",
@@ -201,13 +201,13 @@
       "path": "conformance/fixtures/positive/authorized-amend.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "c94900a75ff5f2cb1ea0aeca702c4d8850c8f3bf3de6f9e840868f20a82437a4"
+      "sha256": "851f61161260c6e758a92884951c7fe9444efd8784b364a6e90ae3301599b768"
     },
     {
       "path": "conformance/fixtures/positive/authorized-release.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "886bdebb8866d1135729cf3609f789b91b299da07576ca866954cdf1332eaeb5"
+      "sha256": "e5b06b0cd41de4a06503e834e64b883579cff2a64f3d82313b20d4ede74858c6"
     },
     {
       "path": "conformance/fixtures/positive/authorized-submit.json",
@@ -237,7 +237,7 @@
       "path": "conformance/json-schema.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "68c3f313f178f56b115655391b74e3a4f973803e1bff49250603b551e328a91a"
+      "sha256": "ee79320efa80c692af47b459a0dc1f71aefd40f1f5c638c27bc6afff6db7ff80"
     },
     {
       "path": "conformance/manifest.yaml",
@@ -249,7 +249,7 @@
       "path": "conformance/package-checks.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "8f58f7e2435a7a0745f0453b01cc9536ccc37c5cfbde44e1ef3fbe7fda74d97e"
+      "sha256": "686ac4b35efcd71940142cc2322787d130b3e78027c7c6fc2182542aedd98de7"
     },
     {
       "path": "conformance/release-targets/amendment/releases/README.md",
@@ -357,7 +357,7 @@
       "path": "conformance/release-targets/amendment/source/package-manifest.yaml",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "9d1b188c2d9a07ad83382fa649b4ecc7deb5671e0ae6e6460764007986b45c4f"
+      "sha256": "b3bd8f152f0bcb3fbf723d1dbdee252ad1a08d6d64f76e4a57cc493157a0c944"
     },
     {
       "path": "conformance/release-targets/amendment/source/performance.md",
@@ -483,7 +483,7 @@
       "path": "conformance/release-targets/amendment/target/package-manifest.yaml",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "40553fc1711aef6de72334851d4272a1679af09bc925580eb5f70ab4daa22d59"
+      "sha256": "34b8b02983e6c9b32d5644695d70d8f3d7b1aeec0d1cafd1c4f457548326b1d7"
     },
     {
       "path": "conformance/release-targets/amendment/target/performance.md",
@@ -606,10 +606,16 @@
       "sha256": "0109988d0c7f859ca2ae76caf2d744e389fc079993d8455e35a89a6fa015f613"
     },
     {
+      "path": "conformance/requirement-checks.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "4318dee6c3aaedc2ecd14d1439a0f6cb007029219bd255f60efda09ff1266c37"
+    },
+    {
       "path": "conformance/safe-path.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "fd3da6d39d804cd63d7c10c17fb6f90f6665675f4879fc232574519f226ea924"
+      "sha256": "031c9efe30989e6927ba09d7dc55316fd0af531f20eb9101125a752a230adae0"
     },
     {
       "path": "conformance/scenarios/authority-denial.json",
@@ -711,43 +717,43 @@
       "path": "conformance/state-observations/candidate/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "4548dec584145a25914e626c3b2f8a96fac6d636f36bf53d39c3e707bc78f702"
+      "sha256": "40227895cfb01e99b2db1ed011e3ded10f70e3bd406e6b3206308f4e5d9d9b59"
     },
     {
       "path": "conformance/state-observations/draft/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "1532d87ad43e102c021810ebca3a78ff6c8ded5411a8a405c5c580607e72791a"
+      "sha256": "64aed3346c7f2989faca23f51a7a1608dd1f2f8580d0ee9807fd5e02952e0978"
     },
     {
       "path": "conformance/state-observations/release-ready/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "7faa576a5362633067b9dac181410eb49aa37040e5e9d9986f8b91731c18aa89"
+      "sha256": "7059f8eca2a2be7ea941aba097d660d0eadaf8958e3c7138ff8ee327385c93a9"
     },
     {
       "path": "conformance/state-observations/released/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "11ef4424c540d72da6fbf371b0afcad3f4ed9ff48a294be8d6329dc75d9f29cd"
+      "sha256": "d5309d1cd2afe560b9539d316fd6121120cdb56f3d134cc420a5f4dffd109ca8"
     },
     {
       "path": "conformance/traceability-checks.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "f8a04ab89d0728633daba07fb4cf8f9ce9319edf87258f294c25a8ac5257423b"
+      "sha256": "68dc9790a69cac9de697a48826dbcd3c35786caa87baf6662c6fc655756f370b"
     },
     {
       "path": "conformance/transition-evidence.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "b85228ee49c624c61223870f0e0adc1eb79847c26b8fbe9469500be8e9422bab"
+      "sha256": "d6437bdc9ce3b46c722a36c33b3ea9118bd85538961f51bdc06323e6af38430a"
     },
     {
       "path": "conformance/transition-observer.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "be297c121842254f3a436ca2bdc57c68bacbd826e2dede6a0b04c069cfddf4fb"
+      "sha256": "0dd9e985419ce7bef73ed65084358365238dec77d49c3214821ceeb5a725aaf0"
     },
     {
       "path": "conformance/validation-report.mjs",
@@ -801,13 +807,13 @@
       "path": "conformance/validator-review-round-two-cases.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "657e74cc6353aea1e12de45b1356f1db0e45bf5f4fe24f94f3b632e5e505e179"
+      "sha256": "630a7ba82868d481ecccac32330a1838248edff3b3669651842343be3d079c21"
     },
     {
       "path": "conformance/validator-rules.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "abdcf9c012d4e86ed1f5ab3d94b6c3c48673c7dd2937f83c8d5f70025d3e03ae"
+      "sha256": "1ec711f0a385310a569a1a25cfde61b236f27d7b6b80d861a3810edd94255c94"
     },
     {
       "path": "conformance/validator-security-cases.mjs",
@@ -843,7 +849,7 @@
       "path": "contracts/schemas/conformance-fixture.schema.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "0b5ef881145313788e2ba18389d7891474a52ac798da88c71e4d4425838cf406"
+      "sha256": "9bee3e94d04ac06f20cbc1359081242eeb892ea27a2045e965d1562e665a549a"
     },
     {
       "path": "contracts/schemas/conformance-manifest.schema.json",
@@ -930,8 +936,8 @@
       "sha256": "58a0b81abf082fbf52b3bf0985b9c86900ef71d42686ddfbcf479f5f03d16f41"
     }
   ],
-  "normative_digest": "c902b5eea9bb891c603c433f59be37e85fa9deb89fb423340f90ee1417aa3229",
-  "conformance_digest": "5f43494cffb750116dfcfca66b8d2e273aabd5c8a088d420cd7f81f859e21765",
+  "normative_digest": "827a6561708b71d24c1d6218e64e40e3612f7261367e65776eb9a9573a0fb2ab",
+  "conformance_digest": "5f4ae8bacfd74a8498d9db2b0be6cf2cf60ed91fd378e712806baf166af23dc4",
   "amendment_policy": {
     "immutable_after_release": true,
     "in_place_mutation": "forbidden",
