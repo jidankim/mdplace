@@ -5,6 +5,11 @@ import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {readPackageFile} from './safe-path.mjs';
 
 const maximumEvidenceDepth = 32;
+const staleBindingCodes = new Set([
+  'claim.evidence_digest_mismatch',
+  'evidence.artifact_digest_mismatch',
+  'evidence.subject_digest_mismatch',
+]);
 
 function observation({verdict, codes = [], output, operations, terminalState, illegalTransition = false}) {
   return {
@@ -469,7 +474,11 @@ async function recoveryCodes(document, packageRoot, context) {
       codes.push('evidence.recovery_binding_mismatch');
     }
   }
-  if (claimResult.codes.length > 0 && !stale) codes.push(...claimResult.codes);
+  if (claimResult.codes.length > 0) {
+    codes.push(...(stale
+      ? claimResult.codes.filter((code) => !staleBindingCodes.has(code))
+      : claimResult.codes));
+  }
   if (document.fresh_evidence_supplied === false) {
     const expectedVerdict = stale && document.prior_verdict === 'pass'
       ? 'inconclusive'
@@ -574,14 +583,11 @@ function evidenceProof(envelope, invocation) {
     envelope?.artifact_digests,
   ];
   if (!isRecord(envelope) || !isRecord(invocation) ||
-      collections.some((entries) => !Array.isArray(entries) || entries.some((entry) => !isRecord(entry)))) {
+      collections.some((entries) => !Array.isArray(entries) ||
+        entries.some((entry) => !isRecord(entry) || typeof entry.sha256 !== 'string'))) {
     return null;
   }
-  return {
-    inputs: envelope.input_digests.map(({ordinal, sha256}) => ({ordinal, sha256})),
-    outputs: envelope.output_digests.map(({ordinal, sha256}) => ({ordinal, sha256})),
-    artifacts: envelope.artifact_digests.map(({ordinal, sha256}) => ({ordinal, sha256})),
-  };
+  return new Set(collections.flatMap((entries) => entries.map(({sha256}) => sha256)));
 }
 
 async function mandatoryEvidenceObservations(claim, packageRoot) {
@@ -614,16 +620,28 @@ async function freshClaimIsNew(recordedClaim, freshClaim, packageRoot) {
     mandatoryEvidenceObservations(recordedClaim, packageRoot),
     mandatoryEvidenceObservations(freshClaim, packageRoot),
   ]);
-  return freshEvidence.size > 0 && freshEvidence.size === recordedEvidence.size &&
-    [...freshEvidence].every(([kind, fresh]) => {
-      const recorded = recordedEvidence.get(kind);
-      if (recorded === undefined || fresh.availability !== 'present' || fresh.proof === null) return false;
-      if (recorded.availability !== 'present') return true;
-      return fresh.envelopeDigest !== recorded.envelopeDigest &&
-        (recorded.invocationDigest === undefined || fresh.invocationDigest !== recorded.invocationDigest) &&
-        (recorded.invocationId === undefined || fresh.invocationId !== recorded.invocationId) &&
-        (recorded.proof === null || !isDeepStrictEqual(fresh.proof, recorded.proof));
-    });
+  if (freshEvidence.size === 0 || freshEvidence.size !== recordedEvidence.size) return false;
+  const recordedPresent = [...recordedEvidence.values()]
+    .filter(({availability}) => availability === 'present');
+  if (recordedPresent.some(({proof}) => proof === null)) return false;
+  const recordedDigests = new Set(recordedPresent.flatMap(({proof}) => [...proof]));
+  let newProofSupplied = false;
+  for (const [kind, fresh] of freshEvidence) {
+    const recorded = recordedEvidence.get(kind);
+    if (recorded === undefined || fresh.availability !== 'present' || fresh.proof === null) return false;
+    const carriedForward = recorded.availability === 'present' &&
+      fresh.envelopeDigest === recorded.envelopeDigest &&
+      fresh.invocationDigest === recorded.invocationDigest &&
+      fresh.invocationId === recorded.invocationId;
+    if (carriedForward) continue;
+    if (recorded.availability === 'present' &&
+        (fresh.envelopeDigest === recorded.envelopeDigest ||
+         fresh.invocationDigest === recorded.invocationDigest ||
+         fresh.invocationId === recorded.invocationId)) return false;
+    if (![...fresh.proof].some((digest) => !recordedDigests.has(digest))) return false;
+    newProofSupplied = true;
+  }
+  return newProofSupplied;
 }
 
 async function observeTransitionAttempt(document, packageRoot, operations, context) {
