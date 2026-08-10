@@ -68,7 +68,7 @@ Pre-release lifecycle state is not evidence of release. Only the complete `relea
 
 ## Normative and informative boundary
 
-The root package manifest, requirement index, schemas, transition tables, conformance manifest, fixtures, scenarios, traceability map, Claim Manifest index and examples, and reference evidence consumed by conformance are Normative Material. This README, validator implementation, validator tests, and generated validation and traceability reports are Informative Material. The informative validator is a reference checker for the normative artifacts; another implementation may replace it only if it produces the same observable verdicts and codes.
+The root package manifest, requirement index, schemas, transition tables, conformance manifest, fixtures, scenarios, traceability map, Claim Manifest index and examples, and reference evidence consumed by conformance are Normative Material whenever the package declares the validator-evidence extension. Their authority cannot be downgraded by changing a validator-version literal. This README, validator implementation, validator tests, and generated validation and traceability reports are Informative Material. The informative validator is a reference checker for the normative artifacts; another implementation may replace it only if it produces the same observable verdicts and codes.
 
 ## Closed-schema convention
 

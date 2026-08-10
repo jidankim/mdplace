@@ -4,7 +4,7 @@
   "title": "mdplace evidence lifecycle transition attempt",
   "type": "object",
   "additionalProperties": false,
-  "required": ["$schema", "schema_id", "package_series", "release_version", "validator_id", "validator_version", "table_ref", "from_state", "command", "actor_authority", "fresh_evidence_supplied"],
+  "required": ["$schema", "schema_id", "package_series", "release_version", "validator_id", "validator_version", "table_ref", "from_state", "command", "actor_authority", "fresh_evidence_supplied", "fresh_claim"],
   "properties": {
     "$schema": {"enum": ["../../contracts/schemas/evidence-transition-attempt.schema.json", "../../../contracts/schemas/evidence-transition-attempt.schema.json"]},
     "schema_id": {"const": "mdplace.evidence-transition-attempt/v1"},
@@ -16,9 +16,32 @@
     "from_state": {"enum": ["awaiting_evidence", "verdict_recorded", "evidence_stale"]},
     "command": {"enum": ["record_verdict", "readback", "mark_stale", "supply_fresh_evidence"]},
     "actor_authority": {"$ref": "#/$defs/authority"},
-    "fresh_evidence_supplied": {"type": "boolean"}
+    "fresh_evidence_supplied": {"type": "boolean"},
+    "fresh_claim": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/claimBinding"}
+      ]
+    }
   },
+  "allOf": [
+    {
+      "if": {"properties": {"fresh_evidence_supplied": {"const": true}}},
+      "then": {"properties": {"fresh_claim": {"$ref": "#/$defs/claimBinding"}}},
+      "else": {"properties": {"fresh_claim": {"type": "null"}}}
+    }
+  ],
   "$defs": {
+    "claimBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claim_id", "path", "sha256"],
+      "properties": {
+        "claim_id": {"type": "string", "pattern": "^CLAIM-[A-Z][A-Z0-9]{1,31}-[0-9]{3}$"},
+        "path": {"type": "string", "pattern": "^conformance/(?:claim-manifests|evidence/claims)/[a-z][a-z0-9-]*\\.json$"},
+        "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    },
     "authority": {
       "type": "object",
       "additionalProperties": false,

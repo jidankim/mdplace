@@ -2,6 +2,7 @@ import {createHash} from 'node:crypto';
 
 export function conformanceDigestForArtifacts(artifacts) {
   const isReferenceEvidence = (path) => path.startsWith('conformance/evidence/envelopes/') ||
+    path.startsWith('conformance/evidence/claims/') ||
     path.startsWith('conformance/evidence/invocations/') ||
     path === 'conformance/evidence/evidence-recovery-report.json';
   const bindings = artifacts

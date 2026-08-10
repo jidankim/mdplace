@@ -68,10 +68,11 @@ function isRecord(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
-function expectedAuthority(path, validatorVersion) {
-  const validatorEvidenceIsNormative = validatorVersion !== '1.0.0' && (
+function expectedAuthority(path, validatorEvidenceExtensionDeclared) {
+  const validatorEvidenceIsNormative = validatorEvidenceExtensionDeclared && (
     path === 'claims-and-evidence.yaml' ||
     path.startsWith('conformance/claim-manifests/') ||
+    path.startsWith('conformance/evidence/claims/') ||
     path.startsWith('conformance/evidence/envelopes/') ||
     path.startsWith('conformance/evidence/invocations/') ||
     path === 'conformance/evidence/evidence-recovery-report.json'
@@ -137,6 +138,8 @@ export async function checkManifest(packageRoot, manifest) {
 export async function checkArtifactBindings(packageRoot, manifest) {
   const codes = [];
   const artifacts = Array.isArray(manifest?.artifacts) ? manifest.artifacts : [];
+  const validatorEvidenceExtensionDeclared = artifacts.some((artifact) =>
+    artifact?.path === 'contracts/validator-extensions.json');
   if (!Array.isArray(manifest?.artifacts)) codes.push('schema.constraint');
   if (artifacts.length > 2_048) codes.push('artifact.count_limit');
   const listedPaths = new Set(artifacts.map((artifact) => artifact?.path).filter((path) => typeof path === 'string'));
@@ -163,7 +166,7 @@ export async function checkArtifactBindings(packageRoot, manifest) {
       continue;
     }
     if (sha256(read.content) !== artifact.sha256) codes.push('artifact.hash_mismatch');
-    if (artifact.authority !== expectedAuthority(artifact.path, manifest.validator_version)) {
+    if (artifact.authority !== expectedAuthority(artifact.path, validatorEvidenceExtensionDeclared)) {
       codes.push('artifact.authority_mismatch');
     }
   }

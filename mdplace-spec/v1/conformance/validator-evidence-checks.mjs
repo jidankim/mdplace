@@ -21,6 +21,7 @@ const subjectSchemas = [
   'contracts/schemas/claim-manifest.schema.json',
   'contracts/schemas/evidence-recovery-report.schema.json',
   'contracts/schemas/evidence-transition-attempt.schema.json',
+  'contracts/schemas/verdict-table.schema.json',
 ];
 
 function result(codes) {

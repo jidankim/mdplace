@@ -1,13 +1,18 @@
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFile, writeFile} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
 import test from 'node:test';
 
+import {conformanceDigestForArtifacts} from './digest-bindings.mjs';
+import {observeEvidenceExtension} from './evidence-extension.mjs';
+import {checkArtifactBindings} from './package-checks.mjs';
 import {copyCommittedPackage, runPreparedPackage, validatePackage} from './validator-test-support.mjs';
 
 const extensionId = 'mdplace.validator-extension/evidence/v1';
 const validatorVersion = '1.1.0';
 const digest = (value) => createHash('sha256').update(value).digest('hex');
+const committedPackageRoot = fileURLToPath(new URL('../', import.meta.url));
 
 function schemaFor(document) {
   return {
@@ -42,6 +47,16 @@ async function runExtensionFixture({
   oracle,
   extraFiles = {},
 }) {
+  const defaultFiles = {
+    'contracts/verdicts/validator-verdicts.json': await readFile(
+      new URL('../contracts/verdicts/validator-verdicts.json', import.meta.url),
+      'utf8',
+    ),
+    'normative/requirements.json': await readFile(
+      new URL('../normative/requirements.json', import.meta.url),
+      'utf8',
+    ),
+  };
   const fixture = {
     $schema: '../../contracts/schemas/conformance-fixture.schema.json',
     schema_id: 'mdplace.conformance-fixture/v1',
@@ -87,6 +102,7 @@ async function runExtensionFixture({
     [schemaPath]: schemaFor(document),
     'conformance/manifest.yaml': conformance,
     [`conformance/fixtures/${fixtureId.toLowerCase()}.json`]: fixture,
+    ...defaultFiles,
     ...extraFiles,
   });
   const report = JSON.parse(result.stdout);
@@ -175,14 +191,39 @@ test('CLI rejects an unregistered validator extension', async () => {
 
 test('CLI preserves an inconclusive verdict during recovery without fresh evidence', async () => {
   // Given a crash recovery readback with no fresh required evidence.
+  const claimPath = 'conformance/evidence/claims/inconclusive.json';
+  const claim = {
+    schema_id: 'mdplace.claim-manifest/v1',
+    claim_id: 'CLAIM-RECOVERY-001',
+    package_series: 'mdplace-spec/v1',
+    release_version: '1.0.0',
+    validator_id: 'mdplace.package-validator',
+    validator_version: validatorVersion,
+    requirement_id: 'REQ-VAL-005',
+    evidence_requirements: [{evidence_kind: 'proof', mandatory: true}],
+    evidence_bindings: [{
+      evidence_kind: 'proof', mandatory: true, availability: 'missing', applicability: 'applicable',
+      evidence_ref: null, evidence_digest: null, verdict: 'inconclusive',
+    }],
+    applicability: 'applicable',
+    verdict: 'inconclusive',
+  };
+  const claimContent = `${JSON.stringify(claim, null, 2)}\n`;
   const document = {
     schema_id: 'mdplace.evidence-recovery-report/v1',
     package_series: 'mdplace-spec/v1',
     release_version: '1.0.0',
     validator_id: 'mdplace.package-validator',
     validator_version: validatorVersion,
+    claim_id: claim.claim_id,
+    claim: {claim_id: claim.claim_id, path: claimPath, sha256: digest(claimContent)},
     prior_verdict: 'inconclusive',
     fresh_evidence_supplied: false,
+    recomputed_bindings: [{
+      path: claimPath, expected_sha256: digest(claimContent),
+      observed_sha256: digest(claimContent), matches: true,
+    }],
+    terminal_state: 'verdict_recorded',
     effective_verdict: 'inconclusive',
   };
 
@@ -190,13 +231,21 @@ test('CLI preserves an inconclusive verdict during recovery without fresh eviden
   await runExtensionFixture({
     fixtureId: 'FIX-VAL-REC-001',
     schemaPath: 'contracts/schemas/evidence-recovery-report.schema.json',
+    subjectSchemas: [
+      'contracts/schemas/evidence-recovery-report.schema.json',
+      'contracts/schemas/claim-manifest.schema.json',
+    ],
     document,
+    extraFiles: {
+      'contracts/schemas/claim-manifest.schema.json': schemaFor(claim),
+      [claimPath]: claimContent,
+    },
     oracle: expected({
       verdict: 'pass',
       codes: [],
       output: 'recovery report accepted',
       operations: ['resolve validator extension', 'validate extension document', 'verify specification and validator bindings', 'recompute evidence bindings', 'preserve non-pass verdict'],
-      terminalState: 'inconclusive',
+      terminalState: 'verdict_recorded',
     }),
   });
   // Then readback cannot upgrade an inconclusive result without fresh proof.
@@ -426,18 +475,34 @@ test('CLI preserves a failed claim when its mandatory evidence later becomes sta
 
 test('CLI marks a recomputed digest mismatch stale and denies an effective pass', async () => {
   // Given recovery that accurately reports a mismatch but attempts to retain pass and recorded state.
-  const proof = 'changed proof\n';
+  const claimPath = 'conformance/evidence/claims/stale.json';
+  const claim = {
+    schema_id: 'mdplace.claim-manifest/v1',
+    claim_id: 'CLAIM-RECOVERY-002',
+    package_series: 'mdplace-spec/v1',
+    release_version: '1.0.0',
+    validator_id: 'mdplace.package-validator',
+    validator_version: validatorVersion,
+    requirement_id: 'REQ-VAL-005',
+    evidence_requirements: [],
+    evidence_bindings: [],
+    applicability: 'not_applicable',
+    verdict: 'pass',
+  };
+  const claimContent = `${JSON.stringify(claim, null, 2)}\n`;
   const document = {
     schema_id: 'mdplace.evidence-recovery-report/v1',
     package_series: 'mdplace-spec/v1',
     release_version: '1.0.0',
     validator_id: 'mdplace.package-validator',
     validator_version: validatorVersion,
+    claim_id: claim.claim_id,
+    claim: {claim_id: claim.claim_id, path: claimPath, sha256: 'a'.repeat(64)},
     prior_verdict: 'pass',
     fresh_evidence_supplied: false,
     recomputed_bindings: [{
-      path: 'conformance/evidence/recovery-proof.json', expected_sha256: 'a'.repeat(64),
-      observed_sha256: digest(proof), matches: false,
+      path: claimPath, expected_sha256: 'a'.repeat(64),
+      observed_sha256: digest(claimContent), matches: false,
     }],
     terminal_state: 'verdict_recorded',
     effective_verdict: 'pass',
@@ -447,11 +512,22 @@ test('CLI marks a recomputed digest mismatch stale and denies an effective pass'
   await runExtensionFixture({
     fixtureId: 'FIX-VAL-REC-101',
     schemaPath: 'contracts/schemas/evidence-recovery-report.schema.json',
+    subjectSchemas: [
+      'contracts/schemas/evidence-recovery-report.schema.json',
+      'contracts/schemas/claim-manifest.schema.json',
+    ],
     document,
-    extraFiles: {'conformance/evidence/recovery-proof.json': proof},
+    extraFiles: {
+      'contracts/schemas/claim-manifest.schema.json': schemaFor(claim),
+      [claimPath]: claimContent,
+    },
     oracle: expected({
       verdict: 'fail',
-      codes: ['evidence.recovery_stale_pass', 'evidence.recovery_state_invalid'],
+      codes: [
+        'evidence.recovery_claim_binding_mismatch',
+        'evidence.recovery_stale_pass',
+        'evidence.recovery_state_invalid',
+      ],
       output: 'recovery report rejected',
       operations: [
         'resolve validator extension', 'validate extension document',
@@ -573,6 +649,438 @@ test('conformance-driving claim examples are normative while generated reports r
   assert.equal(authority.get('conformance/evidence/evidence-recovery-report.json'), 'normative');
   assert.equal(authority.get('conformance/evidence/validation-report.json'), 'informative');
   assert.equal(authority.get('conformance/evidence/traceability-report.json'), 'informative');
+});
+
+test('CLI rejects a caller freshness assertion without a digest-bound claim', async () => {
+  // Given an allowed transition whose caller supplies only the freshness Boolean.
+  const authority = {roles: ['conformance_validator'], quorum: 1, distinct_actors: false, delegation: 'forbidden'};
+  const document = {
+    schema_id: 'mdplace.evidence-transition-attempt/v1',
+    package_series: 'mdplace-spec/v1',
+    release_version: '1.0.0',
+    validator_id: 'mdplace.package-validator',
+    validator_version: validatorVersion,
+    table_ref: 'contracts/transitions/evidence-lifecycle.json',
+    from_state: 'awaiting_evidence',
+    command: 'record_verdict',
+    actor_authority: authority,
+    fresh_evidence_supplied: true,
+    fresh_claim: null,
+  };
+  const table = {transitions: [{
+    from_state: 'awaiting_evidence', command_or_event: 'record_verdict', allowed: true,
+    actor_authority: authority, terminal_state: 'verdict_recorded',
+  }]};
+
+  await runExtensionFixture({
+    fixtureId: 'FIX-VAL-ILLEGAL-102',
+    schemaPath: 'contracts/schemas/evidence-transition-attempt.schema.json',
+    document,
+    extraFiles: {'contracts/transitions/evidence-lifecycle.json': `${JSON.stringify(table)}\n`},
+    oracle: expected({
+      verdict: 'fail',
+      codes: ['evidence.fresh_evidence_required'],
+      output: 'evidence transition denied',
+      operations: [
+        'resolve validator extension', 'validate extension document',
+        'verify specification and validator bindings', 'evaluate evidence lifecycle',
+      ],
+      terminalState: 'awaiting_evidence',
+      illegalTransition: true,
+    }),
+  });
+});
+
+test('CLI rejects recovery that names no resolvable Claim Manifest', async () => {
+  // Given a recovery report whose caller-chosen claim identifier has no bound Claim Manifest.
+  const proof = 'current proof\n';
+  const document = {
+    schema_id: 'mdplace.evidence-recovery-report/v1',
+    package_series: 'mdplace-spec/v1',
+    release_version: '1.0.0',
+    validator_id: 'mdplace.package-validator',
+    validator_version: validatorVersion,
+    claim_id: 'CLAIM-FAKE-999',
+    claim: {
+      claim_id: 'CLAIM-FAKE-999',
+      path: 'conformance/evidence/claims/missing.json',
+      sha256: 'a'.repeat(64),
+    },
+    prior_verdict: 'pass',
+    fresh_evidence_supplied: false,
+    recomputed_bindings: [{
+      path: 'conformance/evidence/recovery-proof.json', expected_sha256: digest(proof),
+      observed_sha256: digest(proof), matches: true,
+    }],
+    terminal_state: 'verdict_recorded',
+    effective_verdict: 'pass',
+  };
+
+  await runExtensionFixture({
+    fixtureId: 'FIX-VAL-REC-102',
+    schemaPath: 'contracts/schemas/evidence-recovery-report.schema.json',
+    document,
+    extraFiles: {'conformance/evidence/recovery-proof.json': proof},
+    oracle: expected({
+      verdict: 'fail',
+      codes: ['evidence.recovery_claim_binding_mismatch', 'evidence.recovery_binding_set_mismatch'],
+      output: 'recovery report rejected',
+      operations: [
+        'resolve validator extension', 'validate extension document',
+        'verify specification and validator bindings', 'recompute evidence bindings',
+        'preserve non-pass verdict',
+      ],
+      terminalState: 'rejected',
+    }),
+  });
+});
+
+test('CLI rejects an invocation whose inner subject schema is undeclared', async () => {
+  const document = {
+    schema_id: 'mdplace.validator-invocation/v1',
+    extension_id: extensionId,
+    package_series: 'mdplace-spec/v1',
+    release_version: '1.0.0',
+    validator_id: 'mdplace.package-validator',
+    validator_version: validatorVersion,
+    subject: {
+      kind: 'conformance_fixture', subject_id: 'fixture:undeclared-subject',
+      path: 'conformance/evidence/subjects/undeclared.json',
+      schema: 'contracts/schemas/undeclared.schema.json', sha256: 'a'.repeat(64),
+    },
+    requirement_ids: ['REQ-VAL-002'],
+    input_digests: [],
+  };
+
+  await runExtensionFixture({
+    fixtureId: 'FIX-VAL-AUTH-102',
+    schemaPath: 'contracts/schemas/validator-invocation.schema.json',
+    document,
+    oracle: expected({
+      verdict: 'fail',
+      codes: ['validator.extension_schema_denied'],
+      output: 'validator invocation rejected',
+      operations: [
+        'resolve validator extension', 'validate extension document',
+        'verify specification and validator bindings', 'recompute referenced artifact digests',
+      ],
+      terminalState: 'rejected',
+    }),
+  });
+});
+
+test('CLI rejects a digest-matching invocation that is not valid JSON', async () => {
+  const invocationPath = 'conformance/evidence/invocations/invalid-json.json';
+  const invocation = '{not json}\n';
+  const document = {
+    schema_id: 'mdplace.evidence-envelope/v1',
+    extension_id: extensionId,
+    package_series: 'mdplace-spec/v1',
+    release_version: '1.0.0',
+    validator_id: 'mdplace.package-validator',
+    validator_version: validatorVersion,
+    invocation: {invocation_id: 'invocation:invalid-json', path: invocationPath, sha256: digest(invocation)},
+    requirement_id: 'REQ-VAL-003',
+    input_digests: [],
+    output_digests: [],
+    receipts: [],
+    artifact_digests: [],
+  };
+
+  await runExtensionFixture({
+    fixtureId: 'FIX-VAL-NEG-103',
+    schemaPath: 'contracts/schemas/evidence-envelope.schema.json',
+    subjectSchemas: [
+      'contracts/schemas/evidence-envelope.schema.json',
+      'contracts/schemas/validator-invocation.schema.json',
+    ],
+    document,
+    extraFiles: {
+      'contracts/schemas/validator-invocation.schema.json': schemaFor({schema_id: 'mdplace.validator-invocation/v1'}),
+      [invocationPath]: invocation,
+    },
+    oracle: expected({
+      verdict: 'fail',
+      codes: ['evidence.invocation_binding_mismatch'],
+      output: 'evidence envelope rejected',
+      operations: [
+        'resolve validator extension', 'validate extension document',
+        'verify specification and validator bindings', 'recompute referenced artifact digests',
+      ],
+      terminalState: 'rejected',
+    }),
+  });
+});
+
+test('CLI enforces the verdict table availability matrix for every claim binding', async () => {
+  const document = {
+    schema_id: 'mdplace.claim-manifest/v1',
+    package_series: 'mdplace-spec/v1',
+    release_version: '1.0.0',
+    validator_id: 'mdplace.package-validator',
+    validator_version: validatorVersion,
+    requirement_id: 'REQ-VAL-005',
+    applicability: 'applicable',
+    verdict: 'fail',
+    evidence_requirements: [{evidence_kind: 'contradiction', mandatory: true}],
+    evidence_bindings: [{
+      evidence_kind: 'contradiction', mandatory: true, availability: 'missing',
+      applicability: 'applicable', evidence_ref: null, evidence_digest: null, verdict: 'fail',
+    }],
+  };
+
+  await runExtensionFixture({
+    fixtureId: 'FIX-VAL-NEG-104',
+    schemaPath: 'contracts/schemas/claim-manifest.schema.json',
+    document,
+    oracle: expected({
+      verdict: 'fail',
+      codes: ['claim.verdict_availability_mismatch'],
+      output: 'claim manifest rejected',
+      operations: [
+        'resolve validator extension', 'validate extension document',
+        'verify specification and validator bindings', 'evaluate mandatory evidence',
+        'validate bound evidence envelopes',
+      ],
+      terminalState: 'rejected',
+    }),
+  });
+});
+
+test('CLI keeps unknown mandatory applicability in the aggregate verdict', async () => {
+  const document = {
+    schema_id: 'mdplace.claim-manifest/v1',
+    package_series: 'mdplace-spec/v1',
+    release_version: '1.0.0',
+    validator_id: 'mdplace.package-validator',
+    validator_version: validatorVersion,
+    requirement_id: 'REQ-VAL-005',
+    applicability: 'unknown',
+    verdict: 'pass',
+    evidence_requirements: [{evidence_kind: 'undetermined', mandatory: true}],
+    evidence_bindings: [{
+      evidence_kind: 'undetermined', mandatory: true, availability: 'missing',
+      applicability: 'unknown', evidence_ref: null, evidence_digest: null, verdict: 'inconclusive',
+    }],
+  };
+
+  await runExtensionFixture({
+    fixtureId: 'FIX-VAL-NEG-105',
+    schemaPath: 'contracts/schemas/claim-manifest.schema.json',
+    document,
+    oracle: expected({
+      verdict: 'fail',
+      codes: ['claim.mandatory_evidence_inconclusive'],
+      output: 'claim manifest rejected',
+      operations: [
+        'resolve validator extension', 'validate extension document',
+        'verify specification and validator bindings', 'evaluate mandatory evidence',
+        'validate bound evidence envelopes',
+      ],
+      terminalState: 'rejected',
+    }),
+  });
+});
+
+test('CLI rejects a Claim Manifest whose normative requirement is unresolved', async () => {
+  const document = {
+    schema_id: 'mdplace.claim-manifest/v1',
+    package_series: 'mdplace-spec/v1',
+    release_version: '1.0.0',
+    validator_id: 'mdplace.package-validator',
+    validator_version: validatorVersion,
+    requirement_id: 'REQ-FAKE-999',
+    applicability: 'not_applicable',
+    verdict: 'pass',
+    evidence_requirements: [{evidence_kind: 'irrelevant', mandatory: true}],
+    evidence_bindings: [{
+      evidence_kind: 'irrelevant', mandatory: true, availability: 'missing',
+      applicability: 'not_applicable', evidence_ref: null, evidence_digest: null, verdict: 'inconclusive',
+    }],
+  };
+
+  await runExtensionFixture({
+    fixtureId: 'FIX-VAL-NEG-106',
+    schemaPath: 'contracts/schemas/claim-manifest.schema.json',
+    document,
+    oracle: expected({
+      verdict: 'fail',
+      codes: ['claim.requirement_unresolved'],
+      output: 'claim manifest rejected',
+      operations: [
+        'resolve validator extension', 'validate extension document',
+        'verify specification and validator bindings', 'evaluate mandatory evidence',
+        'validate bound evidence envelopes',
+      ],
+      terminalState: 'rejected',
+    }),
+  });
+});
+
+test('CLI contains malformed transition rows as structured extension failures', async () => {
+  const document = {
+    schema_id: 'mdplace.evidence-transition-attempt/v1',
+    package_series: 'mdplace-spec/v1',
+    release_version: '1.0.0',
+    validator_id: 'mdplace.package-validator',
+    validator_version: validatorVersion,
+    table_ref: 'contracts/transitions/evidence-lifecycle.json',
+    from_state: 'awaiting_evidence',
+    command: 'record_verdict',
+  };
+
+  await runExtensionFixture({
+    fixtureId: 'FIX-VAL-NEG-107',
+    schemaPath: 'contracts/schemas/evidence-transition-attempt.schema.json',
+    document,
+    extraFiles: {'contracts/transitions/evidence-lifecycle.json': '{"transitions":[null]}\n'},
+    oracle: expected({
+      verdict: 'fail',
+      codes: ['evidence.transition_unresolved'],
+      output: 'evidence transition rejected',
+      operations: [
+        'resolve validator extension', 'validate extension document',
+        'verify specification and validator bindings', 'evaluate evidence lifecycle',
+      ],
+      terminalState: 'rejected',
+    }),
+  });
+});
+
+test('CLI contains a malformed subject-schema registry as a structured extension failure', async () => {
+  await runExtensionFixture({
+    fixtureId: 'FIX-VAL-NEG-108',
+    schemaPath: 'contracts/schemas/evidence-envelope.schema.json',
+    subjectSchemas: 7,
+    document: {schema_id: 'mdplace.evidence-envelope/v1'},
+    oracle: expected({
+      verdict: 'fail',
+      codes: ['schema.constraint'],
+      output: 'validator extension rejected',
+      operations: ['resolve validator extension'],
+      terminalState: 'rejected',
+    }),
+  });
+});
+
+test('evidence authority cannot be downgraded by changing the validator version literal', async () => {
+  const packageRoot = await copyCommittedPackage();
+  const manifestPath = `${packageRoot}/package-manifest.yaml`;
+  const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
+  manifest.validator_version = '1.0.0';
+  for (const artifact of manifest.artifacts) {
+    if (artifact.path === 'claims-and-evidence.yaml' ||
+        artifact.path.startsWith('conformance/claim-manifests/') ||
+        artifact.path.startsWith('conformance/evidence/claims/') ||
+        artifact.path.startsWith('conformance/evidence/envelopes/') ||
+        artifact.path.startsWith('conformance/evidence/invocations/') ||
+        artifact.path === 'conformance/evidence/evidence-recovery-report.json') {
+      artifact.authority = 'informative';
+    }
+  }
+  manifest.normative_digest = digest(manifest.artifacts
+    .filter(({authority}) => authority === 'normative')
+    .sort((left, right) => left.path.localeCompare(right.path))
+    .map(({path, sha256}) => `${path}\0${sha256}\n`)
+    .join(''));
+  manifest.conformance_digest = conformanceDigestForArtifacts(manifest.artifacts);
+  await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+
+  const {check} = await checkArtifactBindings(packageRoot, manifest);
+
+  assert.ok(check.codes.includes('artifact.authority_mismatch'));
+});
+
+test('a fresh-evidence transition validates the complete bound claim chain', async () => {
+  const claimPath = 'conformance/evidence/claims/recovery-example.json';
+  const claimContent = await readFile(new URL(`../${claimPath}`, import.meta.url));
+  const document = {
+    $schema: '../../contracts/schemas/evidence-transition-attempt.schema.json',
+    schema_id: 'mdplace.evidence-transition-attempt/v1',
+    package_series: 'mdplace-spec/v1',
+    release_version: '1.0.0',
+    validator_id: 'mdplace.package-validator',
+    validator_version: validatorVersion,
+    table_ref: 'contracts/transitions/evidence-lifecycle.json',
+    from_state: 'awaiting_evidence',
+    command: 'record_verdict',
+    actor_authority: {roles: ['conformance_validator'], quorum: 1, distinct_actors: false, delegation: 'forbidden'},
+    fresh_evidence_supplied: true,
+    fresh_claim: {claim_id: 'CLAIM-RECOVERY-001', path: claimPath, sha256: digest(claimContent)},
+  };
+
+  const observed = await observeEvidenceExtension({
+    extension_id: extensionId,
+    schema: 'contracts/schemas/evidence-transition-attempt.schema.json',
+    document,
+  }, committedPackageRoot);
+
+  assert.equal(observed.verdict, 'pass');
+  assert.equal(observed.terminal_state, 'verdict_recorded');
+});
+
+test('recovery rejects omission from the transitive binding set', async () => {
+  const recovery = JSON.parse(await readFile(
+    new URL('../conformance/evidence/evidence-recovery-report.json', import.meta.url),
+    'utf8',
+  ));
+  recovery.recomputed_bindings = recovery.recomputed_bindings.slice(0, 1);
+
+  const observed = await observeEvidenceExtension({
+    extension_id: extensionId,
+    schema: 'contracts/schemas/evidence-recovery-report.schema.json',
+    document: recovery,
+  }, committedPackageRoot);
+
+  assert.equal(observed.verdict, 'fail');
+  assert.ok(observed.codes.includes('evidence.recovery_binding_set_mismatch'));
+});
+
+test('recovery cannot upgrade unsupported to pass without fresh evidence', async () => {
+  const recovery = JSON.parse(await readFile(
+    new URL('../conformance/evidence/evidence-recovery-report.json', import.meta.url),
+    'utf8',
+  ));
+  recovery.prior_verdict = 'unsupported';
+
+  const observed = await observeEvidenceExtension({
+    extension_id: extensionId,
+    schema: 'contracts/schemas/evidence-recovery-report.schema.json',
+    document: recovery,
+  }, committedPackageRoot);
+
+  assert.equal(observed.verdict, 'fail');
+  assert.ok(observed.codes.includes('evidence.recovery_verdict_upgrade'));
+});
+
+test('recovery rejects a freshness Boolean bound to incomplete mandatory evidence', async () => {
+  const claimPath = 'conformance/claim-manifests/core.json';
+  const claimContent = await readFile(new URL(`../${claimPath}`, import.meta.url));
+  const recovery = JSON.parse(await readFile(
+    new URL('../conformance/evidence/evidence-recovery-report.json', import.meta.url),
+    'utf8',
+  ));
+  recovery.claim_id = 'CLAIM-CORE-001';
+  recovery.claim = {claim_id: recovery.claim_id, path: claimPath, sha256: digest(claimContent)};
+  recovery.prior_verdict = 'inconclusive';
+  recovery.fresh_evidence_supplied = true;
+  recovery.recomputed_bindings = [{
+    path: claimPath,
+    expected_sha256: digest(claimContent),
+    observed_sha256: digest(claimContent),
+    matches: true,
+  }];
+  recovery.terminal_state = 'awaiting_evidence';
+  recovery.effective_verdict = 'inconclusive';
+
+  const observed = await observeEvidenceExtension({
+    extension_id: extensionId,
+    schema: 'contracts/schemas/evidence-recovery-report.schema.json',
+    document: recovery,
+  }, committedPackageRoot);
+
+  assert.equal(observed.verdict, 'fail');
+  assert.ok(observed.codes.includes('evidence.fresh_evidence_required'));
 });
 
 test('test fixture digests are independently derived from their bytes', () => {

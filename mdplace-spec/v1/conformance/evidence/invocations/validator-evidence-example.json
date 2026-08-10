@@ -8,10 +8,11 @@
   "validator_id": "mdplace.package-validator",
   "validator_version": "1.1.0",
   "subject": {
-    "kind": "conformance_fixture",
-    "subject_id": "fixture:claim-profile-core",
-    "schema": "contracts/schemas/claim-manifest.schema.json",
-    "sha256": "1edd503c41324b5605c4ea1416b986207d37dad09387a4d831b755c3c1b91f55"
+    "kind": "contract_table",
+    "subject_id": "verdict-table:validator-evidence-v1",
+    "path": "contracts/verdicts/validator-verdicts.json",
+    "schema": "contracts/schemas/verdict-table.schema.json",
+    "sha256": "6e968bf6fe7ffeec97cfbfc053e245d4ed48769bfb1f11732d0718ee2f6f32c0"
   },
   "requirement_ids": ["REQ-VAL-001", "REQ-VAL-002", "REQ-VAL-003", "REQ-VAL-004", "REQ-VAL-005", "REQ-VAL-006", "REQ-VAL-007"],
   "input_digests": [

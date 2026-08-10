@@ -10,14 +10,14 @@
   "invocation": {
     "invocation_id": "invocation:validator-evidence-example",
     "path": "conformance/evidence/invocations/validator-evidence-example.json",
-    "sha256": "504da76b334ac0b2ce73bb4e7e26b3361c40d598aaa15639fca73524b0559731"
+    "sha256": "215ea95bcf9336a0a1a78e1d0632d1c98de08232a0caf5e4143c185210f39697"
   },
   "requirement_id": "REQ-VAL-003",
   "subject": {
-    "kind": "conformance_fixture",
-    "subject_id": "fixture:claim-profile-core",
-    "schema": "contracts/schemas/claim-manifest.schema.json",
-    "sha256": "1edd503c41324b5605c4ea1416b986207d37dad09387a4d831b755c3c1b91f55"
+    "kind": "contract_table",
+    "subject_id": "verdict-table:validator-evidence-v1",
+    "schema": "contracts/schemas/verdict-table.schema.json",
+    "sha256": "6e968bf6fe7ffeec97cfbfc053e245d4ed48769bfb1f11732d0718ee2f6f32c0"
   },
   "input_digests": [
     {"ordinal": 0, "label": "requirements", "path": "normative/requirements.json", "sha256": "68db7a4976b9e8b38b66b20c666a9a7451cf4030edcdc75d3c0db3cfe197def6"},
@@ -27,11 +27,11 @@
     {"ordinal": 0, "label": "claim_index", "path": "claims-and-evidence.yaml", "sha256": "78388a4e7b8f05af148f16a7d4065e6a4a54b9c4a4a5b71e1e27dae688c17768"}
   ],
   "receipts": [
-    {"ordinal": 0, "receipt_id": "receipt:validator-evidence-example", "receipt_type": "EvidenceValidationReceipt", "sha256": "ff808500cd7534033e7464e8e794d701088b5b2a07cfcee869708d963a22c3b4"}
+    {"ordinal": 0, "receipt_id": "receipt:validator-evidence-example", "receipt_type": "EvidenceValidationReceipt", "sha256": "1b00b497fdba947895cd890c32eddd1e7f63465b8d7be67504e636229b4c701a"}
   ],
   "artifact_digests": [
-    {"ordinal": 0, "label": "normative_contract", "path": "normative/validator-evidence-contract.md", "sha256": "6a11891bbfeb425cd3b07a4de4ebffff92a5622f55a22d1572e0d7ec351e183b"},
-    {"ordinal": 1, "label": "extension_registry", "path": "contracts/validator-extensions.json", "sha256": "ff808500cd7534033e7464e8e794d701088b5b2a07cfcee869708d963a22c3b4"}
+    {"ordinal": 0, "label": "normative_contract", "path": "normative/validator-evidence-contract.md", "sha256": "5d9fb0610de6af664500539188e1b15f628b648301b17c25de26808ecf464570"},
+    {"ordinal": 1, "label": "extension_registry", "path": "contracts/validator-extensions.json", "sha256": "1b00b497fdba947895cd890c32eddd1e7f63465b8d7be67504e636229b4c701a"}
   ],
   "execution_context": {
     "runner_id": "mdplace.package-validator",
