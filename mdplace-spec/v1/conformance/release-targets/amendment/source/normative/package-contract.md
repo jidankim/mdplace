@@ -78,4 +78,4 @@ All objects are closed unless a later schema defines a named extension map whose
 
 ## Release gate
 
-A release MUST fail when any normative `TBD`, `TODO`, placeholder identity, example-only threshold, unspecified owner, undefined failure result, missing schema, incomplete transition pair, ambiguous authority, duplicate identifier, unresolved traceability reference, missing required release slot, or failed mandatory fixture remains.
+A release MUST fail when any normative `TBD`, `TODO`, placeholder identity, illustrative-only threshold, unspecified owner, undefined failure result, missing schema, incomplete transition pair, ambiguous authority, duplicate identifier, unresolved traceability reference, missing required release slot, or failed mandatory fixture remains.

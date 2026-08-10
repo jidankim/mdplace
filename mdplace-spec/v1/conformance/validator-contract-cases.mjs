@@ -18,7 +18,7 @@ test('CLI validates every committed conformance fixture', () => {
   const report = JSON.parse(result.stdout);
 
   // Then the whole required category matrix is covered by 55 passing fixture results.
-  assert.equal(report.fixture_results.length, 55);
+  assert.equal(report.fixture_results.length, 56);
   assert.ok(report.fixture_results.every(({verdict}) => verdict === 'pass'));
   assert.deepEqual(report.checks.map(({id}) => id), [
     'package-manifest',

@@ -8,7 +8,7 @@
   "properties": {
     "$schema": {"enum": ["../../contracts/schemas/claim-manifest.schema.json", "../../../contracts/schemas/claim-manifest.schema.json"]},
     "schema_id": {"const": "mdplace.claim-manifest/v1"},
-    "manifest_kind": {"enum": ["conformance_example", "implementation_claim", "recovery_snapshot"]},
+    "manifest_kind": {"enum": ["profile_claim", "implementation_claim", "recovery_snapshot"]},
     "claim_id": {"type": "string", "pattern": "^CLAIM-[A-Z][A-Z0-9]{1,31}-[0-9]{3}$"},
     "profile": {"$ref": "#/$defs/profile"},
     "package_series": {"const": "mdplace-spec/v1"},

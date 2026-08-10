@@ -905,6 +905,14 @@
       "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
     },
     {
+      "fixture_id": "FIX-VAL-REC-003",
+      "path": "scenarios/evidence-unsupported-recovery.json",
+      "category": "crash_recovery",
+      "requirement_ids": ["REQ-VAL-005", "REQ-VAL-006"],
+      "expected_verdict": "fail",
+      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+    },
+    {
       "fixture_id": "FIX-VAL-ILLEGAL-005",
       "path": "scenarios/evidence-record-without-fresh-proof.json",
       "category": "illegal_transition",

@@ -524,7 +524,6 @@ test('CLI marks a recomputed digest mismatch stale and denies an effective pass'
     oracle: expected({
       verdict: 'fail',
       codes: [
-        'evidence.recovery_claim_binding_mismatch',
         'evidence.recovery_stale_pass',
         'evidence.recovery_state_invalid',
       ],
@@ -635,7 +634,7 @@ test('verdict rows declare the complete permitted availability matrix', async ()
   });
 });
 
-test('conformance-driving claim examples are normative while generated reports remain informative', async () => {
+test('conformance-driving profile claims are normative while generated reports remain informative', async () => {
   // Given the package authority ledger.
   const manifest = JSON.parse(await readFile(new URL('../package-manifest.yaml', import.meta.url), 'utf8'));
   const authority = new Map(manifest.artifacts.map(({path, authority: value}) => [path, value]));
@@ -644,8 +643,8 @@ test('conformance-driving claim examples are normative while generated reports r
   // Then only the artifacts consumed by conformance carry normative authority.
   assert.equal(authority.get('claims-and-evidence.yaml'), 'normative');
   assert.equal(authority.get('conformance/claim-manifests/core.json'), 'normative');
-  assert.equal(authority.get('conformance/evidence/envelopes/validator-evidence-example.json'), 'normative');
-  assert.equal(authority.get('conformance/evidence/invocations/validator-evidence-example.json'), 'normative');
+  assert.equal(authority.get('conformance/evidence/envelopes/validator-evidence-reference.json'), 'normative');
+  assert.equal(authority.get('conformance/evidence/invocations/validator-evidence-reference.json'), 'normative');
   assert.equal(authority.get('conformance/evidence/evidence-recovery-report.json'), 'normative');
   assert.equal(authority.get('conformance/evidence/validation-report.json'), 'informative');
   assert.equal(authority.get('conformance/evidence/traceability-report.json'), 'informative');
@@ -992,7 +991,7 @@ test('evidence authority cannot be downgraded by changing the validator version 
 });
 
 test('a fresh-evidence transition validates the complete bound claim chain', async () => {
-  const claimPath = 'conformance/evidence/claims/recovery-example.json';
+  const claimPath = 'conformance/evidence/claims/recovery-snapshot.json';
   const claimContent = await readFile(new URL(`../${claimPath}`, import.meta.url));
   const document = {
     $schema: '../../contracts/schemas/evidence-transition-attempt.schema.json',
@@ -1006,6 +1005,8 @@ test('a fresh-evidence transition validates the complete bound claim chain', asy
     command: 'record_verdict',
     actor_authority: {roles: ['conformance_validator'], quorum: 1, distinct_actors: false, delegation: 'forbidden'},
     fresh_evidence_supplied: true,
+    recorded_claim: null,
+    recovery_report: null,
     fresh_claim: {claim_id: 'CLAIM-RECOVERY-001', path: claimPath, sha256: digest(claimContent)},
   };
 
@@ -1081,6 +1082,399 @@ test('recovery rejects a freshness Boolean bound to incomplete mandatory evidenc
 
   assert.equal(observed.verdict, 'fail');
   assert.ok(observed.codes.includes('evidence.fresh_evidence_required'));
+});
+
+test('CLI contains a malformed digest-bound Claim Manifest as a structured failure', async () => {
+  const packageRoot = await copyCommittedPackage();
+  const claimPath = 'conformance/claim-manifests/core.json';
+  const claim = JSON.parse(await readFile(`${packageRoot}/${claimPath}`, 'utf8'));
+  claim.evidence_bindings = [null];
+  const claimContent = `${JSON.stringify(claim, null, 2)}\n`;
+  await writeFile(`${packageRoot}/${claimPath}`, claimContent);
+  const indexPath = `${packageRoot}/claims-and-evidence.yaml`;
+  const index = JSON.parse(await readFile(indexPath, 'utf8'));
+  index.claims.find(({manifest_ref: path}) => path === claimPath).sha256 = digest(claimContent);
+  await writeFile(indexPath, `${JSON.stringify(index, null, 2)}\n`);
+
+  const result = runPreparedPackage(packageRoot);
+  const report = JSON.parse(result.stdout);
+
+  assert.equal(result.status, 1);
+  assert.ok(report.checks.some(({id, codes}) =>
+    ['schema-instances', 'validator-evidence-contract'].includes(id) && codes.includes('schema.constraint')));
+  assert.equal(report.checks.some(({id}) => id === 'validator-boundary'), false);
+});
+
+test('CLI contains malformed recovery claim collections as structured failures', async () => {
+  const packageRoot = await copyCommittedPackage();
+  const recoveryPath = 'conformance/evidence/evidence-recovery-report.json';
+  const recovery = JSON.parse(await readFile(`${packageRoot}/${recoveryPath}`, 'utf8'));
+  const claimPath = recovery.claim.path;
+  const claim = JSON.parse(await readFile(`${packageRoot}/${claimPath}`, 'utf8'));
+  claim.evidence_bindings = 7;
+  const claimContent = `${JSON.stringify(claim, null, 2)}\n`;
+  const claimDigest = digest(claimContent);
+  await writeFile(`${packageRoot}/${claimPath}`, claimContent);
+  recovery.claim.sha256 = claimDigest;
+  const claimBinding = recovery.recomputed_bindings.find(({path}) => path === claimPath);
+  Object.assign(claimBinding, {expected_sha256: claimDigest, observed_sha256: claimDigest, matches: true});
+  await writeFile(`${packageRoot}/${recoveryPath}`, `${JSON.stringify(recovery, null, 2)}\n`);
+
+  const result = runPreparedPackage(packageRoot);
+  const report = JSON.parse(result.stdout);
+
+  assert.equal(result.status, 1);
+  assert.ok(report.checks.some(({id, codes}) =>
+    ['schema-instances', 'validator-evidence-contract'].includes(id) && codes.includes('schema.constraint')));
+  assert.equal(report.checks.some(({id}) => id === 'validator-boundary'), false);
+});
+
+test('recovery accepts an accurate stale downgrade from a prior pass', async () => {
+  const packageRoot = await copyCommittedPackage();
+  const recovery = JSON.parse(await readFile(
+    `${packageRoot}/conformance/evidence/evidence-recovery-report.json`,
+    'utf8',
+  ));
+  const claimPath = recovery.claim.path;
+  const changedClaim = `${await readFile(`${packageRoot}/${claimPath}`, 'utf8')}\n`;
+  await writeFile(`${packageRoot}/${claimPath}`, changedClaim);
+  const claimBinding = recovery.recomputed_bindings.find(({path}) => path === claimPath);
+  claimBinding.observed_sha256 = digest(changedClaim);
+  claimBinding.matches = false;
+  recovery.terminal_state = 'evidence_stale';
+  recovery.effective_verdict = 'inconclusive';
+
+  const observed = await observeEvidenceExtension({
+    extension_id: extensionId,
+    schema: 'contracts/schemas/evidence-recovery-report.schema.json',
+    document: recovery,
+  }, packageRoot);
+
+  assert.equal(observed.verdict, 'pass');
+  assert.equal(observed.terminal_state, 'evidence_stale');
+});
+
+test('readback requires a digest-bound recursively validated Recovery Report', async () => {
+  const document = {
+    $schema: '../../contracts/schemas/evidence-transition-attempt.schema.json',
+    schema_id: 'mdplace.evidence-transition-attempt/v1',
+    package_series: 'mdplace-spec/v1',
+    release_version: '1.0.0',
+    validator_id: 'mdplace.package-validator',
+    validator_version: validatorVersion,
+    table_ref: 'contracts/transitions/evidence-lifecycle.json',
+    from_state: 'verdict_recorded',
+    command: 'readback',
+    actor_authority: {roles: ['conformance_validator'], quorum: 1, distinct_actors: false, delegation: 'forbidden'},
+    fresh_evidence_supplied: false,
+    recorded_claim: null,
+    recovery_report: null,
+    fresh_claim: null,
+  };
+
+  const observed = await observeEvidenceExtension({
+    extension_id: extensionId,
+    schema: 'contracts/schemas/evidence-transition-attempt.schema.json',
+    document,
+  }, committedPackageRoot);
+
+  assert.equal(observed.verdict, 'fail');
+  assert.ok(observed.codes.includes('evidence.recovery_report_required'));
+});
+
+test('transition freshness fields cannot contradict their bound evidence', async () => {
+  const claimPath = 'conformance/evidence/claims/recovery-snapshot.json';
+  const claimContent = await readFile(new URL(`../${claimPath}`, import.meta.url));
+  const document = {
+    $schema: '../../contracts/schemas/evidence-transition-attempt.schema.json',
+    schema_id: 'mdplace.evidence-transition-attempt/v1',
+    package_series: 'mdplace-spec/v1',
+    release_version: '1.0.0',
+    validator_id: 'mdplace.package-validator',
+    validator_version: validatorVersion,
+    table_ref: 'contracts/transitions/evidence-lifecycle.json',
+    from_state: 'verdict_recorded',
+    command: 'readback',
+    actor_authority: {roles: ['conformance_validator'], quorum: 1, distinct_actors: false, delegation: 'forbidden'},
+    fresh_evidence_supplied: false,
+    recorded_claim: null,
+    recovery_report: null,
+    fresh_claim: {claim_id: 'CLAIM-RECOVERY-001', path: claimPath, sha256: digest(claimContent)},
+  };
+
+  const observed = await observeEvidenceExtension({
+    extension_id: extensionId,
+    schema: 'contracts/schemas/evidence-transition-attempt.schema.json',
+    document,
+  }, committedPackageRoot);
+
+  assert.equal(observed.verdict, 'fail');
+  assert.ok(observed.codes.includes('evidence.fresh_evidence_inconsistent'));
+});
+
+test('fresh-evidence supply rejects a replayed Claim Manifest chain', async () => {
+  const claimPath = 'conformance/evidence/claims/recovery-snapshot.json';
+  const claimContent = await readFile(new URL(`../${claimPath}`, import.meta.url));
+  const claim = {claim_id: 'CLAIM-RECOVERY-001', path: claimPath, sha256: digest(claimContent)};
+  const document = {
+    $schema: '../../contracts/schemas/evidence-transition-attempt.schema.json',
+    schema_id: 'mdplace.evidence-transition-attempt/v1',
+    package_series: 'mdplace-spec/v1',
+    release_version: '1.0.0',
+    validator_id: 'mdplace.package-validator',
+    validator_version: validatorVersion,
+    table_ref: 'contracts/transitions/evidence-lifecycle.json',
+    from_state: 'verdict_recorded',
+    command: 'supply_fresh_evidence',
+    actor_authority: {roles: ['evidence_supplier'], quorum: 1, distinct_actors: false, delegation: 'permitted'},
+    fresh_evidence_supplied: true,
+    recorded_claim: claim,
+    recovery_report: null,
+    fresh_claim: claim,
+  };
+
+  const observed = await observeEvidenceExtension({
+    extension_id: extensionId,
+    schema: 'contracts/schemas/evidence-transition-attempt.schema.json',
+    document,
+  }, committedPackageRoot);
+
+  assert.equal(observed.verdict, 'fail');
+  assert.ok(observed.codes.includes('evidence.fresh_evidence_replayed'));
+});
+
+test('readback accepts a digest-bound recursively validated Recovery Report', async () => {
+  const reportPath = 'conformance/evidence/evidence-recovery-report.json';
+  const reportContent = await readFile(new URL(`../${reportPath}`, import.meta.url));
+  const document = {
+    $schema: '../../contracts/schemas/evidence-transition-attempt.schema.json',
+    schema_id: 'mdplace.evidence-transition-attempt/v1',
+    package_series: 'mdplace-spec/v1',
+    release_version: '1.0.0',
+    validator_id: 'mdplace.package-validator',
+    validator_version: validatorVersion,
+    table_ref: 'contracts/transitions/evidence-lifecycle.json',
+    from_state: 'verdict_recorded',
+    command: 'readback',
+    actor_authority: {roles: ['conformance_validator'], quorum: 1, distinct_actors: false, delegation: 'forbidden'},
+    fresh_evidence_supplied: false,
+    recorded_claim: null,
+    recovery_report: {
+      report_id: 'evidence-recovery:pass-readback',
+      path: reportPath,
+      sha256: digest(reportContent),
+    },
+    fresh_claim: null,
+  };
+
+  const observed = await observeEvidenceExtension({
+    extension_id: extensionId,
+    schema: 'contracts/schemas/evidence-transition-attempt.schema.json',
+    document,
+  }, committedPackageRoot);
+
+  assert.equal(observed.verdict, 'pass');
+  assert.equal(observed.terminal_state, 'verdict_recorded');
+});
+
+test('mark-stale accepts an accurate digest-bound stale Recovery Report', async () => {
+  const packageRoot = await copyCommittedPackage();
+  const recordedClaimPath = 'conformance/evidence/claims/recovery-snapshot.json';
+  const staleClaimPath = 'conformance/evidence/claims/stale-recovery-snapshot.json';
+  const staleClaim = JSON.parse(await readFile(`${packageRoot}/${recordedClaimPath}`, 'utf8'));
+  staleClaim.evidence_bindings[0].evidence_digest = 'a'.repeat(64);
+  const staleClaimContent = `${JSON.stringify(staleClaim, null, 2)}\n`;
+  await writeFile(`${packageRoot}/${staleClaimPath}`, staleClaimContent);
+  const report = JSON.parse(await readFile(
+    `${packageRoot}/conformance/evidence/evidence-recovery-report.json`,
+    'utf8',
+  ));
+  report.report_id = 'evidence-recovery:stale-readback';
+  report.claim.path = staleClaimPath;
+  report.claim.sha256 = digest(staleClaimContent);
+  report.recomputed_bindings[0] = {
+    path: staleClaimPath,
+    expected_sha256: digest(staleClaimContent),
+    observed_sha256: digest(staleClaimContent),
+    matches: true,
+  };
+  const envelopeBinding = report.recomputed_bindings.find(({path}) =>
+    path === 'conformance/evidence/envelopes/validator-evidence-reference.json');
+  envelopeBinding.expected_sha256 = 'a'.repeat(64);
+  envelopeBinding.matches = false;
+  report.operations = ['reopen declared artifact', 'recompute sha256', 'mark evidence stale'];
+  report.terminal_state = 'evidence_stale';
+  report.effective_verdict = 'inconclusive';
+  const reportPath = 'conformance/evidence/evidence-stale-recovery-report.json';
+  const reportContent = `${JSON.stringify(report, null, 2)}\n`;
+  await writeFile(`${packageRoot}/${reportPath}`, reportContent);
+  const document = {
+    $schema: '../../contracts/schemas/evidence-transition-attempt.schema.json',
+    schema_id: 'mdplace.evidence-transition-attempt/v1',
+    package_series: 'mdplace-spec/v1',
+    release_version: '1.0.0',
+    validator_id: 'mdplace.package-validator',
+    validator_version: validatorVersion,
+    table_ref: 'contracts/transitions/evidence-lifecycle.json',
+    from_state: 'verdict_recorded',
+    command: 'mark_stale',
+    actor_authority: {roles: ['conformance_validator'], quorum: 1, distinct_actors: false, delegation: 'forbidden'},
+    fresh_evidence_supplied: false,
+    recorded_claim: null,
+    recovery_report: {report_id: report.report_id, path: reportPath, sha256: digest(reportContent)},
+    fresh_claim: null,
+  };
+
+  const observed = await observeEvidenceExtension({
+    extension_id: extensionId,
+    schema: 'contracts/schemas/evidence-transition-attempt.schema.json',
+    document,
+  }, packageRoot);
+
+  assert.equal(observed.verdict, 'pass');
+  assert.equal(observed.terminal_state, 'evidence_stale');
+});
+
+test('fresh-evidence supply accepts a Claim Manifest with a new invocation', async () => {
+  const packageRoot = await copyCommittedPackage();
+  const recordedClaimPath = 'conformance/evidence/claims/recovery-snapshot.json';
+  const recordedClaimContent = await readFile(`${packageRoot}/${recordedClaimPath}`);
+  const invocation = JSON.parse(await readFile(
+    `${packageRoot}/conformance/evidence/invocations/validator-evidence-reference.json`,
+    'utf8',
+  ));
+  invocation.invocation_id = 'invocation:fresh-validator-evidence';
+  const invocationPath = 'conformance/evidence/invocations/fresh-validator-evidence.json';
+  const invocationContent = `${JSON.stringify(invocation, null, 2)}\n`;
+  await writeFile(`${packageRoot}/${invocationPath}`, invocationContent);
+  const envelope = JSON.parse(await readFile(
+    `${packageRoot}/conformance/evidence/envelopes/validator-evidence-reference.json`,
+    'utf8',
+  ));
+  envelope.envelope_id = 'evidence:fresh-validator-evidence';
+  envelope.invocation = {
+    invocation_id: invocation.invocation_id,
+    path: invocationPath,
+    sha256: digest(invocationContent),
+  };
+  envelope.receipts[0].receipt_id = 'receipt:fresh-validator-evidence';
+  const envelopePath = 'conformance/evidence/envelopes/fresh-validator-evidence.json';
+  const envelopeContent = `${JSON.stringify(envelope, null, 2)}\n`;
+  await writeFile(`${packageRoot}/${envelopePath}`, envelopeContent);
+  const freshClaim = JSON.parse(await readFile(`${packageRoot}/${recordedClaimPath}`, 'utf8'));
+  freshClaim.evidence_bindings[0].evidence_ref = envelopePath;
+  freshClaim.evidence_bindings[0].evidence_digest = digest(envelopeContent);
+  const freshClaimPath = 'conformance/evidence/claims/fresh-recovery-snapshot.json';
+  const freshClaimContent = `${JSON.stringify(freshClaim, null, 2)}\n`;
+  await writeFile(`${packageRoot}/${freshClaimPath}`, freshClaimContent);
+  const document = {
+    $schema: '../../contracts/schemas/evidence-transition-attempt.schema.json',
+    schema_id: 'mdplace.evidence-transition-attempt/v1',
+    package_series: 'mdplace-spec/v1',
+    release_version: '1.0.0',
+    validator_id: 'mdplace.package-validator',
+    validator_version: validatorVersion,
+    table_ref: 'contracts/transitions/evidence-lifecycle.json',
+    from_state: 'verdict_recorded',
+    command: 'supply_fresh_evidence',
+    actor_authority: {roles: ['evidence_supplier'], quorum: 1, distinct_actors: false, delegation: 'permitted'},
+    fresh_evidence_supplied: true,
+    recorded_claim: {
+      claim_id: freshClaim.claim_id,
+      path: recordedClaimPath,
+      sha256: digest(recordedClaimContent),
+    },
+    recovery_report: null,
+    fresh_claim: {
+      claim_id: freshClaim.claim_id,
+      path: freshClaimPath,
+      sha256: digest(freshClaimContent),
+    },
+  };
+
+  const observed = await observeEvidenceExtension({
+    extension_id: extensionId,
+    schema: 'contracts/schemas/evidence-transition-attempt.schema.json',
+    document,
+  }, packageRoot);
+
+  assert.equal(observed.verdict, 'pass');
+  assert.equal(observed.terminal_state, 'awaiting_evidence');
+});
+
+test('claim-level unknown applicability cannot aggregate to pass', async () => {
+  const claim = JSON.parse(await readFile(new URL('../conformance/claim-manifests/core.json', import.meta.url), 'utf8'));
+  claim.applicability = 'unknown';
+  claim.evidence_bindings[0].applicability = 'not_applicable';
+  claim.verdict = 'pass';
+
+  const observed = await observeEvidenceExtension({
+    extension_id: extensionId,
+    schema: 'contracts/schemas/claim-manifest.schema.json',
+    document: claim,
+  }, committedPackageRoot);
+
+  assert.equal(observed.verdict, 'fail');
+  assert.ok(observed.codes.includes('claim.mandatory_evidence_inconclusive'));
+  assert.ok(observed.codes.includes('claim.applicability_mismatch'));
+});
+
+test('invocations reject duplicate ordered input identifiers', async () => {
+  const invocation = JSON.parse(await readFile(
+    new URL('../conformance/evidence/invocations/validator-evidence-reference.json', import.meta.url),
+    'utf8',
+  ));
+  invocation.input_digests.push({...invocation.input_digests[0], ordinal: invocation.input_digests.length});
+
+  const observed = await observeEvidenceExtension({
+    extension_id: extensionId,
+    schema: 'contracts/schemas/validator-invocation.schema.json',
+    document: invocation,
+  }, committedPackageRoot);
+
+  assert.equal(observed.verdict, 'fail');
+  assert.ok(observed.codes.includes('evidence.invocation_input_duplicate'));
+});
+
+test('invocation subjects share the package and validator version binding', async () => {
+  const packageRoot = await copyCommittedPackage();
+  const subjectPath = 'contracts/verdicts/validator-verdicts.json';
+  const subject = JSON.parse(await readFile(`${packageRoot}/${subjectPath}`, 'utf8'));
+  subject.release_version = '2.0.0';
+  const subjectContent = `${JSON.stringify(subject, null, 2)}\n`;
+  await writeFile(`${packageRoot}/${subjectPath}`, subjectContent);
+  const invocation = JSON.parse(await readFile(
+    `${packageRoot}/conformance/evidence/invocations/validator-evidence-reference.json`,
+    'utf8',
+  ));
+  invocation.subject.sha256 = digest(subjectContent);
+  invocation.input_digests.find(({path}) => path === subjectPath).sha256 = digest(subjectContent);
+
+  const observed = await observeEvidenceExtension({
+    extension_id: extensionId,
+    schema: 'contracts/schemas/validator-invocation.schema.json',
+    document: invocation,
+  }, packageRoot);
+
+  assert.equal(observed.verdict, 'fail');
+  assert.ok(observed.codes.includes('evidence.specification_version_mismatch'));
+});
+
+test('normative Claim Manifest artifacts use domain-approved names', async () => {
+  const index = JSON.parse(await readFile(new URL('../claims-and-evidence.yaml', import.meta.url), 'utf8'));
+  const claim = JSON.parse(await readFile(new URL('../conformance/claim-manifests/core.json', import.meta.url), 'utf8'));
+
+  assert.equal(index.index_kind, 'profile_claims');
+  assert.equal(claim.manifest_kind, 'profile_claim');
+});
+
+test('unsupported recovery is bound to a normative fixture and Traceability Record', async () => {
+  const manifest = JSON.parse(await readFile(new URL('../conformance/manifest.yaml', import.meta.url), 'utf8'));
+  const traceability = JSON.parse(await readFile(new URL('../traceability.yaml', import.meta.url), 'utf8'));
+  const record = traceability.records.find(({requirement_id: id}) => id === 'REQ-VAL-006');
+
+  assert.ok(manifest.fixtures.some(({fixture_id: id}) => id === 'FIX-VAL-REC-003'));
+  assert.ok(record.negative_fixture_ids.includes('FIX-VAL-REC-003'));
 });
 
 test('test fixture digests are independently derived from their bytes', () => {

@@ -4,6 +4,8 @@ import {isDeepStrictEqual} from 'node:util';
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {readPackageFile} from './safe-path.mjs';
 
+const maximumEvidenceDepth = 32;
+
 function observation({verdict, codes = [], output, operations, terminalState, illegalTransition = false}) {
   return {
     verdict,
@@ -29,6 +31,17 @@ async function readJson(packageRoot, path) {
 
 function isRecord(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+function validationContext(context) {
+  return context ?? {depth: 0, bindings: new Set()};
+}
+
+function descendValidation(context, binding) {
+  const current = validationContext(context);
+  const key = `${binding?.path}\0${binding?.sha256}`;
+  if (current.depth >= maximumEvidenceDepth || current.bindings.has(key)) return null;
+  return {depth: current.depth + 1, bindings: new Set([...current.bindings, key])};
 }
 
 function bindingCodes(document, manifest, extension) {
@@ -59,8 +72,9 @@ function evidenceOperations() {
 function claimCodes(document) {
   if (document.verdict !== 'pass' || !Array.isArray(document.evidence_bindings)) return [];
   const codes = [];
-  for (const binding of document.evidence_bindings.filter(({mandatory, applicability}) =>
-    mandatory === true && applicability !== 'not_applicable')) {
+  if (document.applicability === 'unknown') codes.push('claim.mandatory_evidence_inconclusive');
+  for (const binding of document.evidence_bindings.filter((entry) => isRecord(entry) &&
+    entry.mandatory === true && entry.applicability !== 'not_applicable')) {
     if (binding.applicability === 'unknown') {
       codes.push('claim.mandatory_evidence_inconclusive');
       continue;
@@ -99,7 +113,7 @@ async function bindingMatches(packageRoot, path, expectedDigest) {
   return read.status === 'present' && createHash('sha256').update(read.content).digest('hex') === expectedDigest;
 }
 
-async function evidenceEnvelopeCodes(document, packageRoot) {
+async function evidenceEnvelopeCodes(document, packageRoot, context) {
   const codes = [];
   const orderedCollections = [document.input_digests, document.output_digests, document.receipts, document.artifact_digests];
   if (orderedCollections.some((entries) => !ordinalsAreContiguous(entries))) codes.push('evidence.ordinal_invalid');
@@ -111,7 +125,8 @@ async function evidenceEnvelopeCodes(document, packageRoot) {
   ];
   const artifactPaths = digestBindings.map(({path}) => path);
   if (new Set(artifactPaths).size !== artifactPaths.length) codes.push('evidence.artifact_reference_duplicate');
-  const receiptIds = (document.receipts ?? []).map(({receipt_id: receiptId}) => receiptId);
+  const receipts = Array.isArray(document.receipts) ? document.receipts : [];
+  const receiptIds = receipts.filter(isRecord).map(({receipt_id: receiptId}) => receiptId);
   if (new Set(receiptIds).size !== receiptIds.length) codes.push('evidence.receipt_duplicate');
   const matches = await Promise.all(digestBindings.map(({path, sha256}) => bindingMatches(packageRoot, path, sha256)));
   if (matches.some((match) => !match)) codes.push('evidence.artifact_digest_mismatch');
@@ -123,12 +138,17 @@ async function evidenceEnvelopeCodes(document, packageRoot) {
   if (document.invocation !== undefined && invocation === null) {
     codes.push('evidence.invocation_binding_mismatch');
   } else if (invocation !== null) {
-    const invocationObservation = await observeEvidenceExtension({
-      extension_id: document.extension_id,
-      schema: 'contracts/schemas/validator-invocation.schema.json',
-      document: invocation,
-    }, packageRoot);
-    if (invocationObservation.verdict !== 'pass') codes.push(...invocationObservation.codes);
+    const nestedContext = descendValidation(context, document.invocation);
+    if (nestedContext === null) {
+      codes.push('evidence.validation_cycle');
+    } else {
+      const invocationObservation = await observeEvidenceExtension({
+        extension_id: document.extension_id,
+        schema: 'contracts/schemas/validator-invocation.schema.json',
+        document: invocation,
+      }, packageRoot, nestedContext);
+      if (invocationObservation.verdict !== 'pass') codes.push(...invocationObservation.codes);
+    }
     const {path: invocationSubjectPath, ...invocationSubject} = invocation.subject ?? {};
     if (invocation.invocation_id !== document.invocation.invocation_id ||
        invocation.package_series !== document.package_series ||
@@ -144,7 +164,7 @@ async function evidenceEnvelopeCodes(document, packageRoot) {
   return codes;
 }
 
-async function claimManifestCodes(document, packageRoot) {
+async function claimManifestCodes(document, packageRoot, context) {
   const codes = claimCodes(document);
   const requirementsDocument = await readJson(packageRoot, 'normative/requirements.json');
   if (typeof document.requirement_id === 'string' &&
@@ -154,8 +174,15 @@ async function claimManifestCodes(document, packageRoot) {
   const verdictTable = await readJson(packageRoot, 'contracts/verdicts/validator-verdicts.json');
   const verdictRows = Array.isArray(verdictTable?.rows) ? verdictTable.rows : [];
   if (!Array.isArray(verdictTable?.rows)) codes.push('schema.instance_missing');
-  const requirements = new Map((document.evidence_requirements ?? []).map((entry) => [entry.evidence_kind, entry]));
-  const bindings = new Map((document.evidence_bindings ?? []).map((entry) => [entry.evidence_kind, entry]));
+  const requirementEntries = Array.isArray(document.evidence_requirements) ? document.evidence_requirements : [];
+  const bindingEntries = Array.isArray(document.evidence_bindings) ? document.evidence_bindings : [];
+  if (requirementEntries.length !== document.evidence_requirements?.length ||
+      bindingEntries.length !== document.evidence_bindings?.length ||
+      requirementEntries.some((entry) => !isRecord(entry)) || bindingEntries.some((entry) => !isRecord(entry))) {
+    return [...codes, 'schema.constraint'];
+  }
+  const requirements = new Map(requirementEntries.map((entry) => [entry.evidence_kind, entry]));
+  const bindings = new Map(bindingEntries.map((entry) => [entry.evidence_kind, entry]));
   if (requirements.size !== document.evidence_requirements?.length ||
       bindings.size !== document.evidence_bindings?.length ||
       requirements.size !== bindings.size ||
@@ -180,12 +207,20 @@ async function claimManifestCodes(document, packageRoot) {
         codes.push('claim.evidence_binding_mismatch');
         continue;
       }
-      const envelopeObservation = await observeEvidenceExtension({
-        extension_id: envelope.extension_id,
-        schema: 'contracts/schemas/evidence-envelope.schema.json',
-        document: envelope,
-      }, packageRoot);
-      if (envelopeObservation.verdict !== 'pass') codes.push(...envelopeObservation.codes);
+      const nestedContext = descendValidation(context, {
+        path: binding.evidence_ref,
+        sha256: binding.evidence_digest,
+      });
+      if (nestedContext === null) {
+        codes.push('evidence.validation_cycle');
+      } else {
+        const envelopeObservation = await observeEvidenceExtension({
+          extension_id: envelope.extension_id,
+          schema: 'contracts/schemas/evidence-envelope.schema.json',
+          document: envelope,
+        }, packageRoot, nestedContext);
+        if (envelopeObservation.verdict !== 'pass') codes.push(...envelopeObservation.codes);
+      }
       if (envelope.requirement_id !== document.requirement_id ||
           !isDeepStrictEqual(envelope?.subject, {...document.subject, schema: envelope?.subject?.schema}) ||
           envelope.verdict !== binding.verdict) {
@@ -195,13 +230,19 @@ async function claimManifestCodes(document, packageRoot) {
       codes.push('claim.noncurrent_evidence_bound');
     }
   }
+  if ((document.applicability === 'not_applicable' &&
+       bindingEntries.some(({applicability}) => applicability !== 'not_applicable')) ||
+      (document.applicability === 'unknown' &&
+       !bindingEntries.some(({applicability}) => applicability === 'unknown'))) {
+    codes.push('claim.applicability_mismatch');
+  }
   const mandatory = [...bindings.values()].filter((binding) =>
     binding.mandatory === true && binding.applicability !== 'not_applicable');
   const expectedVerdict = mandatory.some(({verdict}) => verdict === 'fail')
     ? 'fail'
     : mandatory.some(({availability, verdict}) => availability === 'unsupported' || verdict === 'unsupported')
       ? 'unsupported'
-      : mandatory.some(({availability, applicability, verdict}) =>
+      : document.applicability === 'unknown' || mandatory.some(({availability, applicability, verdict}) =>
         applicability === 'unknown' || availability !== 'present' || verdict === 'inconclusive')
         ? 'inconclusive'
         : 'pass';
@@ -209,23 +250,55 @@ async function claimManifestCodes(document, packageRoot) {
   return codes;
 }
 
-async function validateClaimBinding(binding, expectedClaimId, packageRoot) {
+async function validateClaimBinding(binding, expectedClaimId, packageRoot, context, options = {}) {
   const codes = [];
-  if (!isRecord(binding) || typeof binding.path !== 'string' || typeof binding.sha256 !== 'string' ||
-      !await bindingMatches(packageRoot, binding.path, binding.sha256)) {
-    return {codes: ['evidence.recovery_claim_binding_mismatch'], document: null};
+  if (!isRecord(binding) || typeof binding.path !== 'string' || typeof binding.sha256 !== 'string') {
+    return {codes: ['evidence.recovery_claim_binding_mismatch'], document: null, digestMatches: false};
   }
-  const document = await readJson(packageRoot, binding.path);
+  const read = await readPackageFile(packageRoot, binding.path);
+  if (read.status !== 'present') {
+    return {codes: ['evidence.recovery_claim_binding_mismatch'], document: null, digestMatches: false};
+  }
+  const actualDigest = createHash('sha256').update(read.content).digest('hex');
+  const digestMatches = actualDigest === binding.sha256;
+  if (!digestMatches && options.allowDigestMismatch !== true) {
+    return {codes: ['evidence.recovery_claim_binding_mismatch'], document: null, digestMatches};
+  }
+  let document;
+  try {
+    document = JSON.parse(read.content.toString('utf8'));
+  } catch {
+    return {codes: ['evidence.recovery_claim_binding_mismatch'], document: null, digestMatches};
+  }
   if (document === null || document.claim_id !== expectedClaimId || binding.claim_id !== expectedClaimId) {
-    return {codes: ['evidence.recovery_claim_binding_mismatch'], document};
+    return {codes: ['evidence.recovery_claim_binding_mismatch'], document: null, digestMatches};
   }
+  let claimSchemaCode;
+  try {
+    claimSchemaCode = schemaErrorCode(await validateAgainstSchemaPath(
+      packageRoot,
+      'contracts/schemas/claim-manifest.schema.json',
+      document,
+    ));
+  } catch {
+    claimSchemaCode = 'schema.instance_missing';
+  }
+  if (claimSchemaCode !== null) {
+    return {codes: [claimSchemaCode], document: null, digestMatches};
+  }
+  const nestedContext = descendValidation(context, binding);
+  if (nestedContext === null) return {codes: ['evidence.validation_cycle'], document: null, digestMatches};
   const observed = await observeEvidenceExtension({
     extension_id: 'mdplace.validator-extension/evidence/v1',
     schema: 'contracts/schemas/claim-manifest.schema.json',
     document,
-  }, packageRoot);
+  }, packageRoot, nestedContext);
   if (observed.verdict !== 'pass') codes.push(...observed.codes);
-  return {codes, document};
+  return {
+    codes,
+    document: codes.length === 0 || options.retainSemanticFailure === true ? document : null,
+    digestMatches,
+  };
 }
 
 function addExpectedBinding(expected, path, sha256) {
@@ -236,7 +309,8 @@ function addExpectedBinding(expected, path, sha256) {
 }
 
 function hasFreshMandatoryEvidence(claim) {
-  const mandatoryBindings = (claim?.evidence_bindings ?? []).filter((binding) =>
+  const bindings = Array.isArray(claim?.evidence_bindings) ? claim.evidence_bindings : [];
+  const mandatoryBindings = bindings.filter((binding) => isRecord(binding) &&
     binding.mandatory === true && binding.applicability !== 'not_applicable');
   return mandatoryBindings.length > 0 && mandatoryBindings.every((binding) =>
     binding.availability === 'present' && typeof binding.evidence_ref === 'string' &&
@@ -246,45 +320,49 @@ function hasFreshMandatoryEvidence(claim) {
 async function expectedRecoveryBindings(claimBinding, claim, packageRoot) {
   const expected = new Map();
   addExpectedBinding(expected, claimBinding?.path, claimBinding?.sha256);
-  for (const binding of claim?.evidence_bindings ?? []) {
+  const claimBindings = Array.isArray(claim?.evidence_bindings) ? claim.evidence_bindings : [];
+  for (const binding of claimBindings.filter(isRecord)) {
     addExpectedBinding(expected, binding.evidence_ref, binding.evidence_digest);
     if (typeof binding.evidence_ref !== 'string') continue;
     const envelope = await readJson(packageRoot, binding.evidence_ref);
     if (envelope === null) continue;
     addExpectedBinding(expected, envelope.invocation?.path, envelope.invocation?.sha256);
     for (const digestBinding of [
-      ...(envelope.input_digests ?? []),
-      ...(envelope.output_digests ?? []),
-      ...(envelope.artifact_digests ?? []),
+      ...(Array.isArray(envelope.input_digests) ? envelope.input_digests : []),
+      ...(Array.isArray(envelope.output_digests) ? envelope.output_digests : []),
+      ...(Array.isArray(envelope.artifact_digests) ? envelope.artifact_digests : []),
     ]) {
-      addExpectedBinding(expected, digestBinding.path, digestBinding.sha256);
+      if (isRecord(digestBinding)) addExpectedBinding(expected, digestBinding.path, digestBinding.sha256);
     }
     if (typeof envelope.invocation?.path !== 'string') continue;
     const invocation = await readJson(packageRoot, envelope.invocation.path);
     if (invocation === null) continue;
     addExpectedBinding(expected, invocation.subject?.path, invocation.subject?.sha256);
-    for (const digestBinding of invocation.input_digests ?? []) {
+    const invocationInputs = Array.isArray(invocation.input_digests) ? invocation.input_digests : [];
+    for (const digestBinding of invocationInputs.filter(isRecord)) {
       addExpectedBinding(expected, digestBinding.path, digestBinding.sha256);
     }
   }
   return expected;
 }
 
-async function recoveryCodes(document, packageRoot) {
+async function recoveryCodes(document, packageRoot, context) {
   const codes = [];
   let stale = false;
-  if (document.fresh_evidence_supplied === false && document.effective_verdict !== document.prior_verdict) {
-    codes.push('evidence.recovery_verdict_upgrade');
-  }
-  const claimResult = await validateClaimBinding(document.claim, document.claim_id, packageRoot);
-  codes.push(...claimResult.codes);
-  if (document.fresh_evidence_supplied === false && claimResult.document !== null &&
+  const claimResult = await validateClaimBinding(document.claim, document.claim_id, packageRoot, context, {
+    allowDigestMismatch: true,
+    retainSemanticFailure: true,
+  });
+  if (claimResult.document === null) codes.push(...claimResult.codes);
+  if (claimResult.document !== null && claimResult.digestMatches === false) stale = true;
+  if (document.fresh_evidence_supplied === false && !stale && claimResult.document !== null &&
       claimResult.document.claim_id === document.claim_id &&
       claimResult.document.verdict !== document.prior_verdict) {
     codes.push('evidence.recovery_claim_verdict_mismatch');
   }
   if (document.fresh_evidence_supplied === true &&
-      (!hasFreshMandatoryEvidence(claimResult.document) ||
+      (claimResult.digestMatches !== true || claimResult.codes.length > 0 ||
+       !hasFreshMandatoryEvidence(claimResult.document) ||
        claimResult.document?.verdict !== document.effective_verdict)) {
     codes.push('evidence.fresh_evidence_required');
   }
@@ -309,6 +387,16 @@ async function recoveryCodes(document, packageRoot) {
       codes.push('evidence.recovery_binding_mismatch');
     }
   }
+  if (claimResult.codes.length > 0 && !stale) codes.push(...claimResult.codes);
+  if (document.fresh_evidence_supplied === false) {
+    const expectedVerdict = stale && document.prior_verdict === 'pass'
+      ? 'inconclusive'
+      : document.prior_verdict;
+    if (document.effective_verdict !== expectedVerdict &&
+        !(stale && document.prior_verdict === 'pass' && document.effective_verdict === 'pass')) {
+      codes.push('evidence.recovery_verdict_upgrade');
+    }
+  }
   if (stale && document.fresh_evidence_supplied === false) {
     if (document.effective_verdict === 'pass') codes.push('evidence.recovery_stale_pass');
     if (document.terminal_state !== 'evidence_stale') codes.push('evidence.recovery_state_invalid');
@@ -321,10 +409,16 @@ async function recoveryCodes(document, packageRoot) {
   return codes;
 }
 
-async function invocationCodes(document, packageRoot, extension) {
+async function invocationCodes(document, packageRoot, extension, context) {
   const codes = [];
   if (!ordinalsAreContiguous(document.input_digests)) codes.push('evidence.ordinal_invalid');
-  const matches = await Promise.all((document.input_digests ?? [])
+  const inputDigests = Array.isArray(document.input_digests) ? document.input_digests : [];
+  const inputPaths = inputDigests.filter(isRecord).map(({path}) => path);
+  const inputLabels = inputDigests.filter(isRecord).map(({label}) => label);
+  if (new Set(inputPaths).size !== inputPaths.length || new Set(inputLabels).size !== inputLabels.length) {
+    codes.push('evidence.invocation_input_duplicate');
+  }
+  const matches = await Promise.all(inputDigests.filter(isRecord)
     .map(({path, sha256}) => bindingMatches(packageRoot, path, sha256)));
   if (matches.some((match) => !match)) codes.push('evidence.artifact_digest_mismatch');
   const requirements = await readJson(packageRoot, 'normative/requirements.json');
@@ -355,10 +449,66 @@ async function invocationCodes(document, packageRoot, extension) {
   } catch {
     codes.push('schema.instance_missing');
   }
+  if (codes.length === 0) {
+    const nestedContext = descendValidation(context, document.subject);
+    if (nestedContext === null) {
+      codes.push('evidence.validation_cycle');
+    } else {
+      const observed = await observeEvidenceExtension({
+        extension_id: document.extension_id,
+        schema: document.subject.schema,
+        document: subjectDocument,
+      }, packageRoot, nestedContext);
+      if (observed.verdict !== 'pass') codes.push(...observed.codes);
+    }
+  }
   return codes;
 }
 
-async function observeTransitionAttempt(document, packageRoot, operations) {
+async function validateRecoveryReportBinding(binding, packageRoot, context) {
+  if (!isRecord(binding) || typeof binding.report_id !== 'string' ||
+      typeof binding.path !== 'string' || typeof binding.sha256 !== 'string' ||
+      !await bindingMatches(packageRoot, binding.path, binding.sha256)) {
+    return {codes: ['evidence.recovery_report_binding_mismatch'], document: null};
+  }
+  const document = await readJson(packageRoot, binding.path);
+  if (document === null || document.report_id !== binding.report_id) {
+    return {codes: ['evidence.recovery_report_binding_mismatch'], document: null};
+  }
+  const nestedContext = descendValidation(context, binding);
+  if (nestedContext === null) return {codes: ['evidence.validation_cycle'], document: null};
+  const observed = await observeEvidenceExtension({
+    extension_id: 'mdplace.validator-extension/evidence/v1',
+    schema: 'contracts/schemas/evidence-recovery-report.schema.json',
+    document,
+  }, packageRoot, nestedContext);
+  return {codes: observed.verdict === 'pass' ? [] : observed.codes, document, observed};
+}
+
+async function mandatoryInvocationDigests(claim, packageRoot) {
+  const digests = new Set();
+  const bindings = Array.isArray(claim?.evidence_bindings) ? claim.evidence_bindings : [];
+  for (const binding of bindings.filter((entry) => isRecord(entry) && entry.mandatory === true &&
+    entry.applicability !== 'not_applicable' && entry.availability === 'present')) {
+    const envelope = await readJson(packageRoot, binding.evidence_ref);
+    if (typeof envelope?.invocation?.sha256 === 'string') digests.add(envelope.invocation.sha256);
+  }
+  return digests;
+}
+
+async function freshClaimIsNew(recordedClaim, freshClaim, packageRoot) {
+  if (recordedClaim.claim_id !== freshClaim.claim_id || recordedClaim.profile !== freshClaim.profile ||
+      recordedClaim.requirement_id !== freshClaim.requirement_id ||
+      !isDeepStrictEqual(recordedClaim.subject, freshClaim.subject)) return false;
+  const [recordedInvocations, freshInvocations] = await Promise.all([
+    mandatoryInvocationDigests(recordedClaim, packageRoot),
+    mandatoryInvocationDigests(freshClaim, packageRoot),
+  ]);
+  return freshInvocations.size > 0 &&
+    [...freshInvocations].every((invocationDigest) => !recordedInvocations.has(invocationDigest));
+}
+
+async function observeTransitionAttempt(document, packageRoot, operations, context) {
   const table = await readJson(packageRoot, document.table_ref);
   const rows = Array.isArray(table?.transitions) ? table.transitions : [];
   const row = rows.find((candidate) => isRecord(candidate) &&
@@ -392,7 +542,8 @@ async function observeTransitionAttempt(document, packageRoot, operations) {
       illegalTransition: true,
     });
   }
-  if (['record_verdict', 'supply_fresh_evidence'].includes(document.command) &&
+  const freshnessCommand = ['record_verdict', 'supply_fresh_evidence'].includes(document.command);
+  if (freshnessCommand &&
       (document.fresh_evidence_supplied !== true || !isRecord(document.fresh_claim))) {
     return observation({
       verdict: 'fail',
@@ -403,8 +554,49 @@ async function observeTransitionAttempt(document, packageRoot, operations) {
       illegalTransition: true,
     });
   }
+  if ((!freshnessCommand &&
+       (document.fresh_evidence_supplied !== false || document.fresh_claim !== null)) ||
+      (document.command !== 'supply_fresh_evidence' && document.recorded_claim !== null) ||
+      (document.command === 'supply_fresh_evidence' && document.from_state === 'awaiting_evidence' &&
+       document.recorded_claim !== null) ||
+      (['record_verdict', 'supply_fresh_evidence'].includes(document.command) &&
+       document.recovery_report !== null)) {
+    return observation({
+      verdict: 'fail',
+      codes: ['evidence.fresh_evidence_inconsistent'],
+      output: 'evidence transition denied',
+      operations,
+      terminalState: document.from_state,
+      illegalTransition: true,
+    });
+  }
+  if (['readback', 'mark_stale'].includes(document.command)) {
+    if (!isRecord(document.recovery_report)) {
+      return observation({
+        verdict: 'fail', codes: ['evidence.recovery_report_required'], output: 'evidence transition denied',
+        operations, terminalState: document.from_state, illegalTransition: true,
+      });
+    }
+    const recovery = await validateRecoveryReportBinding(document.recovery_report, packageRoot, context);
+    const expectedState = document.command === 'mark_stale' ? 'evidence_stale' : row.terminal_state;
+    if (recovery.codes.length > 0 || recovery.observed?.terminal_state !== expectedState) {
+      return observation({
+        verdict: 'fail',
+        codes: ['evidence.recovery_report_invalid', ...recovery.codes],
+        output: 'evidence transition denied',
+        operations,
+        terminalState: document.from_state,
+        illegalTransition: true,
+      });
+    }
+  }
   if (['record_verdict', 'supply_fresh_evidence'].includes(document.command)) {
-    const freshClaim = await validateClaimBinding(document.fresh_claim, document.fresh_claim.claim_id, packageRoot);
+    const freshClaim = await validateClaimBinding(
+      document.fresh_claim,
+      document.fresh_claim.claim_id,
+      packageRoot,
+      context,
+    );
     if (freshClaim.codes.length > 0 || !hasFreshMandatoryEvidence(freshClaim.document)) {
       return observation({
         verdict: 'fail',
@@ -415,6 +607,35 @@ async function observeTransitionAttempt(document, packageRoot, operations) {
         illegalTransition: true,
       });
     }
+    if (document.command === 'supply_fresh_evidence' && document.from_state !== 'awaiting_evidence') {
+      const recordedClaim = await validateClaimBinding(
+        document.recorded_claim,
+        document.fresh_claim.claim_id,
+        packageRoot,
+        context,
+      );
+      if (recordedClaim.codes.length > 0 || recordedClaim.document === null) {
+        return observation({
+          verdict: 'fail',
+          codes: ['evidence.recorded_claim_required', ...recordedClaim.codes],
+          output: 'evidence transition denied',
+          operations,
+          terminalState: document.from_state,
+          illegalTransition: true,
+        });
+      }
+      if (document.recorded_claim.sha256 === document.fresh_claim.sha256 ||
+          !await freshClaimIsNew(recordedClaim.document, freshClaim.document, packageRoot)) {
+        return observation({
+          verdict: 'fail',
+          codes: ['evidence.fresh_evidence_replayed'],
+          output: 'evidence transition denied',
+          operations,
+          terminalState: document.from_state,
+          illegalTransition: true,
+        });
+      }
+    }
   }
   return observation({
     verdict: 'pass',
@@ -424,7 +645,8 @@ async function observeTransitionAttempt(document, packageRoot, operations) {
   });
 }
 
-export async function observeEvidenceExtension(subject, packageRoot) {
+export async function observeEvidenceExtension(subject, packageRoot, context) {
+  const currentContext = validationContext(context);
   const resolveOperations = ['resolve validator extension'];
   if (!isRecord(subject)) {
     return observation({
@@ -494,7 +716,7 @@ export async function observeEvidenceExtension(subject, packageRoot) {
     case 'evidence-envelope.schema.json':
       if (codes.length === 0) {
         operations.push('recompute referenced artifact digests');
-        codes.push(...await evidenceEnvelopeCodes(subject.document, packageRoot));
+        codes.push(...await evidenceEnvelopeCodes(subject.document, packageRoot, currentContext));
       }
       return observation({
         verdict: codes.length === 0 ? 'pass' : 'fail',
@@ -505,7 +727,7 @@ export async function observeEvidenceExtension(subject, packageRoot) {
       });
     case 'claim-manifest.schema.json': {
       operations.push('evaluate mandatory evidence', 'validate bound evidence envelopes');
-      codes.push(...await claimManifestCodes(subject.document, packageRoot));
+      codes.push(...await claimManifestCodes(subject.document, packageRoot, currentContext));
       return observation({
         verdict: codes.length === 0 ? 'pass' : 'fail',
         codes,
@@ -516,7 +738,7 @@ export async function observeEvidenceExtension(subject, packageRoot) {
     }
     case 'evidence-recovery-report.schema.json': {
       operations.push('recompute evidence bindings', 'preserve non-pass verdict');
-      codes.push(...await recoveryCodes(subject.document, packageRoot));
+      codes.push(...await recoveryCodes(subject.document, packageRoot, currentContext));
       return observation({
         verdict: codes.length === 0 ? 'pass' : 'fail',
         codes,
@@ -532,16 +754,24 @@ export async function observeEvidenceExtension(subject, packageRoot) {
           verdict: 'fail', codes, output: 'evidence transition rejected', operations, terminalState: 'rejected',
         });
       }
-      return observeTransitionAttempt(subject.document, packageRoot, operations);
+      return observeTransitionAttempt(subject.document, packageRoot, operations, currentContext);
     case 'validator-invocation.schema.json':
       if (codes.length === 0) {
         operations.push('recompute referenced artifact digests');
-        codes.push(...await invocationCodes(subject.document, packageRoot, extension));
+        codes.push(...await invocationCodes(subject.document, packageRoot, extension, currentContext));
       }
       return observation({
         verdict: codes.length === 0 ? 'pass' : 'fail',
         codes,
         output: codes.length === 0 ? 'validator invocation accepted' : 'validator invocation rejected',
+        operations,
+        terminalState: codes.length === 0 ? 'validated' : 'rejected',
+      });
+    case 'verdict-table.schema.json':
+      return observation({
+        verdict: codes.length === 0 ? 'pass' : 'fail',
+        codes,
+        output: codes.length === 0 ? 'verdict table accepted' : 'verdict table rejected',
         operations,
         terminalState: codes.length === 0 ? 'validated' : 'rejected',
       });

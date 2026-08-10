@@ -181,7 +181,7 @@
       "negative_fixture_ids": ["FIX-VAL-NEG-002", "FIX-VAL-AUTH-001"],
       "acceptance_gate": "Only registered extension identifiers and their exact version-bound subject schemas are evaluated; ambient or undeclared validators are denied.",
       "scope": "validator-evidence",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/envelopes/validator-evidence-example.json"]
+      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/envelopes/validator-evidence-reference.json"]
     },
     {
       "requirement_id": "REQ-VAL-002",
@@ -205,7 +205,7 @@
       "negative_fixture_ids": ["FIX-PKG-BND-002", "FIX-PKG-BND-003", "FIX-VAL-NEG-003"],
       "acceptance_gate": "Every envelope explicitly carries its requirement, subject, ordered digests and receipts, execution context, and verdict with contiguous ordinals.",
       "scope": "validator-evidence",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/envelopes/validator-evidence-example.json"]
+      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/envelopes/validator-evidence-reference.json"]
     },
     {
       "requirement_id": "REQ-VAL-004",
@@ -226,7 +226,7 @@
       "normative_anchors": ["normative/validator-evidence-contract.md#req-val-005-verdict-aggregation-denies-absent-mandatory-proof"],
       "schema_or_transition_refs": ["contracts/schemas/verdict-table.schema.json", "contracts/verdicts/validator-verdicts.json", "contracts/schemas/claim-manifest.schema.json"],
       "positive_fixture_ids": ["FIX-VAL-POS-001", "FIX-VAL-POS-002", "FIX-VAL-POS-003", "FIX-VAL-REC-001"],
-      "negative_fixture_ids": ["FIX-VAL-NEG-001", "FIX-VAL-NEG-003", "FIX-VAL-NEG-004", "FIX-VAL-STATE-001", "FIX-VAL-STATE-002", "FIX-VAL-REC-002", "FIX-VAL-ILLEGAL-003", "FIX-VAL-ILLEGAL-004", "FIX-VAL-ILLEGAL-005"],
+      "negative_fixture_ids": ["FIX-VAL-NEG-001", "FIX-VAL-NEG-003", "FIX-VAL-NEG-004", "FIX-VAL-STATE-001", "FIX-VAL-STATE-002", "FIX-VAL-REC-002", "FIX-VAL-REC-003", "FIX-VAL-ILLEGAL-003", "FIX-VAL-ILLEGAL-004", "FIX-VAL-ILLEGAL-005"],
       "acceptance_gate": "Pass requires complete current mandatory proof; fail, unsupported, and inconclusive retain distinct non-pass semantics under the complete verdict table.",
       "scope": "validator-evidence",
       "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/evidence-recovery-report.json"]
@@ -238,8 +238,8 @@
       "normative_anchors": ["normative/validator-evidence-contract.md#req-val-006-readback-and-recovery-preserve-non-pass-results"],
       "schema_or_transition_refs": ["contracts/schemas/evidence-recovery-report.schema.json", "contracts/schemas/evidence-transition-attempt.schema.json", "contracts/transitions/evidence-lifecycle.json"],
       "positive_fixture_ids": ["FIX-VAL-REC-001"],
-      "negative_fixture_ids": ["FIX-VAL-STATE-001", "FIX-VAL-STATE-002", "FIX-VAL-REC-002", "FIX-VAL-ILLEGAL-001", "FIX-VAL-ILLEGAL-002", "FIX-VAL-ILLEGAL-003", "FIX-VAL-ILLEGAL-004", "FIX-VAL-ILLEGAL-005"],
-      "acceptance_gate": "Readback recomputes every binding and fail or inconclusive remains effective until fresh mandatory evidence reopens evaluation through the complete lifecycle.",
+      "negative_fixture_ids": ["FIX-VAL-STATE-001", "FIX-VAL-STATE-002", "FIX-VAL-REC-002", "FIX-VAL-REC-003", "FIX-VAL-ILLEGAL-001", "FIX-VAL-ILLEGAL-002", "FIX-VAL-ILLEGAL-003", "FIX-VAL-ILLEGAL-004", "FIX-VAL-ILLEGAL-005"],
+      "acceptance_gate": "Readback recomputes every binding and fail, unsupported, or inconclusive remains effective until fresh mandatory evidence reopens evaluation through the complete lifecycle.",
       "scope": "validator-evidence",
       "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/evidence-recovery-report.json"]
     },

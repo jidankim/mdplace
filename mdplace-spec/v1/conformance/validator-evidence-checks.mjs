@@ -123,10 +123,24 @@ export async function checkValidatorEvidence(packageRoot) {
       codes.push('claim.manifest_digest_mismatch');
       continue;
     }
+    let claimSchemaCode;
+    try {
+      claimSchemaCode = await schemaCode(
+        packageRoot,
+        'contracts/schemas/claim-manifest.schema.json',
+        claimResult.document,
+      );
+    } catch {
+      claimSchemaCode = 'schema.instance_missing';
+    }
+    if (claimSchemaCode !== null) {
+      codes.push(claimSchemaCode);
+      continue;
+    }
     if (claimResult.document.claim_id !== entry.claim_id || claimResult.document.profile !== entry.profile) {
       codes.push('claim.manifest_index_mismatch');
     }
-    for (const binding of claimResult.document.evidence_bindings ?? []) {
+    for (const binding of claimResult.document.evidence_bindings) {
       if (typeof binding.evidence_ref !== 'string') continue;
       const owner = evidenceOwners.get(binding.evidence_ref);
       if (owner !== undefined && owner !== entry.profile) codes.push('claim.profile_evidence_reused');
@@ -140,8 +154,8 @@ export async function checkValidatorEvidence(packageRoot) {
     if (observed.verdict !== 'pass') codes.push(...observed.codes);
   }
   const evidenceDocuments = [
-    ['conformance/evidence/invocations/validator-evidence-example.json', 'contracts/schemas/validator-invocation.schema.json'],
-    ['conformance/evidence/envelopes/validator-evidence-example.json', 'contracts/schemas/evidence-envelope.schema.json'],
+    ['conformance/evidence/invocations/validator-evidence-reference.json', 'contracts/schemas/validator-invocation.schema.json'],
+    ['conformance/evidence/envelopes/validator-evidence-reference.json', 'contracts/schemas/evidence-envelope.schema.json'],
     ['conformance/evidence/evidence-recovery-report.json', 'contracts/schemas/evidence-recovery-report.schema.json'],
   ];
   for (const [path, schema] of evidenceDocuments) {

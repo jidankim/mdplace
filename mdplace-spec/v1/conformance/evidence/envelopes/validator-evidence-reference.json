@@ -1,10 +1,10 @@
 {
   "$schema": "../../../contracts/schemas/evidence-envelope.schema.json",
   "schema_id": "mdplace.evidence-envelope/v1",
-  "envelope_id": "evidence:stale-claim-proof",
+  "envelope_id": "evidence:validator-evidence-reference",
   "extension_id": "mdplace.validator-extension/evidence/v1",
   "package_series": "mdplace-spec/v1",
-  "release_version": "2.0.0",
+  "release_version": "1.0.0",
   "validator_id": "mdplace.package-validator",
   "validator_version": "1.1.0",
   "invocation": {
@@ -12,12 +12,12 @@
     "path": "conformance/evidence/invocations/validator-evidence-reference.json",
     "sha256": "442e060e45d6b5d5d9c3e33f01f56347f42e3945cfcbe305afd12b528b6d3875"
   },
-  "requirement_id": "REQ-VAL-002",
+  "requirement_id": "REQ-VAL-003",
   "subject": {
-    "kind": "conformance_fixture",
-    "subject_id": "fixture:stale-claim-proof",
-    "schema": "contracts/schemas/claim-manifest.schema.json",
-    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    "kind": "contract_table",
+    "subject_id": "verdict-table:validator-evidence-v1",
+    "schema": "contracts/schemas/verdict-table.schema.json",
+    "sha256": "caaeba680abdc21053da0bb727c6a56cde19779a3a4aaee05e66c2ac65f56158"
   },
   "input_digests": [
     {
@@ -25,6 +25,12 @@
       "label": "requirements",
       "path": "normative/requirements.json",
       "sha256": "644ee3971ec9659fa79f7b9bd581effd125aaa92e85377da7ef10826c57d3d29"
+    },
+    {
+      "ordinal": 1,
+      "label": "verdict_table",
+      "path": "contracts/verdicts/validator-verdicts.json",
+      "sha256": "caaeba680abdc21053da0bb727c6a56cde19779a3a4aaee05e66c2ac65f56158"
     }
   ],
   "output_digests": [
@@ -38,7 +44,7 @@
   "receipts": [
     {
       "ordinal": 0,
-      "receipt_id": "receipt:stale-claim-proof",
+      "receipt_id": "receipt:validator-evidence-reference",
       "receipt_type": "EvidenceValidationReceipt",
       "sha256": "1b00b497fdba947895cd890c32eddd1e7f63465b8d7be67504e636229b4c701a"
     }
@@ -46,6 +52,12 @@
   "artifact_digests": [
     {
       "ordinal": 0,
+      "label": "normative_contract",
+      "path": "normative/validator-evidence-contract.md",
+      "sha256": "9ddd57e9e8363191456ca00eb20114f972e635188aed3605f53aa958d2a600e6"
+    },
+    {
+      "ordinal": 1,
       "label": "extension_registry",
       "path": "contracts/validator-extensions.json",
       "sha256": "1b00b497fdba947895cd890c32eddd1e7f63465b8d7be67504e636229b4c701a"

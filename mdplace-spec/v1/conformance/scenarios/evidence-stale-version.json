@@ -3,7 +3,11 @@
   "schema_id": "mdplace.conformance-fixture/v1",
   "fixture_id": "FIX-VAL-STATE-001",
   "category": "stale_state",
-  "requirement_ids": ["REQ-VAL-002", "REQ-VAL-005", "REQ-VAL-006"],
+  "requirement_ids": [
+    "REQ-VAL-002",
+    "REQ-VAL-005",
+    "REQ-VAL-006"
+  ],
   "subject": {
     "kind": "extension",
     "extension_id": "mdplace.validator-extension/evidence/v1",
@@ -17,25 +21,82 @@
       "release_version": "1.1.0",
       "validator_id": "mdplace.package-validator",
       "validator_version": "1.1.0",
-      "invocation": {"invocation_id": "invocation:validator-evidence-example", "path": "conformance/evidence/invocations/validator-evidence-example.json", "sha256": "215ea95bcf9336a0a1a78e1d0632d1c98de08232a0caf5e4143c185210f39697"},
+      "invocation": {
+        "invocation_id": "invocation:validator-evidence-reference",
+        "path": "conformance/evidence/invocations/validator-evidence-reference.json",
+        "sha256": "442e060e45d6b5d5d9c3e33f01f56347f42e3945cfcbe305afd12b528b6d3875"
+      },
       "requirement_id": "REQ-VAL-002",
-      "subject": {"kind": "conformance_fixture", "subject_id": "fixture:claim-profile-core", "schema": "contracts/schemas/claim-manifest.schema.json", "sha256": "1edd503c41324b5605c4ea1416b986207d37dad09387a4d831b755c3c1b91f55"},
-      "input_digests": [{"ordinal": 0, "label": "requirements", "path": "normative/requirements.json", "sha256": "68db7a4976b9e8b38b66b20c666a9a7451cf4030edcdc75d3c0db3cfe197def6"}],
-      "output_digests": [{"ordinal": 0, "label": "claim_index", "path": "claims-and-evidence.yaml", "sha256": "78388a4e7b8f05af148f16a7d4065e6a4a54b9c4a4a5b71e1e27dae688c17768"}],
-      "receipts": [{"ordinal": 0, "receipt_id": "receipt:stale-version", "receipt_type": "EvidenceValidationReceipt", "sha256": "1b00b497fdba947895cd890c32eddd1e7f63465b8d7be67504e636229b4c701a"}],
-      "artifact_digests": [{"ordinal": 0, "label": "extension_registry", "path": "contracts/validator-extensions.json", "sha256": "1b00b497fdba947895cd890c32eddd1e7f63465b8d7be67504e636229b4c701a"}],
-      "execution_context": {"runner_id": "mdplace.package-validator", "platform": "platform_neutral", "architecture": "architecture_neutral", "filesystem": "package_fixture", "locale": "C.UTF-8", "timezone": "UTC", "network_access": "denied"},
+      "subject": {
+        "kind": "conformance_fixture",
+        "subject_id": "fixture:claim-profile-core",
+        "schema": "contracts/schemas/claim-manifest.schema.json",
+        "sha256": "1edd503c41324b5605c4ea1416b986207d37dad09387a4d831b755c3c1b91f55"
+      },
+      "input_digests": [
+        {
+          "ordinal": 0,
+          "label": "requirements",
+          "path": "normative/requirements.json",
+          "sha256": "644ee3971ec9659fa79f7b9bd581effd125aaa92e85377da7ef10826c57d3d29"
+        }
+      ],
+      "output_digests": [
+        {
+          "ordinal": 0,
+          "label": "claim_index",
+          "path": "claims-and-evidence.yaml",
+          "sha256": "9eb04d05991b773681314646b6e85d9cf7bccc34247714e7c1978708f67db370"
+        }
+      ],
+      "receipts": [
+        {
+          "ordinal": 0,
+          "receipt_id": "receipt:stale-version",
+          "receipt_type": "EvidenceValidationReceipt",
+          "sha256": "1b00b497fdba947895cd890c32eddd1e7f63465b8d7be67504e636229b4c701a"
+        }
+      ],
+      "artifact_digests": [
+        {
+          "ordinal": 0,
+          "label": "extension_registry",
+          "path": "contracts/validator-extensions.json",
+          "sha256": "1b00b497fdba947895cd890c32eddd1e7f63465b8d7be67504e636229b4c701a"
+        }
+      ],
+      "execution_context": {
+        "runner_id": "mdplace.package-validator",
+        "platform": "platform_neutral",
+        "architecture": "architecture_neutral",
+        "filesystem": "package_fixture",
+        "locale": "C.UTF-8",
+        "timezone": "UTC",
+        "network_access": "denied"
+      },
       "verdict": "pass",
       "codes": []
     }
   },
   "expected": {
     "verdict": "fail",
-    "codes": ["evidence.specification_version_mismatch"],
-    "outputs": ["evidence envelope rejected"],
-    "operations": ["resolve validator extension", "validate extension document", "verify specification and validator bindings"],
-    "receipts": ["EvidenceValidationReceipt"],
-    "filesystem_effects": ["none"],
+    "codes": [
+      "evidence.specification_version_mismatch"
+    ],
+    "outputs": [
+      "evidence envelope rejected"
+    ],
+    "operations": [
+      "resolve validator extension",
+      "validate extension document",
+      "verify specification and validator bindings"
+    ],
+    "receipts": [
+      "EvidenceValidationReceipt"
+    ],
+    "filesystem_effects": [
+      "none"
+    ],
     "terminal_state": "rejected",
     "illegal_transition": false
   }

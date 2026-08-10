@@ -162,7 +162,7 @@
       "normative_anchor": "normative/validator-evidence-contract.md#req-val-006-readback-and-recovery-preserve-non-pass-results",
       "decision_urls": ["https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"],
       "canonical_terms": ["Evidence Envelope", "Claim Manifest", "Conformance Verdict", "Validator Extension"],
-      "acceptance_gate": "Readback recomputes every binding and fail or inconclusive remains effective until fresh mandatory evidence reopens evaluation through the complete lifecycle.",
+      "acceptance_gate": "Readback recomputes every binding and fail, unsupported, or inconclusive remains effective until fresh mandatory evidence reopens evaluation through the complete lifecycle.",
       "scope": "validator-evidence"
     },
     {

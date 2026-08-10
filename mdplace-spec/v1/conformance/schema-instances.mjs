@@ -22,8 +22,8 @@ export async function checkSchemaInstances(packageRoot, conformance) {
     ['conformance/manifest.yaml', 'contracts/schemas/conformance-manifest.schema.json'],
     ['traceability.yaml', 'contracts/schemas/traceability.schema.json'],
     ['claims-and-evidence.yaml', 'contracts/schemas/claims-and-evidence.schema.json'],
-    ['conformance/evidence/invocations/validator-evidence-example.json', 'contracts/schemas/validator-invocation.schema.json'],
-    ['conformance/evidence/envelopes/validator-evidence-example.json', 'contracts/schemas/evidence-envelope.schema.json'],
+    ['conformance/evidence/invocations/validator-evidence-reference.json', 'contracts/schemas/validator-invocation.schema.json'],
+    ['conformance/evidence/envelopes/validator-evidence-reference.json', 'contracts/schemas/evidence-envelope.schema.json'],
     ['conformance/evidence/evidence-recovery-report.json', 'contracts/schemas/evidence-recovery-report.schema.json'],
   ];
   const fixtureEntries = Array.isArray(conformance?.fixtures) ? conformance.fixtures : [];

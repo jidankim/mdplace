@@ -11,11 +11,14 @@
   "subject": {
     "kind": "contract_table",
     "subject_id": "verdict-table:validator-evidence-v1",
-    "sha256": "6e968bf6fe7ffeec97cfbfc053e245d4ed48769bfb1f11732d0718ee2f6f32c0"
+    "sha256": "caaeba680abdc21053da0bb727c6a56cde19779a3a4aaee05e66c2ac65f56158"
   },
   "requirement_id": "REQ-VAL-003",
   "evidence_requirements": [
-    {"evidence_kind": "validator_evidence", "mandatory": true}
+    {
+      "evidence_kind": "validator_evidence",
+      "mandatory": true
+    }
   ],
   "evidence_bindings": [
     {
@@ -23,8 +26,8 @@
       "mandatory": true,
       "availability": "present",
       "applicability": "applicable",
-      "evidence_ref": "conformance/evidence/envelopes/validator-evidence-example.json",
-      "evidence_digest": "444e21e894c92af6c506285ad58a1e9d7d80d2fd7c1b4508c7a3a0c7abde355e",
+      "evidence_ref": "conformance/evidence/envelopes/validator-evidence-reference.json",
+      "evidence_digest": "d821ff538f305b83a9c2fb059c86175aa7809d6a71c7a331b65b29c6c0748c25",
       "verdict": "pass"
     }
   ],
