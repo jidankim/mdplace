@@ -429,6 +429,10 @@ async function recoveryCodes(document, packageRoot, context) {
         {retainSemanticFailure: true},
       );
     }
+    if (recordedClaimResult !== null && recordedClaimResult.document !== null &&
+        recordedClaimResult.document.verdict !== document.prior_verdict) {
+      codes.push('evidence.recovery_claim_verdict_mismatch');
+    }
     if (claimResult.digestMatches !== true || claimResult.codes.length > 0 ||
         !hasFreshMandatoryEvidence(claimResult.document) ||
         claimResult.document?.verdict !== document.effective_verdict ||
@@ -568,7 +572,6 @@ function evidenceProof(envelope, invocation) {
     envelope?.input_digests,
     envelope?.output_digests,
     envelope?.artifact_digests,
-    envelope?.receipts,
   ];
   if (!isRecord(envelope) || !isRecord(invocation) ||
       collections.some((entries) => !Array.isArray(entries) || entries.some((entry) => !isRecord(entry)))) {
@@ -578,8 +581,6 @@ function evidenceProof(envelope, invocation) {
     inputs: envelope.input_digests.map(({ordinal, sha256}) => ({ordinal, sha256})),
     outputs: envelope.output_digests.map(({ordinal, sha256}) => ({ordinal, sha256})),
     artifacts: envelope.artifact_digests.map(({ordinal, sha256}) => ({ordinal, sha256})),
-    receipts: envelope.receipts.map(({ordinal, receipt_type: receiptType, sha256}) =>
-      ({ordinal, receiptType, sha256})),
   };
 }
 
@@ -587,12 +588,15 @@ async function mandatoryEvidenceObservations(claim, packageRoot) {
   const observations = new Map();
   const bindings = Array.isArray(claim?.evidence_bindings) ? claim.evidence_bindings : [];
   for (const binding of bindings.filter((entry) => isRecord(entry) && entry.mandatory === true &&
-    entry.applicability !== 'not_applicable' && entry.availability === 'present')) {
-    const envelope = await readJson(packageRoot, binding.evidence_ref);
+    entry.applicability !== 'not_applicable')) {
+    const envelope = binding.availability === 'present'
+      ? await readJson(packageRoot, binding.evidence_ref)
+      : null;
     const invocation = typeof envelope?.invocation?.path === 'string'
       ? await readJson(packageRoot, envelope.invocation.path)
       : null;
     observations.set(binding.evidence_kind, {
+      availability: binding.availability,
       envelopeDigest: binding.evidence_digest,
       invocationDigest: envelope?.invocation?.sha256,
       invocationId: invocation?.invocation_id,
@@ -613,8 +617,9 @@ async function freshClaimIsNew(recordedClaim, freshClaim, packageRoot) {
   return freshEvidence.size > 0 && freshEvidence.size === recordedEvidence.size &&
     [...freshEvidence].every(([kind, fresh]) => {
       const recorded = recordedEvidence.get(kind);
-      return recorded !== undefined && fresh.proof !== null &&
-        fresh.envelopeDigest !== recorded.envelopeDigest &&
+      if (recorded === undefined || fresh.availability !== 'present' || fresh.proof === null) return false;
+      if (recorded.availability !== 'present') return true;
+      return fresh.envelopeDigest !== recorded.envelopeDigest &&
         (recorded.invocationDigest === undefined || fresh.invocationDigest !== recorded.invocationDigest) &&
         (recorded.invocationId === undefined || fresh.invocationId !== recorded.invocationId) &&
         (recorded.proof === null || !isDeepStrictEqual(fresh.proof, recorded.proof));

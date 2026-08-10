@@ -1695,6 +1695,36 @@ test('fresh-evidence supply rejects identifier-only churn', async () => {
   assert.ok(observed.codes.includes('evidence.fresh_evidence_replayed'));
 });
 
+test('fresh-evidence supply rejects unauthenticated receipt-only churn', async () => {
+  for (const receiptMutation of ['type', 'digest']) {
+    const packageRoot = await copyCommittedPackage();
+    const suffix = `receipt-${receiptMutation}-churn`;
+    const chain = await createFreshClaimChain(packageRoot, {suffix, substantive: false});
+    const envelope = JSON.parse(await readFile(`${packageRoot}/${chain.envelopeArtifact.path}`, 'utf8'));
+    if (receiptMutation === 'type') envelope.receipts[0].receipt_type = 'AlternateReceipt';
+    else envelope.receipts[0].sha256 = 'a'.repeat(64);
+    const envelopeArtifact = await writeJson(packageRoot, chain.envelopeArtifact.path, envelope);
+    chain.freshClaim.evidence_bindings[0].evidence_digest = envelopeArtifact.sha256;
+    const claimArtifact = await writeJson(packageRoot, chain.freshClaimBinding.path, chain.freshClaim);
+    chain.freshClaimBinding.sha256 = claimArtifact.sha256;
+    const document = transitionAttempt({
+      command: 'supply_fresh_evidence',
+      fromState: 'verdict_recorded',
+      recordedClaim: chain.recordedClaimBinding,
+      freshClaim: chain.freshClaimBinding,
+    });
+
+    const observed = await observeEvidenceExtension({
+      extension_id: extensionId,
+      schema: 'contracts/schemas/evidence-transition-attempt.schema.json',
+      document,
+    }, packageRoot);
+
+    assert.equal(observed.verdict, 'fail', receiptMutation);
+    assert.ok(observed.codes.includes('evidence.fresh_evidence_replayed'), receiptMutation);
+  }
+});
+
 test('fresh-evidence supply rejects reuse of the recorded invocation identity', async () => {
   const packageRoot = await copyCommittedPackage();
   const chain = await createFreshClaimChain(packageRoot, {suffix: 'reused-invocation', reuseInvocationId: true});
@@ -1733,6 +1763,83 @@ test('fresh-evidence supply accepts a new invocation with changed proof bytes', 
 
   assert.equal(observed.verdict, 'pass');
   assert.equal(observed.terminal_state, 'awaiting_evidence');
+});
+
+test('fresh-evidence supply replaces every non-present mandatory evidence state', async () => {
+  const cases = [
+    {availability: 'missing', verdict: 'inconclusive', fromState: 'verdict_recorded'},
+    {availability: 'stale', verdict: 'inconclusive', fromState: 'evidence_stale'},
+    {availability: 'skipped', verdict: 'inconclusive', fromState: 'verdict_recorded'},
+    {availability: 'unsupported', verdict: 'unsupported', fromState: 'verdict_recorded'},
+  ];
+  for (const {availability, verdict, fromState} of cases) {
+    const packageRoot = await copyCommittedPackage();
+    const chain = await createFreshClaimChain(packageRoot, {suffix: `${availability}-replacement`});
+    const recordedClaim = structuredClone(chain.recordedClaim);
+    recordedClaim.verdict = verdict;
+    recordedClaim.evidence_bindings[0] = {
+      ...recordedClaim.evidence_bindings[0],
+      availability,
+      evidence_ref: null,
+      evidence_digest: null,
+      verdict,
+    };
+    const recordedArtifact = await writeJson(
+      packageRoot,
+      `conformance/evidence/claims/recorded-${availability}.json`,
+      recordedClaim,
+    );
+    const document = transitionAttempt({
+      command: 'supply_fresh_evidence',
+      fromState,
+      recordedClaim: {
+        claim_id: recordedClaim.claim_id,
+        path: recordedArtifact.path,
+        sha256: recordedArtifact.sha256,
+      },
+      freshClaim: chain.freshClaimBinding,
+    });
+
+    const observed = await observeEvidenceExtension({
+      extension_id: extensionId,
+      schema: 'contracts/schemas/evidence-transition-attempt.schema.json',
+      document,
+    }, packageRoot);
+
+    assert.equal(observed.verdict, 'pass', availability);
+    assert.equal(observed.terminal_state, 'awaiting_evidence', availability);
+  }
+});
+
+test('fresh recovery binds prior verdict to the recorded Claim Manifest', async () => {
+  const packageRoot = await copyCommittedPackage();
+  const chain = await createFreshClaimChain(packageRoot, {suffix: 'prior-verdict-mismatch'});
+  const recovery = await createFreshRecoveryReport(packageRoot, chain, 'prior-verdict-mismatch');
+  recovery.report.prior_verdict = 'unsupported';
+  const reportArtifact = await writeJson(packageRoot, recovery.binding.path, recovery.report);
+  recovery.binding.sha256 = reportArtifact.sha256;
+
+  const reportObservation = await observeEvidenceExtension({
+    extension_id: extensionId,
+    schema: 'contracts/schemas/evidence-recovery-report.schema.json',
+    document: recovery.report,
+  }, packageRoot);
+  const transitionObservation = await observeEvidenceExtension({
+    extension_id: extensionId,
+    schema: 'contracts/schemas/evidence-transition-attempt.schema.json',
+    document: transitionAttempt({
+      command: 'record_verdict',
+      fromState: 'awaiting_evidence',
+      freshClaim: chain.freshClaimBinding,
+      recoveryReport: recovery.binding,
+    }),
+  }, packageRoot);
+
+  assert.equal(reportObservation.verdict, 'fail');
+  assert.ok(reportObservation.codes.includes('evidence.recovery_claim_verdict_mismatch'));
+  assert.equal(transitionObservation.verdict, 'fail');
+  assert.ok(transitionObservation.codes.includes('evidence.recovery_report_invalid'));
+  assert.ok(transitionObservation.codes.includes('evidence.recovery_claim_verdict_mismatch'));
 });
 
 test('fresh-evidence supply can replace a semantically stale recorded claim chain', async () => {
