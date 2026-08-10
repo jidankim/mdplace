@@ -55,7 +55,8 @@ function evidenceOperations() {
 function claimCodes(document) {
   if (document.verdict !== 'pass' || !Array.isArray(document.evidence_bindings)) return [];
   const codes = [];
-  for (const binding of document.evidence_bindings.filter(({mandatory}) => mandatory === true)) {
+  for (const binding of document.evidence_bindings.filter(({mandatory, applicability}) =>
+    mandatory === true && applicability === 'applicable')) {
     switch (binding.availability) {
       case 'missing':
         codes.push('claim.mandatory_evidence_missing');
@@ -100,6 +101,10 @@ async function evidenceEnvelopeCodes(document, packageRoot) {
     ...(Array.isArray(document.artifact_digests) ? document.artifact_digests : []),
     ...(document.invocation === undefined ? [] : [document.invocation]),
   ];
+  const artifactPaths = digestBindings.map(({path}) => path);
+  if (new Set(artifactPaths).size !== artifactPaths.length) codes.push('evidence.artifact_reference_duplicate');
+  const receiptIds = (document.receipts ?? []).map(({receipt_id: receiptId}) => receiptId);
+  if (new Set(receiptIds).size !== receiptIds.length) codes.push('evidence.receipt_duplicate');
   const matches = await Promise.all(digestBindings.map(({path, sha256}) => bindingMatches(packageRoot, path, sha256)));
   if (matches.some((match) => !match)) codes.push('evidence.artifact_digest_mismatch');
   const requirements = await readJson(packageRoot, 'normative/requirements.json');
@@ -107,15 +112,22 @@ async function evidenceEnvelopeCodes(document, packageRoot) {
     codes.push('evidence.requirement_unresolved');
   }
   const invocation = document.invocation === undefined ? null : await readJson(packageRoot, document.invocation.path);
-  if (invocation !== null &&
-      (invocation.invocation_id !== document.invocation.invocation_id ||
+  if (invocation !== null) {
+    const invocationObservation = await observeEvidenceExtension({
+      extension_id: document.extension_id,
+      schema: 'contracts/schemas/validator-invocation.schema.json',
+      document: invocation,
+    }, packageRoot);
+    if (invocationObservation.verdict !== 'pass') codes.push(...invocationObservation.codes);
+    if (invocation.invocation_id !== document.invocation.invocation_id ||
        invocation.package_series !== document.package_series ||
        invocation.release_version !== document.release_version ||
        invocation.validator_id !== document.validator_id ||
        invocation.validator_version !== document.validator_version ||
        !invocation.requirement_ids?.includes(document.requirement_id) ||
-       !isDeepStrictEqual(invocation.subject, document.subject))) {
-    codes.push('evidence.invocation_binding_mismatch');
+       !isDeepStrictEqual(invocation.subject, document.subject)) {
+      codes.push('evidence.invocation_binding_mismatch');
+    }
   }
   return codes;
 }
@@ -132,24 +144,35 @@ async function claimManifestCodes(document, packageRoot) {
   }
   for (const binding of bindings.values()) {
     const hasReference = typeof binding.evidence_ref === 'string' && typeof binding.evidence_digest === 'string';
+    const hasPartialReference = typeof binding.evidence_ref === 'string' || typeof binding.evidence_digest === 'string';
     if (binding.availability === 'present') {
       if (!hasReference || !await bindingMatches(packageRoot, binding.evidence_ref, binding.evidence_digest)) {
         codes.push('claim.evidence_digest_mismatch');
         continue;
       }
       const envelope = await readJson(packageRoot, binding.evidence_ref);
-      if (envelope?.requirement_id !== document.requirement_id ||
+      if (envelope === null) {
+        codes.push('claim.evidence_binding_mismatch');
+        continue;
+      }
+      const envelopeObservation = await observeEvidenceExtension({
+        extension_id: envelope.extension_id,
+        schema: 'contracts/schemas/evidence-envelope.schema.json',
+        document: envelope,
+      }, packageRoot);
+      if (envelopeObservation.verdict !== 'pass') codes.push(...envelopeObservation.codes);
+      if (envelope.requirement_id !== document.requirement_id ||
           !isDeepStrictEqual(envelope?.subject, {...document.subject, schema: envelope?.subject?.schema}) ||
-          envelope?.verdict !== binding.verdict) {
+          envelope.verdict !== binding.verdict) {
         codes.push('claim.evidence_binding_mismatch');
       }
-    } else if (hasReference) {
+    } else if (hasPartialReference) {
       codes.push('claim.noncurrent_evidence_bound');
     }
   }
   const mandatory = [...bindings.values()].filter((binding) =>
     binding.mandatory === true && binding.applicability === 'applicable');
-  const expectedVerdict = mandatory.some(({availability, verdict}) => availability === 'present' && verdict === 'fail')
+  const expectedVerdict = mandatory.some(({verdict}) => verdict === 'fail')
     ? 'fail'
     : mandatory.some(({availability, verdict}) => availability === 'unsupported' || verdict === 'unsupported')
       ? 'unsupported'
@@ -162,6 +185,7 @@ async function claimManifestCodes(document, packageRoot) {
 
 async function recoveryCodes(document, packageRoot) {
   const codes = [];
+  let stale = false;
   if (document.fresh_evidence_supplied === false &&
       ['fail', 'inconclusive'].includes(document.prior_verdict) &&
       document.effective_verdict !== document.prior_verdict) {
@@ -171,9 +195,14 @@ async function recoveryCodes(document, packageRoot) {
     const read = await readPackageFile(packageRoot, binding.path);
     const actual = read.status === 'present' ? createHash('sha256').update(read.content).digest('hex') : null;
     const actualMatch = actual !== null && actual === binding.expected_sha256;
+    if (!actualMatch) stale = true;
     if (actual !== binding.observed_sha256 || binding.matches !== actualMatch) {
       codes.push('evidence.recovery_binding_mismatch');
     }
+  }
+  if (stale && document.fresh_evidence_supplied === false) {
+    if (document.effective_verdict === 'pass') codes.push('evidence.recovery_stale_pass');
+    if (document.terminal_state !== 'evidence_stale') codes.push('evidence.recovery_state_invalid');
   }
   if (document.fresh_evidence_supplied === true && document.terminal_state !== 'awaiting_evidence') {
     codes.push('evidence.recovery_state_invalid');
@@ -228,6 +257,17 @@ async function observeTransitionAttempt(document, packageRoot, operations) {
       illegalTransition: true,
     });
   }
+  if (['record_verdict', 'supply_fresh_evidence'].includes(document.command) &&
+      document.fresh_evidence_supplied !== true) {
+    return observation({
+      verdict: 'fail',
+      codes: ['evidence.fresh_evidence_required'],
+      output: 'evidence transition denied',
+      operations,
+      terminalState: document.from_state,
+      illegalTransition: true,
+    });
+  }
   return observation({
     verdict: 'pass',
     output: 'evidence transition accepted',
@@ -239,7 +279,9 @@ async function observeTransitionAttempt(document, packageRoot, operations) {
 export async function observeEvidenceExtension(subject, packageRoot) {
   const resolveOperations = ['resolve validator extension'];
   const registry = await readJson(packageRoot, 'contracts/validator-extensions.json');
-  const extension = registry?.extensions?.find(({extension_id: id}) => id === subject.extension_id);
+  const extension = Array.isArray(registry?.extensions)
+    ? registry.extensions.find((candidate) => candidate?.extension_id === subject.extension_id)
+    : undefined;
   if (extension === undefined) {
     return observation({
       verdict: 'fail',
@@ -259,7 +301,18 @@ export async function observeEvidenceExtension(subject, packageRoot) {
       terminalState: 'rejected',
     });
   }
-  const schemaErrors = await validateAgainstSchemaPath(packageRoot, subject.schema, subject.document);
+  let schemaErrors;
+  try {
+    schemaErrors = await validateAgainstSchemaPath(packageRoot, subject.schema, subject.document);
+  } catch {
+    return observation({
+      verdict: 'fail',
+      codes: ['schema.instance_missing'],
+      output: 'validator extension rejected',
+      operations,
+      terminalState: 'rejected',
+    });
+  }
   const schemaCode = schemaErrorCode(schemaErrors);
   if (schemaCode !== null) {
     return observation({
@@ -288,7 +341,7 @@ export async function observeEvidenceExtension(subject, packageRoot) {
         terminalState: codes.length === 0 ? 'validated' : 'rejected',
       });
     case 'claim-manifest.schema.json': {
-      operations.push('evaluate mandatory evidence');
+      operations.push('evaluate mandatory evidence', 'validate bound evidence envelopes');
       codes.push(...await claimManifestCodes(subject.document, packageRoot));
       return observation({
         verdict: codes.length === 0 ? 'pass' : 'fail',

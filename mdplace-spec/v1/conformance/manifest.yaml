@@ -871,6 +871,54 @@
       "requirement_ids": ["REQ-VAL-005", "REQ-VAL-006", "REQ-VAL-007"],
       "expected_verdict": "fail",
       "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": true}
+    },
+    {
+      "fixture_id": "FIX-VAL-STATE-002",
+      "path": "scenarios/evidence-stale-claim-binding.json",
+      "category": "stale_state",
+      "requirement_ids": ["REQ-VAL-002", "REQ-VAL-004", "REQ-VAL-005", "REQ-VAL-006"],
+      "expected_verdict": "fail",
+      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+    },
+    {
+      "fixture_id": "FIX-VAL-NEG-003",
+      "path": "fixtures/negative/duplicate-envelope-references.json",
+      "category": "negative",
+      "requirement_ids": ["REQ-VAL-003", "REQ-VAL-005"],
+      "expected_verdict": "fail",
+      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+    },
+    {
+      "fixture_id": "FIX-VAL-POS-003",
+      "path": "fixtures/positive/not-applicable-evidence.json",
+      "category": "positive",
+      "requirement_ids": ["REQ-VAL-004", "REQ-VAL-005"],
+      "expected_verdict": "pass",
+      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+    },
+    {
+      "fixture_id": "FIX-VAL-REC-002",
+      "path": "scenarios/evidence-stale-recovery-pass.json",
+      "category": "crash_recovery",
+      "requirement_ids": ["REQ-VAL-002", "REQ-VAL-005", "REQ-VAL-006"],
+      "expected_verdict": "fail",
+      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+    },
+    {
+      "fixture_id": "FIX-VAL-ILLEGAL-005",
+      "path": "scenarios/evidence-record-without-fresh-proof.json",
+      "category": "illegal_transition",
+      "requirement_ids": ["REQ-VAL-005", "REQ-VAL-006"],
+      "expected_verdict": "fail",
+      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": true}
+    },
+    {
+      "fixture_id": "FIX-VAL-NEG-004",
+      "path": "fixtures/negative/verdict-row-missing-availability.json",
+      "category": "negative",
+      "requirement_ids": ["REQ-VAL-002", "REQ-VAL-005"],
+      "expected_verdict": "fail",
+      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
     }
   ]
 }

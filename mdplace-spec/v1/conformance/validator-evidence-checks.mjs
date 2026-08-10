@@ -58,6 +58,7 @@ export async function checkValidatorEvidence(packageRoot) {
     [verdictResult.document, 'contracts/schemas/verdict-table.schema.json'],
     [indexResult.document, 'contracts/schemas/claims-and-evidence.schema.json'],
   ];
+  let rootsValid = true;
   for (const [document, schemaPath] of roots) {
     let code;
     try {
@@ -65,9 +66,12 @@ export async function checkValidatorEvidence(packageRoot) {
     } catch {
       code = 'schema.instance_missing';
     }
-    if (code !== null) codes.push(code);
+    if (code !== null) {
+      codes.push(code);
+      rootsValid = false;
+    }
   }
-  if (roots.some(([document]) => document === null)) return result(codes);
+  if (!rootsValid || roots.some(([document]) => document === null)) return result(codes);
   const manifest = manifestResult.document ?? {};
   const registry = registryResult.document ?? {};
   const verdicts = verdictResult.document ?? {};
@@ -87,8 +91,18 @@ export async function checkValidatorEvidence(packageRoot) {
     codes.push('validator.extension_registry_invalid');
   }
   const verdictRows = (verdicts.rows ?? []).map(({verdict}) => verdict);
+  const permittedAvailability = Object.fromEntries((verdicts.rows ?? [])
+    .map(({verdict, permitted_availability: availability}) => [verdict, availability]));
+  const expectedAvailability = {
+    pass: ['present'],
+    fail: ['present', 'stale'],
+    unsupported: ['present', 'unsupported'],
+    inconclusive: ['present', 'missing', 'stale', 'skipped'],
+  };
   if (!sameSet(verdictRows, ['pass', 'fail', 'unsupported', 'inconclusive']) ||
       JSON.stringify(verdicts.precedence) !== JSON.stringify(['fail', 'unsupported', 'inconclusive', 'pass']) ||
+      Object.entries(expectedAvailability).some(([verdict, availability]) =>
+        JSON.stringify(permittedAvailability[verdict]) !== JSON.stringify(availability)) ||
       new Set(verdictRows).size !== verdictRows.length) {
     codes.push('evidence.verdict_table_incomplete');
   }
@@ -100,6 +114,7 @@ export async function checkValidatorEvidence(packageRoot) {
       new Set(indexedIds).size !== indexedIds.length || new Set(indexedPaths).size !== indexedPaths.length) {
     codes.push('claim.profile_index_invalid');
   }
+  const evidenceOwners = new Map();
   for (const entry of claimEntries) {
     const claimResult = await readJson(packageRoot, entry.manifest_ref);
     if (claimResult.read.status !== 'present' || claimResult.document === null ||
@@ -109,6 +124,12 @@ export async function checkValidatorEvidence(packageRoot) {
     }
     if (claimResult.document.claim_id !== entry.claim_id || claimResult.document.profile !== entry.profile) {
       codes.push('claim.manifest_index_mismatch');
+    }
+    for (const binding of claimResult.document.evidence_bindings ?? []) {
+      if (typeof binding.evidence_ref !== 'string') continue;
+      const owner = evidenceOwners.get(binding.evidence_ref);
+      if (owner !== undefined && owner !== entry.profile) codes.push('claim.profile_evidence_reused');
+      evidenceOwners.set(binding.evidence_ref, entry.profile);
     }
     const observed = await observeEvidenceExtension({
       extension_id: extensionId,

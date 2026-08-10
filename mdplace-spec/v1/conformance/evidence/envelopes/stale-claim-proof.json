@@ -1,10 +1,10 @@
 {
   "$schema": "../../../contracts/schemas/evidence-envelope.schema.json",
   "schema_id": "mdplace.evidence-envelope/v1",
-  "envelope_id": "evidence:validator-evidence-example",
+  "envelope_id": "evidence:stale-claim-proof",
   "extension_id": "mdplace.validator-extension/evidence/v1",
   "package_series": "mdplace-spec/v1",
-  "release_version": "1.0.0",
+  "release_version": "2.0.0",
   "validator_id": "mdplace.package-validator",
   "validator_version": "1.1.0",
   "invocation": {
@@ -12,26 +12,24 @@
     "path": "conformance/evidence/invocations/validator-evidence-example.json",
     "sha256": "504da76b334ac0b2ce73bb4e7e26b3361c40d598aaa15639fca73524b0559731"
   },
-  "requirement_id": "REQ-VAL-003",
+  "requirement_id": "REQ-VAL-002",
   "subject": {
     "kind": "conformance_fixture",
-    "subject_id": "fixture:claim-profile-core",
+    "subject_id": "fixture:stale-claim-proof",
     "schema": "contracts/schemas/claim-manifest.schema.json",
-    "sha256": "1edd503c41324b5605c4ea1416b986207d37dad09387a4d831b755c3c1b91f55"
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
   },
   "input_digests": [
-    {"ordinal": 0, "label": "requirements", "path": "normative/requirements.json", "sha256": "68db7a4976b9e8b38b66b20c666a9a7451cf4030edcdc75d3c0db3cfe197def6"},
-    {"ordinal": 1, "label": "verdict_table", "path": "contracts/verdicts/validator-verdicts.json", "sha256": "6e968bf6fe7ffeec97cfbfc053e245d4ed48769bfb1f11732d0718ee2f6f32c0"}
+    {"ordinal": 0, "label": "requirements", "path": "normative/requirements.json", "sha256": "68db7a4976b9e8b38b66b20c666a9a7451cf4030edcdc75d3c0db3cfe197def6"}
   ],
   "output_digests": [
     {"ordinal": 0, "label": "claim_index", "path": "claims-and-evidence.yaml", "sha256": "78388a4e7b8f05af148f16a7d4065e6a4a54b9c4a4a5b71e1e27dae688c17768"}
   ],
   "receipts": [
-    {"ordinal": 0, "receipt_id": "receipt:validator-evidence-example", "receipt_type": "EvidenceValidationReceipt", "sha256": "ff808500cd7534033e7464e8e794d701088b5b2a07cfcee869708d963a22c3b4"}
+    {"ordinal": 0, "receipt_id": "receipt:stale-claim-proof", "receipt_type": "EvidenceValidationReceipt", "sha256": "ff808500cd7534033e7464e8e794d701088b5b2a07cfcee869708d963a22c3b4"}
   ],
   "artifact_digests": [
-    {"ordinal": 0, "label": "normative_contract", "path": "normative/validator-evidence-contract.md", "sha256": "6a11891bbfeb425cd3b07a4de4ebffff92a5622f55a22d1572e0d7ec351e183b"},
-    {"ordinal": 1, "label": "extension_registry", "path": "contracts/validator-extensions.json", "sha256": "ff808500cd7534033e7464e8e794d701088b5b2a07cfcee869708d963a22c3b4"}
+    {"ordinal": 0, "label": "extension_registry", "path": "contracts/validator-extensions.json", "sha256": "ff808500cd7534033e7464e8e794d701088b5b2a07cfcee869708d963a22c3b4"}
   ],
   "execution_context": {
     "runner_id": "mdplace.package-validator",

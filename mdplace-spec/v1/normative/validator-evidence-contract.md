@@ -58,4 +58,4 @@ The eight Claim Manifest examples are structural conformance examples over synth
 
 ## Release gate
 
-The package MUST fail validation for an unknown extension, undeclared schema, mixed specification or validator versions, invalid digest length, duplicate or noncontiguous ordinal, unresolved artifact, digest mismatch, unregistered profile, duplicate profile, missing profile row, unbound claim, pass with non-pass mandatory evidence, incomplete evidence lifecycle, uncovered illegal transition, or recovery that upgrades fail or inconclusive without fresh required evidence.
+The package MUST fail validation for an unknown extension, undeclared schema, mixed specification or validator versions, invalid digest length, duplicate or noncontiguous ordinal, unresolved artifact, digest mismatch, unregistered profile, duplicate profile, missing profile row, a Claim Manifest without a required evidence binding, pass with non-pass mandatory evidence, incomplete evidence lifecycle, uncovered illegal transition, or recovery that upgrades fail or inconclusive without fresh required evidence.

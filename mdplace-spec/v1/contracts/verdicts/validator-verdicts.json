@@ -13,6 +13,7 @@
       "meaning": "Every applicable mandatory proof is present, current, supported, digest-matched, and passing.",
       "mandatory_effect": "satisfied",
       "claim_effect": "eligible_pass",
+      "permitted_availability": ["present"],
       "recovery": "Any stale binding makes the claim non-pass until fresh mandatory evidence is supplied."
     },
     {
@@ -20,6 +21,7 @@
       "meaning": "The requirement is contradicted, an artifact or transition is invalid, or authority is denied.",
       "mandatory_effect": "non_pass",
       "claim_effect": "deny_pass",
+      "permitted_availability": ["present", "stale"],
       "recovery": "Preserve fail until fresh mandatory evidence is supplied and a new invocation records a verdict."
     },
     {
@@ -27,6 +29,7 @@
       "meaning": "The declared validator cannot evaluate the subject or capability.",
       "mandatory_effect": "non_pass",
       "claim_effect": "deny_pass",
+      "permitted_availability": ["present", "unsupported"],
       "recovery": "Declare supported fresh evidence or retain unsupported explicitly."
     },
     {
@@ -34,6 +37,7 @@
       "meaning": "Evaluation occurred but current evidence cannot determine the requirement.",
       "mandatory_effect": "non_pass",
       "claim_effect": "deny_pass",
+      "permitted_availability": ["present", "missing", "stale", "skipped"],
       "recovery": "Preserve inconclusive until fresh mandatory evidence is supplied and a new invocation records a verdict."
     }
   ]

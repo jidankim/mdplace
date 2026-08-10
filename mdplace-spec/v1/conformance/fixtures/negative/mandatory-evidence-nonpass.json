@@ -40,7 +40,7 @@
     "verdict": "fail",
     "codes": ["claim.mandatory_evidence_missing", "claim.mandatory_evidence_stale", "claim.mandatory_evidence_skipped", "claim.mandatory_evidence_unsupported"],
     "outputs": ["claim manifest rejected"],
-    "operations": ["resolve validator extension", "validate extension document", "verify specification and validator bindings", "evaluate mandatory evidence"],
+    "operations": ["resolve validator extension", "validate extension document", "verify specification and validator bindings", "evaluate mandatory evidence", "validate bound evidence envelopes"],
     "receipts": ["EvidenceValidationReceipt"],
     "filesystem_effects": ["none"],
     "terminal_state": "rejected",

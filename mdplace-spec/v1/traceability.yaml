@@ -190,7 +190,7 @@
       "normative_anchors": ["normative/validator-evidence-contract.md#req-val-002-every-validation-artifact-shares-one-immutable-version-binding"],
       "schema_or_transition_refs": ["contracts/schemas/validator-invocation.schema.json", "contracts/schemas/evidence-envelope.schema.json", "contracts/schemas/claim-manifest.schema.json", "contracts/schemas/evidence-recovery-report.schema.json"],
       "positive_fixture_ids": ["FIX-VAL-POS-001", "FIX-VAL-REC-001"],
-      "negative_fixture_ids": ["FIX-VAL-STATE-001", "FIX-VAL-AUTH-001"],
+      "negative_fixture_ids": ["FIX-VAL-STATE-001", "FIX-VAL-STATE-002", "FIX-VAL-AUTH-001", "FIX-VAL-REC-002", "FIX-VAL-NEG-004"],
       "acceptance_gate": "Invocations, envelopes, claims, artifacts, recovery reports, and verdicts bind the current package and validator versions and recomputed artifact digests.",
       "scope": "validator-evidence",
       "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/evidence-recovery-report.json"]
@@ -202,7 +202,7 @@
       "normative_anchors": ["normative/validator-evidence-contract.md#req-val-003-evidence-envelopes-are-deterministic-and-complete"],
       "schema_or_transition_refs": ["contracts/schemas/evidence-envelope.schema.json"],
       "positive_fixture_ids": ["FIX-VAL-POS-001", "FIX-PKG-BND-001"],
-      "negative_fixture_ids": ["FIX-PKG-BND-002", "FIX-PKG-BND-003"],
+      "negative_fixture_ids": ["FIX-PKG-BND-002", "FIX-PKG-BND-003", "FIX-VAL-NEG-003"],
       "acceptance_gate": "Every envelope explicitly carries its requirement, subject, ordered digests and receipts, execution context, and verdict with contiguous ordinals.",
       "scope": "validator-evidence",
       "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/envelopes/validator-evidence-example.json"]
@@ -213,8 +213,8 @@
       "canonical_terms": ["Claim Manifest", "Conformance Profile", "Evidence Envelope", "Conformance Verdict"],
       "normative_anchors": ["normative/validator-evidence-contract.md#req-val-004-claim-manifests-bind-one-claim-to-required-evidence"],
       "schema_or_transition_refs": ["contracts/schemas/claim-manifest.schema.json", "contracts/schemas/claims-and-evidence.schema.json", "claims-and-evidence.yaml"],
-      "positive_fixture_ids": ["FIX-VAL-POS-002"],
-      "negative_fixture_ids": ["FIX-VAL-NEG-001", "FIX-VAL-NEG-002"],
+      "positive_fixture_ids": ["FIX-VAL-POS-002", "FIX-VAL-POS-003"],
+      "negative_fixture_ids": ["FIX-VAL-NEG-001", "FIX-VAL-NEG-002", "FIX-VAL-STATE-002"],
       "acceptance_gate": "Each of the eight isolated profiles has one closed manifest and independent digest binding from claim and requirement to evidence and verdict.",
       "scope": "validator-evidence",
       "evidence_refs": ["conformance/evidence/validation-report.json", "claims-and-evidence.yaml"]
@@ -225,8 +225,8 @@
       "canonical_terms": ["Conformance Verdict", "Claim Manifest", "Evidence Envelope"],
       "normative_anchors": ["normative/validator-evidence-contract.md#req-val-005-verdict-aggregation-denies-absent-mandatory-proof"],
       "schema_or_transition_refs": ["contracts/schemas/verdict-table.schema.json", "contracts/verdicts/validator-verdicts.json", "contracts/schemas/claim-manifest.schema.json"],
-      "positive_fixture_ids": ["FIX-VAL-POS-001", "FIX-VAL-POS-002", "FIX-VAL-REC-001"],
-      "negative_fixture_ids": ["FIX-VAL-NEG-001", "FIX-VAL-STATE-001", "FIX-VAL-ILLEGAL-003", "FIX-VAL-ILLEGAL-004"],
+      "positive_fixture_ids": ["FIX-VAL-POS-001", "FIX-VAL-POS-002", "FIX-VAL-POS-003", "FIX-VAL-REC-001"],
+      "negative_fixture_ids": ["FIX-VAL-NEG-001", "FIX-VAL-NEG-003", "FIX-VAL-NEG-004", "FIX-VAL-STATE-001", "FIX-VAL-STATE-002", "FIX-VAL-REC-002", "FIX-VAL-ILLEGAL-003", "FIX-VAL-ILLEGAL-004", "FIX-VAL-ILLEGAL-005"],
       "acceptance_gate": "Pass requires complete current mandatory proof; fail, unsupported, and inconclusive retain distinct non-pass semantics under the complete verdict table.",
       "scope": "validator-evidence",
       "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/evidence-recovery-report.json"]
@@ -238,7 +238,7 @@
       "normative_anchors": ["normative/validator-evidence-contract.md#req-val-006-readback-and-recovery-preserve-non-pass-results"],
       "schema_or_transition_refs": ["contracts/schemas/evidence-recovery-report.schema.json", "contracts/schemas/evidence-transition-attempt.schema.json", "contracts/transitions/evidence-lifecycle.json"],
       "positive_fixture_ids": ["FIX-VAL-REC-001"],
-      "negative_fixture_ids": ["FIX-VAL-STATE-001", "FIX-VAL-ILLEGAL-001", "FIX-VAL-ILLEGAL-002", "FIX-VAL-ILLEGAL-003", "FIX-VAL-ILLEGAL-004"],
+      "negative_fixture_ids": ["FIX-VAL-STATE-001", "FIX-VAL-STATE-002", "FIX-VAL-REC-002", "FIX-VAL-ILLEGAL-001", "FIX-VAL-ILLEGAL-002", "FIX-VAL-ILLEGAL-003", "FIX-VAL-ILLEGAL-004", "FIX-VAL-ILLEGAL-005"],
       "acceptance_gate": "Readback recomputes every binding and fail or inconclusive remains effective until fresh mandatory evidence reopens evaluation through the complete lifecycle.",
       "scope": "validator-evidence",
       "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/evidence-recovery-report.json"]

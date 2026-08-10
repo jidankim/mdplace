@@ -49,7 +49,7 @@
     },
     {
       "path": "claims-and-evidence.yaml",
-      "authority": "informative",
+      "authority": "normative",
       "media_type": "application/json",
       "sha256": "78388a4e7b8f05af148f16a7d4065e6a4a54b9c4a4a5b71e1e27dae688c17768"
     },
@@ -67,49 +67,49 @@
     },
     {
       "path": "conformance/claim-manifests/alias-automatic-promotion.json",
-      "authority": "informative",
+      "authority": "normative",
       "media_type": "application/json",
       "sha256": "6ecd4da10f3c0d47685c3b5952682a674b71473ce3fd0e0086744e6a1774cf62"
     },
     {
       "path": "conformance/claim-manifests/codex-intelligence-adapter.json",
-      "authority": "informative",
+      "authority": "normative",
       "media_type": "application/json",
       "sha256": "246b082104b135011691e8dc8a652d798e0aa0cccc003a816ee5618750c5689d"
     },
     {
       "path": "conformance/claim-manifests/core.json",
-      "authority": "informative",
+      "authority": "normative",
       "media_type": "application/json",
       "sha256": "1edd503c41324b5605c4ea1416b986207d37dad09387a4d831b755c3c1b91f55"
     },
     {
       "path": "conformance/claim-manifests/local-intelligence-adapter.json",
-      "authority": "informative",
+      "authority": "normative",
       "media_type": "application/json",
       "sha256": "54db33c3214da03b2a45e22e0c5752fb1e37e1c10835dc122bc71522a66d295f"
     },
     {
       "path": "conformance/claim-manifests/new-leaf-automatic-promotion.json",
-      "authority": "informative",
+      "authority": "normative",
       "media_type": "application/json",
       "sha256": "f3a115e5e90f7c9b8d70135fd2ee6c286ba5373b9f46227a11af0daeabe1dfc6"
     },
     {
       "path": "conformance/claim-manifests/placement-automation.json",
-      "authority": "informative",
+      "authority": "normative",
       "media_type": "application/json",
       "sha256": "5433f1acc45320a64f2cc22362e0b000b8540b3f2c27ce72ad077b2904bd6798"
     },
     {
       "path": "conformance/claim-manifests/remote-intelligence-adapter.json",
-      "authority": "informative",
+      "authority": "normative",
       "media_type": "application/json",
       "sha256": "5819a321dd20c12774a165762ebbb47fa20f83a6c09b389ed46ca732bfdbe29f"
     },
     {
       "path": "conformance/claim-manifests/web-clipper-product-readiness.json",
-      "authority": "informative",
+      "authority": "normative",
       "media_type": "application/json",
       "sha256": "baa5e5cf597acfa2735558758dad4bca820c6e4579865cee269eeaeed8d0c74c"
     },
@@ -117,31 +117,37 @@
       "path": "conformance/digest-bindings.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "ff1b77bdf415f9151d53c15a7d323dac6e26999cf7262e2b28c40f076d829fad"
+      "sha256": "342221b2833f5bb465b5c6f4295ba6ef64dc0aa833cd69877e6ad0382da40884"
     },
     {
       "path": "conformance/evidence-extension.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "d20c316a2ae63f216bf0d6adf63ebf303d050d45ab1ec13a7338d0ed690e6e66"
+      "sha256": "c275fd7e3ed3ad6e5f3f79daa9f2aec9e0fe71ef307c7112908b9648c884aa44"
+    },
+    {
+      "path": "conformance/evidence/envelopes/stale-claim-proof.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "1f59bbd9c15e9b73c0de0b13dc3a9f63ebc15923e116b42c58d56d05514437b2"
     },
     {
       "path": "conformance/evidence/envelopes/validator-evidence-example.json",
-      "authority": "informative",
+      "authority": "normative",
       "media_type": "application/json",
-      "sha256": "c49169c064c58a9f0d1fe4d9935b21f2294f2bbd997d54c498684fc37f30c17a"
+      "sha256": "ed94db07e5e2f0c9dc2966b40439bce11a84881f63bdd09dd3839dcd9db45dd7"
     },
     {
       "path": "conformance/evidence/evidence-recovery-report.json",
-      "authority": "informative",
+      "authority": "normative",
       "media_type": "application/json",
-      "sha256": "ffd6e6251fc6b6f9fd0d3b1a1f5e8f1404fa8e676f1c1cd62c6271e2e5cf1f81"
+      "sha256": "20c7dd0aa2f67d81e4b55cc78616e53ee13fc3db2f609c33535ca8f15bb913d4"
     },
     {
       "path": "conformance/evidence/invocations/validator-evidence-example.json",
-      "authority": "informative",
+      "authority": "normative",
       "media_type": "application/json",
-      "sha256": "3f5f05a8485420a40611ae29c6ae3b5eed429a955c1cee17a5f85cea45f39d4d"
+      "sha256": "504da76b334ac0b2ce73bb4e7e26b3361c40d598aaa15639fca73524b0559731"
     },
     {
       "path": "conformance/evidence/recovery-report.json",
@@ -153,13 +159,13 @@
       "path": "conformance/evidence/traceability-report.json",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "09831ced9ff63490f30214439f97ded35871301c092e6606658931aaf32ba25a"
+      "sha256": "ce40c7e9e8e52d975d897c1350689dad23e25c00d4b0cabda0c5fbb84c751909"
     },
     {
       "path": "conformance/evidence/validation-report.json",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "572dda7546e20856172a14f316e1e8d9ef197723fc912a0df0d621d5c54c6513"
+      "sha256": "00533cb14ec0a609d9b53ae8b264d0aa13080d0bc3891afcadbcffb345582499"
     },
     {
       "path": "conformance/evidence/version-amendment-report.json",
@@ -210,6 +216,12 @@
       "sha256": "92c29420bc109c44196ecf81d71bed9dbb72133ab4f2ef05318eab98cb737046"
     },
     {
+      "path": "conformance/fixtures/negative/duplicate-envelope-references.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "a38c3b811b1bd04bd01012bdefa3344c145f5a3ec8b733847bf073bf0dc2c6a0"
+    },
+    {
       "path": "conformance/fixtures/negative/duplicate-requirement-id.json",
       "authority": "normative",
       "media_type": "application/json",
@@ -237,7 +249,7 @@
       "path": "conformance/fixtures/negative/mandatory-evidence-nonpass.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "937988c6c763dc3d49a1a2cccc6ec3176dea7d937da15e5d947c47e874202516"
+      "sha256": "4b6ad50ed641796352a3acec3e2d37801874aa73e8f97b7dcd781e9aa1e68013"
     },
     {
       "path": "conformance/fixtures/negative/missing-release-slot.json",
@@ -288,6 +300,12 @@
       "sha256": "569a161940f83a3bef10c84c63143d4b5601e01d82f72bcf5cf3f15bc56e85b6"
     },
     {
+      "path": "conformance/fixtures/negative/verdict-row-missing-availability.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "0c9b206c1ac00eb73e2c458df747286af9b2917b8869cc22ddb2d4c9ac2487fe"
+    },
+    {
       "path": "conformance/fixtures/positive/authorized-amend.json",
       "authority": "normative",
       "media_type": "application/json",
@@ -297,7 +315,7 @@
       "path": "conformance/fixtures/positive/authorized-release.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "68d330edfc63824e46d41dfb3dd5aeb5b44c35a86b8711eabdf6eebf3e367de8"
+      "sha256": "f3ead127b521724192ab692572467aa7d543651ffc56d9b4ecaafe04fcc03e3f"
     },
     {
       "path": "conformance/fixtures/positive/authorized-submit.json",
@@ -312,16 +330,22 @@
       "sha256": "37be04d235ce252eebcdcc774c98d79ab80a7b5ef9c088e609196f2729d583a3"
     },
     {
+      "path": "conformance/fixtures/positive/not-applicable-evidence.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "586cdc4826e08ea1fbb63430f4fdfba6afcfa288f6e4aa3c43f588afd846dab2"
+    },
+    {
       "path": "conformance/fixtures/positive/valid-claim-manifest.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "195279299f70cb63285a1daa417f352cfd037670cb74f7b69ecfec8135e525ad"
+      "sha256": "7a23f6b6a751fcc5ebbb49ccfa4376dbc7189389232f7ad064bede61864b37ed"
     },
     {
       "path": "conformance/fixtures/positive/valid-evidence-envelope.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "5e131d936fc03bacaca014763d62b9c51c75795e42220adeef453c86ec7228f5"
+      "sha256": "0932f6bbeb0e8c45ffe65a4e503245a363534850ff92f9192d6d4abc325f1f30"
     },
     {
       "path": "conformance/fixtures/positive/valid-package-amendment.json",
@@ -345,13 +369,13 @@
       "path": "conformance/manifest.yaml",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "e6e851c8f155dac319e4ab408df17340dcd89d6e8b51d7453827236d3d5bdb7b"
+      "sha256": "47ead8ef27a0a32d84f882b01223936c95c82f1b882908f5476c6667b6d86b15"
     },
     {
       "path": "conformance/package-checks.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "c5f49357fc632dde4c5074e8e976cd288549596fc8a1a712082ae4c8cb80f69e"
+      "sha256": "847c384da728da7fde6b62932122cd794507d6b669572a9225076b02ffa15b30"
     },
     {
       "path": "conformance/pattern-evaluation.mjs",
@@ -747,7 +771,7 @@
       "path": "conformance/scenarios/evidence-crash-recovery.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "d288153ca65fcc9268f1d8b038f788a5e5769fb3fada68ab4c5a9cb36a399837"
+      "sha256": "cca16eeea9de55172164ba84585f4154ddc18bda8a003393891654ead9c86a53"
     },
     {
       "path": "conformance/scenarios/evidence-illegal-awaiting-readback.json",
@@ -774,10 +798,28 @@
       "sha256": "f3f8d7c152c0a3027eb3c363002f732bf4c83f80318b23e283a385ef0c8f0461"
     },
     {
+      "path": "conformance/scenarios/evidence-record-without-fresh-proof.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "46904ea26633a492c27c4085498e3c68cfaca8df1e1df510ec7fb0452f64e944"
+    },
+    {
+      "path": "conformance/scenarios/evidence-stale-claim-binding.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "a3148c6e676fb799ec5b160d72dfb5e4ac55132c113e6a4b698af146e5099f79"
+    },
+    {
+      "path": "conformance/scenarios/evidence-stale-recovery-pass.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "189965934cf88fb7802ca9a3370cab9dd61aa47791dc0b3672efc28fac3beba7"
+    },
+    {
       "path": "conformance/scenarios/evidence-stale-version.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "97ae17dc9c5e8cd4f077f41153b28e3de9718ca9b76732e2bdb5db3876caf8c4"
+      "sha256": "f69f27e3a2e049d29833ee3f92fcb027e5c294219cdd37fac8a704b517177724"
     },
     {
       "path": "conformance/scenarios/illegal-release.json",
@@ -867,25 +909,25 @@
       "path": "conformance/state-observations/candidate/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "02a1cadc50663fc504031418580d9f9cb5f3cd5f0ddd02844f5412183be4d17d"
+      "sha256": "86232a24d09e57b4c79d8f51d7f64b1e7f3f85526c471a8194004e480e643add"
     },
     {
       "path": "conformance/state-observations/draft/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "63c085f6d6f022bc0f84a2b92858fa34b91f1c6b70a36e314e91f83721f5b353"
+      "sha256": "90b740925d8a7e3a2ca934d8174c846550dbbf644222c4d1fb2f7ea44119aa05"
     },
     {
       "path": "conformance/state-observations/release-ready/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "edb187dddfe8f592dace039388955b855624b30064ea608f1eac76ecb87c0b2c"
+      "sha256": "7f3bbe819fc7adf144152932f1e5b300c06f4c73e83e14def2d121759eceff16"
     },
     {
       "path": "conformance/state-observations/released/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "42e9b8c7bff4bdf9bbc7d1c12371bedbdcac711a2388b02409d744dbe6b6ad20"
+      "sha256": "ccc4c2ca81229d110f321fb288f69bb67eba887183a26be9570da8d91c8fade1"
     },
     {
       "path": "conformance/traceability-checks.mjs",
@@ -921,19 +963,19 @@
       "path": "conformance/validator-contract-cases.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "46da345bba19292f34ae8d076eeb0385e900e1a2dc16919284eaf98fb55db5c5"
+      "sha256": "02bfe20598be07849b1c0492a199f7c8fa5855ca7b6dd17fff91c4c0d723a6bf"
     },
     {
       "path": "conformance/validator-evidence-cases.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "6a37e88d4bc94ce9ebf41f0276af4545b706bc0880e12b7b52f0e49033d99c24"
+      "sha256": "4069238f599dbdffc5e6ff6ff9cb0cf6c92397ddf5fafa8543d3f11a34848542"
     },
     {
       "path": "conformance/validator-evidence-checks.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "6c7eeb51b8651c54592af240f6e2a4c6ede1c2d12aed9703c304c50e56f72994"
+      "sha256": "999487b79fcb5acb6cc51f5b743d2de26d14c56cd62a8736a0a4f71a4084261a"
     },
     {
       "path": "conformance/validator-final-review-cases.mjs",
@@ -1119,7 +1161,7 @@
       "path": "contracts/schemas/verdict-table.schema.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "c33c4c83af4d05b9778e6f76b5876d26da7e1824688bc5693ca2e1013cac4fa6"
+      "sha256": "aaec0a30ad868792dd26eafad1d56829e5a5361e47c0c6f288ea228dbe1b7dae"
     },
     {
       "path": "contracts/schemas/version-amendment-report.schema.json",
@@ -1149,13 +1191,13 @@
       "path": "contracts/verdicts/validator-verdicts.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "3f4d8bd3d9c6b752db6ec09ff0e62b709d647b37185b2ca45cfdd950d38e2410"
+      "sha256": "6e968bf6fe7ffeec97cfbfc053e245d4ed48769bfb1f11732d0718ee2f6f32c0"
     },
     {
       "path": "normative/package-contract.md",
       "authority": "normative",
       "media_type": "text/markdown",
-      "sha256": "c4fec6abb71764bec68b4520315aa6e0254e32bcf8399e90273a6fe1f6a8e7c1"
+      "sha256": "3378f6046b1164e511031a856b064da661e4b0de16b479abf038e79b160b8b3b"
     },
     {
       "path": "normative/requirements.json",
@@ -1167,17 +1209,17 @@
       "path": "normative/validator-evidence-contract.md",
       "authority": "normative",
       "media_type": "text/markdown",
-      "sha256": "2311b9ccb848ab03f36296bea2484b2452a2c927ce0069e61aa822050065ab24"
+      "sha256": "6a11891bbfeb425cd3b07a4de4ebffff92a5622f55a22d1572e0d7ec351e183b"
     },
     {
       "path": "traceability.yaml",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "fc0a358411e0e8c7708eeb261229aafee8732957ac04ef5256fe1a8ea53c57c2"
+      "sha256": "09d4aeec6703754a2179187d27387328a96b970e455cc8b979a712b9274ea1ee"
     }
   ],
-  "normative_digest": "5f256c93bb1b0915ac1e6040b30ce40ec63afff51298632831cea447ed806950",
-  "conformance_digest": "ab8138bc442f2ae87df48c667dcbeff1b3dc12f2a274af5d8ac4d0f59c78559f",
+  "normative_digest": "52fb21157cc47e8953aa953b22a6a5f46a3c032eb0ede4b1b6ceeca65ad57d6e",
+  "conformance_digest": "2c35fa2696b66aa36980b3b242ac238657821b0911cab796d2617d92ed791786",
   "amendment_policy": {
     "immutable_after_release": true,
     "in_place_mutation": "forbidden",

@@ -68,11 +68,19 @@ function isRecord(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
-function expectedAuthority(path) {
+function expectedAuthority(path, validatorVersion) {
+  const validatorEvidenceIsNormative = validatorVersion !== '1.0.0' && (
+    path === 'claims-and-evidence.yaml' ||
+    path.startsWith('conformance/claim-manifests/') ||
+    path.startsWith('conformance/evidence/envelopes/') ||
+    path.startsWith('conformance/evidence/invocations/') ||
+    path === 'conformance/evidence/evidence-recovery-report.json'
+  );
   return path.startsWith('normative/') ||
     path.startsWith('contracts/') ||
     path === 'traceability.yaml' ||
     path === 'conformance/manifest.yaml' ||
+    validatorEvidenceIsNormative ||
     path.startsWith('conformance/release-targets/') ||
     path.startsWith('conformance/fixtures/') ||
     path.startsWith('conformance/scenarios/')
@@ -155,7 +163,9 @@ export async function checkArtifactBindings(packageRoot, manifest) {
       continue;
     }
     if (sha256(read.content) !== artifact.sha256) codes.push('artifact.hash_mismatch');
-    if (artifact.authority !== expectedAuthority(artifact.path)) codes.push('artifact.authority_mismatch');
+    if (artifact.authority !== expectedAuthority(artifact.path, manifest.validator_version)) {
+      codes.push('artifact.authority_mismatch');
+    }
   }
   const listing = await listPackageFiles(packageRoot);
   if (listing.status === 'unsafe') codes.push('artifact.path_unsafe');

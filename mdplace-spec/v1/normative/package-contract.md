@@ -12,7 +12,7 @@ Every package artifact MUST be declared exactly once as Normative Material or In
 
 Every package MUST declare the `mdplace-spec/v1` series, one canonical three-component SemVer release version with a nonzero major and no leading zeroes, one lifecycle state, its validator version, a SHA-256 digest over the ordered normative artifact bindings, and a separate SHA-256 digest over the conformance pack. The package series identifies compatibility; the release version identifies exact content. A requirement identifier MUST retain its meaning for the lifetime of the series.
 
-The ordered normative artifact binding is the UTF-8 concatenation of each normative artifact, sorted by ascending path, as `<path><NUL><lowercase-sha256><LF>`. `normative_digest` is the lowercase SHA-256 of that concatenation. `conformance_digest` uses the same ordered binding over every `contracts/` and `conformance/` artifact except generated `conformance/evidence/` reports, thereby binding schemas, transition tables, the conformance manifest, fixtures, scenarios, observations, and the exact validator inventory without a generated-report cycle. The root manifest is self-declaring Normative Material and is excluded from its own artifact ledger; every other package file MUST occur in the ledger exactly once.
+The ordered normative artifact binding is the UTF-8 concatenation of each normative artifact, sorted by ascending path, as `<path><NUL><lowercase-sha256><LF>`. `normative_digest` is the lowercase SHA-256 of that concatenation. `conformance_digest` uses the same ordered binding over every `contracts/` and `conformance/` artifact except generated reports under `conformance/evidence/`; the reference invocations, Evidence Envelopes, and Evidence Recovery Report consumed by conformance remain included. This binds schemas, transition tables, the conformance manifest, fixtures, scenarios, observations, reference evidence, and the exact validator inventory without a generated-report cycle. The root manifest is self-declaring Normative Material and is excluded from its own artifact ledger; every other package file MUST occur in the ledger exactly once.
 
 ## REQ-PKG-003: Released content is immutable
 
@@ -68,7 +68,7 @@ Pre-release lifecycle state is not evidence of release. Only the complete `relea
 
 ## Normative and informative boundary
 
-The root package manifest, requirement index, schemas, transition tables, conformance manifest, fixtures, scenarios, and traceability map are Normative Material. This README, validator implementation, validator tests, and generated reports are Informative Material. The informative validator is a reference checker for the normative artifacts; another implementation may replace it only if it produces the same observable verdicts and codes.
+The root package manifest, requirement index, schemas, transition tables, conformance manifest, fixtures, scenarios, traceability map, Claim Manifest index and examples, and reference evidence consumed by conformance are Normative Material. This README, validator implementation, validator tests, and generated validation and traceability reports are Informative Material. The informative validator is a reference checker for the normative artifacts; another implementation may replace it only if it produces the same observable verdicts and codes.
 
 ## Closed-schema convention
 

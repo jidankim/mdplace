@@ -1,9 +1,9 @@
 {
   "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
   "schema_id": "mdplace.conformance-fixture/v1",
-  "fixture_id": "FIX-VAL-POS-002",
+  "fixture_id": "FIX-VAL-POS-003",
   "category": "positive",
-  "requirement_ids": ["REQ-VAL-004", "REQ-VAL-005", "REQ-VAL-007"],
+  "requirement_ids": ["REQ-VAL-004", "REQ-VAL-005"],
   "subject": {
     "kind": "extension",
     "extension_id": "mdplace.validator-extension/evidence/v1",
@@ -12,18 +12,18 @@
       "$schema": "../../contracts/schemas/claim-manifest.schema.json",
       "schema_id": "mdplace.claim-manifest/v1",
       "manifest_kind": "conformance_example",
-      "claim_id": "CLAIM-CORE-001",
+      "claim_id": "CLAIM-NOTAPPLICABLE-001",
       "profile": "core",
       "package_series": "mdplace-spec/v1",
       "release_version": "1.0.0",
       "validator_id": "mdplace.package-validator",
       "validator_version": "1.1.0",
-      "subject": {"kind": "conformance_fixture", "subject_id": "fixture:claim-profile-core", "sha256": "45c03d616f5593cf057f0990e487afaf038a64ad7078720e8808d0290a5fa2f2"},
+      "subject": {"kind": "conformance_fixture", "subject_id": "fixture:not-applicable-proof", "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
       "requirement_id": "REQ-VAL-005",
-      "evidence_requirements": [{"evidence_kind": "profile_conformance", "mandatory": true}],
-      "evidence_bindings": [{"evidence_kind": "profile_conformance", "mandatory": true, "availability": "missing", "applicability": "applicable", "evidence_ref": null, "evidence_digest": null, "verdict": "inconclusive"}],
+      "evidence_requirements": [{"evidence_kind": "irrelevant_proof", "mandatory": true}],
+      "evidence_bindings": [{"evidence_kind": "irrelevant_proof", "mandatory": true, "availability": "missing", "applicability": "not_applicable", "evidence_ref": null, "evidence_digest": null, "verdict": "inconclusive"}],
       "applicability": "applicable",
-      "verdict": "inconclusive"
+      "verdict": "pass"
     }
   },
   "expected": {
