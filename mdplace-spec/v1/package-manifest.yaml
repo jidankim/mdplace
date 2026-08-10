@@ -111,7 +111,7 @@
       "path": "conformance/evidence-extension.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "39de7a8a90466423bc8329899d4a1cabd1d510a5cd72e64718c61c14a2a26c98"
+      "sha256": "a0982d41b2e4ab2994a09fef3b2cd52ddcf7b5941b28987d0dfd98d457cea8d1"
     },
     {
       "path": "conformance/evidence/claims/recovery-snapshot.json",
@@ -153,13 +153,13 @@
       "path": "conformance/evidence/traceability-report.json",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "8fbd973ff10707c924c881dc4c108b7c781458e92054a8dadb758dffbeae8daf"
+      "sha256": "8ded52a537a24c7fe6372acde08b4086acbb8363548947af3e9ef13dca020abe"
     },
     {
       "path": "conformance/evidence/validation-report.json",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "151e7485dd9ef1b0fa30979e6c2349b5139603934b1384082780485a81f83659"
+      "sha256": "000f64fc4661668cd064f54af78004e045955a3d8100b95f77d10e3978fc58c5"
     },
     {
       "path": "conformance/evidence/version-amendment-report.json",
@@ -969,7 +969,7 @@
       "path": "conformance/validator-evidence-cases.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "4ad33c603ecc46bc53f8cd4676138df1e89e506d0d12b4151f24dca8cf9aa710"
+      "sha256": "0480287258f92cd44b31bb8733892d1552f14ebeaa1e0d8ef1aea0f0a9caac37"
     },
     {
       "path": "conformance/validator-evidence-checks.mjs",
@@ -1023,7 +1023,7 @@
       "path": "conformance/validator-rules.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "3de44cc3789ae0840f4094554504322b3cfffdacd45e9d653b8ca803a025c919"
+      "sha256": "8d4643c5b77b92dfcc9d0f53f874f0fc8b2a9d3cb8c3b0ea01ef981fb9d9138e"
     },
     {
       "path": "conformance/validator-security-cases.mjs",
@@ -1228,10 +1228,142 @@
       "authority": "normative",
       "media_type": "application/json",
       "sha256": "8960f09674bbbbdb24b2b7b0d096c103d202f15db428e56eec2cda46f5aea15f"
+    },
+    {
+      "path": "conformance/evidence-claim-validation.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "bfff18bc37fc6e7f9ce831c3f8340a1398e3f6852932eb16ab7ded9e5f6a61d9"
+    },
+    {
+      "path": "conformance/evidence-core.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "07de705a21b1fc031b3d51aa99fe4425d03821c556967186b8ac763f0bf8b7c4"
+    },
+    {
+      "path": "conformance/evidence-envelope-validation.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "82c6699a614f8253f33470dffc5b40220ee002449249384fbcb1aa2802630e0e"
+    },
+    {
+      "path": "conformance/evidence-freshness.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "e11ea605c31e398c73a5fecaaf9e4fad7900c1708c308e407a58a3b7c3ae4240"
+    },
+    {
+      "path": "conformance/evidence-invocation-validation.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "47840ab2c03ece7304620f6b3e90f9b45f93d5f55e370d3af09c8d5992de1d1c"
+    },
+    {
+      "path": "conformance/evidence-recovery-validation.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "41d2849d9dded52479db5b5a6a5ce9fe2eecb20955959ee3bc0d40782d3255f0"
+    },
+    {
+      "path": "conformance/evidence-transition-validation.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "250f0c45145dd1f20c09dc216dcecd038f89d666dfc7c3d9cc08ad30eceef830"
+    },
+    {
+      "path": "conformance/validator-evidence-domain-invariants.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "d4c39749e7399cd35e83820a54e24c8cf2a7e3668ff00f25e2beed550383e086"
+    },
+    {
+      "path": "conformance/validator-evidence-envelope-integrity.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "750b59309713e2c9df2a29b0b7e0d1007bbc0c1cd8b3379bff96c7dfcbe05ba0"
+    },
+    {
+      "path": "conformance/validator-evidence-extension-binding.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "147ec0e5aae0349e53bc25352c6cbead0f5ae5efd1bbfd04539993d1190fc819"
+    },
+    {
+      "path": "conformance/validator-evidence-fixture-support.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "56405509f8e4e6a36d3853280fcf733cdba319ca62e66281fb1eacc43555c230"
+    },
+    {
+      "path": "conformance/validator-evidence-fresh-replacement.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "559d005b502ea443aa8cf4af89463d02992f01334ce05d6ad620978ec40759b3"
+    },
+    {
+      "path": "conformance/validator-evidence-fresh-report.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "0bc50b770752e8083e1f09efb912a55e39172ed22446e6e35faef986b3ffe35d"
+    },
+    {
+      "path": "conformance/validator-evidence-mark-stale-churn.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "6e4871b2eeb844d22263085f88ad0c44f61085cf070620e639833ad1e87cec1c"
+    },
+    {
+      "path": "conformance/validator-evidence-readback-replay.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "9fc103a9c2a2065ad5f6a65ce7e22a784d0218dd438b5498eca118040f2b3c81"
+    },
+    {
+      "path": "conformance/validator-evidence-recovery-resolution.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "73a76868473d8677f015567edd0c59137d584b5b0d7255e09cb99762cac3c259"
+    },
+    {
+      "path": "conformance/validator-evidence-stale-recovery.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "d884eb33772a9ca7f42b08d4b84b9e86ff7d22f9649c92113005dfb19b6326ba"
+    },
+    {
+      "path": "conformance/validator-evidence-stale-semantics.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "03f34e58987e6513dd8e2707d7db0f02599be067de25a105ac1360c863289429"
+    },
+    {
+      "path": "conformance/validator-evidence-support.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "35c488f5657ad863cecb610700fb54561cf09eeb0add55143a529744e7e1186e"
+    },
+    {
+      "path": "conformance/validator-evidence-table-validation.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "804f31fbb13192758580a73c9b546ca481201e4272ab2e56e25ed1573c7c7d02"
+    },
+    {
+      "path": "conformance/validator-evidence-transitive-bindings.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "e8f14236951e59366e588444e038ec37d74a402fdc4673f673cd2f0a054cfecf"
+    },
+    {
+      "path": "conformance/validator-evidence-verdict-resolution.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "22408a5d4e2f643f77a689dc570f3283d7b5373eb578a1e131b52a885833a3cc"
     }
   ],
   "normative_digest": "0ffff589e820b1c1d5dbc6512e9149ddeec1a355b63a10534656b0f11f135cdb",
-  "conformance_digest": "d56ef2944e7e3abd9e5f5141b407ef2eb2e1f727d3b1cc4536e9871ff44ab253",
+  "conformance_digest": "c2fd78d13489b0dfa671b81e162f8ba72e8cb4bf1813059081c7b2c1aef12088",
   "amendment_policy": {
     "immutable_after_release": true,
     "in_place_mutation": "forbidden",
