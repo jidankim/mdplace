@@ -37,11 +37,14 @@ function patternWithinBudget(pattern) {
       priorTokenIsRisky = false;
       continue;
     }
-    const braceQuantifier = character === '{' && /^\{\d+(?:,\d*)?\}/.test(pattern.slice(index));
-    if (character === '*' || character === '+' || character === '?' || braceQuantifier) {
-      const unbounded = character === '*' || character === '+' ||
-        (braceQuantifier && /^\{\d+,\}/.test(pattern.slice(index)));
-      if (priorTokenIsRisky && unbounded) return false;
+    const braceQuantifier = character === '{' ? /^\{(\d+)(?:,(\d*))?\}/.exec(pattern.slice(index)) : null;
+    if (character === '*' || character === '+' || character === '?' || braceQuantifier !== null) {
+      const repetitionMaximum = character === '*' || character === '+' ? Number.POSITIVE_INFINITY
+        : character === '?' ? 1
+          : braceQuantifier[2] === '' ? Number.POSITIVE_INFINITY
+            : Number(braceQuantifier[2] ?? braceQuantifier[1]);
+      const unbounded = repetitionMaximum === Number.POSITIVE_INFINITY;
+      if (priorTokenIsRisky && repetitionMaximum > 1) return false;
       const frame = frames.at(-1);
       if (unbounded && frame.unbounded >= 2) return false;
       if (unbounded) frame.unbounded += 1;

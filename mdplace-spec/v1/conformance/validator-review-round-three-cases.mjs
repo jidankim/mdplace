@@ -6,6 +6,7 @@ import test from 'node:test';
 
 import {amendmentEvidenceMatches} from './amendment-evidence.mjs';
 import {conformanceDigestForArtifacts} from './digest-bindings.mjs';
+import {validateJsonSchema} from './json-schema.mjs';
 import {observeTransition} from './transition-observer.mjs';
 import {copyCommittedPackage} from './validator-test-support.mjs';
 
@@ -45,6 +46,15 @@ async function amendedFixture(packageRoot, mutate) {
   fixture.subject.amendment_evidence.target_digest = manifest.normative_digest;
   return fixture;
 }
+
+test('schema validation rejects nested bounded repetition before evaluation', () => {
+  const errors = validateJsonSchema(
+    {type: 'string', pattern: '^(a{0,1000}){0,1000}$'},
+    `${'a'.repeat(1023)}b`,
+  );
+
+  assert.ok(errors.some(({keyword}) => keyword === 'resourceLimit'));
+});
 
 test('transition preconditions apply the complete package-manifest schema', async () => {
   const packageRoot = await copyCommittedPackage();
