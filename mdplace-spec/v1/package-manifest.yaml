@@ -153,13 +153,13 @@
       "path": "conformance/evidence/traceability-report.json",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "8ded52a537a24c7fe6372acde08b4086acbb8363548947af3e9ef13dca020abe"
+      "sha256": "a74b843900ed4bef061f527b62ea17a86440834e89b6e0fe92d9fef492361e84"
     },
     {
       "path": "conformance/evidence/validation-report.json",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "000f64fc4661668cd064f54af78004e045955a3d8100b95f77d10e3978fc58c5"
+      "sha256": "adf4beba58f8320e31520ece01fc250678d833a14756a910f3a28afb061eb762"
     },
     {
       "path": "conformance/evidence/version-amendment-report.json",
@@ -969,7 +969,7 @@
       "path": "conformance/validator-evidence-cases.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "0480287258f92cd44b31bb8733892d1552f14ebeaa1e0d8ef1aea0f0a9caac37"
+      "sha256": "74034d9fe1a44d924dd089772e5246404a7eb9171e45986a8e0cfc9c374913af"
     },
     {
       "path": "conformance/validator-evidence-checks.mjs",
@@ -1023,7 +1023,7 @@
       "path": "conformance/validator-rules.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "8d4643c5b77b92dfcc9d0f53f874f0fc8b2a9d3cb8c3b0ea01ef981fb9d9138e"
+      "sha256": "30dea150de314c9c1709256dc6c80be8d76f4aa72946fc3be0c9cd46ab334627"
     },
     {
       "path": "conformance/validator-security-cases.mjs",
@@ -1251,7 +1251,7 @@
       "path": "conformance/evidence-freshness.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "e11ea605c31e398c73a5fecaaf9e4fad7900c1708c308e407a58a3b7c3ae4240"
+      "sha256": "4f7e5779134d98af32d5248b4dc9b043c19c81e9015f1cc0c9124e74e8184b80"
     },
     {
       "path": "conformance/evidence-invocation-validation.mjs",
@@ -1314,6 +1314,12 @@
       "sha256": "6e4871b2eeb844d22263085f88ad0c44f61085cf070620e639833ad1e87cec1c"
     },
     {
+      "path": "conformance/validator-evidence-nested-subjects.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "c79387a2df78e36783d1ddeb6965ac9a090c0506650e64ba606cae8b32c7b904"
+    },
+    {
       "path": "conformance/validator-evidence-readback-replay.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
@@ -1363,7 +1369,7 @@
     }
   ],
   "normative_digest": "0ffff589e820b1c1d5dbc6512e9149ddeec1a355b63a10534656b0f11f135cdb",
-  "conformance_digest": "c2fd78d13489b0dfa671b81e162f8ba72e8cb4bf1813059081c7b2c1aef12088",
+  "conformance_digest": "cf62fcd080aacb2427ef105076aa9b71ca7e220d370bb66025c5342a9a8572f7",
   "amendment_policy": {
     "immutable_after_release": true,
     "in_place_mutation": "forbidden",

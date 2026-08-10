@@ -200,6 +200,30 @@ async function addTransitiveBindings(expected, binding, schemaPath, packageRoot,
       addExpectedBinding(expected, child.path, child.sha256);
     }
     await addTransitiveBindings(expected, document.subject, document.subject?.schema, packageRoot, nested);
+  } else if (schemaName === 'evidence-recovery-report.schema.json') {
+    await addTransitiveBindings(expected, document.claim,
+      'contracts/schemas/claim-manifest.schema.json', packageRoot, nested);
+    if (document.recorded_claim !== null) {
+      await addTransitiveBindings(expected, document.recorded_claim,
+        'contracts/schemas/claim-manifest.schema.json', packageRoot, nested);
+    }
+    for (const recomputed of (Array.isArray(document.recomputed_bindings)
+      ? document.recomputed_bindings : []).filter(isRecord)) {
+      addExpectedBinding(expected, recomputed.path, recomputed.expected_sha256);
+    }
+  } else if (schemaName === 'evidence-transition-attempt.schema.json') {
+    if (document.recorded_claim !== null) {
+      await addTransitiveBindings(expected, document.recorded_claim,
+        'contracts/schemas/claim-manifest.schema.json', packageRoot, nested);
+    }
+    if (document.fresh_claim !== null) {
+      await addTransitiveBindings(expected, document.fresh_claim,
+        'contracts/schemas/claim-manifest.schema.json', packageRoot, nested);
+    }
+    if (document.recovery_report !== null) {
+      await addTransitiveBindings(expected, document.recovery_report,
+        'contracts/schemas/evidence-recovery-report.schema.json', packageRoot, nested);
+    }
   }
 }
 

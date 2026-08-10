@@ -5,6 +5,7 @@ import './validator-evidence-recovery-resolution.mjs';
 import './validator-evidence-verdict-resolution.mjs';
 import './validator-evidence-fresh-report.mjs';
 import './validator-evidence-transitive-bindings.mjs';
+import './validator-evidence-nested-subjects.mjs';
 import './validator-evidence-stale-recovery.mjs';
 import './validator-evidence-readback-replay.mjs';
 import './validator-evidence-mark-stale-churn.mjs';

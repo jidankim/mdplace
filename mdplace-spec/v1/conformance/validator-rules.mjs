@@ -73,6 +73,7 @@ const conformanceExecutables = new Set([
   'conformance/validator-evidence-fresh-replacement.mjs',
   'conformance/validator-evidence-fresh-report.mjs',
   'conformance/validator-evidence-mark-stale-churn.mjs',
+  'conformance/validator-evidence-nested-subjects.mjs',
   'conformance/validator-evidence-readback-replay.mjs',
   'conformance/validator-evidence-recovery-resolution.mjs',
   'conformance/validator-evidence-stale-recovery.mjs',
