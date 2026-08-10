@@ -113,6 +113,13 @@ async function bindingMatches(packageRoot, path, expectedDigest) {
   return read.status === 'present' && createHash('sha256').update(read.content).digest('hex') === expectedDigest;
 }
 
+async function requirementCatalog(packageRoot) {
+  const document = await readJson(packageRoot, 'normative/requirements.json');
+  const rows = Array.isArray(document?.requirements) ? document.requirements : [];
+  const valid = Array.isArray(document?.requirements) && rows.every(isRecord);
+  return {ids: new Set(rows.filter(isRecord).map(({id}) => id)), valid};
+}
+
 async function evidenceEnvelopeCodes(document, packageRoot, context) {
   const codes = [];
   const orderedCollections = [document.input_digests, document.output_digests, document.receipts, document.artifact_digests];
@@ -130,8 +137,9 @@ async function evidenceEnvelopeCodes(document, packageRoot, context) {
   if (new Set(receiptIds).size !== receiptIds.length) codes.push('evidence.receipt_duplicate');
   const matches = await Promise.all(digestBindings.map(({path, sha256}) => bindingMatches(packageRoot, path, sha256)));
   if (matches.some((match) => !match)) codes.push('evidence.artifact_digest_mismatch');
-  const requirements = await readJson(packageRoot, 'normative/requirements.json');
-  if (!requirements?.requirements?.some(({id}) => id === document.requirement_id)) {
+  const requirements = await requirementCatalog(packageRoot);
+  if (!requirements.valid) codes.push('schema.constraint');
+  if (!requirements.ids.has(document.requirement_id)) {
     codes.push('evidence.requirement_unresolved');
   }
   const invocation = document.invocation === undefined ? null : await readJson(packageRoot, document.invocation.path);
@@ -157,7 +165,9 @@ async function evidenceEnvelopeCodes(document, packageRoot, context) {
        invocation.validator_version !== document.validator_version ||
        !invocation.requirement_ids?.includes(document.requirement_id) ||
        typeof invocationSubjectPath !== 'string' ||
-       !isDeepStrictEqual(invocationSubject, document.subject)) {
+       !isDeepStrictEqual(invocationSubject, document.subject) ||
+       !isDeepStrictEqual(invocation.input_digests, document.input_digests) ||
+       !isDeepStrictEqual(invocation.execution_context, document.execution_context)) {
       codes.push('evidence.invocation_binding_mismatch');
     }
   }
@@ -166,9 +176,9 @@ async function evidenceEnvelopeCodes(document, packageRoot, context) {
 
 async function claimManifestCodes(document, packageRoot, context) {
   const codes = claimCodes(document);
-  const requirementsDocument = await readJson(packageRoot, 'normative/requirements.json');
-  if (typeof document.requirement_id === 'string' &&
-      !requirementsDocument?.requirements?.some(({id}) => id === document.requirement_id)) {
+  const requirementsDocument = await requirementCatalog(packageRoot);
+  if (!requirementsDocument.valid) codes.push('schema.constraint');
+  if (typeof document.requirement_id === 'string' && !requirementsDocument.ids.has(document.requirement_id)) {
     codes.push('claim.requirement_unresolved');
   }
   const verdictTable = await readJson(packageRoot, 'contracts/verdicts/validator-verdicts.json');
@@ -317,31 +327,79 @@ function hasFreshMandatoryEvidence(claim) {
     typeof binding.evidence_digest === 'string');
 }
 
-async function expectedRecoveryBindings(claimBinding, claim, packageRoot) {
-  const expected = new Map();
-  addExpectedBinding(expected, claimBinding?.path, claimBinding?.sha256);
-  const claimBindings = Array.isArray(claim?.evidence_bindings) ? claim.evidence_bindings : [];
-  for (const binding of claimBindings.filter(isRecord)) {
-    addExpectedBinding(expected, binding.evidence_ref, binding.evidence_digest);
-    if (typeof binding.evidence_ref !== 'string') continue;
-    const envelope = await readJson(packageRoot, binding.evidence_ref);
-    if (envelope === null) continue;
-    addExpectedBinding(expected, envelope.invocation?.path, envelope.invocation?.sha256);
-    for (const digestBinding of [
-      ...(Array.isArray(envelope.input_digests) ? envelope.input_digests : []),
-      ...(Array.isArray(envelope.output_digests) ? envelope.output_digests : []),
-      ...(Array.isArray(envelope.artifact_digests) ? envelope.artifact_digests : []),
-    ]) {
-      if (isRecord(digestBinding)) addExpectedBinding(expected, digestBinding.path, digestBinding.sha256);
+async function addTransitiveBindings(expected, binding, schemaPath, packageRoot, context = {depth: 0, seen: new Set()}) {
+  const path = binding?.path ?? binding?.evidence_ref;
+  const sha256 = binding?.sha256 ?? binding?.evidence_digest;
+  addExpectedBinding(expected, path, sha256);
+  if (typeof path !== 'string' || typeof sha256 !== 'string' || context.depth >= maximumEvidenceDepth) return;
+  const key = `${path}\0${sha256}`;
+  if (context.seen.has(key)) return;
+  const document = await readJson(packageRoot, path);
+  if (!isRecord(document)) return;
+  const nestedContext = {depth: context.depth + 1, seen: new Set([...context.seen, key])};
+  const schemaName = schemaPath?.split('/').at(-1);
+  if (schemaName === 'claim-manifest.schema.json') {
+    const evidenceBindings = Array.isArray(document.evidence_bindings) ? document.evidence_bindings : [];
+    for (const evidenceBinding of evidenceBindings.filter(isRecord)) {
+      await addTransitiveBindings(expected, evidenceBinding, 'contracts/schemas/evidence-envelope.schema.json',
+        packageRoot, nestedContext);
     }
-    if (typeof envelope.invocation?.path !== 'string') continue;
-    const invocation = await readJson(packageRoot, envelope.invocation.path);
-    if (invocation === null) continue;
-    addExpectedBinding(expected, invocation.subject?.path, invocation.subject?.sha256);
-    const invocationInputs = Array.isArray(invocation.input_digests) ? invocation.input_digests : [];
-    for (const digestBinding of invocationInputs.filter(isRecord)) {
+    return;
+  }
+  if (schemaName === 'evidence-envelope.schema.json') {
+    for (const digestBinding of [
+      ...(Array.isArray(document.input_digests) ? document.input_digests : []),
+      ...(Array.isArray(document.output_digests) ? document.output_digests : []),
+      ...(Array.isArray(document.artifact_digests) ? document.artifact_digests : []),
+    ].filter(isRecord)) {
       addExpectedBinding(expected, digestBinding.path, digestBinding.sha256);
     }
+    await addTransitiveBindings(expected, document.invocation, 'contracts/schemas/validator-invocation.schema.json',
+      packageRoot, nestedContext);
+    return;
+  }
+  if (schemaName === 'validator-invocation.schema.json') {
+    const inputDigests = Array.isArray(document.input_digests) ? document.input_digests : [];
+    for (const digestBinding of inputDigests.filter(isRecord)) {
+      addExpectedBinding(expected, digestBinding.path, digestBinding.sha256);
+    }
+    await addTransitiveBindings(expected, document.subject, document.subject?.schema, packageRoot, nestedContext);
+    return;
+  }
+  if (schemaName === 'evidence-recovery-report.schema.json') {
+    await addTransitiveBindings(expected, document.claim, 'contracts/schemas/claim-manifest.schema.json',
+      packageRoot, nestedContext);
+    if (document.recorded_claim !== null) {
+      await addTransitiveBindings(expected, document.recorded_claim, 'contracts/schemas/claim-manifest.schema.json',
+        packageRoot, nestedContext);
+    }
+    for (const recomputed of (Array.isArray(document.recomputed_bindings) ? document.recomputed_bindings : [])
+      .filter(isRecord)) {
+      addExpectedBinding(expected, recomputed.path, recomputed.expected_sha256);
+    }
+    return;
+  }
+  if (schemaName === 'evidence-transition-attempt.schema.json') {
+    if (document.recorded_claim !== null) {
+      await addTransitiveBindings(expected, document.recorded_claim, 'contracts/schemas/claim-manifest.schema.json',
+        packageRoot, nestedContext);
+    }
+    if (document.fresh_claim !== null) {
+      await addTransitiveBindings(expected, document.fresh_claim, 'contracts/schemas/claim-manifest.schema.json',
+        packageRoot, nestedContext);
+    }
+    if (document.recovery_report !== null) {
+      await addTransitiveBindings(expected, document.recovery_report,
+        'contracts/schemas/evidence-recovery-report.schema.json', packageRoot, nestedContext);
+    }
+  }
+}
+
+async function expectedRecoveryBindings(claimBinding, packageRoot, recordedClaimBinding = null) {
+  const expected = new Map();
+  await addTransitiveBindings(expected, claimBinding, 'contracts/schemas/claim-manifest.schema.json', packageRoot);
+  if (recordedClaimBinding !== null) {
+    await addTransitiveBindings(expected, recordedClaimBinding, 'contracts/schemas/claim-manifest.schema.json', packageRoot);
   }
   return expected;
 }
@@ -360,13 +418,33 @@ async function recoveryCodes(document, packageRoot, context) {
       claimResult.document.verdict !== document.prior_verdict) {
     codes.push('evidence.recovery_claim_verdict_mismatch');
   }
-  if (document.fresh_evidence_supplied === true &&
-      (claimResult.digestMatches !== true || claimResult.codes.length > 0 ||
-       !hasFreshMandatoryEvidence(claimResult.document) ||
-       claimResult.document?.verdict !== document.effective_verdict)) {
-    codes.push('evidence.fresh_evidence_required');
+  let recordedClaimResult = null;
+  if (document.fresh_evidence_supplied === true) {
+    if (isRecord(document.recorded_claim)) {
+      recordedClaimResult = await validateClaimBinding(
+        document.recorded_claim,
+        document.claim_id,
+        packageRoot,
+        context,
+        {retainSemanticFailure: true},
+      );
+    }
+    if (claimResult.digestMatches !== true || claimResult.codes.length > 0 ||
+        !hasFreshMandatoryEvidence(claimResult.document) ||
+        claimResult.document?.verdict !== document.effective_verdict ||
+        recordedClaimResult?.document === null || recordedClaimResult === null) {
+      codes.push('evidence.fresh_evidence_required');
+    } else if (!await freshClaimIsNew(recordedClaimResult.document, claimResult.document, packageRoot)) {
+      codes.push('evidence.fresh_evidence_replayed');
+    }
+  } else if (isRecord(document.recorded_claim)) {
+    codes.push('evidence.fresh_evidence_inconsistent');
   }
-  const expectedBindings = await expectedRecoveryBindings(document.claim, claimResult.document, packageRoot);
+  const expectedBindings = await expectedRecoveryBindings(
+    document.claim,
+    packageRoot,
+    recordedClaimResult?.document === null ? null : document.recorded_claim,
+  );
   const recomputedBindings = Array.isArray(document.recomputed_bindings) ? document.recomputed_bindings : [];
   const suppliedBindings = new Map(recomputedBindings.map((binding) => [binding?.path, binding?.expected_sha256]));
   if (suppliedBindings.size !== recomputedBindings.length || expectedBindings.size !== suppliedBindings.size ||
@@ -421,9 +499,9 @@ async function invocationCodes(document, packageRoot, extension, context) {
   const matches = await Promise.all(inputDigests.filter(isRecord)
     .map(({path, sha256}) => bindingMatches(packageRoot, path, sha256)));
   if (matches.some((match) => !match)) codes.push('evidence.artifact_digest_mismatch');
-  const requirements = await readJson(packageRoot, 'normative/requirements.json');
-  if ((document.requirement_ids ?? []).some((requirementId) =>
-    !requirements?.requirements?.some(({id}) => id === requirementId))) {
+  const requirements = await requirementCatalog(packageRoot);
+  if (!requirements.valid) codes.push('schema.constraint');
+  if ((document.requirement_ids ?? []).some((requirementId) => !requirements.ids.has(requirementId))) {
     codes.push('evidence.requirement_unresolved');
   }
   if (!extension.subject_schemas.includes(document.subject?.schema)) {
@@ -485,27 +563,62 @@ async function validateRecoveryReportBinding(binding, packageRoot, context) {
   return {codes: observed.verdict === 'pass' ? [] : observed.codes, document, observed};
 }
 
-async function mandatoryInvocationDigests(claim, packageRoot) {
-  const digests = new Set();
+function evidenceProof(envelope, invocation) {
+  const collections = [
+    envelope?.input_digests,
+    envelope?.output_digests,
+    envelope?.artifact_digests,
+    envelope?.receipts,
+  ];
+  if (!isRecord(envelope) || !isRecord(invocation) ||
+      collections.some((entries) => !Array.isArray(entries) || entries.some((entry) => !isRecord(entry)))) {
+    return null;
+  }
+  return {
+    inputs: envelope.input_digests.map(({ordinal, sha256}) => ({ordinal, sha256})),
+    outputs: envelope.output_digests.map(({ordinal, sha256}) => ({ordinal, sha256})),
+    artifacts: envelope.artifact_digests.map(({ordinal, sha256}) => ({ordinal, sha256})),
+    receipts: envelope.receipts.map(({ordinal, receipt_type: receiptType, sha256}) =>
+      ({ordinal, receiptType, sha256})),
+  };
+}
+
+async function mandatoryEvidenceObservations(claim, packageRoot) {
+  const observations = new Map();
   const bindings = Array.isArray(claim?.evidence_bindings) ? claim.evidence_bindings : [];
   for (const binding of bindings.filter((entry) => isRecord(entry) && entry.mandatory === true &&
     entry.applicability !== 'not_applicable' && entry.availability === 'present')) {
     const envelope = await readJson(packageRoot, binding.evidence_ref);
-    if (typeof envelope?.invocation?.sha256 === 'string') digests.add(envelope.invocation.sha256);
+    const invocation = typeof envelope?.invocation?.path === 'string'
+      ? await readJson(packageRoot, envelope.invocation.path)
+      : null;
+    observations.set(binding.evidence_kind, {
+      envelopeDigest: binding.evidence_digest,
+      invocationDigest: envelope?.invocation?.sha256,
+      invocationId: invocation?.invocation_id,
+      proof: evidenceProof(envelope, invocation),
+    });
   }
-  return digests;
+  return observations;
 }
 
 async function freshClaimIsNew(recordedClaim, freshClaim, packageRoot) {
   if (recordedClaim.claim_id !== freshClaim.claim_id || recordedClaim.profile !== freshClaim.profile ||
       recordedClaim.requirement_id !== freshClaim.requirement_id ||
       !isDeepStrictEqual(recordedClaim.subject, freshClaim.subject)) return false;
-  const [recordedInvocations, freshInvocations] = await Promise.all([
-    mandatoryInvocationDigests(recordedClaim, packageRoot),
-    mandatoryInvocationDigests(freshClaim, packageRoot),
+  const [recordedEvidence, freshEvidence] = await Promise.all([
+    mandatoryEvidenceObservations(recordedClaim, packageRoot),
+    mandatoryEvidenceObservations(freshClaim, packageRoot),
   ]);
-  return freshInvocations.size > 0 &&
-    [...freshInvocations].every((invocationDigest) => !recordedInvocations.has(invocationDigest));
+  return freshEvidence.size > 0 && freshEvidence.size === recordedEvidence.size &&
+    [...freshEvidence].every(([kind, fresh]) => {
+      const recorded = recordedEvidence.get(kind);
+      return recorded !== undefined && fresh.proof !== null &&
+        fresh.envelopeDigest !== recorded.envelopeDigest &&
+        (recorded.invocationDigest === undefined || fresh.invocationDigest !== recorded.invocationDigest) &&
+        (recorded.invocationId === undefined || fresh.invocationId !== recorded.invocationId) &&
+        (recorded.proof === null || !isDeepStrictEqual(fresh.proof, recorded.proof));
+    });
 }
 
 async function observeTransitionAttempt(document, packageRoot, operations, context) {
@@ -559,8 +672,7 @@ async function observeTransitionAttempt(document, packageRoot, operations, conte
       (document.command !== 'supply_fresh_evidence' && document.recorded_claim !== null) ||
       (document.command === 'supply_fresh_evidence' && document.from_state === 'awaiting_evidence' &&
        document.recorded_claim !== null) ||
-      (['record_verdict', 'supply_fresh_evidence'].includes(document.command) &&
-       document.recovery_report !== null)) {
+      (document.command === 'supply_fresh_evidence' && document.recovery_report !== null)) {
     return observation({
       verdict: 'fail',
       codes: ['evidence.fresh_evidence_inconsistent'],
@@ -607,14 +719,37 @@ async function observeTransitionAttempt(document, packageRoot, operations, conte
         illegalTransition: true,
       });
     }
+    if (document.command === 'record_verdict') {
+      if (!isRecord(document.recovery_report)) {
+        return observation({
+          verdict: 'fail', codes: ['evidence.recovery_report_required'], output: 'evidence transition denied',
+          operations, terminalState: document.from_state, illegalTransition: true,
+        });
+      }
+      const recovery = await validateRecoveryReportBinding(document.recovery_report, packageRoot, context);
+      if (recovery.codes.length > 0 || recovery.observed?.terminal_state !== 'awaiting_evidence' ||
+          recovery.document?.fresh_evidence_supplied !== true ||
+          !isDeepStrictEqual(recovery.document?.claim, document.fresh_claim)) {
+        return observation({
+          verdict: 'fail',
+          codes: ['evidence.recovery_report_invalid', ...recovery.codes],
+          output: 'evidence transition denied',
+          operations,
+          terminalState: document.from_state,
+          illegalTransition: true,
+        });
+      }
+    }
     if (document.command === 'supply_fresh_evidence' && document.from_state !== 'awaiting_evidence') {
       const recordedClaim = await validateClaimBinding(
         document.recorded_claim,
         document.fresh_claim.claim_id,
         packageRoot,
         context,
+        {retainSemanticFailure: document.from_state === 'evidence_stale'},
       );
-      if (recordedClaim.codes.length > 0 || recordedClaim.document === null) {
+      if (recordedClaim.document === null ||
+          (recordedClaim.codes.length > 0 && document.from_state !== 'evidence_stale')) {
         return observation({
           verdict: 'fail',
           codes: ['evidence.recorded_claim_required', ...recordedClaim.codes],

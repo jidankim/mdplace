@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {readFile, writeFile} from 'node:fs/promises';
+import {readFile, unlink, writeFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import test from 'node:test';
 
@@ -13,6 +13,138 @@ const extensionId = 'mdplace.validator-extension/evidence/v1';
 const validatorVersion = '1.1.0';
 const digest = (value) => createHash('sha256').update(value).digest('hex');
 const committedPackageRoot = fileURLToPath(new URL('../', import.meta.url));
+
+async function writeJson(packageRoot, path, document) {
+  const content = `${JSON.stringify(document, null, 2)}\n`;
+  await writeFile(`${packageRoot}/${path}`, content);
+  return {document, path, content, sha256: digest(content)};
+}
+
+async function createFreshClaimChain(packageRoot, {
+  suffix = 'fresh-validator-evidence',
+  reuseInvocationId = false,
+  substantive = true,
+} = {}) {
+  const recordedClaimPath = 'conformance/evidence/claims/recovery-snapshot.json';
+  const recordedClaimContent = await readFile(`${packageRoot}/${recordedClaimPath}`);
+  const recordedClaim = JSON.parse(recordedClaimContent.toString('utf8'));
+  const invocation = JSON.parse(await readFile(
+    `${packageRoot}/conformance/evidence/invocations/validator-evidence-reference.json`,
+    'utf8',
+  ));
+  if (!reuseInvocationId) invocation.invocation_id = `invocation:${suffix}`;
+  let freshArtifact = null;
+  if (substantive) {
+    freshArtifact = await writeJson(packageRoot, `conformance/evidence/${suffix}-observation.json`, {
+      observation: suffix,
+    });
+    invocation.input_digests.push({
+      ordinal: invocation.input_digests.length,
+      label: 'fresh_observation',
+      path: freshArtifact.path,
+      sha256: freshArtifact.sha256,
+    });
+  }
+  const invocationArtifact = await writeJson(
+    packageRoot,
+    `conformance/evidence/invocations/${suffix}.json`,
+    invocation,
+  );
+  const envelope = JSON.parse(await readFile(
+    `${packageRoot}/conformance/evidence/envelopes/validator-evidence-reference.json`,
+    'utf8',
+  ));
+  envelope.envelope_id = `evidence:${suffix}`;
+  envelope.invocation = {
+    invocation_id: invocation.invocation_id,
+    path: invocationArtifact.path,
+    sha256: invocationArtifact.sha256,
+  };
+  envelope.receipts[0].receipt_id = `receipt:${suffix}`;
+  if (freshArtifact !== null) {
+    envelope.input_digests.push({...invocation.input_digests.at(-1)});
+  }
+  const envelopeArtifact = await writeJson(
+    packageRoot,
+    `conformance/evidence/envelopes/${suffix}.json`,
+    envelope,
+  );
+  const freshClaim = structuredClone(recordedClaim);
+  freshClaim.evidence_bindings[0].evidence_ref = envelopeArtifact.path;
+  freshClaim.evidence_bindings[0].evidence_digest = envelopeArtifact.sha256;
+  const claimArtifact = await writeJson(
+    packageRoot,
+    `conformance/evidence/claims/${suffix}.json`,
+    freshClaim,
+  );
+  return {
+    recordedClaim,
+    recordedClaimBinding: {
+      claim_id: recordedClaim.claim_id,
+      path: recordedClaimPath,
+      sha256: digest(recordedClaimContent),
+    },
+    freshClaim,
+    freshClaimBinding: {
+      claim_id: freshClaim.claim_id,
+      path: claimArtifact.path,
+      sha256: claimArtifact.sha256,
+    },
+    invocationArtifact,
+    envelopeArtifact,
+    freshArtifact,
+  };
+}
+
+async function createFreshRecoveryReport(packageRoot, chain, suffix = 'fresh-supply') {
+  const report = JSON.parse(await readFile(
+    `${packageRoot}/conformance/evidence/evidence-recovery-report.json`,
+    'utf8',
+  ));
+  report.report_id = `evidence-recovery:${suffix}`;
+  report.claim = structuredClone(chain.freshClaimBinding);
+  report.recorded_claim = structuredClone(chain.recordedClaimBinding);
+  report.prior_verdict = chain.recordedClaim.verdict;
+  report.fresh_evidence_supplied = true;
+  for (const artifact of [chain.freshClaimBinding, chain.envelopeArtifact, chain.invocationArtifact, chain.freshArtifact]) {
+    if (artifact === null) continue;
+    report.recomputed_bindings.push({
+      path: artifact.path,
+      expected_sha256: artifact.sha256,
+      observed_sha256: artifact.sha256,
+      matches: true,
+    });
+  }
+  report.operations = ['reopen declared artifact', 'recompute sha256', 'accept fresh required evidence'];
+  report.terminal_state = 'awaiting_evidence';
+  report.effective_verdict = chain.freshClaim.verdict;
+  const artifact = await writeJson(packageRoot, `conformance/evidence/${suffix}-report.json`, report);
+  return {
+    report,
+    binding: {report_id: report.report_id, path: artifact.path, sha256: artifact.sha256},
+  };
+}
+
+function transitionAttempt({command, fromState, freshClaim, recordedClaim = null, recoveryReport = null}) {
+  return {
+    $schema: '../../contracts/schemas/evidence-transition-attempt.schema.json',
+    schema_id: 'mdplace.evidence-transition-attempt/v1',
+    package_series: 'mdplace-spec/v1',
+    release_version: '1.0.0',
+    validator_id: 'mdplace.package-validator',
+    validator_version: validatorVersion,
+    table_ref: 'contracts/transitions/evidence-lifecycle.json',
+    from_state: fromState,
+    command,
+    actor_authority: command === 'record_verdict'
+      ? {roles: ['conformance_validator'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}
+      : {roles: ['evidence_supplier'], quorum: 1, distinct_actors: false, delegation: 'permitted'},
+    fresh_evidence_supplied: true,
+    recorded_claim: recordedClaim,
+    recovery_report: recoveryReport,
+    fresh_claim: freshClaim,
+  };
+}
 
 function schemaFor(document) {
   return {
@@ -990,7 +1122,7 @@ test('evidence authority cannot be downgraded by changing the validator version 
   assert.ok(check.codes.includes('artifact.authority_mismatch'));
 });
 
-test('a fresh-evidence transition validates the complete bound claim chain', async () => {
+test('record-verdict requires an artifact-bound fresh-supply report', async () => {
   const claimPath = 'conformance/evidence/claims/recovery-snapshot.json';
   const claimContent = await readFile(new URL(`../${claimPath}`, import.meta.url));
   const document = {
@@ -1016,6 +1148,27 @@ test('a fresh-evidence transition validates the complete bound claim chain', asy
     document,
   }, committedPackageRoot);
 
+  assert.equal(observed.verdict, 'fail');
+  assert.ok(observed.codes.includes('evidence.recovery_report_required'));
+});
+
+test('record-verdict accepts the claim bound by a validated fresh-supply report', async () => {
+  const packageRoot = await copyCommittedPackage();
+  const chain = await createFreshClaimChain(packageRoot, {suffix: 'recordable-fresh-evidence'});
+  const recovery = await createFreshRecoveryReport(packageRoot, chain, 'recordable-fresh-evidence');
+  const document = transitionAttempt({
+    command: 'record_verdict',
+    fromState: 'awaiting_evidence',
+    freshClaim: chain.freshClaimBinding,
+    recoveryReport: recovery.binding,
+  });
+
+  const observed = await observeEvidenceExtension({
+    extension_id: extensionId,
+    schema: 'contracts/schemas/evidence-transition-attempt.schema.json',
+    document,
+  }, packageRoot);
+
   assert.equal(observed.verdict, 'pass');
   assert.equal(observed.terminal_state, 'verdict_recorded');
 });
@@ -1032,6 +1185,138 @@ test('recovery rejects omission from the transitive binding set', async () => {
     schema: 'contracts/schemas/evidence-recovery-report.schema.json',
     document: recovery,
   }, committedPackageRoot);
+
+  assert.equal(observed.verdict, 'fail');
+  assert.ok(observed.codes.includes('evidence.recovery_binding_set_mismatch'));
+});
+
+test('recovery binding enumeration descends through invocation subjects', async () => {
+  const packageRoot = await copyCommittedPackage();
+  const baseInvocation = JSON.parse(await readFile(
+    `${packageRoot}/conformance/evidence/invocations/validator-evidence-reference.json`,
+    'utf8',
+  ));
+  const nestedInvocation = structuredClone(baseInvocation);
+  nestedInvocation.invocation_id = 'invocation:nested-recovery-subject';
+  const nestedInvocationArtifact = await writeJson(
+    packageRoot,
+    'conformance/evidence/invocations/nested-recovery-subject.json',
+    nestedInvocation,
+  );
+  const baseEnvelope = JSON.parse(await readFile(
+    `${packageRoot}/conformance/evidence/envelopes/validator-evidence-reference.json`,
+    'utf8',
+  ));
+  const nestedEnvelope = structuredClone(baseEnvelope);
+  nestedEnvelope.envelope_id = 'evidence:nested-recovery-subject';
+  nestedEnvelope.invocation = {
+    invocation_id: nestedInvocation.invocation_id,
+    path: nestedInvocationArtifact.path,
+    sha256: nestedInvocationArtifact.sha256,
+  };
+  nestedEnvelope.receipts[0].receipt_id = 'receipt:nested-recovery-subject';
+  const nestedEnvelopeArtifact = await writeJson(
+    packageRoot,
+    'conformance/evidence/envelopes/nested-recovery-subject.json',
+    nestedEnvelope,
+  );
+  const nestedClaim = JSON.parse(await readFile(
+    `${packageRoot}/conformance/evidence/claims/recovery-snapshot.json`,
+    'utf8',
+  ));
+  nestedClaim.claim_id = 'CLAIM-NESTED-001';
+  nestedClaim.evidence_bindings[0].evidence_ref = nestedEnvelopeArtifact.path;
+  nestedClaim.evidence_bindings[0].evidence_digest = nestedEnvelopeArtifact.sha256;
+  const nestedClaimArtifact = await writeJson(
+    packageRoot,
+    'conformance/evidence/claims/nested-recovery-subject.json',
+    nestedClaim,
+  );
+  const outerInvocation = structuredClone(baseInvocation);
+  outerInvocation.invocation_id = 'invocation:outer-recovery-subject';
+  outerInvocation.subject = {
+    kind: 'claim_manifest',
+    subject_id: 'claim:nested-recovery-subject',
+    path: nestedClaimArtifact.path,
+    schema: 'contracts/schemas/claim-manifest.schema.json',
+    sha256: nestedClaimArtifact.sha256,
+  };
+  const outerInvocationArtifact = await writeJson(
+    packageRoot,
+    'conformance/evidence/invocations/outer-recovery-subject.json',
+    outerInvocation,
+  );
+  const outerEnvelope = structuredClone(baseEnvelope);
+  outerEnvelope.envelope_id = 'evidence:outer-recovery-subject';
+  outerEnvelope.invocation = {
+    invocation_id: outerInvocation.invocation_id,
+    path: outerInvocationArtifact.path,
+    sha256: outerInvocationArtifact.sha256,
+  };
+  outerEnvelope.subject = {
+    kind: outerInvocation.subject.kind,
+    subject_id: outerInvocation.subject.subject_id,
+    schema: outerInvocation.subject.schema,
+    sha256: outerInvocation.subject.sha256,
+  };
+  outerEnvelope.receipts[0].receipt_id = 'receipt:outer-recovery-subject';
+  const outerEnvelopeArtifact = await writeJson(
+    packageRoot,
+    'conformance/evidence/envelopes/outer-recovery-subject.json',
+    outerEnvelope,
+  );
+  const rootClaim = JSON.parse(await readFile(
+    `${packageRoot}/conformance/evidence/claims/recovery-snapshot.json`,
+    'utf8',
+  ));
+  rootClaim.subject = {
+    kind: outerEnvelope.subject.kind,
+    subject_id: outerEnvelope.subject.subject_id,
+    sha256: outerEnvelope.subject.sha256,
+  };
+  rootClaim.evidence_bindings[0].evidence_ref = outerEnvelopeArtifact.path;
+  rootClaim.evidence_bindings[0].evidence_digest = outerEnvelopeArtifact.sha256;
+  const rootClaimArtifact = await writeJson(
+    packageRoot,
+    'conformance/evidence/claims/outer-recovery-subject.json',
+    rootClaim,
+  );
+  const recovery = JSON.parse(await readFile(
+    `${packageRoot}/conformance/evidence/evidence-recovery-report.json`,
+    'utf8',
+  ));
+  recovery.claim = {
+    claim_id: rootClaim.claim_id,
+    path: rootClaimArtifact.path,
+    sha256: rootClaimArtifact.sha256,
+  };
+  recovery.recomputed_bindings = recovery.recomputed_bindings.map((binding) => {
+    if (binding.path === 'conformance/evidence/claims/recovery-snapshot.json') {
+      return {path: rootClaimArtifact.path, expected_sha256: rootClaimArtifact.sha256,
+        observed_sha256: rootClaimArtifact.sha256, matches: true};
+    }
+    if (binding.path === 'conformance/evidence/envelopes/validator-evidence-reference.json') {
+      return {path: outerEnvelopeArtifact.path, expected_sha256: outerEnvelopeArtifact.sha256,
+        observed_sha256: outerEnvelopeArtifact.sha256, matches: true};
+    }
+    if (binding.path === 'conformance/evidence/invocations/validator-evidence-reference.json') {
+      return {path: outerInvocationArtifact.path, expected_sha256: outerInvocationArtifact.sha256,
+        observed_sha256: outerInvocationArtifact.sha256, matches: true};
+    }
+    return binding;
+  });
+  recovery.recomputed_bindings.push({
+    path: nestedClaimArtifact.path,
+    expected_sha256: nestedClaimArtifact.sha256,
+    observed_sha256: nestedClaimArtifact.sha256,
+    matches: true,
+  });
+
+  const observed = await observeEvidenceExtension({
+    extension_id: extensionId,
+    schema: 'contracts/schemas/evidence-recovery-report.schema.json',
+    document: recovery,
+  }, packageRoot);
 
   assert.equal(observed.verdict, 'fail');
   assert.ok(observed.codes.includes('evidence.recovery_binding_set_mismatch'));
@@ -1084,6 +1369,25 @@ test('recovery rejects a freshness Boolean bound to incomplete mandatory evidenc
   assert.ok(observed.codes.includes('evidence.fresh_evidence_required'));
 });
 
+test('recovery rejects unchanged recorded evidence presented as fresh', async () => {
+  const recovery = JSON.parse(await readFile(
+    new URL('../conformance/evidence/evidence-recovery-report.json', import.meta.url),
+    'utf8',
+  ));
+  recovery.recorded_claim = structuredClone(recovery.claim);
+  recovery.fresh_evidence_supplied = true;
+  recovery.terminal_state = 'awaiting_evidence';
+
+  const observed = await observeEvidenceExtension({
+    extension_id: extensionId,
+    schema: 'contracts/schemas/evidence-recovery-report.schema.json',
+    document: recovery,
+  }, committedPackageRoot);
+
+  assert.equal(observed.verdict, 'fail');
+  assert.ok(observed.codes.includes('evidence.fresh_evidence_replayed'));
+});
+
 test('CLI contains a malformed digest-bound Claim Manifest as a structured failure', async () => {
   const packageRoot = await copyCommittedPackage();
   const claimPath = 'conformance/claim-manifests/core.json';
@@ -1129,6 +1433,18 @@ test('CLI contains malformed recovery claim collections as structured failures',
   assert.equal(report.checks.some(({id}) => id === 'validator-boundary'), false);
 });
 
+test('CLI contains malformed normative requirement rows as structured failures', async () => {
+  const packageRoot = await copyCommittedPackage();
+  await writeFile(`${packageRoot}/normative/requirements.json`, '{"requirements":[null]}\n');
+
+  const result = runPreparedPackage(packageRoot);
+  const report = JSON.parse(result.stdout);
+
+  assert.equal(result.status, 1);
+  assert.ok(report.checks.some(({codes}) => codes.includes('schema.constraint')));
+  assert.equal(report.checks.some(({id}) => id === 'validator-boundary'), false);
+});
+
 test('recovery accepts an accurate stale downgrade from a prior pass', async () => {
   const packageRoot = await copyCommittedPackage();
   const recovery = JSON.parse(await readFile(
@@ -1141,6 +1457,30 @@ test('recovery accepts an accurate stale downgrade from a prior pass', async () 
   const claimBinding = recovery.recomputed_bindings.find(({path}) => path === claimPath);
   claimBinding.observed_sha256 = digest(changedClaim);
   claimBinding.matches = false;
+  recovery.terminal_state = 'evidence_stale';
+  recovery.effective_verdict = 'inconclusive';
+
+  const observed = await observeEvidenceExtension({
+    extension_id: extensionId,
+    schema: 'contracts/schemas/evidence-recovery-report.schema.json',
+    document: recovery,
+  }, packageRoot);
+
+  assert.equal(observed.verdict, 'pass');
+  assert.equal(observed.terminal_state, 'evidence_stale');
+});
+
+test('recovery accepts null as the truthful observation of an absent artifact', async () => {
+  const packageRoot = await copyCommittedPackage();
+  const recovery = JSON.parse(await readFile(
+    `${packageRoot}/conformance/evidence/evidence-recovery-report.json`,
+    'utf8',
+  ));
+  const absentPath = 'normative/validator-evidence-contract.md';
+  await unlink(`${packageRoot}/${absentPath}`);
+  const absentBinding = recovery.recomputed_bindings.find(({path}) => path === absentPath);
+  absentBinding.observed_sha256 = null;
+  absentBinding.matches = false;
   recovery.terminal_state = 'evidence_stale';
   recovery.effective_verdict = 'inconclusive';
 
@@ -1335,62 +1675,79 @@ test('mark-stale accepts an accurate digest-bound stale Recovery Report', async 
   assert.equal(observed.terminal_state, 'evidence_stale');
 });
 
-test('fresh-evidence supply accepts a Claim Manifest with a new invocation', async () => {
+test('fresh-evidence supply rejects identifier-only churn', async () => {
   const packageRoot = await copyCommittedPackage();
-  const recordedClaimPath = 'conformance/evidence/claims/recovery-snapshot.json';
-  const recordedClaimContent = await readFile(`${packageRoot}/${recordedClaimPath}`);
-  const invocation = JSON.parse(await readFile(
-    `${packageRoot}/conformance/evidence/invocations/validator-evidence-reference.json`,
-    'utf8',
-  ));
-  invocation.invocation_id = 'invocation:fresh-validator-evidence';
-  const invocationPath = 'conformance/evidence/invocations/fresh-validator-evidence.json';
-  const invocationContent = `${JSON.stringify(invocation, null, 2)}\n`;
-  await writeFile(`${packageRoot}/${invocationPath}`, invocationContent);
-  const envelope = JSON.parse(await readFile(
-    `${packageRoot}/conformance/evidence/envelopes/validator-evidence-reference.json`,
-    'utf8',
-  ));
-  envelope.envelope_id = 'evidence:fresh-validator-evidence';
-  envelope.invocation = {
-    invocation_id: invocation.invocation_id,
-    path: invocationPath,
-    sha256: digest(invocationContent),
-  };
-  envelope.receipts[0].receipt_id = 'receipt:fresh-validator-evidence';
-  const envelopePath = 'conformance/evidence/envelopes/fresh-validator-evidence.json';
-  const envelopeContent = `${JSON.stringify(envelope, null, 2)}\n`;
-  await writeFile(`${packageRoot}/${envelopePath}`, envelopeContent);
-  const freshClaim = JSON.parse(await readFile(`${packageRoot}/${recordedClaimPath}`, 'utf8'));
-  freshClaim.evidence_bindings[0].evidence_ref = envelopePath;
-  freshClaim.evidence_bindings[0].evidence_digest = digest(envelopeContent);
-  const freshClaimPath = 'conformance/evidence/claims/fresh-recovery-snapshot.json';
-  const freshClaimContent = `${JSON.stringify(freshClaim, null, 2)}\n`;
-  await writeFile(`${packageRoot}/${freshClaimPath}`, freshClaimContent);
-  const document = {
-    $schema: '../../contracts/schemas/evidence-transition-attempt.schema.json',
-    schema_id: 'mdplace.evidence-transition-attempt/v1',
-    package_series: 'mdplace-spec/v1',
-    release_version: '1.0.0',
-    validator_id: 'mdplace.package-validator',
-    validator_version: validatorVersion,
-    table_ref: 'contracts/transitions/evidence-lifecycle.json',
-    from_state: 'verdict_recorded',
+  const chain = await createFreshClaimChain(packageRoot, {suffix: 'identifier-churn', substantive: false});
+  const document = transitionAttempt({
     command: 'supply_fresh_evidence',
-    actor_authority: {roles: ['evidence_supplier'], quorum: 1, distinct_actors: false, delegation: 'permitted'},
-    fresh_evidence_supplied: true,
-    recorded_claim: {
-      claim_id: freshClaim.claim_id,
-      path: recordedClaimPath,
-      sha256: digest(recordedClaimContent),
-    },
-    recovery_report: null,
-    fresh_claim: {
-      claim_id: freshClaim.claim_id,
-      path: freshClaimPath,
-      sha256: digest(freshClaimContent),
-    },
-  };
+    fromState: 'verdict_recorded',
+    recordedClaim: chain.recordedClaimBinding,
+    freshClaim: chain.freshClaimBinding,
+  });
+
+  const observed = await observeEvidenceExtension({
+    extension_id: extensionId,
+    schema: 'contracts/schemas/evidence-transition-attempt.schema.json',
+    document,
+  }, packageRoot);
+
+  assert.equal(observed.verdict, 'fail');
+  assert.ok(observed.codes.includes('evidence.fresh_evidence_replayed'));
+});
+
+test('fresh-evidence supply rejects reuse of the recorded invocation identity', async () => {
+  const packageRoot = await copyCommittedPackage();
+  const chain = await createFreshClaimChain(packageRoot, {suffix: 'reused-invocation', reuseInvocationId: true});
+  const document = transitionAttempt({
+    command: 'supply_fresh_evidence',
+    fromState: 'verdict_recorded',
+    recordedClaim: chain.recordedClaimBinding,
+    freshClaim: chain.freshClaimBinding,
+  });
+
+  const observed = await observeEvidenceExtension({
+    extension_id: extensionId,
+    schema: 'contracts/schemas/evidence-transition-attempt.schema.json',
+    document,
+  }, packageRoot);
+
+  assert.equal(observed.verdict, 'fail');
+  assert.ok(observed.codes.includes('evidence.fresh_evidence_replayed'));
+});
+
+test('fresh-evidence supply accepts a new invocation with changed proof bytes', async () => {
+  const packageRoot = await copyCommittedPackage();
+  const chain = await createFreshClaimChain(packageRoot);
+  const document = transitionAttempt({
+    command: 'supply_fresh_evidence',
+    fromState: 'verdict_recorded',
+    recordedClaim: chain.recordedClaimBinding,
+    freshClaim: chain.freshClaimBinding,
+  });
+
+  const observed = await observeEvidenceExtension({
+    extension_id: extensionId,
+    schema: 'contracts/schemas/evidence-transition-attempt.schema.json',
+    document,
+  }, packageRoot);
+
+  assert.equal(observed.verdict, 'pass');
+  assert.equal(observed.terminal_state, 'awaiting_evidence');
+});
+
+test('fresh-evidence supply can replace a semantically stale recorded claim chain', async () => {
+  const packageRoot = await copyCommittedPackage();
+  const chain = await createFreshClaimChain(packageRoot, {suffix: 'stale-replacement'});
+  const recordedEnvelopePath = 'conformance/evidence/envelopes/validator-evidence-reference.json';
+  const recordedEnvelope = JSON.parse(await readFile(`${packageRoot}/${recordedEnvelopePath}`, 'utf8'));
+  recordedEnvelope.input_digests = [null];
+  await writeJson(packageRoot, recordedEnvelopePath, recordedEnvelope);
+  const document = transitionAttempt({
+    command: 'supply_fresh_evidence',
+    fromState: 'evidence_stale',
+    recordedClaim: chain.recordedClaimBinding,
+    freshClaim: chain.freshClaimBinding,
+  });
 
   const observed = await observeEvidenceExtension({
     extension_id: extensionId,
@@ -1434,6 +1791,36 @@ test('invocations reject duplicate ordered input identifiers', async () => {
 
   assert.equal(observed.verdict, 'fail');
   assert.ok(observed.codes.includes('evidence.invocation_input_duplicate'));
+});
+
+test('evidence envelopes exactly reproduce invocation inputs and execution context', async (t) => {
+  const envelopePath = new URL('../conformance/evidence/envelopes/validator-evidence-reference.json', import.meta.url);
+  await t.test('input digests', async () => {
+    const envelope = JSON.parse(await readFile(envelopePath, 'utf8'));
+    envelope.input_digests.pop();
+
+    const observed = await observeEvidenceExtension({
+      extension_id: extensionId,
+      schema: 'contracts/schemas/evidence-envelope.schema.json',
+      document: envelope,
+    }, committedPackageRoot);
+
+    assert.equal(observed.verdict, 'fail');
+    assert.ok(observed.codes.includes('evidence.invocation_binding_mismatch'));
+  });
+  await t.test('execution context', async () => {
+    const envelope = JSON.parse(await readFile(envelopePath, 'utf8'));
+    envelope.execution_context.network_access = 'declared';
+
+    const observed = await observeEvidenceExtension({
+      extension_id: extensionId,
+      schema: 'contracts/schemas/evidence-envelope.schema.json',
+      document: envelope,
+    }, committedPackageRoot);
+
+    assert.equal(observed.verdict, 'fail');
+    assert.ok(observed.codes.includes('evidence.invocation_binding_mismatch'));
+  });
 });
 
 test('invocation subjects share the package and validator version binding', async () => {

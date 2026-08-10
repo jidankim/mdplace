@@ -4,7 +4,7 @@
   "title": "mdplace evidence recovery report",
   "type": "object",
   "additionalProperties": false,
-  "required": ["$schema", "schema_id", "report_id", "package_series", "release_version", "validator_id", "validator_version", "claim_id", "claim", "prior_verdict", "crash_point", "fresh_evidence_supplied", "recomputed_bindings", "operations", "receipts", "filesystem_effects", "terminal_state", "effective_verdict"],
+  "required": ["$schema", "schema_id", "report_id", "package_series", "release_version", "validator_id", "validator_version", "claim_id", "claim", "recorded_claim", "prior_verdict", "crash_point", "fresh_evidence_supplied", "recomputed_bindings", "operations", "receipts", "filesystem_effects", "terminal_state", "effective_verdict"],
   "properties": {
     "$schema": {"enum": ["../../contracts/schemas/evidence-recovery-report.schema.json", "../../../contracts/schemas/evidence-recovery-report.schema.json"]},
     "schema_id": {"const": "mdplace.evidence-recovery-report/v1"},
@@ -15,6 +15,12 @@
     "validator_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
     "claim_id": {"type": "string", "pattern": "^CLAIM-[A-Z][A-Z0-9]{1,31}-[0-9]{3}$"},
     "claim": {"$ref": "#/$defs/claimBinding"},
+    "recorded_claim": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/claimBinding"}
+      ]
+    },
     "prior_verdict": {"enum": ["pass", "fail", "unsupported", "inconclusive"]},
     "crash_point": {"enum": ["after_binding_recompute", "after_report_staged", "before_report_publish"]},
     "fresh_evidence_supplied": {"type": "boolean"},
@@ -43,7 +49,12 @@
       "properties": {
         "path": {"type": "string", "pattern": "^[a-zA-Z0-9][a-zA-Z0-9./-]*$"},
         "expected_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
-        "observed_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "observed_sha256": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+          ]
+        },
         "matches": {"type": "boolean"}
       }
     }

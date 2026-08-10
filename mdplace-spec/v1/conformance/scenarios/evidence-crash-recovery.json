@@ -25,22 +25,23 @@
       "claim": {
         "claim_id": "CLAIM-RECOVERY-001",
         "path": "conformance/evidence/claims/recovery-snapshot.json",
-        "sha256": "8060e54d8b6cac3de7e825174f1b51fefc7c5fb3d66a16c7aebf1b4ba0b76a1c"
+        "sha256": "95b8c49e40adf6365c23d4ee728913c8afc67e7b423a16a6f04cdf148d8e575b"
       },
+      "recorded_claim": null,
       "prior_verdict": "pass",
       "crash_point": "after_binding_recompute",
       "fresh_evidence_supplied": false,
       "recomputed_bindings": [
         {
           "path": "conformance/evidence/claims/recovery-snapshot.json",
-          "expected_sha256": "8060e54d8b6cac3de7e825174f1b51fefc7c5fb3d66a16c7aebf1b4ba0b76a1c",
-          "observed_sha256": "8060e54d8b6cac3de7e825174f1b51fefc7c5fb3d66a16c7aebf1b4ba0b76a1c",
+          "expected_sha256": "95b8c49e40adf6365c23d4ee728913c8afc67e7b423a16a6f04cdf148d8e575b",
+          "observed_sha256": "95b8c49e40adf6365c23d4ee728913c8afc67e7b423a16a6f04cdf148d8e575b",
           "matches": true
         },
         {
           "path": "conformance/evidence/envelopes/validator-evidence-reference.json",
-          "expected_sha256": "d821ff538f305b83a9c2fb059c86175aa7809d6a71c7a331b65b29c6c0748c25",
-          "observed_sha256": "d821ff538f305b83a9c2fb059c86175aa7809d6a71c7a331b65b29c6c0748c25",
+          "expected_sha256": "6624870649580be254fb716fa28a810bfedbf9690ab3ff61aeaadccc73747c40",
+          "observed_sha256": "6624870649580be254fb716fa28a810bfedbf9690ab3ff61aeaadccc73747c40",
           "matches": true
         },
         {
@@ -69,8 +70,8 @@
         },
         {
           "path": "normative/validator-evidence-contract.md",
-          "expected_sha256": "9ddd57e9e8363191456ca00eb20114f972e635188aed3605f53aa958d2a600e6",
-          "observed_sha256": "9ddd57e9e8363191456ca00eb20114f972e635188aed3605f53aa958d2a600e6",
+          "expected_sha256": "fe0789e91dada73b481046755ad240c3a498301f5adaee1f568015fa9bf40827",
+          "observed_sha256": "fe0789e91dada73b481046755ad240c3a498301f5adaee1f568015fa9bf40827",
           "matches": true
         },
         {
