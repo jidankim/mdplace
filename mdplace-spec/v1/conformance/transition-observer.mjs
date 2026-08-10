@@ -1,6 +1,7 @@
 import {dirname, resolve} from 'node:path';
 
 import {checkArtifactBindings, checkManifest} from './package-checks.mjs';
+import {validateAgainstSchemaPath} from './json-schema.mjs';
 import {readPackageFile} from './safe-path.mjs';
 import {amendmentEvidenceMatches} from './amendment-evidence.mjs';
 import {releaseEvidenceMatches} from './transition-evidence.mjs';
@@ -53,6 +54,19 @@ async function candidatePreconditionsMatch(subject, packageRoot) {
     /^conformance\/state-observations\/[a-z][a-z0-9-]{2,63}\/package-manifest\.yaml$/.test(stateManifestReference ?? '');
   if (!stateManifestReferenceIsSafe) return false;
   const stateManifest = await readJson(packageRoot, stateManifestReference);
+  let manifestSchemaErrors;
+  let stateManifestSchemaErrors;
+  try {
+    [manifestSchemaErrors, stateManifestSchemaErrors] = await Promise.all([
+      validateAgainstSchemaPath(packageRoot, 'contracts/schemas/package-manifest.schema.json', manifest),
+      validateAgainstSchemaPath(packageRoot, stateManifestReference === manifestReference
+        ? 'contracts/schemas/package-manifest.schema.json'
+        : 'contracts/schemas/package-state-observation.schema.json', stateManifest),
+    ]);
+  } catch {
+    return false;
+  }
+  if (manifestSchemaErrors.length > 0 || stateManifestSchemaErrors.length > 0) return false;
   if (stateManifest === null || stateManifest.package_series !== manifest.package_series ||
       stateManifest.release_version !== manifest.release_version ||
       stateManifest.validator_version !== manifest.validator_version ||

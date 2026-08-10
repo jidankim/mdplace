@@ -21,7 +21,21 @@ async function rewriteSourceRequirements(packageRoot, mutate) {
   const sourceRoot = join(packageRoot, 'conformance/release-targets/amendment/source');
   const requirementsPath = join(sourceRoot, 'normative/requirements.json');
   const requirements = JSON.parse(await readFile(requirementsPath, 'utf8'));
+  const sourceIds = new Set(requirements.requirements.map(({id}) => id));
   mutate(requirements.requirements);
+  const targetIds = new Set(requirements.requirements.map(({id}) => id));
+  const removedIds = new Set([...sourceIds].filter((id) => !targetIds.has(id)));
+  if (removedIds.size > 0) {
+    const contractPath = join(sourceRoot, 'normative/package-contract.md');
+    let excluded = false;
+    const contract = (await readFile(contractPath, 'utf8')).split(/\r?\n/).filter((line) => {
+      const heading = /^## (REQ-[A-Z][A-Z0-9]{1,15}-[0-9]{3}):/.exec(line);
+      if (heading !== null) excluded = removedIds.has(heading[1]);
+      else if (line.startsWith('## ')) excluded = false;
+      return !excluded;
+    }).join('\n');
+    await writeFile(contractPath, contract);
+  }
   await writeFile(requirementsPath, `${JSON.stringify(requirements, null, 2)}\n`);
   const manifestPath = join(sourceRoot, 'package-manifest.yaml');
   const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));

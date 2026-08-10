@@ -178,10 +178,14 @@ test('amendment evidence permits an additive-only target', async () => {
   const requirements = await readJson(targetRoot, 'normative/requirements.json');
   requirements.requirements.splice(requirements.requirements.findIndex(({id}) => id === 'REQ-PKG-012'), 1);
   await writeJson(sourceRoot, 'normative/requirements.json', requirements);
-  await writeFile(
-    join(sourceRoot, 'normative/package-contract.md'),
-    await readFile(join(targetRoot, 'normative/package-contract.md')),
-  );
+  let insideRemovedRequirement = false;
+  const sourceContract = (await readFile(join(targetRoot, 'normative/package-contract.md'), 'utf8'))
+    .split(/\r?\n/).filter((line) => {
+      if (line.startsWith('## REQ-PKG-012:')) insideRemovedRequirement = true;
+      else if (line.startsWith('## ')) insideRemovedRequirement = false;
+      return !insideRemovedRequirement;
+    }).join('\n');
+  await writeFile(join(sourceRoot, 'normative/package-contract.md'), sourceContract);
   const manifest = await readJson(sourceRoot, 'package-manifest.yaml');
   for (const path of ['normative/requirements.json', 'normative/package-contract.md']) {
     const artifact = manifest.artifacts.find((entry) => entry.path === path);

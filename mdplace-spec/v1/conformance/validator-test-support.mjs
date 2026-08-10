@@ -18,6 +18,10 @@ export async function preparePackage(files) {
   const packageOverrides = files['package-manifest.yaml'] ?? {};
   const packageFiles = Object.fromEntries(Object.entries(files).filter(([path]) => path !== 'package-manifest.yaml'));
   if (!('normative/package-contract.md' in packageFiles)) packageFiles['normative/package-contract.md'] = 'Fixture contract.\n';
+  const manifestSchemaPath = 'contracts/schemas/package-manifest.schema.json';
+  if (!(manifestSchemaPath in packageFiles)) {
+    packageFiles[manifestSchemaPath] = await readFile(join(committedPackage, manifestSchemaPath), 'utf8');
+  }
   for (const document of Object.values(packageFiles)) {
     const schemaPath = document?.subject?.kind === 'artifact' ? document.subject.schema : null;
     if (typeof schemaPath === 'string' && !(schemaPath in packageFiles)) {

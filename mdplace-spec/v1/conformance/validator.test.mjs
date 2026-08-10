@@ -8,3 +8,4 @@ import './validator-meta-schema-cases.mjs';
 import './validator-precondition-cases.mjs';
 import './validator-final-review-cases.mjs';
 import './validator-review-round-two-cases.mjs';
+import './validator-review-round-three-cases.mjs';

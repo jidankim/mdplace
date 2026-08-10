@@ -57,7 +57,7 @@
       "path": "conformance/amendment-evidence.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "806cc62676a64806e73c0659699d294bc3105f1a893944f145443101560dc09b"
+      "sha256": "2a6e9c07f0a381388dcd65a382f48915fec1dfce08a4d50abac908057696d313"
     },
     {
       "path": "conformance/digest-bindings.mjs",
@@ -75,13 +75,13 @@
       "path": "conformance/evidence/traceability-report.json",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "8e179ca25b675f84badc9304ecf7bb9f6e1a2e2d239d9ed9ae06b0deab4fddc5"
+      "sha256": "dc45982ad34838df04f3fcbbfb44a20dcabeb092811b0cf470aa70165da3bd7c"
     },
     {
       "path": "conformance/evidence/validation-report.json",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "7bb1cbb83fcdff22693d6bd8d711cfaab626157bfe11c8aa3a38d0d007b2a0ed"
+      "sha256": "040c7681eb9eab27b786b4bde176acc611c59e7692444bde36ddbbe0fc9d3891"
     },
     {
       "path": "conformance/evidence/version-amendment-report.json",
@@ -753,7 +753,7 @@
       "path": "conformance/transition-observer.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "0dd9e985419ce7bef73ed65084358365238dec77d49c3214821ceeb5a725aaf0"
+      "sha256": "3be60202b624bd216f34330123e98a71fb90c18e2e2734302a4b80f204a648b6"
     },
     {
       "path": "conformance/validation-report.mjs",
@@ -777,7 +777,7 @@
       "path": "conformance/validator-final-review-cases.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "623b453556b8c08b258e56885836fbc7d18a79e89fd9b5b471f34750d4327efb"
+      "sha256": "7519f32a1cda71cd80c21275bd3b5962dc818a0b8955d8be421bf43f117e37c9"
     },
     {
       "path": "conformance/validator-fixture-cases.mjs",
@@ -801,19 +801,25 @@
       "path": "conformance/validator-precondition-cases.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "e6e85c45bbbb0e9254897914bba9088ffbc5c2375b2791415c96898ecd723bd1"
+      "sha256": "b707775d98d75a03f57d90535ff84d489376f3bf191ec509aa40b593a3169a0c"
     },
     {
       "path": "conformance/validator-review-round-two-cases.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "630a7ba82868d481ecccac32330a1838248edff3b3669651842343be3d079c21"
+      "sha256": "ee863439403616c8f14dce7bfb4cab8850085afc7e44e065fe477f20d76e5eed"
+    },
+    {
+      "path": "conformance/validator-review-round-three-cases.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "e109639926365e9b0f2bffb746602fb7454403ccb600ce136186d326cbebd5b4"
     },
     {
       "path": "conformance/validator-rules.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "1ec711f0a385310a569a1a25cfde61b236f27d7b6b80d861a3810edd94255c94"
+      "sha256": "a4c4fc7c8629aadddbccf3c74e2e4b7777d3604dac1458b820997569adbc6eb4"
     },
     {
       "path": "conformance/validator-security-cases.mjs",
@@ -825,7 +831,7 @@
       "path": "conformance/validator-test-support.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "3e52712910efa7849dc0ccb5647b2ebf82bf4a6ba2469f312b0440e076f932b1"
+      "sha256": "873e5bc2890ab463238a6ce22f9b931bf7fe6ef34d76cad7e0c0f05bd08a7684"
     },
     {
       "path": "conformance/validator-transition-cases.mjs",
@@ -843,7 +849,7 @@
       "path": "conformance/validator.test.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "1aa610fd6694cbf8c6f0a05e7d28d9b97f2c6b923f7044fb9984ebcb18b32a2d"
+      "sha256": "509fee71a0f3377e8ddd2b845de1aa030c032e9eadcdd1306092f66f437647c9"
     },
     {
       "path": "contracts/schemas/conformance-fixture.schema.json",
@@ -937,7 +943,7 @@
     }
   ],
   "normative_digest": "827a6561708b71d24c1d6218e64e40e3612f7261367e65776eb9a9573a0fb2ab",
-  "conformance_digest": "5f4ae8bacfd74a8498d9db2b0be6cf2cf60ed91fd378e712806baf166af23dc4",
+  "conformance_digest": "bc21faa96c01ffb4238cbcee49c28a8a7e64a63ffa4015a803bfa869a496de99",
   "amendment_policy": {
     "immutable_after_release": true,
     "in_place_mutation": "forbidden",

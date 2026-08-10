@@ -1,9 +1,13 @@
-import {createHash} from 'node:crypto';
 import {isDeepStrictEqual} from 'node:util';
 
-import {requiredCandidateFoundationSlots, requiredReleaseSlots} from './package-checks.mjs';
+import {
+  checkArtifactBindings,
+  checkManifest,
+  requiredCandidateFoundationSlots,
+  requiredReleaseSlots,
+} from './package-checks.mjs';
 import {validateAgainstSchemaPath} from './json-schema.mjs';
-import {inspectAbsentPackageEntry, inspectPackageEntry, listPackageFiles, readPackageFile} from './safe-path.mjs';
+import {inspectAbsentPackageEntry, inspectPackageEntry, readPackageFile} from './safe-path.mjs';
 
 function equalSets(left, right) {
   return left.length === right.length && left.every((value) => right.includes(value));
@@ -36,28 +40,18 @@ async function observedPackage(packageRoot, observationRoot, manifestReference, 
   const directory = manifestPath.split('/').slice(0, -1).join('/');
   const inspectedRoot = await inspectPackageEntry(packageRoot, directory, 'directory');
   if (inspectedRoot.status !== 'present') return null;
-  const listing = await listPackageFiles(inspectedRoot.target);
   const artifacts = Array.isArray(manifest.artifacts) ? manifest.artifacts : [];
   const artifactPaths = artifacts.map(({path}) => path);
-  const listedPaths = listing.paths.filter((path) => path !== 'package-manifest.yaml');
-  if (listing.status !== 'present' || !equalSets(artifactPaths, listedPaths) ||
-      new Set(artifactPaths).size !== artifactPaths.length ||
-      requiredArtifacts.some((path) => !artifactPaths.includes(path))) return null;
+  if (requiredArtifacts.some((path) => !artifactPaths.includes(path))) return null;
   const slotsMatch = (await Promise.all(requiredSlots.map((path) =>
     inspectPackageEntry(inspectedRoot.target, path, path.endsWith('/') ? 'directory' : 'file'))))
     .every(({status}) => status === 'present');
   if (!slotsMatch) return null;
-  const bindingsMatch = (await Promise.all(artifacts.map(async (artifact) => {
-    if (artifact === null || typeof artifact !== 'object' || typeof artifact.path !== 'string' ||
-        typeof artifact.sha256 !== 'string' || !['normative', 'informative'].includes(artifact.authority)) return false;
-    const read = await readPackageFile(inspectedRoot.target, artifact.path);
-    return read.status === 'present' && createHash('sha256').update(read.content).digest('hex') === artifact.sha256;
-  }))).every(Boolean);
-  const digest = createHash('sha256').update(artifacts
-    .filter(({authority}) => authority === 'normative')
-    .sort((left, right) => left.path.localeCompare(right.path))
-    .map(({path, sha256}) => `${path}\0${sha256}\n`).join('')).digest('hex');
-  return bindingsMatch && digest === manifest.normative_digest
+  const [manifestCheck, artifactCheck] = await Promise.all([
+    checkManifest(inspectedRoot.target, manifest),
+    checkArtifactBindings(inspectedRoot.target, manifest).then(({check}) => check),
+  ]);
+  return manifestCheck.verdict === 'pass' && artifactCheck.verdict === 'pass'
     ? {manifest, root: inspectedRoot.target, artifacts}
     : null;
 }
@@ -75,6 +69,7 @@ async function requirementSection(root, entry) {
 }
 
 async function unanchoredNormativeMaterial(root, entries) {
+  const requirementIds = new Set(entries.map(({id}) => id));
   const paths = [...new Set(entries.map((entry) => entry?.normative_anchor?.split('#', 1)[0])
     .filter((path) => typeof path === 'string'))].sort();
   const documents = [];
@@ -84,7 +79,8 @@ async function unanchoredNormativeMaterial(root, entries) {
     let insideRequirement = false;
     const unanchoredLines = [];
     for (const line of read.content.toString('utf8').split(/\r?\n/)) {
-      if (/^## REQ-[A-Z][A-Z0-9]{1,15}-[0-9]{3}:/.test(line)) {
+      const heading = /^## (REQ-[A-Z][A-Z0-9]{1,15}-[0-9]{3}):/.exec(line);
+      if (heading !== null && requirementIds.has(heading[1])) {
         insideRequirement = true;
         continue;
       }
@@ -94,6 +90,17 @@ async function unanchoredNormativeMaterial(root, entries) {
     documents.push(`${path}\0${unanchoredLines.join('\n')}`);
   }
   return documents;
+}
+
+function unchangedUnanchoredNormativeArtifacts(sourcePackage, targetPackage, entries) {
+  const anchoredPaths = new Set(entries.map((entry) => entry?.normative_anchor?.split('#', 1)[0])
+    .filter((path) => typeof path === 'string'));
+  anchoredPaths.add('normative/requirements.json');
+  const bindings = ({artifacts}) => artifacts.filter(({authority, path}) =>
+    authority === 'normative' && !anchoredPaths.has(path))
+    .sort((left, right) => left.path.localeCompare(right.path))
+    .map(({path, sha256}) => `${path}\0${sha256}`);
+  return isDeepStrictEqual(bindings(sourcePackage), bindings(targetPackage));
 }
 
 function isGreaterSemver(target, source) {
@@ -169,6 +176,7 @@ export async function amendmentEvidenceMatches(subject, packageRoot) {
     sourceEntries.length > 0 && targetEntries.length > 0 &&
     sourceSections.every((section) => section !== null) && targetSections.every((section) => section !== null) &&
     sourceUnanchored !== null && targetUnanchored !== null && isDeepStrictEqual(sourceUnanchored, targetUnanchored) &&
+    unchangedUnanchoredNormativeArtifacts(sourcePackage, targetPackage, [...sourceEntries, ...targetEntries]) &&
     new Set(sourceIds).size === sourceIds.length && new Set(targetIds).size === targetIds.length &&
     sourceIds.every((id) => targetById.has(id)) && equalSets(changedIds, evidence.changed_requirement_ids ?? []) &&
     equalSets(newIds, evidence.new_requirement_ids ?? []);

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {mkdir, mkdtemp, writeFile} from 'node:fs/promises';
+import {mkdir, mkdtemp, readFile, writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import test from 'node:test';
@@ -14,7 +14,12 @@ const digestReference = 'package-manifest.yaml#/normative_digest';
 async function transitionRoot({artifactContent = 'changed\n', table}) {
   const root = await mkdtemp(join(tmpdir(), 'mdplace-transition-precondition-'));
   await mkdir(join(root, 'normative'), {recursive: true});
+  await mkdir(join(root, 'contracts/schemas'), {recursive: true});
   await mkdir(join(root, 'contracts/transitions'), {recursive: true});
+  await writeFile(
+    join(root, 'contracts/schemas/package-manifest.schema.json'),
+    await readFile(new URL('../contracts/schemas/package-manifest.schema.json', import.meta.url)),
+  );
   const declaredContent = 'declared\n';
   const artifactDigest = createHash('sha256').update(declaredContent).digest('hex');
   const normativeDigest = createHash('sha256').update(`normative/contract.md\0${artifactDigest}\n`).digest('hex');

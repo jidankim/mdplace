@@ -54,6 +54,7 @@ const conformanceExecutables = new Set([
   'conformance/validator-contract-cases.mjs',
   'conformance/validator-final-review-cases.mjs',
   'conformance/validator-review-round-two-cases.mjs',
+  'conformance/validator-review-round-three-cases.mjs',
   'conformance/validator-fixture-cases.mjs',
   'conformance/validator-meta-schema-cases.mjs',
   'conformance/validator-package-cases.mjs',
