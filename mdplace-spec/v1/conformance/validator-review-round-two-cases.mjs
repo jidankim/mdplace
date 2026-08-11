@@ -1,13 +1,12 @@
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {link, mkdir, mkdtemp, readFile, unlink, writeFile} from 'node:fs/promises';
+import {link, mkdtemp, readFile, unlink, writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import test from 'node:test';
 
 import {validateJsonSchema} from './json-schema.mjs';
 import {checkArtifactBindings, checkRequirements} from './package-checks.mjs';
-import {writePackageFile} from './safe-path.mjs';
 import {checkTraceability, runConformance} from './traceability-checks.mjs';
 import {amendmentEvidenceMatches} from './amendment-evidence.mjs';
 import {releaseEvidenceMatches} from './transition-evidence.mjs';
@@ -72,24 +71,6 @@ test('schema validation bounds uniqueItems evaluation', () => {
 
   assert.ok(firstErrors.some(({keyword}) => keyword === 'resourceLimit'));
   assert.deepEqual(secondErrors, firstErrors);
-});
-
-test('evidence output refuses a hard-linked external inode', async () => {
-  const packageRoot = await mkdtemp(join(tmpdir(), 'mdplace-safe-hardlink-'));
-  const externalRoot = await mkdtemp(join(tmpdir(), 'mdplace-external-hardlink-'));
-  await mkdir(join(packageRoot, 'conformance/evidence'), {recursive: true});
-  const external = join(externalRoot, 'report.json');
-  await writeFile(external, 'preserve hard link\n');
-  await link(external, join(packageRoot, 'conformance/evidence/validation-report.json'));
-
-  const result = await writePackageFile(
-    packageRoot,
-    'conformance/evidence/validation-report.json',
-    'replacement\n',
-  );
-
-  assert.equal(result.status, 'unsafe');
-  assert.equal(await readFile(external, 'utf8'), 'preserve hard link\n');
 });
 
 test('package and amendment artifact readers refuse hard-linked files', async () => {

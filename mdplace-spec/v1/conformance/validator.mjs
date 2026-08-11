@@ -2,7 +2,6 @@
 
 import {resolve} from 'node:path';
 
-import {writePackageFile} from './safe-path.mjs';
 import {buildValidationReport, deterministicFailureReport} from './validation-report.mjs';
 
 function check(id, codes) {
@@ -11,29 +10,21 @@ function check(id, codes) {
 }
 
 const arguments_ = process.argv.slice(2);
-const packageRoot = resolve(arguments_.find((argument) => !argument.startsWith('--')) ?? 'mdplace-spec/v1');
-const writeEvidence = arguments_.includes('--write-evidence');
+const options = arguments_.filter((argument) => argument.startsWith('--'));
+const positionalArguments = arguments_.filter((argument) => !argument.startsWith('--'));
+const packageRoot = resolve(positionalArguments[0] ?? 'mdplace-spec/v1');
 let report;
-try {
-  report = await buildValidationReport(packageRoot);
-} catch (error) {
-  report = deterministicFailureReport();
-  if (!(error instanceof Error)) throw error;
-}
-if (writeEvidence && report.verdict === 'pass') {
-  const write = await writePackageFile(
-    packageRoot,
-    'conformance/evidence/validation-report.json',
-    `${JSON.stringify(report, null, 2)}\n`,
-  );
-  if (write.status !== 'written') {
-    report = {
-      ...report,
-      verdict: 'fail',
-      checks: [...report.checks, check('evidence-output', [
-        write.status === 'too_large' ? 'schema.resource_limit' : 'artifact.path_unsafe',
-      ])],
-    };
+if (options.length > 0 || positionalArguments.length > 1) {
+  report = {
+    ...deterministicFailureReport(),
+    checks: [check('validator-arguments', ['validator.argument_unknown'])],
+  };
+} else {
+  try {
+    report = await buildValidationReport(packageRoot);
+  } catch (error) {
+    report = deterministicFailureReport();
+    if (!(error instanceof Error)) throw error;
   }
 }
 process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);

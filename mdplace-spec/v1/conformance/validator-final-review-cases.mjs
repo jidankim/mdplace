@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
-import {mkdir, mkdtemp, readFile, symlink, writeFile} from 'node:fs/promises';
+import {mkdir, mkdtemp, readFile, writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import test from 'node:test';
@@ -12,7 +12,6 @@ import {observeTransition} from './transition-observer.mjs';
 import {amendmentEvidenceMatches} from './amendment-evidence.mjs';
 import {releaseEvidenceMatches} from './transition-evidence.mjs';
 import {packageArtifactPathAllowed} from './validator-rules.mjs';
-import {writePackageFile} from './safe-path.mjs';
 import {copyCommittedPackage} from './validator-test-support.mjs';
 
 const schemaModule = new URL('./json-schema.mjs', import.meta.url).href;
@@ -100,42 +99,6 @@ test('specification-only policy admits only known conformance executables', () =
   assert.equal(packageArtifactPathAllowed('conformance/validator.mjs'), true);
   assert.equal(packageArtifactPathAllowed('conformance/validator-security-cases.mjs'), true);
   assert.equal(packageArtifactPathAllowed('conformance/semantic-kernel.mjs'), false);
-});
-
-test('evidence output never follows a package-external symlink', async () => {
-  const packageRoot = await mkdtemp(join(tmpdir(), 'mdplace-safe-evidence-write-'));
-  const externalRoot = await mkdtemp(join(tmpdir(), 'mdplace-external-evidence-'));
-  await mkdir(join(packageRoot, 'conformance/evidence'), {recursive: true});
-  const external = join(externalRoot, 'external.json');
-  await writeFile(external, 'preserve me\n');
-  await symlink(external, join(packageRoot, 'conformance/evidence/validation-report.json'));
-
-  const result = await writePackageFile(
-    packageRoot,
-    'conformance/evidence/validation-report.json',
-    'replacement\n',
-  );
-
-  assert.equal(result.status, 'unsafe');
-  assert.equal(await readFile(external, 'utf8'), 'preserve me\n');
-});
-
-test('evidence output refuses a symlinked parent directory', async () => {
-  const packageRoot = await mkdtemp(join(tmpdir(), 'mdplace-safe-evidence-parent-'));
-  const externalRoot = await mkdtemp(join(tmpdir(), 'mdplace-external-evidence-parent-'));
-  await mkdir(join(packageRoot, 'conformance'), {recursive: true});
-  const external = join(externalRoot, 'validation-report.json');
-  await writeFile(external, 'preserve parent target\n');
-  await symlink(externalRoot, join(packageRoot, 'conformance/evidence'));
-
-  const result = await writePackageFile(
-    packageRoot,
-    'conformance/evidence/validation-report.json',
-    'replacement\n',
-  );
-
-  assert.equal(result.status, 'unsafe');
-  assert.equal(await readFile(external, 'utf8'), 'preserve parent target\n');
 });
 
 test('transition observation rejects a lifecycle state contradicted by its observed manifest', async () => {

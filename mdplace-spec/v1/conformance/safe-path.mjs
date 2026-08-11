@@ -1,9 +1,6 @@
-import {randomUUID} from 'node:crypto';
 import {constants} from 'node:fs';
 import {lstat, open, readdir, realpath} from 'node:fs/promises';
-import {basename, dirname, relative, resolve, sep} from 'node:path';
-
-import {commitPackageReplacement} from './safe-write-commit.mjs';
+import {dirname, relative, resolve, sep} from 'node:path';
 
 export const maxFileBytes = 1_048_576;
 const maxPackageEntries = 2_048;
@@ -110,29 +107,6 @@ export async function readPackageFile(packageRoot, relativePath, byteLimit = max
   } finally {
     await handle.close();
   }
-}
-
-export async function writePackageFile(packageRoot, relativePath, content) {
-  const bytes = Buffer.isBuffer(content) ? content : Buffer.from(content);
-  if (bytes.length > maxFileBytes) return {status: 'too_large'};
-  const target = await inspectPackageEntry(packageRoot, relativePath, 'file');
-  if (target.status !== 'present') return target;
-  if (target.stats.nlink !== 1) return {status: 'unsafe'};
-  const parentStats = await lstat(dirname(target.target));
-  const committed = await commitPackageReplacement(
-    dirname(target.target),
-    basename(target.target),
-    `${basename(target.target)}.mdplace-${randomUUID()}.tmp`,
-    bytes,
-    parentStats,
-    target.stats,
-  );
-  if (committed.status !== 'written') return committed;
-  const current = await inspectPackageEntry(packageRoot, relativePath, 'file');
-  return current.status === 'present' && current.stats.nlink === 1 &&
-    current.stats.dev === committed.dev && current.stats.ino === committed.ino
-    ? {status: 'written'}
-    : {status: 'unsafe'};
 }
 
 export async function listPackageFiles(packageRoot) {

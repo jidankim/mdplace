@@ -46,7 +46,7 @@ The evidence lifecycle table is complete over `awaiting_evidence`, `verdict_reco
 
 This contract, its schemas, registry, verdict and lifecycle tables, fixtures, reference artifacts, validator assertions, traceability, and generated evidence are specification and conformance artifacts only. They MUST NOT implement or invoke the mdplace Agent, Semantic Kernel, Control Channel, Vault Mutation Gate, Capture Adapter, Placement Evaluation, Taxonomy Evolution Cycle, Folder Projection, Intelligence Adapter, Placement Automation Permission, or Automation Grant.
 
-The reference validator MAY read declared package artifacts and write only the requested generated report under `conformance/evidence/`. Report publication MUST commit relative to a validated evidence-directory identity, verify that the identity remains bound to the validated package path immediately before replacement, and fail closed if either binding changes before the commit begins. It MUST observe inputs, outputs, operations, receipts, filesystem effects, terminal states, and illegal transitions, and MUST NOT assert private helper calls, internal class shape, or unconsumed prose.
+The reference validator MAY read declared package artifacts but MUST NOT write or mutate package or external filesystem state. It emits a generated report only on standard output; publication of those bytes is a separate, explicitly authorized operation outside the validator. It MUST observe inputs, outputs, operations, receipts, filesystem effects, terminal states, and illegal transitions, and MUST NOT assert private helper calls, internal class shape, or unconsumed prose.
 
 ## Verdict table
 
