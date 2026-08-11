@@ -2,7 +2,7 @@ import {createHash} from 'node:crypto';
 import {spawn} from 'node:child_process';
 import {constants} from 'node:fs';
 import {lstat, open, rename, unlink} from 'node:fs/promises';
-import {basename} from 'node:path';
+import {basename, isAbsolute, join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 const maximumContentBytes = 1_048_576;
@@ -12,8 +12,12 @@ function safeEntryName(name) {
   return typeof name === 'string' && name.length > 0 && basename(name) === name && !name.includes('\\');
 }
 
-function matches(stats, expected) {
+function matchesSingleLinkFileIdentity(stats, expected) {
   return stats.isFile() && stats.nlink === 1 && stats.dev === expected.dev && stats.ino === expected.ino;
+}
+
+function matchesDirectoryIdentity(stats, expected) {
+  return stats.isDirectory() && stats.dev === expected.dev && stats.ino === expected.ino;
 }
 
 async function readInput() {
@@ -30,19 +34,25 @@ async function readInput() {
 async function commitFromCurrentDirectory(payload) {
   const bytes = await readInput();
   if (bytes === null || !safeEntryName(payload?.targetName) || !safeEntryName(payload?.temporaryName) ||
+      typeof payload?.directoryPath !== 'string' || !isAbsolute(payload.directoryPath) ||
       typeof payload?.contentLength !== 'number' || typeof payload?.contentSha256 !== 'string' ||
       bytes.length !== payload.contentLength ||
       createHash('sha256').update(bytes).digest('hex') !== payload.contentSha256) return {status: 'unsafe'};
-  const [parent, target] = await Promise.all([lstat('.'), lstat(payload.targetName)]);
-  if (!parent.isDirectory() || parent.dev !== payload.parent.dev || parent.ino !== payload.parent.ino ||
-      !matches(target, payload.target)) return {status: 'unsafe'};
+  const temporaryPath = join(payload.directoryPath, payload.temporaryName);
+  const targetPath = join(payload.directoryPath, payload.targetName);
+  const [parent, namedParent, target] = await Promise.all([
+    lstat('.'), lstat(payload.directoryPath), lstat(targetPath),
+  ]);
+  if (!matchesDirectoryIdentity(parent, payload.parent) ||
+      !matchesDirectoryIdentity(namedParent, payload.parent) ||
+      !matchesSingleLinkFileIdentity(target, payload.target)) return {status: 'unsafe'};
   const noFollow = constants.O_NOFOLLOW ?? 0;
   let handle;
   let temporary;
   let temporaryExists = false;
   try {
     handle = await open(
-      payload.temporaryName,
+      temporaryPath,
       constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | noFollow,
       0o600,
     );
@@ -59,24 +69,28 @@ async function commitFromCurrentDirectory(payload) {
     await handle.close();
     handle = undefined;
     if (!temporary.isFile() || temporary.nlink !== 1) return {status: 'unsafe'};
-    const [currentParent, currentTarget, currentTemporary] = await Promise.all([
-      lstat('.'), lstat(payload.targetName), lstat(payload.temporaryName),
+    const [currentParent, namedCurrentParent, currentTarget, currentTemporary] = await Promise.all([
+      lstat('.'), lstat(payload.directoryPath), lstat(targetPath), lstat(temporaryPath),
     ]);
-    if (!currentParent.isDirectory() || currentParent.dev !== payload.parent.dev ||
-        currentParent.ino !== payload.parent.ino || !matches(currentTarget, payload.target) ||
-        !matches(currentTemporary, temporary)) return {status: 'unsafe'};
-    await rename(payload.temporaryName, payload.targetName);
+    if (!matchesDirectoryIdentity(currentParent, payload.parent) ||
+        !matchesDirectoryIdentity(namedCurrentParent, payload.parent) ||
+        !matchesSingleLinkFileIdentity(currentTarget, payload.target) ||
+        !matchesSingleLinkFileIdentity(currentTemporary, temporary)) return {status: 'unsafe'};
+    await rename(temporaryPath, targetPath);
     temporaryExists = false;
-    const committed = await lstat(payload.targetName);
-    return matches(committed, temporary)
+    const [committedParent, committed] = await Promise.all([
+      lstat(payload.directoryPath), lstat(targetPath),
+    ]);
+    return matchesDirectoryIdentity(committedParent, payload.parent) &&
+      matchesSingleLinkFileIdentity(committed, temporary)
       ? {status: 'written', dev: committed.dev, ino: committed.ino}
       : {status: 'unsafe'};
   } finally {
     if (handle !== undefined) await handle.close();
     if (temporaryExists && temporary !== undefined) {
-      const current = await lstat(payload.temporaryName).catch(() => null);
+      const current = await lstat(temporaryPath).catch(() => null);
       if (current !== null && current.dev === temporary.dev && current.ino === temporary.ino) {
-        await unlink(payload.temporaryName);
+        await unlink(temporaryPath);
       }
     }
   }
@@ -84,6 +98,7 @@ async function commitFromCurrentDirectory(payload) {
 
 export async function commitPackageReplacement(directoryPath, targetName, temporaryName, bytes, parent, target) {
   const payload = {
+    directoryPath,
     targetName,
     temporaryName,
     contentLength: bytes.length,

@@ -60,3 +60,44 @@ test('evidence output cannot be redirected by swapping its validated parent', as
     syncBuiltinESMExports();
   }
 });
+
+test('evidence output cannot follow its validated parent outside the package', async () => {
+  // Given a package report and an adversary that relocates its parent after the writer pins it.
+  const packageRoot = await mkdtemp(join(tmpdir(), 'mdplace-safe-evidence-relocation-'));
+  const externalRoot = await mkdtemp(join(tmpdir(), 'mdplace-external-evidence-relocation-'));
+  const evidenceParent = join(packageRoot, 'conformance/evidence');
+  const relocatedParent = join(externalRoot, 'evidence');
+  const target = join(evidenceParent, 'validation-report.json');
+  const relocatedTarget = join(relocatedParent, 'validation-report.json');
+  await mkdir(evidenceParent, {recursive: true});
+  await writeFile(target, 'package report\n');
+
+  const originalSpawn = childProcess.spawn;
+  let relocated = false;
+  childProcess.spawn = function (...arguments_) {
+    const child = originalSpawn.apply(this, arguments_);
+    fs.renameSync(evidenceParent, relocatedParent);
+    relocated = true;
+    return child;
+  };
+  syncBuiltinESMExports();
+
+  try {
+    const {writePackageFile} = await import(`./safe-path.mjs?parent-relocation=${Date.now()}`);
+
+    // When evidence publication reaches its final filesystem commit.
+    const result = await writePackageFile(
+      packageRoot,
+      'conformance/evidence/validation-report.json',
+      'replacement report\n',
+    );
+
+    // Then the operation fails closed without changing the report now outside the package.
+    assert.equal(relocated, true);
+    assert.equal(result.status, 'unsafe');
+    assert.equal(await readFile(relocatedTarget, 'utf8'), 'package report\n');
+  } finally {
+    childProcess.spawn = originalSpawn;
+    syncBuiltinESMExports();
+  }
+});
