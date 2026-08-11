@@ -1,0 +1,17 @@
+{
+  "$schema": "../../contracts/schemas/claim-manifest.schema.json",
+  "schema_id": "mdplace.claim-manifest/v1",
+  "manifest_kind": "profile_claim",
+  "claim_id": "CLAIM-WEBCLIPPER-001",
+  "profile": "web_clipper_product_readiness",
+  "package_series": "mdplace-spec/v1",
+  "release_version": "1.0.0",
+  "validator_id": "mdplace.package-validator",
+  "validator_version": "1.1.0",
+  "subject": {"kind": "conformance_fixture", "subject_id": "fixture:claim-profile-web-clipper", "sha256": "7d59b994abfe82398a4875569be48fc420f8748a5230c286eb749fdac0c2b700"},
+  "requirement_id": "REQ-VAL-004",
+  "evidence_requirements": [{"evidence_kind": "web_clipper_compatibility", "mandatory": true}],
+  "evidence_bindings": [{"evidence_kind": "web_clipper_compatibility", "mandatory": true, "availability": "missing", "applicability": "applicable", "evidence_ref": null, "evidence_digest": null, "verdict": "inconclusive"}],
+  "applicability": "applicable",
+  "verdict": "inconclusive"
+}

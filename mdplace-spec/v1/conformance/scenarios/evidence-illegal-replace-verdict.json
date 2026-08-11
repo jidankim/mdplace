@@ -1,0 +1,38 @@
+{
+  "$schema": "../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-VAL-ILLEGAL-003",
+  "category": "illegal_transition",
+  "requirement_ids": ["REQ-VAL-005", "REQ-VAL-006", "REQ-VAL-007"],
+  "subject": {
+    "kind": "extension",
+    "extension_id": "mdplace.validator-extension/evidence/v1",
+    "schema": "contracts/schemas/evidence-transition-attempt.schema.json",
+    "document": {
+      "$schema": "../../contracts/schemas/evidence-transition-attempt.schema.json",
+      "schema_id": "mdplace.evidence-transition-attempt/v1",
+      "package_series": "mdplace-spec/v1",
+      "release_version": "1.0.0",
+      "validator_id": "mdplace.package-validator",
+      "validator_version": "1.1.0",
+      "table_ref": "contracts/transitions/evidence-lifecycle.json",
+      "from_state": "verdict_recorded",
+      "command": "record_verdict",
+      "actor_authority": {"roles": ["conformance_validator"], "quorum": 1, "distinct_actors": false, "delegation": "forbidden"},
+      "fresh_evidence_supplied": false,
+      "recorded_claim": null,
+      "recovery_report": null,
+      "fresh_claim": null
+    }
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": ["evidence.transition_denied"],
+    "outputs": ["evidence transition denied"],
+    "operations": ["resolve validator extension", "validate extension document", "verify specification and validator bindings", "evaluate evidence lifecycle"],
+    "receipts": ["EvidenceValidationReceipt"],
+    "filesystem_effects": ["none"],
+    "terminal_state": "verdict_recorded",
+    "illegal_transition": true
+  }
+}

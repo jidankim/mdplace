@@ -1,0 +1,54 @@
+{
+  "$schema": "../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-VAL-REC-003",
+  "category": "crash_recovery",
+  "requirement_ids": ["REQ-VAL-005", "REQ-VAL-006"],
+  "subject": {
+    "kind": "extension",
+    "extension_id": "mdplace.validator-extension/evidence/v1",
+    "schema": "contracts/schemas/evidence-recovery-report.schema.json",
+    "document": {
+      "$schema": "../../contracts/schemas/evidence-recovery-report.schema.json",
+      "schema_id": "mdplace.evidence-recovery-report/v1",
+      "report_id": "evidence-recovery:unsupported-upgrade-denied",
+      "package_series": "mdplace-spec/v1",
+      "release_version": "1.0.0",
+      "validator_id": "mdplace.package-validator",
+      "validator_version": "1.1.0",
+      "claim_id": "CLAIM-LOCALADAPTER-001",
+      "claim": {
+        "claim_id": "CLAIM-LOCALADAPTER-001",
+        "path": "conformance/claim-manifests/local-intelligence-adapter.json",
+        "sha256": "fa0abe3d3278dafee75a2d959068375ad4d3bf8dfe0127af578e5e05b147b867"
+      },
+      "recorded_claim": null,
+      "prior_verdict": "unsupported",
+      "crash_point": "after_binding_recompute",
+      "fresh_evidence_supplied": false,
+      "recomputed_bindings": [
+        {
+          "path": "conformance/claim-manifests/local-intelligence-adapter.json",
+          "expected_sha256": "fa0abe3d3278dafee75a2d959068375ad4d3bf8dfe0127af578e5e05b147b867",
+          "observed_sha256": "fa0abe3d3278dafee75a2d959068375ad4d3bf8dfe0127af578e5e05b147b867",
+          "matches": true
+        }
+      ],
+      "operations": ["reopen declared artifact", "recompute sha256", "preserve unsupported verdict"],
+      "receipts": ["EvidenceRecoveryReport"],
+      "filesystem_effects": ["none"],
+      "terminal_state": "verdict_recorded",
+      "effective_verdict": "pass"
+    }
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": ["evidence.recovery_verdict_upgrade"],
+    "outputs": ["recovery report rejected"],
+    "operations": ["resolve validator extension", "validate extension document", "verify specification and validator bindings", "recompute evidence bindings", "preserve non-pass verdict"],
+    "receipts": ["EvidenceValidationReceipt"],
+    "filesystem_effects": ["none"],
+    "terminal_state": "rejected",
+    "illegal_transition": false
+  }
+}

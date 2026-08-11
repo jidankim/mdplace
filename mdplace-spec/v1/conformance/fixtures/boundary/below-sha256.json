@@ -3,7 +3,7 @@
   "schema_id": "mdplace.conformance-fixture/v1",
   "fixture_id": "FIX-PKG-BND-002",
   "category": "exact_boundary",
-  "requirement_ids": ["REQ-PKG-002", "REQ-PKG-006", "REQ-PKG-009"],
+  "requirement_ids": ["REQ-PKG-002", "REQ-PKG-006", "REQ-PKG-009", "REQ-VAL-003"],
   "subject": {"kind": "sha256_boundary", "value": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcde"},
   "expected": {"verdict": "fail", "codes": ["schema.pattern"], "outputs": ["digest rejected"], "operations": ["validate sha256 boundary"], "receipts": ["ValidationReceipt"], "filesystem_effects": ["none"], "terminal_state": "rejected", "illegal_transition": false}
 }

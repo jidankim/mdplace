@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:claims-and-evidence:v1",
+  "title": "mdplace claim manifest index",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "index_kind", "package_series", "release_version", "validator_id", "validator_version", "claims"],
+  "properties": {
+    "$schema": {"const": "contracts/schemas/claims-and-evidence.schema.json"},
+    "schema_id": {"const": "mdplace.claims-and-evidence/v1"},
+    "index_kind": {"const": "profile_claims"},
+    "package_series": {"const": "mdplace-spec/v1"},
+    "release_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "validator_id": {"const": "mdplace.package-validator"},
+    "validator_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "claims": {"type": "array", "minItems": 8, "maxItems": 8, "items": {"$ref": "#/$defs/claimBinding"}}
+  },
+  "$defs": {
+    "claimBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claim_id", "profile", "manifest_ref", "sha256"],
+      "properties": {
+        "claim_id": {"type": "string", "pattern": "^CLAIM-[A-Z][A-Z0-9]{1,31}-[0-9]{3}$"},
+        "profile": {"enum": ["core", "web_clipper_product_readiness", "local_intelligence_adapter", "remote_intelligence_adapter", "codex_intelligence_adapter", "placement_automation", "new_leaf_automatic_promotion", "alias_automatic_promotion"]},
+        "manifest_ref": {"type": "string", "pattern": "^conformance/claim-manifests/[a-z][a-z0-9-]*\\.json$"},
+        "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    }
+  }
+}

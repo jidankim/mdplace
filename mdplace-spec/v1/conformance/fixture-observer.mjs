@@ -2,6 +2,7 @@ import {readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
+import {observeEvidenceExtension} from './evidence-extension.mjs';
 import {observeTransition} from './transition-observer.mjs';
 import {authorityMatches, manifestFields, packageArtifactPathAllowed, transitionFields} from './validator-rules.mjs';
 
@@ -82,7 +83,12 @@ export async function observeFixture(fixture, packageRoot, options = {}) {
         case 'traceability.schema.json': {
           const requirements = JSON.parse(await readFile(resolve(packageRoot, 'normative/requirements.json'), 'utf8'));
           const tracedIds = document.records.map(({requirement_id: requirementId}) => requirementId);
-          if (requirements.requirements.some(({id}) => !tracedIds.includes(id)) || new Set(tracedIds).size !== tracedIds.length) {
+          const requirementRows = Array.isArray(requirements?.requirements) ? requirements.requirements : [];
+          if (!Array.isArray(requirements?.requirements) ||
+              requirementRows.some((row) => row === null || typeof row !== 'object' || Array.isArray(row))) {
+            codes = ['schema.constraint'];
+          } else if (requirementRows.some(({id}) => !tracedIds.includes(id)) ||
+                     new Set(tracedIds).size !== tracedIds.length) {
             codes = ['traceability.untraced_requirement'];
           }
           break;
@@ -155,6 +161,8 @@ export async function observeFixture(fixture, packageRoot, options = {}) {
     }
     case 'transition':
       return observeTransition(fixture, packageRoot, options);
+    case 'extension':
+      return observeEvidenceExtension(fixture.subject, packageRoot);
     default:
       return {
         verdict: 'fail',

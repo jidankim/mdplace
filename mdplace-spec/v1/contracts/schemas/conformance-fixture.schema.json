@@ -38,9 +38,10 @@
     "extensionSubject": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["kind", "schema", "document"],
+      "required": ["kind", "extension_id", "schema", "document"],
       "properties": {
         "kind": {"const": "extension"},
+        "extension_id": {"type": "string", "pattern": "^mdplace\\.validator-extension/[a-z][a-z0-9-]*/v[1-9][0-9]*$"},
         "schema": {"type": "string", "pattern": "^contracts/schemas/[a-z][a-z0-9-]*\\.schema\\.json$"},
         "document": {"description": "Opaque downstream subject validated and observed by the validator named by its conformance suite."}
       }

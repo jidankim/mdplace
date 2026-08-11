@@ -1,0 +1,38 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-VAL-NEG-004",
+  "category": "negative",
+  "requirement_ids": ["REQ-VAL-002", "REQ-VAL-005"],
+  "subject": {
+    "kind": "artifact",
+    "schema": "contracts/schemas/verdict-table.schema.json",
+    "document": {
+      "$schema": "../schemas/verdict-table.schema.json",
+      "schema_id": "mdplace.verdict-table/v1",
+      "table_id": "VERDICT-VALIDATOR-EVIDENCE-V1",
+      "package_series": "mdplace-spec/v1",
+      "release_version": "1.0.0",
+      "validator_id": "mdplace.package-validator",
+      "validator_version": "1.1.0",
+      "default_denial": "missing_stale_skipped_unsupported_or_inconclusive_mandatory_evidence_is_non_pass",
+      "precedence": ["fail", "unsupported", "inconclusive", "pass"],
+      "rows": [
+        {"verdict": "pass", "meaning": "complete", "mandatory_effect": "satisfied", "claim_effect": "eligible_pass", "recovery": "become stale"},
+        {"verdict": "fail", "meaning": "contradicted", "mandatory_effect": "non_pass", "claim_effect": "deny_pass", "permitted_availability": ["present", "stale"], "recovery": "preserve fail"},
+        {"verdict": "unsupported", "meaning": "unsupported", "mandatory_effect": "non_pass", "claim_effect": "deny_pass", "permitted_availability": ["present", "unsupported"], "recovery": "retain unsupported"},
+        {"verdict": "inconclusive", "meaning": "undetermined", "mandatory_effect": "non_pass", "claim_effect": "deny_pass", "permitted_availability": ["present", "missing", "stale", "skipped"], "recovery": "preserve inconclusive"}
+      ]
+    }
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": ["schema.required_field"],
+    "outputs": ["artifact rejected"],
+    "operations": ["parse boundary document"],
+    "receipts": ["ValidationReceipt"],
+    "filesystem_effects": ["none"],
+    "terminal_state": "rejected",
+    "illegal_transition": false
+  }
+}

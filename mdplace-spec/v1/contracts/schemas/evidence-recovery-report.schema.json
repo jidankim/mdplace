@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:evidence-recovery-report:v1",
+  "title": "mdplace evidence recovery report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "report_id", "package_series", "release_version", "validator_id", "validator_version", "claim_id", "claim", "recorded_claim", "prior_verdict", "crash_point", "fresh_evidence_supplied", "recomputed_bindings", "operations", "receipts", "filesystem_effects", "terminal_state", "effective_verdict"],
+  "properties": {
+    "$schema": {"enum": ["../../contracts/schemas/evidence-recovery-report.schema.json", "../../../contracts/schemas/evidence-recovery-report.schema.json"]},
+    "schema_id": {"const": "mdplace.evidence-recovery-report/v1"},
+    "report_id": {"type": "string", "pattern": "^evidence-recovery:[a-z0-9][a-z0-9-]{2,63}$"},
+    "package_series": {"const": "mdplace-spec/v1"},
+    "release_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "validator_id": {"const": "mdplace.package-validator"},
+    "validator_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "claim_id": {"type": "string", "pattern": "^CLAIM-[A-Z][A-Z0-9]{1,31}-[0-9]{3}$"},
+    "claim": {"$ref": "#/$defs/claimBinding"},
+    "recorded_claim": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/claimBinding"}
+      ]
+    },
+    "prior_verdict": {"enum": ["pass", "fail", "unsupported", "inconclusive"]},
+    "crash_point": {"enum": ["after_binding_recompute", "after_report_staged", "before_report_publish"]},
+    "fresh_evidence_supplied": {"type": "boolean"},
+    "recomputed_bindings": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/recomputedBinding"}},
+    "operations": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "receipts": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[A-Z][A-Za-z0-9]{2,63}$"}},
+    "filesystem_effects": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "terminal_state": {"enum": ["awaiting_evidence", "verdict_recorded", "evidence_stale"]},
+    "effective_verdict": {"enum": ["pass", "fail", "unsupported", "inconclusive"]}
+  },
+  "$defs": {
+    "claimBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claim_id", "path", "sha256"],
+      "properties": {
+        "claim_id": {"type": "string", "pattern": "^CLAIM-[A-Z][A-Z0-9]{1,31}-[0-9]{3}$"},
+        "path": {"type": "string", "pattern": "^conformance/(?:claim-manifests|evidence/claims)/[a-z][a-z0-9-]*\\.json$"},
+        "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    },
+    "recomputedBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "expected_sha256", "observed_sha256", "matches"],
+      "properties": {
+        "path": {"type": "string", "pattern": "^[a-zA-Z0-9][a-zA-Z0-9./-]*$"},
+        "expected_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "observed_sha256": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+          ]
+        },
+        "matches": {"type": "boolean"}
+      }
+    }
+  }
+}

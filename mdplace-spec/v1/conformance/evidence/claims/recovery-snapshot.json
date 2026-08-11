@@ -1,0 +1,36 @@
+{
+  "$schema": "../../../contracts/schemas/claim-manifest.schema.json",
+  "schema_id": "mdplace.claim-manifest/v1",
+  "manifest_kind": "recovery_snapshot",
+  "claim_id": "CLAIM-RECOVERY-001",
+  "profile": "core",
+  "package_series": "mdplace-spec/v1",
+  "release_version": "1.0.0",
+  "validator_id": "mdplace.package-validator",
+  "validator_version": "1.1.0",
+  "subject": {
+    "kind": "contract_table",
+    "subject_id": "verdict-table:validator-evidence-v1",
+    "sha256": "caaeba680abdc21053da0bb727c6a56cde19779a3a4aaee05e66c2ac65f56158"
+  },
+  "requirement_id": "REQ-VAL-003",
+  "evidence_requirements": [
+    {
+      "evidence_kind": "validator_evidence",
+      "mandatory": true
+    }
+  ],
+  "evidence_bindings": [
+    {
+      "evidence_kind": "validator_evidence",
+      "mandatory": true,
+      "availability": "present",
+      "applicability": "applicable",
+      "evidence_ref": "conformance/evidence/envelopes/validator-evidence-reference.json",
+      "evidence_digest": "8c100abfa4aea5a4e1769fa80629dd5e956870bc0080d87a7e0e6ba8d02fb4ab",
+      "verdict": "pass"
+    }
+  ],
+  "applicability": "applicable",
+  "verdict": "pass"
+}

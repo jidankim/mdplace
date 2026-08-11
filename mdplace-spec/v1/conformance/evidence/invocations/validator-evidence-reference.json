@@ -1,0 +1,49 @@
+{
+  "$schema": "../../../contracts/schemas/validator-invocation.schema.json",
+  "schema_id": "mdplace.validator-invocation/v1",
+  "extension_id": "mdplace.validator-extension/evidence/v1",
+  "invocation_id": "invocation:validator-evidence-reference",
+  "package_series": "mdplace-spec/v1",
+  "release_version": "1.0.0",
+  "validator_id": "mdplace.package-validator",
+  "validator_version": "1.1.0",
+  "subject": {
+    "kind": "contract_table",
+    "subject_id": "verdict-table:validator-evidence-v1",
+    "path": "contracts/verdicts/validator-verdicts.json",
+    "schema": "contracts/schemas/verdict-table.schema.json",
+    "sha256": "caaeba680abdc21053da0bb727c6a56cde19779a3a4aaee05e66c2ac65f56158"
+  },
+  "requirement_ids": [
+    "REQ-VAL-001",
+    "REQ-VAL-002",
+    "REQ-VAL-003",
+    "REQ-VAL-004",
+    "REQ-VAL-005",
+    "REQ-VAL-006",
+    "REQ-VAL-007"
+  ],
+  "input_digests": [
+    {
+      "ordinal": 0,
+      "label": "requirements",
+      "path": "normative/requirements.json",
+      "sha256": "1063ce1a4ec287201a56564e294f53b55d809efd232798f5b9f52c979078bb76"
+    },
+    {
+      "ordinal": 1,
+      "label": "verdict_table",
+      "path": "contracts/verdicts/validator-verdicts.json",
+      "sha256": "caaeba680abdc21053da0bb727c6a56cde19779a3a4aaee05e66c2ac65f56158"
+    }
+  ],
+  "execution_context": {
+    "runner_id": "mdplace.package-validator",
+    "platform": "platform_neutral",
+    "architecture": "architecture_neutral",
+    "filesystem": "package_fixture",
+    "locale": "C.UTF-8",
+    "timezone": "UTC",
+    "network_access": "denied"
+  }
+}

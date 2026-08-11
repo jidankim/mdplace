@@ -2,9 +2,9 @@
   "schema_id": "mdplace.validation-report/v1",
   "package_series": "mdplace-spec/v1",
   "release_version": "1.0.0",
-  "validator_version": "1.0.0",
-  "normative_digest": "827a6561708b71d24c1d6218e64e40e3612f7261367e65776eb9a9573a0fb2ab",
-  "conformance_digest": "3b245b948a4f7495abde9c13c23d1cc0689f75966f0a381bd05975e85d84df7f",
+  "validator_version": "1.1.0",
+  "normative_digest": "3c1628b237b0f4a28e78a65fe9e652f9218cbf140f0d750f17069d4fbf8154c6",
+  "conformance_digest": "c40da66ee57518d16843a92fdb985e6e26d230b6c5411bb7b61a2b003f59d499",
   "verdict": "pass",
   "checks": [
     {
@@ -28,12 +28,22 @@
       "codes": []
     },
     {
+      "id": "evidence-lifecycle",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
       "id": "contract-schemas",
       "verdict": "pass",
       "codes": []
     },
     {
       "id": "schema-instances",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "validator-evidence-contract",
       "verdict": "pass",
       "codes": []
     },
@@ -236,6 +246,106 @@
     },
     {
       "id": "FIX-PKG-ILLEGAL-012",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VAL-POS-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VAL-NEG-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VAL-POS-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VAL-NEG-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VAL-STATE-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VAL-AUTH-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VAL-REC-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VAL-ILLEGAL-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VAL-ILLEGAL-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VAL-ILLEGAL-003",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VAL-ILLEGAL-004",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VAL-STATE-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VAL-NEG-003",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VAL-POS-003",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VAL-REC-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VAL-REC-003",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VAL-ILLEGAL-005",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VAL-NEG-004",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VAL-NEG-005",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VAL-NEG-006",
       "verdict": "pass",
       "codes": []
     }

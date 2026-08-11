@@ -1,0 +1,59 @@
+{
+  "$schema": "contracts/schemas/claims-and-evidence.schema.json",
+  "schema_id": "mdplace.claims-and-evidence/v1",
+  "index_kind": "profile_claims",
+  "package_series": "mdplace-spec/v1",
+  "release_version": "1.0.0",
+  "validator_id": "mdplace.package-validator",
+  "validator_version": "1.1.0",
+  "claims": [
+    {
+      "claim_id": "CLAIM-CORE-001",
+      "profile": "core",
+      "manifest_ref": "conformance/claim-manifests/core.json",
+      "sha256": "aeb2fa6c5b31052cae51d38dc1c94ce1f872e299eb25a46c079249323e3cddc4"
+    },
+    {
+      "claim_id": "CLAIM-WEBCLIPPER-001",
+      "profile": "web_clipper_product_readiness",
+      "manifest_ref": "conformance/claim-manifests/web-clipper-product-readiness.json",
+      "sha256": "c1444fb2dcbae9c107b27b4a7eb8748e28f6ea6bfc11de07719a4209ecc1241d"
+    },
+    {
+      "claim_id": "CLAIM-LOCALADAPTER-001",
+      "profile": "local_intelligence_adapter",
+      "manifest_ref": "conformance/claim-manifests/local-intelligence-adapter.json",
+      "sha256": "fa0abe3d3278dafee75a2d959068375ad4d3bf8dfe0127af578e5e05b147b867"
+    },
+    {
+      "claim_id": "CLAIM-REMOTEADAPTER-001",
+      "profile": "remote_intelligence_adapter",
+      "manifest_ref": "conformance/claim-manifests/remote-intelligence-adapter.json",
+      "sha256": "4620b6fb586283a052f74b6a9deb36d7bbfcd2d61f101ed2dfa546446641da80"
+    },
+    {
+      "claim_id": "CLAIM-CODEXADAPTER-001",
+      "profile": "codex_intelligence_adapter",
+      "manifest_ref": "conformance/claim-manifests/codex-intelligence-adapter.json",
+      "sha256": "82feb7d1f33ff626ff8b3d5bbdc48c9abd70b801ebd910d2232c2afcd8205fbb"
+    },
+    {
+      "claim_id": "CLAIM-PLACEMENTAUTO-001",
+      "profile": "placement_automation",
+      "manifest_ref": "conformance/claim-manifests/placement-automation.json",
+      "sha256": "1ca5ff63edd93ec02e29974d9fd125f12daf45694d570026b0c6a557c6be5309"
+    },
+    {
+      "claim_id": "CLAIM-NEWLEAFPROMO-001",
+      "profile": "new_leaf_automatic_promotion",
+      "manifest_ref": "conformance/claim-manifests/new-leaf-automatic-promotion.json",
+      "sha256": "4aa67d49cf67aef90324d2b6f65eae6c9d215f630acec07e0f74c149fd267747"
+    },
+    {
+      "claim_id": "CLAIM-ALIASPROMO-001",
+      "profile": "alias_automatic_promotion",
+      "manifest_ref": "conformance/claim-manifests/alias-automatic-promotion.json",
+      "sha256": "bc9a20dbd7183b03d9251c7be993d815b1f9c07f81ee9a2e4af5221d0d3e6f88"
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "$schema": "../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-VAL-REC-001",
+  "category": "crash_recovery",
+  "requirement_ids": [
+    "REQ-VAL-002",
+    "REQ-VAL-005",
+    "REQ-VAL-006",
+    "REQ-VAL-007"
+  ],
+  "subject": {
+    "kind": "extension",
+    "extension_id": "mdplace.validator-extension/evidence/v1",
+    "schema": "contracts/schemas/evidence-recovery-report.schema.json",
+    "document": {
+      "$schema": "../../contracts/schemas/evidence-recovery-report.schema.json",
+      "schema_id": "mdplace.evidence-recovery-report/v1",
+      "report_id": "evidence-recovery:pass-readback",
+      "package_series": "mdplace-spec/v1",
+      "release_version": "1.0.0",
+      "validator_id": "mdplace.package-validator",
+      "validator_version": "1.1.0",
+      "claim_id": "CLAIM-RECOVERY-001",
+      "claim": {
+        "claim_id": "CLAIM-RECOVERY-001",
+        "path": "conformance/evidence/claims/recovery-snapshot.json",
+        "sha256": "b4c2d7c5cf372dde48de9e181263668c13c50f03c034f253f54557ea770d2472"
+      },
+      "recorded_claim": null,
+      "prior_verdict": "pass",
+      "crash_point": "after_binding_recompute",
+      "fresh_evidence_supplied": false,
+      "recomputed_bindings": [
+        {
+          "path": "conformance/evidence/claims/recovery-snapshot.json",
+          "expected_sha256": "b4c2d7c5cf372dde48de9e181263668c13c50f03c034f253f54557ea770d2472",
+          "observed_sha256": "b4c2d7c5cf372dde48de9e181263668c13c50f03c034f253f54557ea770d2472",
+          "matches": true
+        },
+        {
+          "path": "conformance/evidence/envelopes/validator-evidence-reference.json",
+          "expected_sha256": "8c100abfa4aea5a4e1769fa80629dd5e956870bc0080d87a7e0e6ba8d02fb4ab",
+          "observed_sha256": "8c100abfa4aea5a4e1769fa80629dd5e956870bc0080d87a7e0e6ba8d02fb4ab",
+          "matches": true
+        },
+        {
+          "path": "conformance/evidence/invocations/validator-evidence-reference.json",
+          "expected_sha256": "56711d65f762d79e6f53404178bcde4e53f09f5a714f9ffd212dfd3d230f1cdb",
+          "observed_sha256": "56711d65f762d79e6f53404178bcde4e53f09f5a714f9ffd212dfd3d230f1cdb",
+          "matches": true
+        },
+        {
+          "path": "normative/requirements.json",
+          "expected_sha256": "1063ce1a4ec287201a56564e294f53b55d809efd232798f5b9f52c979078bb76",
+          "observed_sha256": "1063ce1a4ec287201a56564e294f53b55d809efd232798f5b9f52c979078bb76",
+          "matches": true
+        },
+        {
+          "path": "contracts/verdicts/validator-verdicts.json",
+          "expected_sha256": "caaeba680abdc21053da0bb727c6a56cde19779a3a4aaee05e66c2ac65f56158",
+          "observed_sha256": "caaeba680abdc21053da0bb727c6a56cde19779a3a4aaee05e66c2ac65f56158",
+          "matches": true
+        },
+        {
+          "path": "claims-and-evidence.yaml",
+          "expected_sha256": "9eb04d05991b773681314646b6e85d9cf7bccc34247714e7c1978708f67db370",
+          "observed_sha256": "9eb04d05991b773681314646b6e85d9cf7bccc34247714e7c1978708f67db370",
+          "matches": true
+        },
+        {
+          "path": "normative/validator-evidence-contract.md",
+          "expected_sha256": "4b1c8cbccee44802a4173a859977d300fc31703118965b04cec81ec56e7a4f12",
+          "observed_sha256": "4b1c8cbccee44802a4173a859977d300fc31703118965b04cec81ec56e7a4f12",
+          "matches": true
+        },
+        {
+          "path": "contracts/validator-extensions.json",
+          "expected_sha256": "1b00b497fdba947895cd890c32eddd1e7f63465b8d7be67504e636229b4c701a",
+          "observed_sha256": "1b00b497fdba947895cd890c32eddd1e7f63465b8d7be67504e636229b4c701a",
+          "matches": true
+        }
+      ],
+      "operations": [
+        "reopen declared artifact",
+        "recompute sha256",
+        "preserve pass verdict"
+      ],
+      "receipts": [
+        "EvidenceRecoveryReport"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "terminal_state": "verdict_recorded",
+      "effective_verdict": "pass"
+    }
+  },
+  "expected": {
+    "verdict": "pass",
+    "codes": [],
+    "outputs": [
+      "recovery report accepted"
+    ],
+    "operations": [
+      "resolve validator extension",
+      "validate extension document",
+      "verify specification and validator bindings",
+      "recompute evidence bindings",
+      "preserve non-pass verdict"
+    ],
+    "receipts": [
+      "EvidenceValidationReceipt"
+    ],
+    "filesystem_effects": [
+      "none"
+    ],
+    "terminal_state": "verdict_recorded",
+    "illegal_transition": false
+  }
+}

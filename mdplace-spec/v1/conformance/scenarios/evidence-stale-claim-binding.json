@@ -1,0 +1,77 @@
+{
+  "$schema": "../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-VAL-STATE-002",
+  "category": "stale_state",
+  "requirement_ids": [
+    "REQ-VAL-002",
+    "REQ-VAL-004",
+    "REQ-VAL-005",
+    "REQ-VAL-006"
+  ],
+  "subject": {
+    "kind": "extension",
+    "extension_id": "mdplace.validator-extension/evidence/v1",
+    "schema": "contracts/schemas/claim-manifest.schema.json",
+    "document": {
+      "$schema": "../../contracts/schemas/claim-manifest.schema.json",
+      "schema_id": "mdplace.claim-manifest/v1",
+      "manifest_kind": "profile_claim",
+      "claim_id": "CLAIM-STALEPROOF-001",
+      "profile": "core",
+      "package_series": "mdplace-spec/v1",
+      "release_version": "1.0.0",
+      "validator_id": "mdplace.package-validator",
+      "validator_version": "1.1.0",
+      "subject": {
+        "kind": "conformance_fixture",
+        "subject_id": "fixture:stale-claim-proof",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "requirement_id": "REQ-VAL-002",
+      "evidence_requirements": [
+        {
+          "evidence_kind": "profile_conformance",
+          "mandatory": true
+        }
+      ],
+      "evidence_bindings": [
+        {
+          "evidence_kind": "profile_conformance",
+          "mandatory": true,
+          "availability": "present",
+          "applicability": "applicable",
+          "evidence_ref": "conformance/evidence/envelopes/stale-claim-proof.json",
+          "evidence_digest": "1b20176489d3933817d242b6b1e5dd46739c40088efe0ee227712da13b6bdcb6",
+          "verdict": "pass"
+        }
+      ],
+      "applicability": "applicable",
+      "verdict": "pass"
+    }
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": [
+      "evidence.specification_version_mismatch"
+    ],
+    "outputs": [
+      "claim manifest rejected"
+    ],
+    "operations": [
+      "resolve validator extension",
+      "validate extension document",
+      "verify specification and validator bindings",
+      "evaluate mandatory evidence",
+      "validate bound evidence envelopes"
+    ],
+    "receipts": [
+      "EvidenceValidationReceipt"
+    ],
+    "filesystem_effects": [
+      "none"
+    ],
+    "terminal_state": "rejected",
+    "illegal_transition": false
+  }
+}

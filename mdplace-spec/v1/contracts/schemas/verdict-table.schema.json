@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:verdict-table:v1",
+  "title": "mdplace conformance verdict table",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "table_id", "package_series", "release_version", "validator_id", "validator_version", "default_denial", "precedence", "rows"],
+  "properties": {
+    "$schema": {"const": "../schemas/verdict-table.schema.json"},
+    "schema_id": {"const": "mdplace.verdict-table/v1"},
+    "table_id": {"const": "VERDICT-VALIDATOR-EVIDENCE-V1"},
+    "package_series": {"const": "mdplace-spec/v1"},
+    "release_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "validator_id": {"const": "mdplace.package-validator"},
+    "validator_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "default_denial": {"const": "missing_stale_skipped_unsupported_or_inconclusive_mandatory_evidence_is_non_pass"},
+    "precedence": {"type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "items": {"enum": ["fail", "unsupported", "inconclusive", "pass"]}},
+    "rows": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"$ref": "#/$defs/row"}}
+  },
+  "$defs": {
+    "row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verdict", "meaning", "mandatory_effect", "claim_effect", "permitted_availability", "recovery"],
+      "properties": {
+        "verdict": {"enum": ["pass", "fail", "unsupported", "inconclusive"]},
+        "meaning": {"type": "string", "minLength": 1},
+        "mandatory_effect": {"enum": ["satisfied", "non_pass"]},
+        "claim_effect": {"enum": ["eligible_pass", "deny_pass"]},
+        "permitted_availability": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"enum": ["present", "missing", "stale", "skipped", "unsupported"]}
+        },
+        "recovery": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

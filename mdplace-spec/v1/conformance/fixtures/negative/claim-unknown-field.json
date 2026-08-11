@@ -1,0 +1,40 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-VAL-NEG-002",
+  "category": "negative",
+  "requirement_ids": ["REQ-VAL-001", "REQ-VAL-004"],
+  "subject": {
+    "kind": "extension",
+    "extension_id": "mdplace.validator-extension/evidence/v1",
+    "schema": "contracts/schemas/claim-manifest.schema.json",
+    "document": {
+      "$schema": "../../contracts/schemas/claim-manifest.schema.json",
+      "schema_id": "mdplace.claim-manifest/v1",
+      "manifest_kind": "profile_claim",
+      "claim_id": "CLAIM-UNKNOWNFIELD-001",
+      "profile": "core",
+      "package_series": "mdplace-spec/v1",
+      "release_version": "1.0.0",
+      "validator_id": "mdplace.package-validator",
+      "validator_version": "1.1.0",
+      "subject": {"kind": "conformance_fixture", "subject_id": "fixture:claim-unknown-field", "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+      "requirement_id": "REQ-VAL-004",
+      "evidence_requirements": [{"evidence_kind": "profile_conformance", "mandatory": true}],
+      "evidence_bindings": [{"evidence_kind": "profile_conformance", "mandatory": true, "availability": "missing", "applicability": "applicable", "evidence_ref": null, "evidence_digest": null, "verdict": "inconclusive"}],
+      "applicability": "applicable",
+      "verdict": "inconclusive",
+      "ambient_pass": true
+    }
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": ["schema.unknown_field"],
+    "outputs": ["claim manifest rejected"],
+    "operations": ["resolve validator extension", "validate extension document"],
+    "receipts": ["EvidenceValidationReceipt"],
+    "filesystem_effects": ["none"],
+    "terminal_state": "rejected",
+    "illegal_transition": false
+  }
+}

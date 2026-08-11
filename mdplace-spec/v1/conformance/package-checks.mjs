@@ -34,6 +34,14 @@ export const requiredSchemaPaths = [
   'contracts/schemas/validation-report.schema.json',
   'contracts/schemas/version-amendment-report.schema.json',
   'contracts/schemas/recovery-report.schema.json',
+  'contracts/schemas/validator-extension-registry.schema.json',
+  'contracts/schemas/validator-invocation.schema.json',
+  'contracts/schemas/evidence-envelope.schema.json',
+  'contracts/schemas/claim-manifest.schema.json',
+  'contracts/schemas/claims-and-evidence.schema.json',
+  'contracts/schemas/verdict-table.schema.json',
+  'contracts/schemas/evidence-recovery-report.schema.json',
+  'contracts/schemas/evidence-transition-attempt.schema.json',
 ];
 
 export const requiredCandidateFoundationSlots = [
@@ -60,11 +68,20 @@ function isRecord(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
-function expectedAuthority(path) {
+function expectedAuthority(path, validatorEvidenceExtensionDeclared) {
+  const validatorEvidenceIsNormative = validatorEvidenceExtensionDeclared && (
+    path === 'claims-and-evidence.yaml' ||
+    path.startsWith('conformance/claim-manifests/') ||
+    path.startsWith('conformance/evidence/claims/') ||
+    path.startsWith('conformance/evidence/envelopes/') ||
+    path.startsWith('conformance/evidence/invocations/') ||
+    path === 'conformance/evidence/evidence-recovery-report.json'
+  );
   return path.startsWith('normative/') ||
     path.startsWith('contracts/') ||
     path === 'traceability.yaml' ||
     path === 'conformance/manifest.yaml' ||
+    validatorEvidenceIsNormative ||
     path.startsWith('conformance/release-targets/') ||
     path.startsWith('conformance/fixtures/') ||
     path.startsWith('conformance/scenarios/')
@@ -121,6 +138,8 @@ export async function checkManifest(packageRoot, manifest) {
 export async function checkArtifactBindings(packageRoot, manifest) {
   const codes = [];
   const artifacts = Array.isArray(manifest?.artifacts) ? manifest.artifacts : [];
+  const validatorEvidenceExtensionDeclared = artifacts.some((artifact) =>
+    artifact?.path === 'contracts/validator-extensions.json');
   if (!Array.isArray(manifest?.artifacts)) codes.push('schema.constraint');
   if (artifacts.length > 2_048) codes.push('artifact.count_limit');
   const listedPaths = new Set(artifacts.map((artifact) => artifact?.path).filter((path) => typeof path === 'string'));
@@ -147,7 +166,9 @@ export async function checkArtifactBindings(packageRoot, manifest) {
       continue;
     }
     if (sha256(read.content) !== artifact.sha256) codes.push('artifact.hash_mismatch');
-    if (artifact.authority !== expectedAuthority(artifact.path)) codes.push('artifact.authority_mismatch');
+    if (artifact.authority !== expectedAuthority(artifact.path, validatorEvidenceExtensionDeclared)) {
+      codes.push('artifact.authority_mismatch');
+    }
   }
   const listing = await listPackageFiles(packageRoot);
   if (listing.status === 'unsafe') codes.push('artifact.path_unsafe');
@@ -166,7 +187,7 @@ export async function checkArtifactBindings(packageRoot, manifest) {
   return {check: result('artifact-bindings', codes), normativeDigest, conformanceDigest};
 }
 
-export function checkTransitionTable(table) {
+export function checkTransitionTable(table, id = 'package-lifecycle') {
   const codes = [];
   const rows = Array.isArray(table?.transitions) ? table.transitions : [];
   const states = Array.isArray(table?.states) ? table.states : [];
@@ -187,7 +208,7 @@ export function checkTransitionTable(table) {
   }
   const transitionIds = rows.map((row) => row?.transition_id);
   if (new Set(transitionIds).size !== transitionIds.length) codes.push('transition.duplicate_id');
-  return result('package-lifecycle', codes);
+  return result(id, codes);
 }
 
 export {checkRequirements} from './requirement-checks.mjs';
