@@ -28,8 +28,8 @@
     "FIX-SK-POS-006",
     "FIX-SK-STATE-002",
     "FIX-SK-POS-007",
-    "FIX-SK-POS-008",
-    "FIX-SK-POS-009",
+    "FIX-SK-NEG-008",
+    "FIX-SK-NEG-009",
     "FIX-SK-POS-010",
     "FIX-SK-NEG-007",
     "FIX-SK-ILLEGAL-001",
@@ -37,19 +37,227 @@
     "FIX-SK-REC-002",
     "FIX-SK-ILLEGAL-002"
   ],
-  "replay_snapshot_equivalent": true,
-  "rebuild_deterministic": true,
-  "crash_outcomes": [
-    "staging_discarded_without_semantic_write",
-    "canonical_record_preserved_and_receipt_closed"
+  "fixture_bindings": [
+    {
+      "fixture_id": "FIX-SK-POS-001",
+      "path": "scenarios/semantic-kernel/valid-initial-append.json",
+      "fixture_sha256": "13978163795dc34bee47bb6f8743747852174de9be5ba5ae0a25a6d1e0a0a006",
+      "observable_result_sha256": "43fd131464cc9489e613ef0432e308cd656493a3a8e8aa39d77a781692818ca0"
+    },
+    {
+      "fixture_id": "FIX-SK-POS-002",
+      "path": "scenarios/semantic-kernel/valid-serialized-second-append.json",
+      "fixture_sha256": "2c3d941ef310f2f161dde65de6cb54df905e1bf1eac39079f1f9c29107507970",
+      "observable_result_sha256": "34dd2d784e3303bab93a844283fef30c1f16ee7e903fcd98aceb60508d4c372f"
+    },
+    {
+      "fixture_id": "FIX-SK-POS-003",
+      "path": "scenarios/semantic-kernel/deterministic-ordered-replay.json",
+      "fixture_sha256": "c4bd8eb85b3de44827f2cf9fcb71edd604f1147ccba7241d46c4a9fd4dd8815f",
+      "observable_result_sha256": "399116d4c42b767f1dee15592a25e184941272c5bf70d2c1be1b5bbd1ca057a2"
+    },
+    {
+      "fixture_id": "FIX-SK-BND-001",
+      "path": "scenarios/semantic-kernel/future-base-rejected.json",
+      "fixture_sha256": "102dbd0e7ea489709b17c8605b0f4697c88cda9725aa8a954a35a06988690e14",
+      "observable_result_sha256": "7dd25e648b16e2061fcea77f28de7d4041f93c6accf7e939257d3a8b052e1f26"
+    },
+    {
+      "fixture_id": "FIX-SK-STATE-001",
+      "path": "scenarios/semantic-kernel/stale-base-rejected.json",
+      "fixture_sha256": "bcf2e234ae9c13a0a5f1739200799952dcaf71754f8c457c83f4732efa129025",
+      "observable_result_sha256": "a4e2a1e06c852e6d2e6bbcef65ba6643aa82c121839873264d9b8e7386f717df"
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-001",
+      "path": "scenarios/semantic-kernel/noncontiguous-ordering-rejected.json",
+      "fixture_sha256": "a23dc9ad416b6d780d36366eb5d82b6fb218105ab6306f41996f99d1f4563f6a",
+      "observable_result_sha256": "aa672e79dcf4776a3e3bbeb70f4c6852eebffcdea487468cf8cc8b7fec143ec6"
+    },
+    {
+      "fixture_id": "FIX-SK-POS-004",
+      "path": "scenarios/semantic-kernel/duplicate-compatible-idempotent.json",
+      "fixture_sha256": "9fc01851f067f327e12ce405c076436b7a907cfbdb8323af4c07b74b8aa05720",
+      "observable_result_sha256": "c9d4b2d388e8802309182644a233b2a4ee0205f4afd48c523a5a826cfd4b9160"
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-002",
+      "path": "scenarios/semantic-kernel/duplicate-incompatible-rejected.json",
+      "fixture_sha256": "88d9a1135503fc5a6ad1a81ef4d7fe181ec1a17f56b8c92c0933be753f2aaf3b",
+      "observable_result_sha256": "ff904d1345dace8d08e53f1c0f9d80323d85b239b8bc09183f293cf1db6837b0"
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-003",
+      "path": "scenarios/semantic-kernel/unknown-operation-kind-rejected.json",
+      "fixture_sha256": "71166b6d9db33aa4217a84f2cb49350be7edf9e2cd56b75f37daa1904bba7062",
+      "observable_result_sha256": "2062f05a8265f6c4747a4697ffe7c19dc245e58137cf43d5a43692dddfa07cbb"
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-004",
+      "path": "scenarios/semantic-kernel/malformed-record-rejected.json",
+      "fixture_sha256": "2bdbd06d4a46aceb3d60bc0704c1c5d7e23a0a865094fe1190ecc483e96be66a",
+      "observable_result_sha256": "b9fb10b57fab37d6b6797c75ba062605dcf89c567c98668195420374e1e0d6ec"
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-005",
+      "path": "scenarios/semantic-kernel/torn-record-rejected.json",
+      "fixture_sha256": "c6adb4650dcc916573fe6e342ceb55bc8b97c3b89935960deede834feb295fc8",
+      "observable_result_sha256": "3487d24a213a095b866389b49f8a5798f01a702af58d20edb12e166e5e07aaa4"
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-006",
+      "path": "scenarios/semantic-kernel/noncanonical-record-rejected.json",
+      "fixture_sha256": "3e51dbf81c4c5e8513eca2960a4557f18556ff28d96141e3e0d033ae1f225a93",
+      "observable_result_sha256": "aa9b1a4af15c26444399e7300130535d26842bc4c29fed6d2eef5c989daf74d8"
+    },
+    {
+      "fixture_id": "FIX-SK-AUTH-001",
+      "path": "scenarios/semantic-kernel/capture-adapter-write-denied.json",
+      "fixture_sha256": "391555083faf92261213363f7546d3b7a0ba161c990a6d866a0fff00d0ea246a",
+      "observable_result_sha256": "8a5b153bc8009975820e86ca48364f5519f5e9e8910c2bfc083ead9af2b842af"
+    },
+    {
+      "fixture_id": "FIX-SK-AUTH-002",
+      "path": "scenarios/semantic-kernel/intelligence-adapter-write-denied.json",
+      "fixture_sha256": "1711ee1837e8f041a184048e487c5969f58c652952eed96ca115b3f659d024a1",
+      "observable_result_sha256": "148ff5f4fb2e7caaecb92aa668d1771f8077c1f21e3c6313b98a7d50906e8005"
+    },
+    {
+      "fixture_id": "FIX-SK-AUTH-003",
+      "path": "scenarios/semantic-kernel/folder-projection-write-denied.json",
+      "fixture_sha256": "5566318d300aba48d08aebc773646bf5562855ccf89664272cad9ce1a6241695",
+      "observable_result_sha256": "fbcd7eb3eac2d0aa5eb50b347181e553162024035b1f81b0457b0541089a60bb"
+    },
+    {
+      "fixture_id": "FIX-SK-AUTH-004",
+      "path": "scenarios/semantic-kernel/projection-write-denied.json",
+      "fixture_sha256": "5649d74ebd89960d3758571e848e5e7ea1897afc1f615735be5a7cf7bd3df19d",
+      "observable_result_sha256": "d2e6fbdbb26c431ca5458d69f97455983756f4764bf20eda7e74f4f8cacc8943"
+    },
+    {
+      "fixture_id": "FIX-SK-AUTH-005",
+      "path": "scenarios/semantic-kernel/frontmatter-bridge-write-denied.json",
+      "fixture_sha256": "fb2755a1b98df1b8780733447f900627468ff9e655be9fcca68002d4ce981904",
+      "observable_result_sha256": "85d2225831e8d4d57ab2a5b4a6c729fd914f6d5ef7aa06cae1e1a3c193a6fc27"
+    },
+    {
+      "fixture_id": "FIX-SK-AUTH-006",
+      "path": "scenarios/semantic-kernel/cache-write-denied.json",
+      "fixture_sha256": "93051619bbb0f378e9836bff4dac54deebbbb90f20c3457f25d1ff81dcea85be",
+      "observable_result_sha256": "582b2137f268de25a5b2535098188f54403e82d3095edb4c319d99a156b7a217"
+    },
+    {
+      "fixture_id": "FIX-SK-POS-005",
+      "path": "scenarios/semantic-kernel/full-replay-snapshot-equivalence.json",
+      "fixture_sha256": "c9c15c30e37822d48b1d9a4e57e55b989aa8fda396e0869fd94d82874f89790a",
+      "observable_result_sha256": "399116d4c42b767f1dee15592a25e184941272c5bf70d2c1be1b5bbd1ca057a2"
+    },
+    {
+      "fixture_id": "FIX-SK-POS-006",
+      "path": "scenarios/semantic-kernel/snapshot-suffix-equivalence.json",
+      "fixture_sha256": "acecb7e818dcce06dcd17b03166f9a7af9f6e6ee1e740a4d422bd3335eb448b5",
+      "observable_result_sha256": "399116d4c42b767f1dee15592a25e184941272c5bf70d2c1be1b5bbd1ca057a2"
+    },
+    {
+      "fixture_id": "FIX-SK-STATE-002",
+      "path": "scenarios/semantic-kernel/stale-snapshot-rejected.json",
+      "fixture_sha256": "a982b3e2702812b94721ecb808b4409ce83ace7adeaf5d6cfa7d0e1e1eb42bab",
+      "observable_result_sha256": "7b3c10fcef4c01d733a07de0a60aaf3542726f69d34770614daddcc494eee3c4"
+    },
+    {
+      "fixture_id": "FIX-SK-POS-007",
+      "path": "scenarios/semantic-kernel/deterministic-view-rebuild.json",
+      "fixture_sha256": "a2ee3f855ff93d34166eb2147e86a164187be7bbe1c115e9dfb005f286e29d2a",
+      "observable_result_sha256": "01fcb9143c66abb97d6ef5df9c9ebf5cadd96a7c537ad73c88b4d173873a8639"
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-008",
+      "path": "scenarios/semantic-kernel/snapshot-idempotency-conflict-rejected.json",
+      "fixture_sha256": "32e8d438021b3669f968f9df9233ab22ca9c82b740ca6b7112649ba280c95c3d",
+      "observable_result_sha256": "5b6d7b2edc69baee866795596d935ac46f4693f35410ec0a9438b1040e45e208"
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-009",
+      "path": "scenarios/semantic-kernel/failed-precondition-rejected.json",
+      "fixture_sha256": "c781c7757c0367c04f9f577d7e10da0d7e21678c67fd7df42ba562ce58f43faa",
+      "observable_result_sha256": "32269b874159ce8cba57d0181bf54bc1dec74344f740b844426dc491b051d97a"
+    },
+    {
+      "fixture_id": "FIX-SK-POS-010",
+      "path": "scenarios/semantic-kernel/recognized-forward-compatible-record.json",
+      "fixture_sha256": "3cd7726b9c88844fdbd0d586b63a3a0faabc2d3858247d67192f6770c575cf1d",
+      "observable_result_sha256": "399116d4c42b767f1dee15592a25e184941272c5bf70d2c1be1b5bbd1ca057a2"
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-007",
+      "path": "scenarios/semantic-kernel/unsupported-schema-version-rejected.json",
+      "fixture_sha256": "5fde73ffd7eb3ef6fb12dcee59daf0d2f1b2f2a0bb27fb9e12cbafd38ea1ac9f",
+      "observable_result_sha256": "ac5b2198b770b754da7672b59f484a45ecc67467c704fe3f568e03574fc31145"
+    },
+    {
+      "fixture_id": "FIX-SK-ILLEGAL-001",
+      "path": "scenarios/semantic-kernel/append-during-recovery-denied.json",
+      "fixture_sha256": "1f8548a64c3221a8b253e198055048f3a2099a03d7701e1df01637ff6dc9b5bc",
+      "observable_result_sha256": "cd3366924d86cda5aec102fc509c0d42fe6f596d0b3eb6d08b4fe2571bd924d1"
+    },
+    {
+      "fixture_id": "FIX-SK-REC-001",
+      "path": "scenarios/semantic-kernel/crash-before-record-publish-recovery.json",
+      "fixture_sha256": "d1e00637ca20287612f3a7f673f91b66316e942aa0c23657c0f75ee3f00ec830",
+      "observable_result_sha256": "858b4401671b73a260932ff43b85fdeaa9c7e111594f5689c24fcc59083d28eb"
+    },
+    {
+      "fixture_id": "FIX-SK-REC-002",
+      "path": "scenarios/semantic-kernel/crash-after-record-publish-recovery.json",
+      "fixture_sha256": "fbff121d5c2f1bc255308a69837acba625047df9b345d09c6e8cc092974e74b0",
+      "observable_result_sha256": "f07ccec0e91e07457f2515b98d828c1df38d2dcde810adb77db357e91b7c3b50"
+    },
+    {
+      "fixture_id": "FIX-SK-ILLEGAL-002",
+      "path": "scenarios/semantic-kernel/recovery-while-ready-denied.json",
+      "fixture_sha256": "8f4049d95d608f3470316662fb7d2173e94a818adb4fd17f35b1625b352fc2c4",
+      "observable_result_sha256": "f23c5cf040d35e2707f2f6cd09b0570e1278f4c8dca749f8586d3ae4b8609d04"
+    }
   ],
-  "semantic_write_denials": [
-    "capture_adapter",
-    "intelligence_adapter",
-    "folder_projection",
-    "projection",
-    "frontmatter_bridge",
-    "cache"
-  ],
-  "verdict": "pass"
+  "claims": {
+    "replay_snapshot_equivalence": {
+      "fixture_ids": [
+        "FIX-SK-POS-005",
+        "FIX-SK-POS-006"
+      ],
+      "semantic_state_sha256": "58a6bd79bd97649bd1d10c3452f37ba4d52bc91eaaefacea0a5d26c382c14af8"
+    },
+    "rebuild_deterministic": {
+      "fixture_id": "FIX-SK-POS-007",
+      "observable_result_sha256": "01fcb9143c66abb97d6ef5df9c9ebf5cadd96a7c537ad73c88b4d173873a8639"
+    },
+    "crash_recovery": {
+      "fixture_ids": [
+        "FIX-SK-REC-001",
+        "FIX-SK-REC-002"
+      ],
+      "observable_result_sha256": [
+        "858b4401671b73a260932ff43b85fdeaa9c7e111594f5689c24fcc59083d28eb",
+        "f07ccec0e91e07457f2515b98d828c1df38d2dcde810adb77db357e91b7c3b50"
+      ]
+    },
+    "semantic_write_denials": {
+      "fixture_ids": [
+        "FIX-SK-AUTH-001",
+        "FIX-SK-AUTH-002",
+        "FIX-SK-AUTH-003",
+        "FIX-SK-AUTH-004",
+        "FIX-SK-AUTH-005",
+        "FIX-SK-AUTH-006"
+      ],
+      "observable_result_sha256": [
+        "8a5b153bc8009975820e86ca48364f5519f5e9e8910c2bfc083ead9af2b842af",
+        "148ff5f4fb2e7caaecb92aa668d1771f8077c1f21e3c6313b98a7d50906e8005",
+        "fbcd7eb3eac2d0aa5eb50b347181e553162024035b1f81b0457b0541089a60bb",
+        "d2e6fbdbb26c431ca5458d69f97455983756f4764bf20eda7e74f4f8cacc8943",
+        "85d2225831e8d4d57ab2a5b4a6c729fd914f6d5ef7aa06cae1e1a3c193a6fc27",
+        "582b2137f268de25a5b2535098188f54403e82d3095edb4c319d99a156b7a217"
+      ]
+    }
+  }
 }

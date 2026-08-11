@@ -43,7 +43,7 @@
         "records": [],
         "snapshot": null,
         "supplied_view": [],
-        "crash_point": null,
+        "crash_point": "before_record_publish",
         "recovery_id": "recovery:003"
       }
     }
@@ -62,7 +62,7 @@
       "validate recovery state"
     ],
     "receipts": [
-      "SemanticRejectionReceipt"
+      "{\"actor_kind\":\"foreground_recovery\",\"code\":\"semantic.recovery_not_required\",\"command_id\":null,\"filesystem_effects\":[\"none\"],\"operation_id\":null,\"outcome\":\"rejected\",\"receipt_id\":\"receipt:rejection-sk-030\",\"schema_id\":\"mdplace.semantic-rejection-receipt/v1\",\"semantic_head\":{\"operation_id\":null,\"sequence\":0,\"state_digest\":\"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"}}"
     ],
     "filesystem_effects": [
       "none"

@@ -18,10 +18,18 @@ export function isRecognizedOperationKind(operationKind) {
     operationKind === 'compatibility_marker';
 }
 
+export function isSemanticWriter(actorKind) {
+  return actorKind === 'vault_owner' || actorKind === 'mdplace_agent';
+}
+
 export function stateEntries(state) {
   return [...state.entries()]
     .sort(([left], [right]) => compareCanonicalText(left, right))
     .map(([key, value]) => ({key, value}));
+}
+
+export function stateEntriesAreCanonical(entries) {
+  return entries.every(({key}, index) => index === 0 || compareCanonicalText(entries[index - 1].key, key) < 0);
 }
 
 export function stateDigest(state) {
@@ -36,14 +44,34 @@ export function stateFromEntries(entries) {
   return new Map(entries.map(({key, value}) => [key, value]));
 }
 
+export function snapshotHistoryDigest(history) {
+  return createHash('sha256').update(canonicalJson(history)).digest('hex');
+}
+
+export function snapshotHistoryIsCanonical(snapshot) {
+  const history = snapshot.history;
+  if (history.length !== snapshot.sequence || snapshotHistoryDigest(history) !== snapshot.history_digest) return false;
+  const operationIds = new Set();
+  const idempotencyKeys = new Set();
+  for (const [index, entry] of history.entries()) {
+    if (entry.sequence !== index + 1 || operationIds.has(entry.operation_id) ||
+        idempotencyKeys.has(entry.idempotency_key)) return false;
+    operationIds.add(entry.operation_id);
+    idempotencyKeys.add(entry.idempotency_key);
+  }
+  return (history.at(-1)?.operation_id ?? null) === snapshot.operation_id;
+}
+
 export function baseMatches(baseReferences, head, state, boundInputs = []) {
   if (baseReferences.length === 0) return false;
   if (baseReferences.some(({ordinal}, index) => ordinal !== index)) return false;
   const base = baseReferences[0];
   const headMatches = base.kind === 'semantic_head' && base.sequence === head.sequence &&
     base.operation_id === head.operationId && base.state_digest === stateDigest(state);
-  const inputsMatch = baseReferences.slice(1).every(({kind, ref_id: refId, digest}) =>
-    kind === 'bound_input' && boundInputs.some((input) => input.ref_id === refId && input.digest === digest));
+  const inputsMatch = baseReferences.slice(1).every(({kind, ref_id: refId, digest}, index) => {
+    const input = boundInputs[index];
+    return kind === 'bound_input' && input?.ref_id === refId && input.digest === digest;
+  });
   return headMatches && inputsMatch && baseReferences.length === boundInputs.length + 1;
 }
 

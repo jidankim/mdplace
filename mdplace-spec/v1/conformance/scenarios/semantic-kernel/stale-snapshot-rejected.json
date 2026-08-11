@@ -51,7 +51,16 @@
               "key": "note:001/placement",
               "value": "cat:research"
             }
-          ]
+          ],
+          "history": [
+            {
+              "sequence": 1,
+              "operation_id": "operation:001",
+              "idempotency_key": "idempotency:001",
+              "command_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            }
+          ],
+          "history_digest": "4a7963de58c72bd81c0dfc348050b4668287db70a2d5c44151b65fc475cc1584"
         },
         "supplied_view": [],
         "crash_point": null,
@@ -72,7 +81,7 @@
       "validate canonical operation records"
     ],
     "receipts": [
-      "SemanticRejectionReceipt"
+      "{\"actor_kind\":\"mdplace_agent\",\"code\":\"semantic.snapshot_stale\",\"command_id\":null,\"filesystem_effects\":[\"none\"],\"operation_id\":null,\"outcome\":\"rejected\",\"receipt_id\":\"receipt:rejection-sk-021\",\"schema_id\":\"mdplace.semantic-rejection-receipt/v1\",\"semantic_head\":{\"operation_id\":null,\"sequence\":0,\"state_digest\":\"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"}}"
     ],
     "filesystem_effects": [
       "none"

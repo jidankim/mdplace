@@ -1,19 +1,19 @@
 {
   "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
   "schema_id": "mdplace.conformance-fixture/v1",
-  "fixture_id": "FIX-SK-BND-001",
-  "category": "exact_boundary",
+  "fixture_id": "FIX-SK-NEG-001",
+  "category": "negative",
   "requirement_ids": [
     "REQ-SK-002",
-    "REQ-SK-003",
-    "REQ-SK-004"
+    "REQ-SK-004",
+    "REQ-SK-005"
   ],
   "subject": {
     "kind": "semantic_kernel",
     "schema": "contracts/schemas/semantic-kernel-scenario.schema.json",
     "document": {
       "schema_id": "mdplace.semantic-kernel-scenario/v1",
-      "scenario_id": "SK-004",
+      "scenario_id": "SK-006",
       "initial": {
         "lifecycle_state": "ready",
         "head": {
@@ -21,12 +21,7 @@
           "operation_id": null
         },
         "semantic_state": [],
-        "bound_inputs": [
-          {
-            "ref_id": "policy:active-001",
-            "digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
-          }
-        ],
+        "bound_inputs": [],
         "prior_receipts": []
       },
       "action": {
@@ -46,18 +41,12 @@
             "sequence": 0,
             "operation_id": null,
             "state_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
-          },
-          {
-            "ordinal": 1,
-            "kind": "bound_input",
-            "ref_id": "policy:active-001",
-            "digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
           }
         ],
         "ordering": {
-          "sequence": 1,
+          "sequence": 2,
           "predecessor_operation_id": null,
-          "sort_key": "000001:command:001"
+          "sort_key": "000002:command:001"
         },
         "idempotency_key": "idempotency:001",
         "command_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -75,26 +64,23 @@
     }
   },
   "expected": {
-    "verdict": "pass",
-    "codes": [],
+    "verdict": "fail",
+    "codes": [
+      "semantic.ordering_invalid"
+    ],
     "outputs": [
-      "append accepted",
-      "canonical_record:operation:001",
-      "semantic_state:[{\"key\":\"note:001/placement\",\"value\":\"cat:research\"}]",
-      "snapshot_state:[{\"key\":\"note:001/placement\",\"value\":\"cat:research\"}]"
+      "append rejected",
+      "canonical_record:none",
+      "semantic_state:[]"
     ],
     "operations": [
-      "validate actor authority",
-      "resolve idempotency material",
-      "compare exact semantic head",
-      "validate operation preconditions",
-      "append canonical operation"
+      "validate append command"
     ],
     "receipts": [
-      "SemanticAppendReceipt:receipt:001"
+      "{\"actor_kind\":\"vault_owner\",\"code\":\"semantic.ordering_invalid\",\"command_id\":\"command:001\",\"filesystem_effects\":[\"none\"],\"operation_id\":\"operation:001\",\"outcome\":\"rejected\",\"receipt_id\":\"receipt:rejection-sk-006\",\"schema_id\":\"mdplace.semantic-rejection-receipt/v1\",\"semantic_head\":{\"operation_id\":null,\"sequence\":0,\"state_digest\":\"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"}}"
     ],
     "filesystem_effects": [
-      "append one immutable canonical operation"
+      "none"
     ],
     "terminal_state": "ready",
     "illegal_transition": false

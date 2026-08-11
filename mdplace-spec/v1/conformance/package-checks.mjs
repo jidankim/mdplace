@@ -46,6 +46,7 @@ export const requiredSchemaPaths = [
   'contracts/schemas/semantic-operation-kind-registry.schema.json',
   'contracts/schemas/semantic-kernel-scenario.schema.json',
   'contracts/schemas/semantic-kernel-recovery-report.schema.json',
+  'contracts/schemas/semantic-receipt.schema.json',
 ];
 
 export const requiredCandidateFoundationSlots = [
@@ -79,7 +80,8 @@ function expectedAuthority(path, validatorEvidenceExtensionDeclared) {
     path.startsWith('conformance/evidence/claims/') ||
     path.startsWith('conformance/evidence/envelopes/') ||
     path.startsWith('conformance/evidence/invocations/') ||
-    path === 'conformance/evidence/evidence-recovery-report.json'
+    path === 'conformance/evidence/evidence-recovery-report.json' ||
+    path === 'conformance/evidence/semantic-kernel-recovery-report.json'
   );
   return path.startsWith('normative/') ||
     path.startsWith('contracts/') ||

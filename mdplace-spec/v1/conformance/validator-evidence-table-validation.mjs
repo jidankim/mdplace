@@ -166,7 +166,7 @@ test('verdict rows declare the complete permitted availability matrix', async ()
   });
 });
 
-test('conformance-driving profile claims are normative while generated reports remain informative', async () => {
+test('conformance-driving evidence is normative while publication reports remain informative', async () => {
   // Given the package authority ledger.
   const manifest = JSON.parse(await readFile(new URL('../package-manifest.yaml', import.meta.url), 'utf8'));
   const authority = new Map(manifest.artifacts.map(({path, authority: value}) => [path, value]));
@@ -178,6 +178,7 @@ test('conformance-driving profile claims are normative while generated reports r
   assert.equal(authority.get('conformance/evidence/envelopes/validator-evidence-reference.json'), 'normative');
   assert.equal(authority.get('conformance/evidence/invocations/validator-evidence-reference.json'), 'normative');
   assert.equal(authority.get('conformance/evidence/evidence-recovery-report.json'), 'normative');
+  assert.equal(authority.get('conformance/evidence/semantic-kernel-recovery-report.json'), 'normative');
   assert.equal(authority.get('conformance/evidence/validation-report.json'), 'informative');
   assert.equal(authority.get('conformance/evidence/traceability-report.json'), 'informative');
 });

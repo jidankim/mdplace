@@ -88,7 +88,7 @@
       "validate append command"
     ],
     "receipts": [
-      "SemanticRejectionReceipt"
+      "{\"actor_kind\":\"vault_owner\",\"code\":\"semantic.idempotency_incompatible\",\"command_id\":\"command:001\",\"filesystem_effects\":[\"none\"],\"operation_id\":\"operation:001\",\"outcome\":\"rejected\",\"receipt_id\":\"receipt:rejection-sk-008\",\"schema_id\":\"mdplace.semantic-rejection-receipt/v1\",\"semantic_head\":{\"operation_id\":\"operation:001\",\"sequence\":1,\"state_digest\":\"fa346467e0189c1ff1b12a1c1294ca93ebee37500f9d7b704b92cc012ea91529\"}}"
     ],
     "filesystem_effects": [
       "none"

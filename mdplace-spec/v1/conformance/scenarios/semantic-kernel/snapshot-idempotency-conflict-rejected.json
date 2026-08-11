@@ -1,8 +1,8 @@
 {
   "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
   "schema_id": "mdplace.conformance-fixture/v1",
-  "fixture_id": "FIX-SK-POS-006",
-  "category": "positive",
+  "fixture_id": "FIX-SK-NEG-008",
+  "category": "negative",
   "requirement_ids": [
     "REQ-SK-003",
     "REQ-SK-004",
@@ -13,7 +13,7 @@
     "schema": "contracts/schemas/semantic-kernel-scenario.schema.json",
     "document": {
       "schema_id": "mdplace.semantic-kernel-scenario/v1",
-      "scenario_id": "SK-020",
+      "scenario_id": "SK-023",
       "initial": {
         "lifecycle_state": "ready",
         "head": {
@@ -41,7 +41,7 @@
         "payload": null,
         "preconditions": [],
         "records": [
-          "{\"$schema\":\"semantic-operation.schema.json\",\"actor_authority\":{\"actor_id\":\"person:owner-001\",\"actor_kind\":\"vault_owner\",\"authority_ref\":\"authority:vault-owner-001\"},\"base_references\":[{\"kind\":\"semantic_head\",\"operation_id\":\"operation:001\",\"ordinal\":0,\"sequence\":1,\"state_digest\":\"fa346467e0189c1ff1b12a1c1294ca93ebee37500f9d7b704b92cc012ea91529\"}],\"closure_receipt\":{\"command_id\":\"command:002\",\"operation_id\":\"operation:002\",\"outcome\":\"accepted\",\"receipt_id\":\"receipt:002\",\"sequence\":2,\"state_digest\":\"3f71931a4733547b0614914672dbdb8f01975a5cc21190a00919d14153337460\"},\"command_id\":\"command:002\",\"idempotency\":{\"command_digest\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"key\":\"idempotency:002\"},\"operation_id\":\"operation:002\",\"operation_kind\":\"semantic_assignment\",\"ordering\":{\"predecessor_operation_id\":\"operation:001\",\"sequence\":2,\"sort_key\":\"000002:command:002\"},\"payload\":{\"key\":\"note:002/placement\",\"value\":\"cat:projects\"},\"preconditions\":[],\"schema_id\":\"mdplace.semantic-operation/v1\",\"schema_version\":\"1.0.0\"}\n"
+          "{\"$schema\":\"semantic-operation.schema.json\",\"actor_authority\":{\"actor_id\":\"person:owner-001\",\"actor_kind\":\"vault_owner\",\"authority_ref\":\"authority:vault-owner-001\"},\"base_references\":[{\"kind\":\"semantic_head\",\"operation_id\":\"operation:001\",\"ordinal\":0,\"sequence\":1,\"state_digest\":\"fa346467e0189c1ff1b12a1c1294ca93ebee37500f9d7b704b92cc012ea91529\"}],\"closure_receipt\":{\"command_id\":\"command:002\",\"operation_id\":\"operation:002\",\"outcome\":\"accepted\",\"receipt_id\":\"receipt:002\",\"sequence\":2,\"state_digest\":\"3f71931a4733547b0614914672dbdb8f01975a5cc21190a00919d14153337460\"},\"command_id\":\"command:002\",\"idempotency\":{\"command_digest\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"key\":\"idempotency:001\"},\"operation_id\":\"operation:002\",\"operation_kind\":\"semantic_assignment\",\"ordering\":{\"predecessor_operation_id\":\"operation:001\",\"sequence\":2,\"sort_key\":\"000002:command:002\"},\"payload\":{\"key\":\"note:002/placement\",\"value\":\"cat:projects\"},\"preconditions\":[],\"schema_id\":\"mdplace.semantic-operation/v1\",\"schema_version\":\"1.0.0\"}\n"
         ],
         "snapshot": {
           "sequence": 1,
@@ -70,26 +70,24 @@
     }
   },
   "expected": {
-    "verdict": "pass",
-    "codes": [],
+    "verdict": "fail",
+    "codes": [
+      "semantic.idempotency_incompatible"
+    ],
     "outputs": [
-      "replay accepted",
-      "semantic_state:[{\"key\":\"note:001/placement\",\"value\":\"cat:research\"},{\"key\":\"note:002/placement\",\"value\":\"cat:projects\"}]",
-      "snapshot_state:[{\"key\":\"note:001/placement\",\"value\":\"cat:research\"},{\"key\":\"note:002/placement\",\"value\":\"cat:projects\"}]"
+      "replay rejected",
+      "semantic_state:[{\"key\":\"note:001/placement\",\"value\":\"cat:research\"}]"
     ],
     "operations": [
-      "validate canonical operation records",
-      "order operations deterministically",
-      "replay semantic state",
-      "emit Semantic Snapshot"
+      "validate canonical operation records"
     ],
     "receipts": [
-      "SemanticReplayReceipt"
+      "{\"actor_kind\":\"mdplace_agent\",\"code\":\"semantic.idempotency_incompatible\",\"command_id\":null,\"filesystem_effects\":[\"none\"],\"operation_id\":null,\"outcome\":\"rejected\",\"receipt_id\":\"receipt:rejection-sk-023\",\"schema_id\":\"mdplace.semantic-rejection-receipt/v1\",\"semantic_head\":{\"operation_id\":\"operation:001\",\"sequence\":1,\"state_digest\":\"fa346467e0189c1ff1b12a1c1294ca93ebee37500f9d7b704b92cc012ea91529\"}}"
     ],
     "filesystem_effects": [
       "none"
     ],
-    "terminal_state": "ready",
+    "terminal_state": "recovery_required",
     "illegal_transition": false
   }
 }

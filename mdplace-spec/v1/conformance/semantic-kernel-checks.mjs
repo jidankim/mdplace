@@ -1,5 +1,6 @@
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {readPackageFile} from './safe-path.mjs';
+import {semanticKernelEvidenceCodes} from './semantic-kernel-evidence.mjs';
 
 const scenarioCategories = new Set([
   'positive', 'negative', 'exact_boundary', 'stale_state',
@@ -66,6 +67,9 @@ export async function checkSemanticKernelContract(packageRoot, manifest, conform
   }
   const scenarioIds = [];
   const deniedPairs = new Set();
+  const baseCoverage = new Set();
+  const observedCodes = new Set();
+  const observedOutputs = new Set();
   for (const entry of entries) {
     if (!/^scenarios\/semantic-kernel\/[a-z0-9][a-z0-9-]*\.json$/.test(entry.path ?? '')) {
       codes.push('semantic.scenario_path_invalid');
@@ -80,6 +84,37 @@ export async function checkSemanticKernelContract(packageRoot, manifest, conform
     const code = await schemaCode(packageRoot, fixture.subject.schema, fixture.subject.document);
     if (code !== null) codes.push(code);
     scenarioIds.push(fixture.subject.document?.scenario_id);
+    for (const expectedCode of fixture.expected?.codes ?? []) observedCodes.add(expectedCode);
+    for (const output of fixture.expected?.outputs ?? []) observedOutputs.add(output);
+    const {action, initial} = fixture.subject.document;
+    const base = action?.kind === 'append' ? action.base_references?.[0] : undefined;
+    if (base?.kind === 'semantic_head') {
+      const direction = base.sequence < initial.head.sequence ? 'past'
+        : base.sequence > initial.head.sequence ? 'future' : 'exact';
+      if (fixture.expected?.verdict === 'pass' && direction === 'exact') baseCoverage.add('exact:accepted');
+      if (fixture.expected?.codes?.includes('semantic.base_stale') && direction !== 'exact') {
+        baseCoverage.add(`${direction}:rejected`);
+      }
+    }
+    const requiredReceiptSchemaId = entry.category === 'crash_recovery'
+      ? 'mdplace.semantic-recovery-receipt/v1'
+      : fixture.expected?.verdict === 'fail' ? 'mdplace.semantic-rejection-receipt/v1' : null;
+    if (requiredReceiptSchemaId !== null) {
+      let validReceiptFound = false;
+      for (const receipt of fixture.expected?.receipts ?? []) {
+        if (typeof receipt !== 'string' || !receipt.startsWith('{')) continue;
+        try {
+          const parsed = JSON.parse(receipt);
+          if (parsed.schema_id === requiredReceiptSchemaId &&
+              await schemaCode(packageRoot, 'contracts/schemas/semantic-receipt.schema.json', parsed) === null) {
+            validReceiptFound = true;
+          }
+        } catch {
+          // The closed receipt requirement below records the deterministic package failure.
+        }
+      }
+      if (!validReceiptFound) codes.push('semantic.receipt_evidence_invalid');
+    }
     if (entry.category === 'illegal_transition' && fixture.expected?.illegal_transition === true) {
       const command = fixture.subject.document?.action?.kind === 'append' ? 'append_operation' : 'recover_operation';
       deniedPairs.add(`${fixture.subject.document?.initial?.lifecycle_state}:${command}`);
@@ -88,6 +123,21 @@ export async function checkSemanticKernelContract(packageRoot, manifest, conform
   const expectedScenarioIds = Array.from({length: 30}, (_, index) => `SK-${String(index + 1).padStart(3, '0')}`);
   if (new Set(scenarioIds).size !== 30 || expectedScenarioIds.some((id) => !scenarioIds.includes(id))) {
     codes.push('semantic.scenario_identity_invalid');
+  }
+  const requiredCodes = [
+    'semantic.base_stale', 'semantic.ordering_invalid', 'semantic.idempotency_incompatible',
+    'semantic.operation_unknown', 'semantic.record_malformed', 'semantic.record_torn',
+    'semantic.record_noncanonical', 'semantic.authority_denied', 'semantic.snapshot_stale',
+    'semantic.precondition_failed', 'semantic.schema_version_unsupported',
+    'semantic.recovery_required', 'semantic.recovery_not_required',
+  ];
+  const requiredOutputs = ['append accepted', 'append idempotent', 'replay accepted', 'view rebuilt', 'recovery completed'];
+  if (requiredCodes.some((code) => !observedCodes.has(code)) ||
+      requiredOutputs.some((output) => !observedOutputs.has(output))) {
+    codes.push('semantic.required_behavior_uncovered');
+  }
+  if (['exact:accepted', 'past:rejected', 'future:rejected'].some((coverage) => !baseCoverage.has(coverage))) {
+    codes.push('semantic.base_direction_uncovered');
   }
   const deniedRows = Array.isArray(table?.transitions)
     ? table.transitions.filter(({allowed}) => allowed === false).map(({from_state: state, command_or_event: command}) => `${state}:${command}`)
@@ -102,6 +152,7 @@ export async function checkSemanticKernelContract(packageRoot, manifest, conform
       fixtureIds.some((id) => !recovery.scenario_ids.includes(id))) {
     codes.push('semantic.recovery_evidence_invalid');
   }
+  codes.push(...await semanticKernelEvidenceCodes(packageRoot, recovery, entries));
   const decision = Array.isArray(traceability?.decisions)
     ? traceability.decisions.find(({decision_id: id}) => id === 'DEC-002')
     : undefined;

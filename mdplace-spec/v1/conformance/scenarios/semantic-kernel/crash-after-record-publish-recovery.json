@@ -66,7 +66,7 @@
     ],
     "receipts": [
       "SemanticAppendReceipt:receipt:001",
-      "SemanticRecoveryReport"
+      "{\"canonical_record_published\":true,\"closure_receipt_published\":true,\"crash_point\":\"after_record_publish_before_receipt\",\"filesystem_effects\":[\"preserve canonical operation\",\"publish missing closure receipt\"],\"operation_id\":\"operation:001\",\"outcome\":\"completed\",\"receipt_id\":\"receipt:recovery-002\",\"recovery_id\":\"recovery:002\",\"schema_id\":\"mdplace.semantic-recovery-receipt/v1\",\"state_digest\":\"fa346467e0189c1ff1b12a1c1294ca93ebee37500f9d7b704b92cc012ea91529\"}"
     ],
     "filesystem_effects": [
       "preserve canonical operation",

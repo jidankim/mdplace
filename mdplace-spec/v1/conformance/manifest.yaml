@@ -1245,14 +1245,14 @@
     },
     {
       "fixture_id": "FIX-SK-BND-001",
-      "path": "scenarios/semantic-kernel/exact-current-base-boundary.json",
+      "path": "scenarios/semantic-kernel/future-base-rejected.json",
       "category": "exact_boundary",
       "requirement_ids": [
         "REQ-SK-002",
         "REQ-SK-003",
         "REQ-SK-004"
       ],
-      "expected_verdict": "pass",
+      "expected_verdict": "fail",
       "observable_assertions": {
         "inputs": true,
         "outputs": true,
@@ -1284,11 +1284,12 @@
     },
     {
       "fixture_id": "FIX-SK-NEG-001",
-      "path": "scenarios/semantic-kernel/future-base-rejected.json",
+      "path": "scenarios/semantic-kernel/noncontiguous-ordering-rejected.json",
       "category": "negative",
       "requirement_ids": [
         "REQ-SK-002",
-        "REQ-SK-004"
+        "REQ-SK-004",
+        "REQ-SK-005"
       ],
       "expected_verdict": "fail",
       "observable_assertions": {
@@ -1611,49 +1612,50 @@
       "requirement_ids": [
         "REQ-SK-003",
         "REQ-SK-004",
-        "REQ-SK-005"
-      ],
-      "expected_verdict": "pass",
-      "observable_assertions": {
-        "inputs": true,
-        "outputs": true,
-        "operations": true,
-        "receipts": true,
-        "filesystem_effects": true,
-        "terminal_state": true,
-        "illegal_transition": false
-      }
-    },
-    {
-      "fixture_id": "FIX-SK-POS-008",
-      "path": "scenarios/semantic-kernel/cache-loss-view-rebuild.json",
-      "category": "positive",
-      "requirement_ids": [
-        "REQ-SK-003",
-        "REQ-SK-004",
-        "REQ-SK-005"
-      ],
-      "expected_verdict": "pass",
-      "observable_assertions": {
-        "inputs": true,
-        "outputs": true,
-        "operations": true,
-        "receipts": true,
-        "filesystem_effects": true,
-        "terminal_state": true,
-        "illegal_transition": false
-      }
-    },
-    {
-      "fixture_id": "FIX-SK-POS-009",
-      "path": "scenarios/semantic-kernel/derived-view-cannot-establish-truth.json",
-      "category": "positive",
-      "requirement_ids": [
-        "REQ-SK-003",
-        "REQ-SK-004",
+        "REQ-SK-005",
         "REQ-SK-007"
       ],
       "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-008",
+      "path": "scenarios/semantic-kernel/snapshot-idempotency-conflict-rejected.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-SK-003",
+        "REQ-SK-004",
+        "REQ-SK-005"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-009",
+      "path": "scenarios/semantic-kernel/failed-precondition-rejected.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-SK-002",
+        "REQ-SK-004",
+        "REQ-SK-005"
+      ],
+      "expected_verdict": "fail",
       "observable_assertions": {
         "inputs": true,
         "outputs": true,

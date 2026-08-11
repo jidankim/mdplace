@@ -180,7 +180,7 @@
       "normative_anchor": "normative/semantic-kernel-contract.md#req-sk-001-the-canonical-operation-envelope-is-closed",
       "decision_urls": ["https://github.com/jidankim/mdplace/issues/2#issuecomment-5012541174"],
       "canonical_terms": ["Semantic Kernel", "Specification Package"],
-      "acceptance_gate": "Every accepted append and replay record has one closed canonical envelope with stable identity, version, authority, bases, ordering, payload, idempotency, preconditions, and closure receipt; malformed, torn, noncanonical, unsupported, and unknown records are rejected.",
+      "acceptance_gate": "Stable REQ-SK identifiers and canonical vocabulary define every accepted append and replay record as one closed canonical envelope with identity, version, authority, bases, ordering, payload, idempotency, preconditions, and closure receipt; malformed, torn, noncanonical, unsupported, and unknown records are rejected.",
       "scope": "semantic-kernel"
     },
     {
@@ -189,7 +189,7 @@
       "normative_anchor": "normative/semantic-kernel-contract.md#req-sk-002-compare-and-append-is-serialized-and-fail-closed",
       "decision_urls": ["https://github.com/jidankim/mdplace/issues/2#issuecomment-5012541174"],
       "canonical_terms": ["Semantic Kernel", "mdplace Agent", "Control Channel"],
-      "acceptance_gate": "An authorized exact-base command emits one immutable canonical operation and receipt; stale, future, incompatible, unauthorized, or illegal input emits one deterministic rejection and no semantic write.",
+      "acceptance_gate": "A closed schema and complete lifecycle table ensure an authorized exact-base command emits one immutable canonical operation and receipt; stale, incompatible, unauthorized, noncontiguous, failed-precondition, or illegal input emits one deterministic rejection and no semantic write.",
       "scope": "semantic-kernel"
     },
     {
@@ -198,7 +198,7 @@
       "normative_anchor": "normative/semantic-kernel-contract.md#req-sk-003-replay-snapshots-ordering-and-views-are-deterministic",
       "decision_urls": ["https://github.com/jidankim/mdplace/issues/2#issuecomment-5012541174"],
       "canonical_terms": ["Semantic Kernel", "Folder Projection", "Specification Package"],
-      "acceptance_gate": "Full replay and valid-snapshot suffix replay produce identical semantic state, ordering is stable, recognized forward-compatible no-op records preserve state, and disposable views rebuild only from canonical history.",
+      "acceptance_gate": "Exactly 30 manifest scenarios prove that full replay and valid-snapshot suffix replay preserve semantic state and idempotency decisions, ordering is stable, recognized forward-compatible no-op records preserve state, and disposable views rebuild only from canonical history.",
       "scope": "semantic-kernel"
     },
     {
@@ -216,7 +216,7 @@
       "normative_anchor": "normative/semantic-kernel-contract.md#req-sk-005-validation-and-evidence-bind-public-behavior",
       "decision_urls": ["https://github.com/jidankim/mdplace/issues/2#issuecomment-5012541174"],
       "canonical_terms": ["Conformance Fixture", "Traceability Record", "Specification Package"],
-      "acceptance_gate": "The validator checks public schemas, lifecycle behavior, ordering, idempotency, replay, snapshots, rebuild, recovery, authority denials, traceability, and machine evidence without private implementation assertions.",
+      "acceptance_gate": "The validator checks public schemas, closed receipts, lifecycle behavior, ordering, idempotency, replay, snapshots, rebuild, recovery, authority denials, traceability, and fixture/result-bound machine evidence without private implementation assertions.",
       "scope": "semantic-kernel"
     },
     {
