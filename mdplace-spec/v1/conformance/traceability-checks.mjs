@@ -203,6 +203,11 @@ export async function runConformance(packageRoot, conformance, requirementIds, o
         fixture.subject.schema === 'contracts/schemas/evidence-transition-attempt.schema.json') {
       coveredIllegalPairs.add(`${fixture.subject.document?.table_ref}:${fixture.subject.document?.from_state}:${fixture.subject.document?.command}`);
     }
+    if (entry.category === 'illegal_transition' && fixture.category === 'illegal_transition' &&
+        fixture.expected.illegal_transition === true && fixture.subject?.kind === 'semantic_kernel') {
+      const command = fixture.subject.document?.action?.kind === 'append' ? 'append_operation' : 'recover_operation';
+      coveredIllegalPairs.add(`contracts/transitions/semantic-kernel-lifecycle.json:${fixture.subject.document?.initial?.lifecycle_state}:${command}`);
+    }
     if (entry.fixture_id !== fixture.fixture_id ||
         (entry.category !== undefined && entry.category !== fixture.category) ||
         entry.expected_verdict !== fixture.expected.verdict ||
@@ -224,7 +229,7 @@ export async function runConformance(packageRoot, conformance, requirementIds, o
     const matches = isDeepStrictEqual(observed, fixture.expected);
     results.push({id: fixture.fixture_id, verdict: matches ? 'pass' : 'fail', codes: matches ? [] : ['fixture.oracle_mismatch']});
   }
-  for (const tablePath of ['contracts/transitions/package-lifecycle.json', 'contracts/transitions/evidence-lifecycle.json']) {
+  for (const tablePath of ['contracts/transitions/package-lifecycle.json', 'contracts/transitions/evidence-lifecycle.json', 'contracts/transitions/semantic-kernel-lifecycle.json']) {
     const tableRead = await readPackageFile(packageRoot, tablePath);
     if (tableRead.status !== 'present') continue;
     try {

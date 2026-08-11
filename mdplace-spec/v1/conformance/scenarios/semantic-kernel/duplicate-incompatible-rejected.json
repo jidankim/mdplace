@@ -1,0 +1,99 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-SK-NEG-002",
+  "category": "negative",
+  "requirement_ids": [
+    "REQ-SK-002",
+    "REQ-SK-004"
+  ],
+  "subject": {
+    "kind": "semantic_kernel",
+    "schema": "contracts/schemas/semantic-kernel-scenario.schema.json",
+    "document": {
+      "schema_id": "mdplace.semantic-kernel-scenario/v1",
+      "scenario_id": "SK-008",
+      "initial": {
+        "lifecycle_state": "ready",
+        "head": {
+          "sequence": 1,
+          "operation_id": "operation:001"
+        },
+        "semantic_state": [
+          {
+            "key": "note:001/placement",
+            "value": "cat:research"
+          }
+        ],
+        "bound_inputs": [],
+        "prior_receipts": [
+          {
+            "idempotency_key": "idempotency:001",
+            "command_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "operation_id": "operation:001",
+            "receipt_id": "receipt:001"
+          }
+        ]
+      },
+      "action": {
+        "kind": "append",
+        "actor": {
+          "actor_id": "person:owner-001",
+          "actor_kind": "vault_owner",
+          "authority_ref": "authority:vault-owner-001"
+        },
+        "command_id": "command:001",
+        "operation_id": "operation:001",
+        "operation_kind": "semantic_assignment",
+        "base_references": [
+          {
+            "ordinal": 0,
+            "kind": "semantic_head",
+            "sequence": 0,
+            "operation_id": null,
+            "state_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        ],
+        "ordering": {
+          "sequence": 1,
+          "predecessor_operation_id": null,
+          "sort_key": "000001:command:001"
+        },
+        "idempotency_key": "idempotency:001",
+        "command_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "payload": {
+          "key": "note:001/placement",
+          "value": "cat:projects"
+        },
+        "preconditions": [],
+        "records": [],
+        "snapshot": null,
+        "supplied_view": [],
+        "crash_point": null,
+        "recovery_id": null
+      }
+    }
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": [
+      "semantic.idempotency_incompatible"
+    ],
+    "outputs": [
+      "append rejected",
+      "canonical_record:none",
+      "semantic_state:[{\"key\":\"note:001/placement\",\"value\":\"cat:research\"}]"
+    ],
+    "operations": [
+      "validate append command"
+    ],
+    "receipts": [
+      "SemanticRejectionReceipt"
+    ],
+    "filesystem_effects": [
+      "none"
+    ],
+    "terminal_state": "ready",
+    "illegal_transition": false
+  }
+}

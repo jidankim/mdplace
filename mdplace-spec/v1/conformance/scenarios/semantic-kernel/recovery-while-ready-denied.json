@@ -1,0 +1,73 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-SK-ILLEGAL-002",
+  "category": "illegal_transition",
+  "requirement_ids": [
+    "REQ-SK-002",
+    "REQ-SK-003",
+    "REQ-SK-004"
+  ],
+  "subject": {
+    "kind": "semantic_kernel",
+    "schema": "contracts/schemas/semantic-kernel-scenario.schema.json",
+    "document": {
+      "schema_id": "mdplace.semantic-kernel-scenario/v1",
+      "scenario_id": "SK-030",
+      "initial": {
+        "lifecycle_state": "ready",
+        "head": {
+          "sequence": 0,
+          "operation_id": null
+        },
+        "semantic_state": [],
+        "bound_inputs": [],
+        "prior_receipts": []
+      },
+      "action": {
+        "kind": "recover",
+        "actor": {
+          "actor_id": "component:foreground-recovery-001",
+          "actor_kind": "foreground_recovery",
+          "authority_ref": "authority:foreground-recovery-001"
+        },
+        "command_id": null,
+        "operation_id": null,
+        "operation_kind": null,
+        "base_references": [],
+        "ordering": null,
+        "idempotency_key": null,
+        "command_digest": null,
+        "payload": null,
+        "preconditions": [],
+        "records": [],
+        "snapshot": null,
+        "supplied_view": [],
+        "crash_point": null,
+        "recovery_id": "recovery:003"
+      }
+    }
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": [
+      "semantic.recovery_not_required"
+    ],
+    "outputs": [
+      "recovery rejected",
+      "canonical_record:none",
+      "semantic_state:[]"
+    ],
+    "operations": [
+      "validate recovery state"
+    ],
+    "receipts": [
+      "SemanticRejectionReceipt"
+    ],
+    "filesystem_effects": [
+      "none"
+    ],
+    "terminal_state": "ready",
+    "illegal_transition": true
+  }
+}

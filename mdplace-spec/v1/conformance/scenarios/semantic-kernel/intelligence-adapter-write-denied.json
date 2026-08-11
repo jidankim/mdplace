@@ -1,0 +1,89 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-SK-AUTH-002",
+  "category": "authority_denial",
+  "requirement_ids": [
+    "REQ-SK-002",
+    "REQ-SK-003",
+    "REQ-SK-004",
+    "REQ-SK-007"
+  ],
+  "subject": {
+    "kind": "semantic_kernel",
+    "schema": "contracts/schemas/semantic-kernel-scenario.schema.json",
+    "document": {
+      "schema_id": "mdplace.semantic-kernel-scenario/v1",
+      "scenario_id": "SK-014",
+      "initial": {
+        "lifecycle_state": "ready",
+        "head": {
+          "sequence": 0,
+          "operation_id": null
+        },
+        "semantic_state": [],
+        "bound_inputs": [],
+        "prior_receipts": []
+      },
+      "action": {
+        "kind": "append",
+        "actor": {
+          "actor_id": "component:intelligence-adapter-001",
+          "actor_kind": "intelligence_adapter",
+          "authority_ref": "authority:intelligence-adapter-001"
+        },
+        "command_id": "command:001",
+        "operation_id": "operation:001",
+        "operation_kind": "semantic_assignment",
+        "base_references": [
+          {
+            "ordinal": 0,
+            "kind": "semantic_head",
+            "sequence": 0,
+            "operation_id": null,
+            "state_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        ],
+        "ordering": {
+          "sequence": 1,
+          "predecessor_operation_id": null,
+          "sort_key": "000001:command:001"
+        },
+        "idempotency_key": "idempotency:001",
+        "command_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "payload": {
+          "key": "note:001/placement",
+          "value": "cat:research"
+        },
+        "preconditions": [],
+        "records": [],
+        "snapshot": null,
+        "supplied_view": [],
+        "crash_point": null,
+        "recovery_id": null
+      }
+    }
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": [
+      "semantic.authority_denied"
+    ],
+    "outputs": [
+      "append rejected",
+      "canonical_record:none",
+      "semantic_state:[]"
+    ],
+    "operations": [
+      "validate append command"
+    ],
+    "receipts": [
+      "SemanticRejectionReceipt"
+    ],
+    "filesystem_effects": [
+      "none"
+    ],
+    "terminal_state": "ready",
+    "illegal_transition": false
+  }
+}

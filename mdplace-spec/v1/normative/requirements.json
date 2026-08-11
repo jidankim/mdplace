@@ -173,6 +173,69 @@
       "canonical_terms": ["Specification Package", "Conformance Fixture", "mdplace Agent", "Semantic Kernel", "Control Channel", "Vault Mutation Gate", "Capture Adapter", "Placement Evaluation", "Taxonomy Evolution Cycle", "Folder Projection", "Intelligence Adapter", "Placement Automation Permission", "Automation Grant"],
       "acceptance_gate": "Only specification, schemas, fixtures, validator assertions, traceability, and evidence artifacts are added; no production mdplace boundary is implemented or invoked.",
       "scope": "validator-evidence"
+    },
+    {
+      "id": "REQ-SK-001",
+      "title": "The canonical operation envelope is closed",
+      "normative_anchor": "normative/semantic-kernel-contract.md#req-sk-001-the-canonical-operation-envelope-is-closed",
+      "decision_urls": ["https://github.com/jidankim/mdplace/issues/2#issuecomment-5012541174"],
+      "canonical_terms": ["Semantic Kernel", "Specification Package"],
+      "acceptance_gate": "Every accepted append and replay record has one closed canonical envelope with stable identity, version, authority, bases, ordering, payload, idempotency, preconditions, and closure receipt; malformed, torn, noncanonical, unsupported, and unknown records are rejected.",
+      "scope": "semantic-kernel"
+    },
+    {
+      "id": "REQ-SK-002",
+      "title": "Compare-and-append is serialized and fail-closed",
+      "normative_anchor": "normative/semantic-kernel-contract.md#req-sk-002-compare-and-append-is-serialized-and-fail-closed",
+      "decision_urls": ["https://github.com/jidankim/mdplace/issues/2#issuecomment-5012541174"],
+      "canonical_terms": ["Semantic Kernel", "mdplace Agent", "Control Channel"],
+      "acceptance_gate": "An authorized exact-base command emits one immutable canonical operation and receipt; stale, future, incompatible, unauthorized, or illegal input emits one deterministic rejection and no semantic write.",
+      "scope": "semantic-kernel"
+    },
+    {
+      "id": "REQ-SK-003",
+      "title": "Replay snapshots ordering and views are deterministic",
+      "normative_anchor": "normative/semantic-kernel-contract.md#req-sk-003-replay-snapshots-ordering-and-views-are-deterministic",
+      "decision_urls": ["https://github.com/jidankim/mdplace/issues/2#issuecomment-5012541174"],
+      "canonical_terms": ["Semantic Kernel", "Folder Projection", "Specification Package"],
+      "acceptance_gate": "Full replay and valid-snapshot suffix replay produce identical semantic state, ordering is stable, recognized forward-compatible no-op records preserve state, and disposable views rebuild only from canonical history.",
+      "scope": "semantic-kernel"
+    },
+    {
+      "id": "REQ-SK-004",
+      "title": "Stateful fixtures observe complete closure outcomes",
+      "normative_anchor": "normative/semantic-kernel-contract.md#req-sk-004-stateful-fixtures-observe-complete-closure-outcomes",
+      "decision_urls": ["https://github.com/jidankim/mdplace/issues/2#issuecomment-5012541174"],
+      "canonical_terms": ["Conformance Fixture", "Semantic Kernel", "Specification Package"],
+      "acceptance_gate": "Exactly 30 manifest-owned stateful scenarios cover every required class and expose accepted or rejected closure, canonical record or none, receipts, semantic state, snapshots or replay, rebuilt views, filesystem effects, terminal state, and illegal transitions.",
+      "scope": "semantic-kernel"
+    },
+    {
+      "id": "REQ-SK-005",
+      "title": "Validation and evidence bind public behavior",
+      "normative_anchor": "normative/semantic-kernel-contract.md#req-sk-005-validation-and-evidence-bind-public-behavior",
+      "decision_urls": ["https://github.com/jidankim/mdplace/issues/2#issuecomment-5012541174"],
+      "canonical_terms": ["Conformance Fixture", "Traceability Record", "Specification Package"],
+      "acceptance_gate": "The validator checks public schemas, lifecycle behavior, ordering, idempotency, replay, snapshots, rebuild, recovery, authority denials, traceability, and machine evidence without private implementation assertions.",
+      "scope": "semantic-kernel"
+    },
+    {
+      "id": "REQ-SK-006",
+      "title": "The accepted reconciliation remains an input",
+      "normative_anchor": "normative/semantic-kernel-contract.md#req-sk-006-the-accepted-reconciliation-remains-an-input",
+      "decision_urls": ["https://github.com/jidankim/mdplace/issues/2#issuecomment-5012541174"],
+      "canonical_terms": ["Semantic Kernel", "Folder Projection", "Intelligence Adapter", "Capture Adapter"],
+      "acceptance_gate": "Every Semantic Kernel requirement binds the exact accepted issue #2 decision as input_without_reopening and none restores a deprecated authority or persistence model.",
+      "scope": "semantic-kernel"
+    },
+    {
+      "id": "REQ-SK-007",
+      "title": "Artifacts are specification and conformance only",
+      "normative_anchor": "normative/semantic-kernel-contract.md#req-sk-007-artifacts-are-specification-and-conformance-only",
+      "decision_urls": ["https://github.com/jidankim/mdplace/issues/2#issuecomment-5012541174"],
+      "canonical_terms": ["Specification Package", "Conformance Fixture", "mdplace Agent", "Semantic Kernel", "Control Channel", "Vault Mutation Gate", "Capture Adapter", "Folder Projection", "Intelligence Adapter"],
+      "acceptance_gate": "Only specification, schemas, registries, fixtures, conformance-only observers, traceability, and evidence are added; no production mdplace boundary or vault mutation is implemented or invoked.",
+      "scope": "semantic-kernel"
     }
   ]
 }

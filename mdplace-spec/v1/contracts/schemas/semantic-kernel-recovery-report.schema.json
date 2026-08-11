@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:semantic-kernel-recovery-report:v1",
+  "title": "mdplace Semantic Kernel recovery and equivalence evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "package_series", "release_version", "validator_version", "scenario_count", "scenario_ids", "replay_snapshot_equivalent", "rebuild_deterministic", "crash_outcomes", "semantic_write_denials", "verdict"],
+  "properties": {
+    "$schema": {"const": "../../contracts/schemas/semantic-kernel-recovery-report.schema.json"},
+    "schema_id": {"const": "mdplace.semantic-kernel-recovery-report/v1"},
+    "package_series": {"const": "mdplace-spec/v1"},
+    "release_version": {"const": "1.0.0"},
+    "validator_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "scenario_count": {"const": 30},
+    "scenario_ids": {"type": "array", "minItems": 30, "maxItems": 30, "uniqueItems": true, "items": {"type": "string", "pattern": "^FIX-SK-[A-Z][A-Z0-9_]{1,31}-[0-9]{3}$"}},
+    "replay_snapshot_equivalent": {"const": true},
+    "rebuild_deterministic": {"const": true},
+    "crash_outcomes": {
+      "type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true,
+      "items": {"enum": ["staging_discarded_without_semantic_write", "canonical_record_preserved_and_receipt_closed"]}
+    },
+    "semantic_write_denials": {
+      "type": "array", "minItems": 6, "maxItems": 6, "uniqueItems": true,
+      "items": {"enum": ["capture_adapter", "intelligence_adapter", "folder_projection", "projection", "frontmatter_bridge", "cache"]}
+    },
+    "verdict": {"const": "pass"}
+  }
+}

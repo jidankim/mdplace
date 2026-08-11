@@ -1,0 +1,74 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-SK-REC-001",
+  "category": "crash_recovery",
+  "requirement_ids": [
+    "REQ-SK-002",
+    "REQ-SK-003",
+    "REQ-SK-004",
+    "REQ-SK-005"
+  ],
+  "subject": {
+    "kind": "semantic_kernel",
+    "schema": "contracts/schemas/semantic-kernel-scenario.schema.json",
+    "document": {
+      "schema_id": "mdplace.semantic-kernel-scenario/v1",
+      "scenario_id": "SK-028",
+      "initial": {
+        "lifecycle_state": "recovery_required",
+        "head": {
+          "sequence": 0,
+          "operation_id": null
+        },
+        "semantic_state": [],
+        "bound_inputs": [],
+        "prior_receipts": []
+      },
+      "action": {
+        "kind": "recover",
+        "actor": {
+          "actor_id": "component:foreground-recovery-001",
+          "actor_kind": "foreground_recovery",
+          "authority_ref": "authority:foreground-recovery-001"
+        },
+        "command_id": null,
+        "operation_id": null,
+        "operation_kind": null,
+        "base_references": [],
+        "ordering": null,
+        "idempotency_key": null,
+        "command_digest": null,
+        "payload": null,
+        "preconditions": [],
+        "records": [],
+        "snapshot": null,
+        "supplied_view": [],
+        "crash_point": "before_record_publish",
+        "recovery_id": "recovery:001"
+      }
+    }
+  },
+  "expected": {
+    "verdict": "pass",
+    "codes": [],
+    "outputs": [
+      "recovery completed",
+      "canonical_record:none",
+      "semantic_state:[]"
+    ],
+    "operations": [
+      "read crash journal",
+      "inspect canonical namespace",
+      "discard uncommitted staging record"
+    ],
+    "receipts": [
+      "SemanticRecoveryReport"
+    ],
+    "filesystem_effects": [
+      "discard uncommitted staging record"
+    ],
+    "terminal_state": "ready",
+    "illegal_transition": false
+  }
+}

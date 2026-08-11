@@ -18,7 +18,8 @@
         {"$ref": "#/$defs/extensionSubject"},
         {"$ref": "#/$defs/releaseMutationSubject"},
         {"$ref": "#/$defs/digestSubject"},
-        {"$ref": "#/$defs/recoverySubject"}
+        {"$ref": "#/$defs/recoverySubject"},
+        {"$ref": "#/$defs/semanticKernelSubject"}
       ]
     },
     "expected": {"$ref": "#/$defs/expected"}
@@ -228,6 +229,16 @@
         "target_artifacts_verified": {"type": "boolean"},
         "target_published": {"type": "boolean"},
         "partial_target_exists": {"type": "boolean"}
+      }
+    },
+    "semanticKernelSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "schema", "document"],
+      "properties": {
+        "kind": {"const": "semantic_kernel"},
+        "schema": {"const": "contracts/schemas/semantic-kernel-scenario.schema.json"},
+        "document": {"description": "Closed stateful scenario validated against subject.schema before observation."}
       }
     },
     "expected": {

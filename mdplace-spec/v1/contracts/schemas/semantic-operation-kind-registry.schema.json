@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:semantic-operation-kind-registry:v1",
+  "title": "mdplace semantic operation kind registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "package_series", "release_version", "kinds"],
+  "properties": {
+    "$schema": {"const": "schemas/semantic-operation-kind-registry.schema.json"},
+    "schema_id": {"const": "mdplace.semantic-operation-kind-registry/v1"},
+    "package_series": {"const": "mdplace-spec/v1"},
+    "release_version": {"const": "1.0.0"},
+    "kinds": {
+      "type": "array", "minItems": 3, "maxItems": 3, "uniqueItems": true,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["operation_kind", "payload_contract", "replay_effect", "forward_compatibility"],
+        "properties": {
+          "operation_kind": {"enum": ["semantic_assignment", "semantic_removal", "compatibility_marker"]},
+          "payload_contract": {"const": "contracts/schemas/semantic-operation.schema.json#/$defs/payload"},
+          "replay_effect": {"enum": ["assign_value", "remove_value", "preserve_state"]},
+          "forward_compatibility": {"enum": ["core_v1", "recognized_noop_v1"]}
+        }
+      }
+    }
+  }
+}

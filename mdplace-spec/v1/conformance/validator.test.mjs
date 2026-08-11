@@ -10,3 +10,4 @@ import './validator-final-review-cases.mjs';
 import './validator-review-round-two-cases.mjs';
 import './validator-review-round-three-cases.mjs';
 import './validator-evidence-cases.mjs';
+import './validator-semantic-kernel-cases.mjs';

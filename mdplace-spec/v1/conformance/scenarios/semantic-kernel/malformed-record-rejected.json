@@ -1,0 +1,73 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-SK-NEG-004",
+  "category": "negative",
+  "requirement_ids": [
+    "REQ-SK-001",
+    "REQ-SK-004"
+  ],
+  "subject": {
+    "kind": "semantic_kernel",
+    "schema": "contracts/schemas/semantic-kernel-scenario.schema.json",
+    "document": {
+      "schema_id": "mdplace.semantic-kernel-scenario/v1",
+      "scenario_id": "SK-010",
+      "initial": {
+        "lifecycle_state": "ready",
+        "head": {
+          "sequence": 0,
+          "operation_id": null
+        },
+        "semantic_state": [],
+        "bound_inputs": [],
+        "prior_receipts": []
+      },
+      "action": {
+        "kind": "replay",
+        "actor": {
+          "actor_id": "component:mdplace-agent-001",
+          "actor_kind": "mdplace_agent",
+          "authority_ref": "authority:mdplace-agent-001"
+        },
+        "command_id": null,
+        "operation_id": null,
+        "operation_kind": null,
+        "base_references": [],
+        "ordering": null,
+        "idempotency_key": null,
+        "command_digest": null,
+        "payload": null,
+        "preconditions": [],
+        "records": [
+          "{\"$schema\":\"semantic-operation.schema.json\",\"actor_authority\":{\"actor_id\":\"person:owner-001\",\"actor_kind\":\"vault_owner\",\"authority_ref\":\"authority:vault-owner-001\"},\"base_references\":[{\"kind\":\"semantic_head\",\"operation_id\":null,\"ordinal\":0,\"sequence\":0,\"state_digest\":\"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"}],\"command_id\":\"command:001\",\"idempotency\":{\"command_digest\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"key\":\"idempotency:001\"},\"operation_id\":\"operation:001\",\"operation_kind\":\"semantic_assignment\",\"ordering\":{\"predecessor_operation_id\":null,\"sequence\":1,\"sort_key\":\"000001:command:001\"},\"payload\":{\"key\":\"note:001/placement\",\"value\":\"cat:research\"},\"preconditions\":[],\"schema_id\":\"mdplace.semantic-operation/v1\",\"schema_version\":\"1.0.0\"}\n"
+        ],
+        "snapshot": null,
+        "supplied_view": [],
+        "crash_point": null,
+        "recovery_id": null
+      }
+    }
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": [
+      "semantic.record_malformed"
+    ],
+    "outputs": [
+      "replay rejected",
+      "semantic_state:[]"
+    ],
+    "operations": [
+      "validate canonical operation records"
+    ],
+    "receipts": [
+      "SemanticRejectionReceipt"
+    ],
+    "filesystem_effects": [
+      "none"
+    ],
+    "terminal_state": "recovery_required",
+    "illegal_transition": false
+  }
+}

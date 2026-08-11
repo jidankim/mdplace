@@ -9,6 +9,12 @@
       "url": "https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153",
       "status": "accepted",
       "use": "input_without_reopening"
+    },
+    {
+      "decision_id": "DEC-002",
+      "url": "https://github.com/jidankim/mdplace/issues/2#issuecomment-5012541174",
+      "status": "accepted",
+      "use": "input_without_reopening"
     }
   ],
   "records": [
@@ -254,6 +260,90 @@
       "acceptance_gate": "Only specification, schemas, fixtures, validator assertions, traceability, and evidence artifacts are added; no production mdplace boundary is implemented or invoked.",
       "scope": "validator-evidence",
       "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/evidence-recovery-report.json"]
+    },
+    {
+      "requirement_id": "REQ-SK-001",
+      "decision_ids": ["DEC-002"],
+      "canonical_terms": ["Semantic Kernel", "Specification Package"],
+      "normative_anchors": ["normative/semantic-kernel-contract.md#req-sk-001-the-canonical-operation-envelope-is-closed"],
+      "schema_or_transition_refs": ["contracts/schemas/semantic-operation.schema.json", "contracts/schemas/semantic-operation-kind-registry.schema.json", "contracts/semantic-operation-kinds.json"],
+      "positive_fixture_ids": ["FIX-SK-POS-001", "FIX-SK-POS-010"],
+      "negative_fixture_ids": ["FIX-SK-NEG-003", "FIX-SK-NEG-004", "FIX-SK-NEG-005", "FIX-SK-NEG-006", "FIX-SK-NEG-007"],
+      "acceptance_gate": "Every accepted append and replay record has one closed canonical envelope with stable identity, version, authority, bases, ordering, payload, idempotency, preconditions, and closure receipt; malformed, torn, noncanonical, unsupported, and unknown records are rejected.",
+      "scope": "semantic-kernel",
+      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/semantic-kernel-recovery-report.json"]
+    },
+    {
+      "requirement_id": "REQ-SK-002",
+      "decision_ids": ["DEC-002"],
+      "canonical_terms": ["Semantic Kernel", "mdplace Agent", "Control Channel"],
+      "normative_anchors": ["normative/semantic-kernel-contract.md#req-sk-002-compare-and-append-is-serialized-and-fail-closed"],
+      "schema_or_transition_refs": ["contracts/schemas/semantic-operation.schema.json", "contracts/transitions/semantic-kernel-lifecycle.json"],
+      "positive_fixture_ids": ["FIX-SK-POS-001", "FIX-SK-POS-002", "FIX-SK-POS-004", "FIX-SK-REC-001", "FIX-SK-REC-002"],
+      "negative_fixture_ids": ["FIX-SK-STATE-001", "FIX-SK-NEG-001", "FIX-SK-NEG-002", "FIX-SK-AUTH-001", "FIX-SK-ILLEGAL-001", "FIX-SK-ILLEGAL-002"],
+      "acceptance_gate": "An authorized exact-base command emits one immutable canonical operation and receipt; stale, future, incompatible, unauthorized, or illegal input emits one deterministic rejection and no semantic write.",
+      "scope": "semantic-kernel",
+      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/semantic-kernel-recovery-report.json"]
+    },
+    {
+      "requirement_id": "REQ-SK-003",
+      "decision_ids": ["DEC-002"],
+      "canonical_terms": ["Semantic Kernel", "Folder Projection", "Specification Package"],
+      "normative_anchors": ["normative/semantic-kernel-contract.md#req-sk-003-replay-snapshots-ordering-and-views-are-deterministic"],
+      "schema_or_transition_refs": ["contracts/schemas/semantic-operation.schema.json", "contracts/schemas/semantic-kernel-scenario.schema.json", "contracts/transitions/semantic-kernel-lifecycle.json"],
+      "positive_fixture_ids": ["FIX-SK-POS-003", "FIX-SK-POS-005", "FIX-SK-POS-006", "FIX-SK-POS-007", "FIX-SK-POS-008", "FIX-SK-POS-009", "FIX-SK-POS-010"],
+      "negative_fixture_ids": ["FIX-SK-STATE-002", "FIX-SK-NEG-007", "FIX-SK-ILLEGAL-001", "FIX-SK-ILLEGAL-002"],
+      "acceptance_gate": "Full replay and valid-snapshot suffix replay produce identical semantic state, ordering is stable, recognized forward-compatible no-op records preserve state, and disposable views rebuild only from canonical history.",
+      "scope": "semantic-kernel",
+      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/semantic-kernel-recovery-report.json"]
+    },
+    {
+      "requirement_id": "REQ-SK-004",
+      "decision_ids": ["DEC-002"],
+      "canonical_terms": ["Conformance Fixture", "Semantic Kernel", "Specification Package"],
+      "normative_anchors": ["normative/semantic-kernel-contract.md#req-sk-004-stateful-fixtures-observe-complete-closure-outcomes"],
+      "schema_or_transition_refs": ["contracts/schemas/conformance-fixture.schema.json", "contracts/schemas/conformance-manifest.schema.json", "contracts/schemas/semantic-kernel-scenario.schema.json"],
+      "positive_fixture_ids": ["FIX-SK-POS-001", "FIX-SK-POS-003", "FIX-SK-REC-001"],
+      "negative_fixture_ids": ["FIX-SK-NEG-003", "FIX-SK-NEG-004", "FIX-SK-NEG-005", "FIX-SK-STATE-001", "FIX-SK-AUTH-001", "FIX-SK-ILLEGAL-001"],
+      "acceptance_gate": "Exactly 30 manifest-owned stateful scenarios cover every required class and expose accepted or rejected closure, canonical record or none, receipts, semantic state, snapshots or replay, rebuilt views, filesystem effects, terminal state, and illegal transitions.",
+      "scope": "semantic-kernel",
+      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/semantic-kernel-recovery-report.json"]
+    },
+    {
+      "requirement_id": "REQ-SK-005",
+      "decision_ids": ["DEC-002"],
+      "canonical_terms": ["Conformance Fixture", "Traceability Record", "Specification Package"],
+      "normative_anchors": ["normative/semantic-kernel-contract.md#req-sk-005-validation-and-evidence-bind-public-behavior"],
+      "schema_or_transition_refs": ["contracts/schemas/semantic-kernel-recovery-report.schema.json", "contracts/transitions/semantic-kernel-lifecycle.json"],
+      "positive_fixture_ids": ["FIX-SK-POS-001", "FIX-SK-POS-005", "FIX-SK-POS-007", "FIX-SK-REC-002"],
+      "negative_fixture_ids": ["FIX-SK-NEG-005"],
+      "acceptance_gate": "The validator checks public schemas, lifecycle behavior, ordering, idempotency, replay, snapshots, rebuild, recovery, authority denials, traceability, and machine evidence without private implementation assertions.",
+      "scope": "semantic-kernel",
+      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/traceability-report.json", "conformance/evidence/semantic-kernel-recovery-report.json"]
+    },
+    {
+      "requirement_id": "REQ-SK-006",
+      "decision_ids": ["DEC-002"],
+      "canonical_terms": ["Semantic Kernel", "Folder Projection", "Intelligence Adapter", "Capture Adapter"],
+      "normative_anchors": ["normative/semantic-kernel-contract.md#req-sk-006-the-accepted-reconciliation-remains-an-input"],
+      "schema_or_transition_refs": ["contracts/schemas/semantic-operation.schema.json", "contracts/transitions/semantic-kernel-lifecycle.json"],
+      "positive_fixture_ids": ["FIX-SK-POS-001"],
+      "negative_fixture_ids": ["FIX-SK-NEG-003"],
+      "acceptance_gate": "Every Semantic Kernel requirement binds the exact accepted issue #2 decision as input_without_reopening and none restores a deprecated authority or persistence model.",
+      "scope": "semantic-kernel",
+      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/semantic-kernel-recovery-report.json"]
+    },
+    {
+      "requirement_id": "REQ-SK-007",
+      "decision_ids": ["DEC-002"],
+      "canonical_terms": ["Specification Package", "Conformance Fixture", "mdplace Agent", "Semantic Kernel", "Control Channel", "Vault Mutation Gate", "Capture Adapter", "Folder Projection", "Intelligence Adapter"],
+      "normative_anchors": ["normative/semantic-kernel-contract.md#req-sk-007-artifacts-are-specification-and-conformance-only"],
+      "schema_or_transition_refs": ["contracts/schemas/conformance-fixture.schema.json", "contracts/schemas/semantic-kernel-scenario.schema.json"],
+      "positive_fixture_ids": ["FIX-SK-POS-009"],
+      "negative_fixture_ids": ["FIX-SK-AUTH-001", "FIX-SK-AUTH-002", "FIX-SK-AUTH-003", "FIX-SK-AUTH-004", "FIX-SK-AUTH-005", "FIX-SK-AUTH-006"],
+      "acceptance_gate": "Only specification, schemas, registries, fixtures, conformance-only observers, traceability, and evidence are added; no production mdplace boundary or vault mutation is implemented or invoked.",
+      "scope": "semantic-kernel",
+      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/semantic-kernel-recovery-report.json"]
     }
   ]
 }

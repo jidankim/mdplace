@@ -1,0 +1,49 @@
+{
+  "$schema": "../schemas/transition-table.schema.json",
+  "schema_id": "mdplace.transition-table/v1",
+  "table_id": "TRANS-SEMANTIC-KERNEL",
+  "lifecycle": "Semantic Kernel serialized writer recovery",
+  "version": "1.0.0",
+  "states": ["ready", "recovery_required"],
+  "commands": ["append_operation", "recover_operation"],
+  "transitions": [
+    {
+      "transition_id": "TR-SK-001", "command_or_event": "append_operation", "from_state": "ready", "allowed": true,
+      "actor_authority": {"roles": ["semantic_kernel"], "quorum": 1, "distinct_actors": false, "delegation": "forbidden"},
+      "preconditions": ["actor authority is explicit", "idempotency is compatible", "base equals current semantic head", "operation kind and preconditions are valid"],
+      "base_references": ["semantic_head_sequence", "semantic_head_operation_id", "semantic_state_digest", "ordered_bound_inputs"],
+      "emitted_records": ["CanonicalSemanticOperation", "SemanticAppendReceipt"], "filesystem_effects": ["append one immutable .op.json record"],
+      "idempotency": {"key_fields": ["idempotency_key", "command_digest"], "retry_result": "return the original receipt without another operation"},
+      "terminal_state": "ready", "failure_result": {"code": "semantic.append_rejected", "state_effect": "unchanged", "emitted_records": ["SemanticRejectionReceipt"], "filesystem_effects": ["none"]},
+      "recovery": "Reject without a semantic write, or enter recovery_required only when crash evidence proves an unresolved publication boundary."
+    },
+    {
+      "transition_id": "TR-SK-002", "command_or_event": "recover_operation", "from_state": "ready", "allowed": false,
+      "actor_authority": {"roles": ["semantic_kernel"], "quorum": 1, "distinct_actors": false, "delegation": "forbidden"},
+      "preconditions": ["recovery_required state is present"], "base_references": ["semantic_head_sequence", "semantic_state_digest"],
+      "emitted_records": ["SemanticRejectionReceipt"], "filesystem_effects": ["none"],
+      "idempotency": {"key_fields": ["recovery_id"], "retry_result": "return the original denial"},
+      "terminal_state": "ready", "failure_result": {"code": "semantic.recovery_not_required", "state_effect": "unchanged", "emitted_records": ["SemanticRejectionReceipt"], "filesystem_effects": ["none"]},
+      "recovery": "Continue normal operation; no recovery action is authorized."
+    },
+    {
+      "transition_id": "TR-SK-003", "command_or_event": "append_operation", "from_state": "recovery_required", "allowed": false,
+      "actor_authority": {"roles": ["semantic_kernel"], "quorum": 1, "distinct_actors": false, "delegation": "forbidden"},
+      "preconditions": ["ready state is restored"], "base_references": ["recovery_id", "semantic_head_sequence", "semantic_state_digest"],
+      "emitted_records": ["SemanticRejectionReceipt"], "filesystem_effects": ["none"],
+      "idempotency": {"key_fields": ["idempotency_key", "command_digest"], "retry_result": "return the original denial"},
+      "terminal_state": "recovery_required", "failure_result": {"code": "semantic.recovery_required", "state_effect": "unchanged", "emitted_records": ["SemanticRejectionReceipt"], "filesystem_effects": ["none"]},
+      "recovery": "Complete deterministic recovery before accepting another append."
+    },
+    {
+      "transition_id": "TR-SK-004", "command_or_event": "recover_operation", "from_state": "recovery_required", "allowed": true,
+      "actor_authority": {"roles": ["semantic_kernel"], "quorum": 1, "distinct_actors": false, "delegation": "forbidden"},
+      "preconditions": ["crash journal and canonical namespace are read back", "canonical record bytes are validated when present"],
+      "base_references": ["recovery_id", "semantic_head_sequence", "semantic_state_digest", "journal_digest"],
+      "emitted_records": ["SemanticRecoveryReport", "SemanticAppendReceipt"], "filesystem_effects": ["discard uncommitted staging or publish only a missing receipt"],
+      "idempotency": {"key_fields": ["recovery_id", "journal_digest"], "retry_result": "return the original recovery report without another operation"},
+      "terminal_state": "ready", "failure_result": {"code": "semantic.recovery_failed", "state_effect": "unchanged", "emitted_records": ["SemanticRecoveryReport"], "filesystem_effects": ["none"]},
+      "recovery": "Preserve canonical bytes, report the failed binding, and remain recovery_required."
+    }
+  ]
+}
