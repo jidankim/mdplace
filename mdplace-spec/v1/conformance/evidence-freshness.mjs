@@ -100,6 +100,7 @@ async function evidenceObservation(binding, packageRoot) {
   const proof = new Set();
   addDigestBindings(proof, envelope.input_digests);
   addDigestBindings(proof, envelope.output_digests);
+  addDigestBindings(proof, envelope.receipts);
   addDigestBindings(proof, envelope.artifact_digests);
   addDigestBindings(proof, invocation.input_digests);
   return {
@@ -189,7 +190,8 @@ async function addTransitiveBindings(expected, binding, schemaPath, packageRoot,
       await addTransitiveBindings(expected, child, 'contracts/schemas/evidence-envelope.schema.json', packageRoot, nested);
     }
   } else if (schemaName === 'evidence-envelope.schema.json') {
-    for (const child of [document.input_digests, document.output_digests, document.artifact_digests]
+    for (const child of [document.input_digests, document.output_digests, document.receipts,
+      document.artifact_digests]
       .flatMap((entries) => Array.isArray(entries) ? entries : []).filter(isRecord)) {
       addExpectedBinding(expected, child.path, child.sha256);
     }

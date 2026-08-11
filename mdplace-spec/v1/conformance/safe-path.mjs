@@ -1,7 +1,9 @@
 import {randomUUID} from 'node:crypto';
 import {constants} from 'node:fs';
-import {lstat, open, readdir, realpath, rename, unlink} from 'node:fs/promises';
-import {dirname, relative, resolve, sep} from 'node:path';
+import {lstat, open, readdir, realpath} from 'node:fs/promises';
+import {basename, dirname, relative, resolve, sep} from 'node:path';
+
+import {commitPackageReplacement} from './safe-write-commit.mjs';
 
 export const maxFileBytes = 1_048_576;
 const maxPackageEntries = 2_048;
@@ -117,63 +119,20 @@ export async function writePackageFile(packageRoot, relativePath, content) {
   if (target.status !== 'present') return target;
   if (target.stats.nlink !== 1) return {status: 'unsafe'};
   const parentStats = await lstat(dirname(target.target));
-  const temporaryRelativePath = `${relativePath}.mdplace-${randomUUID()}.tmp`;
-  const temporary = await packageTarget(packageRoot, temporaryRelativePath);
-  if (temporary.status !== 'present') return temporary;
-  const noFollow = constants.O_NOFOLLOW ?? 0;
-  let handle;
-  let temporaryStats;
-  let temporaryExists = false;
-  try {
-    handle = await open(
-      temporary.target,
-      constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | noFollow,
-      0o600,
-    );
-    temporaryExists = true;
-  } catch (error) {
-    if (error.code === 'ENOENT') return {status: 'absent'};
-    if (error.code === 'ELOOP' || error.code === 'ENOTDIR') return {status: 'unsafe'};
-    throw error;
-  }
-  try {
-    try {
-      temporaryStats = await handle.stat();
-      if (!temporaryStats.isFile() || temporaryStats.nlink !== 1) return {status: 'unsafe'};
-      let offset = 0;
-      while (offset < bytes.length) {
-        const {bytesWritten} = await handle.write(bytes, offset, bytes.length - offset, offset);
-        offset += bytesWritten;
-      }
-      await handle.sync();
-      if ((await handle.stat()).nlink !== 1) return {status: 'unsafe'};
-    } finally {
-      await handle.close();
-    }
-    const [currentTarget, currentTemporary, currentParent] = await Promise.all([
-      inspectPackageEntry(packageRoot, relativePath, 'file'),
-      inspectPackageEntry(packageRoot, temporaryRelativePath, 'file'),
-      lstat(dirname(target.target)),
-    ]);
-    if (currentTarget.status !== 'present' || currentTarget.stats.nlink !== 1 ||
-        currentTarget.stats.dev !== target.stats.dev || currentTarget.stats.ino !== target.stats.ino ||
-        currentTemporary.status !== 'present' || currentTemporary.stats.nlink !== 1 ||
-        currentTemporary.stats.dev !== temporaryStats.dev || currentTemporary.stats.ino !== temporaryStats.ino ||
-        currentParent.dev !== parentStats.dev || currentParent.ino !== parentStats.ino) return {status: 'unsafe'};
-    await rename(temporary.target, target.target);
-    temporaryExists = false;
-    const committed = await inspectPackageEntry(packageRoot, relativePath, 'file');
-    return committed.status === 'present' && committed.stats.nlink === 1 &&
-      committed.stats.dev === temporaryStats.dev && committed.stats.ino === temporaryStats.ino
-      ? {status: 'written'}
-      : {status: 'unsafe'};
-  } finally {
-    if (temporaryExists && temporaryStats !== undefined) {
-      const inspected = await inspectPackageEntry(packageRoot, temporaryRelativePath, 'file');
-      if (inspected.status === 'present' && inspected.stats.dev === temporaryStats.dev &&
-          inspected.stats.ino === temporaryStats.ino) await unlink(temporary.target);
-    }
-  }
+  const committed = await commitPackageReplacement(
+    dirname(target.target),
+    basename(target.target),
+    `${basename(target.target)}.mdplace-${randomUUID()}.tmp`,
+    bytes,
+    parentStats,
+    target.stats,
+  );
+  if (committed.status !== 'written') return committed;
+  const current = await inspectPackageEntry(packageRoot, relativePath, 'file');
+  return current.status === 'present' && current.stats.nlink === 1 &&
+    current.stats.dev === committed.dev && current.stats.ino === committed.ino
+    ? {status: 'written'}
+    : {status: 'unsafe'};
 }
 
 export async function listPackageFiles(packageRoot) {

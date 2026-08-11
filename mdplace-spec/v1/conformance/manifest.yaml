@@ -358,7 +358,8 @@
       "category": "negative",
       "requirement_ids": [
         "REQ-PKG-010",
-        "REQ-PKG-012"
+        "REQ-PKG-012",
+        "REQ-VAL-007"
       ],
       "expected_verdict": "fail",
       "observable_assertions": {
@@ -925,6 +926,22 @@
       "path": "fixtures/negative/verdict-row-missing-availability.json",
       "category": "negative",
       "requirement_ids": ["REQ-VAL-002", "REQ-VAL-005"],
+      "expected_verdict": "fail",
+      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+    },
+    {
+      "fixture_id": "FIX-VAL-NEG-005",
+      "path": "fixtures/negative/evidence-receipt-type-tampered.json",
+      "category": "negative",
+      "requirement_ids": ["REQ-VAL-002", "REQ-VAL-003", "REQ-VAL-006"],
+      "expected_verdict": "fail",
+      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+    },
+    {
+      "fixture_id": "FIX-VAL-NEG-006",
+      "path": "fixtures/negative/evidence-receipt-digest-tampered.json",
+      "category": "negative",
+      "requirement_ids": ["REQ-VAL-002", "REQ-VAL-003", "REQ-VAL-006"],
       "expected_verdict": "fail",
       "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
     }

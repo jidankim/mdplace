@@ -84,7 +84,10 @@ test('fresh-evidence supply rejects identifier-only churn', async () => {
 });
 
 test('fresh-evidence supply rejects unauthenticated receipt-only churn', async () => {
-  for (const receiptMutation of ['type', 'digest']) {
+  for (const [receiptMutation, expectedCode] of [
+    ['type', 'schema.constraint'],
+    ['digest', 'evidence.receipt_digest_mismatch'],
+  ]) {
     const packageRoot = await copyCommittedPackage();
     const suffix = `receipt-${receiptMutation}-churn`;
     const chain = await createFreshClaimChain(packageRoot, {suffix, substantive: false});
@@ -109,7 +112,7 @@ test('fresh-evidence supply rejects unauthenticated receipt-only churn', async (
     }, packageRoot);
 
     assert.equal(observed.verdict, 'fail', receiptMutation);
-    assert.ok(observed.codes.includes('evidence.fresh_evidence_replayed'), receiptMutation);
+    assert.ok(observed.codes.includes(expectedCode), receiptMutation);
   }
 });
 
@@ -178,6 +181,9 @@ test('fresh-evidence supply rejects digest-list churn without new proof bytes', 
     }, packageRoot);
 
     assert.equal(observed.verdict, 'fail', mutation.name);
-    assert.ok(observed.codes.includes('evidence.fresh_evidence_replayed'), mutation.name);
+    const expectedCode = mutation.name === 'remove'
+      ? 'evidence.receipt_unbound'
+      : 'evidence.fresh_evidence_replayed';
+    assert.ok(observed.codes.includes(expectedCode), mutation.name);
   }
 });

@@ -25,8 +25,22 @@ export async function evidenceEnvelopeCodes(document, packageRoot, context, obse
   const receipts = Array.isArray(document.receipts) ? document.receipts : [];
   const receiptIds = receipts.filter(isRecord).map(({receipt_id: receiptId}) => receiptId);
   if (new Set(receiptIds).size !== receiptIds.length) codes.push('evidence.receipt_duplicate');
-  const matches = await Promise.all(digestBindings.map(({path, sha256}) => bindingMatches(packageRoot, path, sha256)));
-  if (matches.some((match) => !match)) codes.push('evidence.artifact_digest_mismatch');
+  const receiptBindings = receipts.filter(isRecord)
+    .filter(({path, sha256}) => typeof path === 'string' && typeof sha256 === 'string');
+  const verifiedResults = [
+    ...(Array.isArray(document.output_digests) ? document.output_digests : []),
+    ...(Array.isArray(document.artifact_digests) ? document.artifact_digests : []),
+  ].filter(isRecord);
+  const [artifactMatches, receiptMatches] = await Promise.all([
+    Promise.all(digestBindings.map(({path, sha256}) => bindingMatches(packageRoot, path, sha256))),
+    Promise.all(receiptBindings.map(({path, sha256}) => bindingMatches(packageRoot, path, sha256))),
+  ]);
+  if (artifactMatches.some((match) => !match)) codes.push('evidence.artifact_digest_mismatch');
+  if (receiptMatches.some((match) => !match)) codes.push('evidence.receipt_digest_mismatch');
+  if (receiptBindings.some(({path, sha256}, index) => receiptMatches[index] &&
+    !verifiedResults.some((binding) => binding.path === path && binding.sha256 === sha256))) {
+    codes.push('evidence.receipt_unbound');
+  }
   const requirements = await requirementCatalog(packageRoot);
   if (!requirements.valid) codes.push('schema.constraint');
   if (!requirements.ids.has(document.requirement_id)) codes.push('evidence.requirement_unresolved');

@@ -12,3 +12,4 @@ import './validator-evidence-mark-stale-churn.mjs';
 import './validator-evidence-fresh-replacement.mjs';
 import './validator-evidence-stale-semantics.mjs';
 import './validator-evidence-domain-invariants.mjs';
+import './validator-evidence-write-race-cases.mjs';

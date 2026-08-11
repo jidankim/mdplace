@@ -1,6 +1,48 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {join} from 'node:path';
 import test from 'node:test';
+
+import {observeEvidenceExtension} from './evidence-extension.mjs';
 import {runExtensionFixture} from './validator-evidence-fixture-support.mjs';
 import {schemaFor, expected, digest, extensionId, validatorVersion} from './validator-evidence-support.mjs';
+import {copyCommittedPackage} from './validator-test-support.mjs';
+
+test('Evidence Envelope readback rejects altered receipt bindings', async () => {
+  // Given a valid reference envelope whose receipt metadata or digest is changed after issue.
+  const packageRoot = await copyCommittedPackage();
+  const envelope = JSON.parse(await readFile(
+    join(packageRoot, 'conformance/evidence/envelopes/validator-evidence-reference.json'),
+    'utf8',
+  ));
+  const cases = [
+    {
+      name: 'receipt type',
+      mutate: (document) => { document.receipts[0].receipt_type = 'AlternateReceipt'; },
+      code: 'schema.constraint',
+    },
+    {
+      name: 'receipt digest',
+      mutate: (document) => { document.receipts[0].sha256 = 'a'.repeat(64); },
+      code: 'evidence.receipt_digest_mismatch',
+    },
+  ];
+
+  // When each altered envelope is observed through the registered Validator Extension.
+  for (const {name, mutate, code} of cases) {
+    const document = structuredClone(envelope);
+    mutate(document);
+    const observed = await observeEvidenceExtension({
+      extension_id: extensionId,
+      schema: 'contracts/schemas/evidence-envelope.schema.json',
+      document,
+    }, packageRoot);
+
+    // Then the receipt cannot remain accepted without an authentic binding.
+    assert.equal(observed.verdict, 'fail', name);
+    assert.ok(observed.codes.includes(code), name);
+  }
+});
 
 test('CLI validates a claim-bound envelope before accepting its verdict', async () => {
   // Given a current Claim Manifest whose digest-bound Evidence Envelope names a stale package version.

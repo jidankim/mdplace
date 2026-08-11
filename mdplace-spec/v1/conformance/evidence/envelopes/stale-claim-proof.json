@@ -10,7 +10,7 @@
   "invocation": {
     "invocation_id": "invocation:validator-evidence-reference",
     "path": "conformance/evidence/invocations/validator-evidence-reference.json",
-    "sha256": "442e060e45d6b5d5d9c3e33f01f56347f42e3945cfcbe305afd12b528b6d3875"
+    "sha256": "56711d65f762d79e6f53404178bcde4e53f09f5a714f9ffd212dfd3d230f1cdb"
   },
   "requirement_id": "REQ-VAL-002",
   "subject": {
@@ -24,7 +24,7 @@
       "ordinal": 0,
       "label": "requirements",
       "path": "normative/requirements.json",
-      "sha256": "644ee3971ec9659fa79f7b9bd581effd125aaa92e85377da7ef10826c57d3d29"
+      "sha256": "1063ce1a4ec287201a56564e294f53b55d809efd232798f5b9f52c979078bb76"
     }
   ],
   "output_digests": [
@@ -40,6 +40,7 @@
       "ordinal": 0,
       "receipt_id": "receipt:stale-claim-proof",
       "receipt_type": "EvidenceValidationReceipt",
+      "path": "contracts/validator-extensions.json",
       "sha256": "1b00b497fdba947895cd890c32eddd1e7f63465b8d7be67504e636229b4c701a"
     }
   ],

@@ -126,7 +126,7 @@
       "normative_anchor": "normative/validator-evidence-contract.md#req-val-002-every-validation-artifact-shares-one-immutable-version-binding",
       "decision_urls": ["https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"],
       "canonical_terms": ["Validator Extension", "Evidence Envelope", "Claim Manifest", "Specification Package"],
-      "acceptance_gate": "Invocations, envelopes, claims, artifacts, recovery reports, and verdicts bind the current package and validator versions and recomputed artifact digests.",
+      "acceptance_gate": "Invocations, envelopes, claims, artifacts, receipts, recovery reports, and verdicts bind the current package and validator versions and recomputed artifact digests.",
       "scope": "validator-evidence"
     },
     {
@@ -135,7 +135,7 @@
       "normative_anchor": "normative/validator-evidence-contract.md#req-val-003-evidence-envelopes-are-deterministic-and-complete",
       "decision_urls": ["https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"],
       "canonical_terms": ["Evidence Envelope", "Validator Extension", "Conformance Verdict"],
-      "acceptance_gate": "Every envelope explicitly carries its requirement, subject, ordered digests and receipts, execution context, and verdict with contiguous ordinals.",
+      "acceptance_gate": "Every envelope explicitly carries its requirement, subject, ordered digests and verified receipt bindings, execution context, and verdict with contiguous ordinals.",
       "scope": "validator-evidence"
     },
     {
