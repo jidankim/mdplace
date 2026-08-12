@@ -65,6 +65,7 @@ const conformanceExecutables = new Set([
   'conformance/semantic-kernel-replay.mjs',
   'conformance/json-schema.mjs',
   'conformance/package-checks.mjs',
+  'conformance/package-foundation.mjs',
   'conformance/pattern-evaluation.mjs',
   'conformance/requirement-checks.mjs',
   'conformance/safe-path.mjs',

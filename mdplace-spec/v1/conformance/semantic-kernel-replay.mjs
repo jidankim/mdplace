@@ -57,10 +57,13 @@ export async function replayRecords(records, snapshot, boundInputs, packageRoot)
     head = prefix.head;
     history = prefix.history;
   }
+  const baseState = new Map(state);
+  const baseHead = {...head};
+  const rejectBatch = (code) => ({code, state: new Map(baseState), head: {...baseHead}});
   const parsed = [];
   for (const record of records) {
     const result = await validateRecord(record, packageRoot);
-    if (result.code !== null) return {code: result.code, state, head};
+    if (result.code !== null) return rejectBatch(result.code);
     parsed.push({operation: result.operation, canonicalRecord: record});
   }
   const ordered = parsed.toSorted(({operation: left}, {operation: right}) =>
@@ -69,30 +72,30 @@ export async function replayRecords(records, snapshot, boundInputs, packageRoot)
     .map(({idempotency_key: key, command_digest: digest}) => [key, digest]));
   const seenOperations = new Set(history.map(({operation_id: operationId}) => operationId));
   for (const {operation, canonicalRecord} of ordered) {
-    if (!isRecognizedOperationKind(operation.operation_kind)) return {code: 'semantic.operation_unknown', state, head};
+    if (!isRecognizedOperationKind(operation.operation_kind)) return rejectBatch('semantic.operation_unknown');
     if (!await semanticActorHasCapability(packageRoot, operation.actor_authority, 'append')) {
-      return {code: 'semantic.authority_denied', state, head};
+      return rejectBatch('semantic.authority_denied');
     }
     const priorDigest = seenCommands.get(operation.idempotency.key);
     if (priorDigest !== undefined && priorDigest !== operation.idempotency.command_digest) {
-      return {code: 'semantic.idempotency_incompatible', state, head};
+      return rejectBatch('semantic.idempotency_incompatible');
     }
     if (priorDigest !== undefined || seenOperations.has(operation.operation_id)) {
-      return {code: 'semantic.operation_duplicate', state, head};
+      return rejectBatch('semantic.operation_duplicate');
     }
-    if (!baseMatches(operation.base_references, head, state, boundInputs)) return {code: 'semantic.base_stale', state, head};
+    if (!baseMatches(operation.base_references, head, state, boundInputs)) return rejectBatch('semantic.base_stale');
     if (operation.ordering.sequence !== head.sequence + 1 ||
         operation.ordering.predecessor_operation_id !== head.operationId) {
-      return {code: 'semantic.ordering_invalid', state, head};
+      return rejectBatch('semantic.ordering_invalid');
     }
-    if (!preconditionsMatch(operation.preconditions, state)) return {code: 'semantic.precondition_failed', state, head};
+    if (!preconditionsMatch(operation.preconditions, state)) return rejectBatch('semantic.precondition_failed');
     const effect = operationEffect(operation, state);
-    if (effect.code !== null) return {code: effect.code, state, head};
+    if (effect.code !== null) return rejectBatch(effect.code);
     if (operation.closure_receipt.command_id !== operation.command_id ||
         operation.closure_receipt.operation_id !== operation.operation_id ||
         operation.closure_receipt.sequence !== operation.ordering.sequence ||
         operation.closure_receipt.state_digest !== stateDigest(effect.state)) {
-      return {code: 'semantic.receipt_invalid', state, head};
+      return rejectBatch('semantic.receipt_invalid');
     }
     state.clear();
     for (const [key, value] of effect.state) state.set(key, value);

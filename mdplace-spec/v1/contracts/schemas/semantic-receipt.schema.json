@@ -13,7 +13,7 @@
       "type": "object", "additionalProperties": false,
       "required": ["sequence", "operation_id", "state_digest"],
       "properties": {
-        "sequence": {"type": "integer", "minimum": 0},
+        "sequence": {"type": "integer", "minimum": 0, "maximum": 256},
         "operation_id": {"type": ["string", "null"], "pattern": "^operation:[a-z0-9][a-z0-9-]{2,63}$"},
         "state_digest": {"$ref": "#/$defs/digest"}
       }
