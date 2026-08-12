@@ -27,6 +27,15 @@ function rejected(code, document, state, {terminal = 'ready', illegal = false, o
   });
 }
 
+function identityHistoryIsValid(initial) {
+  const receiptKeys = ['idempotency_key', 'operation_id', 'receipt_id'];
+  const identitiesAreUnique = receiptKeys.every((key) =>
+    new Set(initial.prior_receipts.map((receipt) => receipt[key])).size === initial.prior_receipts.length);
+  return identitiesAreUnique && initial.operation_ids.length === initial.head.sequence &&
+    (initial.operation_ids.at(-1) ?? null) === initial.head.operation_id &&
+    initial.prior_receipts.every(({operation_id: operationId}) => initial.operation_ids.includes(operationId));
+}
+
 async function observeAppend(document, packageRoot) {
   const {action, initial} = document;
   const state = stateFromEntries(initial.semantic_state);
@@ -42,6 +51,9 @@ async function observeAppend(document, packageRoot) {
       operations: ['validate actor authority', 'resolve idempotency material'],
       receipts: [`SemanticAppendReceipt:${prior.receipt_id}`],
     });
+  }
+  if (initial.operation_ids.includes(action.operation_id)) {
+    return rejected('semantic.operation_duplicate', document, state);
   }
   if (!baseMatches(action.base_references, {sequence: initial.head.sequence, operationId: initial.head.operation_id}, state, initial.bound_inputs)) {
     return rejected('semantic.base_stale', document, state);
@@ -148,6 +160,14 @@ export async function observeSemanticKernelScenario(subject, packageRoot) {
     });
   }
   const {document} = subject;
+  if (!identityHistoryIsValid(document.initial)) {
+    const state = stateFromEntries(document.initial.semantic_state);
+    return observed({
+      verdict: 'fail', codes: ['semantic.identity_history_invalid'], outputs: ['scenario rejected', `semantic_state:${stateLabel(state)}`],
+      operations: ['validate Semantic Kernel identity history'], receipts: [semanticRejectionReceipt('semantic.identity_history_invalid', document, state)],
+      terminal: 'rejected',
+    });
+  }
   if (!stateEntriesAreCanonical(document.initial.semantic_state) ||
       (document.action.snapshot !== null && !stateEntriesAreCanonical(document.action.snapshot.semantic_state))) {
     return observed({

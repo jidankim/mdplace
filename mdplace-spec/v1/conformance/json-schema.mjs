@@ -130,6 +130,7 @@ function validateNode(schema, value, rootSchema, path, errors, state) {
   }
   if (typeof value === 'string') {
     if (schema.minLength !== undefined && [...value].length < schema.minLength) addError(errors, path, 'minLength');
+    if (schema.maxLength !== undefined && [...value].length > schema.maxLength) addError(errors, path, 'maxLength');
     if (schema.pattern !== undefined) {
       if (typeof schema.pattern !== 'string') addError(errors, path, 'invalidSchema');
       else if (schema.pattern.length > maxPatternLength || value.length > maxPatternInputLength) {
@@ -151,6 +152,7 @@ function validateNode(schema, value, rootSchema, path, errors, state) {
       return;
     }
     if (schema.minItems !== undefined && value.length < schema.minItems) addError(errors, path, 'minItems');
+    if (schema.maxItems !== undefined && value.length > schema.maxItems) addError(errors, path, 'maxItems');
     if (schema.uniqueItems) {
       let duplicate = false;
       for (let index = 0; index < value.length && !duplicate; index += 1) {

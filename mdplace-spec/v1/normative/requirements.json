@@ -189,7 +189,7 @@
       "normative_anchor": "normative/semantic-kernel-contract.md#req-sk-002-compare-and-append-is-serialized-and-fail-closed",
       "decision_urls": ["https://github.com/jidankim/mdplace/issues/2#issuecomment-5012541174"],
       "canonical_terms": ["Semantic Kernel", "mdplace Agent", "Control Channel"],
-      "acceptance_gate": "A closed schema, package-bound exact-tuple capability registry, and complete lifecycle table ensure an authorized exact-base command with a recomputed command digest emits one immutable canonical operation and receipt; stale, incompatible, unauthorized, noncontiguous, failed-precondition, or illegal input emits one deterministic rejection and no semantic write.",
+      "acceptance_gate": "A closed scenario and operation schema, package-bound exact-tuple capability registry, and complete lifecycle table ensure an authorized exact-base command with a recomputed command digest, unique idempotency material, and a new operation identity against complete history emits one immutable canonical operation and receipt; stale, duplicate, incompatible, unauthorized, noncontiguous, failed-precondition, or illegal input emits one deterministic rejection and no semantic write.",
       "scope": "semantic-kernel"
     },
     {

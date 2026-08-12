@@ -278,10 +278,10 @@
       "decision_ids": ["DEC-002"],
       "canonical_terms": ["Semantic Kernel", "mdplace Agent", "Control Channel"],
       "normative_anchors": ["normative/semantic-kernel-contract.md#req-sk-002-compare-and-append-is-serialized-and-fail-closed"],
-      "schema_or_transition_refs": ["contracts/schemas/semantic-operation.schema.json", "contracts/schemas/semantic-authority-registry.schema.json", "contracts/schemas/semantic-receipt.schema.json", "contracts/transitions/semantic-kernel-lifecycle.json", "contracts/semantic-authorities.json"],
+      "schema_or_transition_refs": ["contracts/schemas/semantic-operation.schema.json", "contracts/schemas/semantic-kernel-scenario.schema.json", "contracts/schemas/semantic-authority-registry.schema.json", "contracts/schemas/semantic-receipt.schema.json", "contracts/transitions/semantic-kernel-lifecycle.json", "contracts/semantic-authorities.json"],
       "positive_fixture_ids": ["FIX-SK-POS-001", "FIX-SK-POS-002", "FIX-SK-POS-004", "FIX-SK-REC-001", "FIX-SK-REC-002"],
       "negative_fixture_ids": ["FIX-SK-STATE-001", "FIX-SK-NEG-001", "FIX-SK-NEG-002", "FIX-SK-NEG-009", "FIX-SK-AUTH-001", "FIX-SK-ILLEGAL-001", "FIX-SK-ILLEGAL-002"],
-      "acceptance_gate": "A closed schema, package-bound exact-tuple capability registry, and complete lifecycle table ensure an authorized exact-base command with a recomputed command digest emits one immutable canonical operation and receipt; stale, incompatible, unauthorized, noncontiguous, failed-precondition, or illegal input emits one deterministic rejection and no semantic write.",
+      "acceptance_gate": "A closed scenario and operation schema, package-bound exact-tuple capability registry, and complete lifecycle table ensure an authorized exact-base command with a recomputed command digest, unique idempotency material, and a new operation identity against complete history emits one immutable canonical operation and receipt; stale, duplicate, incompatible, unauthorized, noncontiguous, failed-precondition, or illegal input emits one deterministic rejection and no semantic write.",
       "scope": "semantic-kernel",
       "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/semantic-kernel-recovery-report.json"]
     },
