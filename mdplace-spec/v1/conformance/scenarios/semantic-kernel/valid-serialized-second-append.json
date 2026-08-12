@@ -1,0 +1,115 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-SK-POS-002",
+  "category": "positive",
+  "requirement_ids": [
+    "REQ-SK-002",
+    "REQ-SK-003",
+    "REQ-SK-004"
+  ],
+  "subject": {
+    "kind": "semantic_kernel",
+    "schema": "contracts/schemas/semantic-kernel-scenario.schema.json",
+    "document": {
+      "schema_id": "mdplace.semantic-kernel-scenario/v1",
+      "scenario_id": "SK-002",
+      "initial": {
+        "lifecycle_state": "ready",
+        "head": {
+          "sequence": 1,
+          "operation_id": "operation:001"
+        },
+        "semantic_state": [
+          {
+            "key": "note:001/placement",
+            "value": "cat:research"
+          }
+        ],
+        "bound_inputs": [],
+        "prior_receipts": [
+          {
+            "idempotency_key": "idempotency:001",
+            "command_digest": "372e21c0f4e9a353d29eed992057369ec7f4cacc6de07aa070e1172271d43eb2",
+            "operation_id": "operation:001",
+            "receipt_id": "receipt:001"
+          }
+        ],
+        "operation_ids": [
+          "operation:001"
+        ]
+      },
+      "action": {
+        "kind": "append",
+        "actor": {
+          "actor_id": "person:owner-001",
+          "actor_kind": "vault_owner",
+          "authority_ref": "authority:vault-owner-001"
+        },
+        "command_id": "command:002",
+        "operation_id": "operation:002",
+        "operation_kind": "semantic_removal",
+        "base_references": [
+          {
+            "ordinal": 0,
+            "kind": "semantic_head",
+            "sequence": 1,
+            "operation_id": "operation:001",
+            "state_digest": "fa346467e0189c1ff1b12a1c1294ca93ebee37500f9d7b704b92cc012ea91529"
+          }
+        ],
+        "ordering": {
+          "sequence": 2,
+          "predecessor_operation_id": "operation:001",
+          "sort_key": "000002:command:002"
+        },
+        "idempotency_key": "idempotency:002",
+        "command_digest": "46cd42e37d854c2e27619343e55b352b3d21bbafddbde8e506e41e3db4ca7474",
+        "payload": {
+          "events": [
+            {
+              "event_id": "event:002-001",
+              "ordinal": 0,
+              "event_kind": "semantic_removal",
+              "schema_version": "1.0.0",
+              "payload": {
+                "key": "note:001/placement",
+                "value": null
+              }
+            }
+          ]
+        },
+        "preconditions": [],
+        "records": [],
+        "snapshot": null,
+        "supplied_view": [],
+        "crash_point": null,
+        "recovery_id": null
+      }
+    }
+  },
+  "expected": {
+    "verdict": "pass",
+    "codes": [],
+    "outputs": [
+      "append accepted",
+      "canonical_record:operation:002",
+      "semantic_state:[]"
+    ],
+    "operations": [
+      "validate actor authority",
+      "resolve idempotency material",
+      "compare exact semantic head",
+      "validate operation preconditions",
+      "append canonical operation"
+    ],
+    "receipts": [
+      "SemanticAppendReceipt:receipt:002"
+    ],
+    "filesystem_effects": [
+      "append one immutable canonical operation"
+    ],
+    "terminal_state": "ready",
+    "illegal_transition": false
+  }
+}

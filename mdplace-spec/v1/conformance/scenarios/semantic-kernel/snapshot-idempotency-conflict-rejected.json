@@ -1,0 +1,96 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-SK-NEG-008",
+  "category": "negative",
+  "requirement_ids": [
+    "REQ-SK-003",
+    "REQ-SK-004",
+    "REQ-SK-005"
+  ],
+  "subject": {
+    "kind": "semantic_kernel",
+    "schema": "contracts/schemas/semantic-kernel-scenario.schema.json",
+    "document": {
+      "schema_id": "mdplace.semantic-kernel-scenario/v1",
+      "scenario_id": "SK-023",
+      "initial": {
+        "lifecycle_state": "ready",
+        "head": {
+          "sequence": 0,
+          "operation_id": null
+        },
+        "semantic_state": [],
+        "bound_inputs": [],
+        "prior_receipts": [],
+        "operation_ids": []
+      },
+      "action": {
+        "kind": "replay",
+        "actor": {
+          "actor_id": "component:mdplace-agent-001",
+          "actor_kind": "mdplace_agent",
+          "authority_ref": "authority:mdplace-agent-001"
+        },
+        "command_id": null,
+        "operation_id": null,
+        "operation_kind": null,
+        "base_references": [],
+        "ordering": null,
+        "idempotency_key": null,
+        "command_digest": null,
+        "payload": null,
+        "preconditions": [],
+        "records": [
+          "{\"$schema\":\"semantic-operation.schema.json\",\"actor_authority\":{\"actor_id\":\"person:owner-001\",\"actor_kind\":\"vault_owner\",\"authority_ref\":\"authority:vault-owner-001\"},\"base_references\":[{\"kind\":\"semantic_head\",\"operation_id\":\"operation:001\",\"ordinal\":0,\"sequence\":1,\"state_digest\":\"fa346467e0189c1ff1b12a1c1294ca93ebee37500f9d7b704b92cc012ea91529\"}],\"closure_receipt\":{\"command_id\":\"command:002\",\"operation_id\":\"operation:002\",\"outcome\":\"accepted\",\"receipt_id\":\"receipt:002\",\"sequence\":2,\"state_digest\":\"3f71931a4733547b0614914672dbdb8f01975a5cc21190a00919d14153337460\"},\"command_id\":\"command:002\",\"idempotency\":{\"command_digest\":\"6db5bc963a744c4e1bc847d451e30bfcc2ecf32f6a75e071801b002f65ea53f4\",\"key\":\"idempotency:001\"},\"operation_digest\":\"b8ab5180575177f02d7515371c31ce9c9480ace6a2ba405d9d374c41a9848998\",\"operation_id\":\"operation:002\",\"operation_kind\":\"semantic_assignment\",\"ordering\":{\"predecessor_operation_id\":\"operation:001\",\"sequence\":2,\"sort_key\":\"000002:command:002\"},\"payload\":{\"events\":[{\"event_id\":\"event:002-001\",\"event_kind\":\"semantic_assignment\",\"ordinal\":0,\"payload\":{\"key\":\"note:002/placement\",\"value\":\"cat:projects\"},\"schema_version\":\"1.0.0\"}]},\"preconditions\":[],\"schema_id\":\"mdplace.semantic-operation/v1\",\"schema_version\":\"1.0.0\"}\n"
+        ],
+        "snapshot": {
+          "sequence": 1,
+          "operation_id": "operation:001",
+          "state_digest": "fa346467e0189c1ff1b12a1c1294ca93ebee37500f9d7b704b92cc012ea91529",
+          "semantic_state": [
+            {
+              "key": "note:001/placement",
+              "value": "cat:research"
+            }
+          ],
+          "history": [
+            {
+              "sequence": 1,
+              "operation_id": "operation:001",
+              "idempotency_key": "idempotency:001",
+              "command_digest": "372e21c0f4e9a353d29eed992057369ec7f4cacc6de07aa070e1172271d43eb2",
+              "operation_digest": "cfeed52063285cfc3d25775bc77675639195a10682b774e5ccf75c155893f6c9",
+              "canonical_record": "{\"$schema\":\"semantic-operation.schema.json\",\"actor_authority\":{\"actor_id\":\"person:owner-001\",\"actor_kind\":\"vault_owner\",\"authority_ref\":\"authority:vault-owner-001\"},\"base_references\":[{\"kind\":\"semantic_head\",\"operation_id\":null,\"ordinal\":0,\"sequence\":0,\"state_digest\":\"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"}],\"closure_receipt\":{\"command_id\":\"command:001\",\"operation_id\":\"operation:001\",\"outcome\":\"accepted\",\"receipt_id\":\"receipt:001\",\"sequence\":1,\"state_digest\":\"fa346467e0189c1ff1b12a1c1294ca93ebee37500f9d7b704b92cc012ea91529\"},\"command_id\":\"command:001\",\"idempotency\":{\"command_digest\":\"372e21c0f4e9a353d29eed992057369ec7f4cacc6de07aa070e1172271d43eb2\",\"key\":\"idempotency:001\"},\"operation_digest\":\"cfeed52063285cfc3d25775bc77675639195a10682b774e5ccf75c155893f6c9\",\"operation_id\":\"operation:001\",\"operation_kind\":\"semantic_assignment\",\"ordering\":{\"predecessor_operation_id\":null,\"sequence\":1,\"sort_key\":\"000001:command:001\"},\"payload\":{\"events\":[{\"event_id\":\"event:001-001\",\"event_kind\":\"semantic_assignment\",\"ordinal\":0,\"payload\":{\"key\":\"note:001/placement\",\"value\":\"cat:research\"},\"schema_version\":\"1.0.0\"}]},\"preconditions\":[],\"schema_id\":\"mdplace.semantic-operation/v1\",\"schema_version\":\"1.0.0\"}\n"
+            }
+          ],
+          "history_digest": "49ef4a03fb64b2cd9aa368db93e6fa1b27a5292ee54a174e9136f45a172ef4cb"
+        },
+        "supplied_view": [],
+        "crash_point": null,
+        "recovery_id": null
+      }
+    }
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": [
+      "semantic.idempotency_incompatible"
+    ],
+    "outputs": [
+      "replay rejected",
+      "semantic_state:[{\"key\":\"note:001/placement\",\"value\":\"cat:research\"}]"
+    ],
+    "operations": [
+      "validate canonical operation records"
+    ],
+    "receipts": [
+      "{\"actor_kind\":\"mdplace_agent\",\"code\":\"semantic.idempotency_incompatible\",\"command_id\":null,\"filesystem_effects\":[\"none\"],\"operation_id\":null,\"outcome\":\"rejected\",\"receipt_id\":\"receipt:rejection-sk-023\",\"schema_id\":\"mdplace.semantic-rejection-receipt/v1\",\"semantic_head\":{\"operation_id\":\"operation:001\",\"sequence\":1,\"state_digest\":\"fa346467e0189c1ff1b12a1c1294ca93ebee37500f9d7b704b92cc012ea91529\"}}"
+    ],
+    "filesystem_effects": [
+      "none"
+    ],
+    "terminal_state": "recovery_required",
+    "illegal_transition": false
+  }
+}

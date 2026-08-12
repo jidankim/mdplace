@@ -1,59 +1,16 @@
 import {createHash} from 'node:crypto';
 
 import {conformanceDigestForArtifacts} from './digest-bindings.mjs';
+import {
+  requiredCandidateFoundationSlots,
+  requiredReleaseSlots,
+  requiredSchemaPaths,
+} from './package-foundation.mjs';
+import {isReferenceEvidence} from './reference-evidence.mjs';
 import {listPackageFiles, inspectPackageEntry, readPackageFile} from './safe-path.mjs';
 import {authorityMatches, manifestFields, packageArtifactPathAllowed, transitionFields} from './validator-rules.mjs';
 
-export const requiredReleaseSlots = [
-  'README.md',
-  'product.md',
-  'architecture.md',
-  'contracts/',
-  'operations.md',
-  'security-and-privacy.md',
-  'performance.md',
-  'conformance/manifest.yaml',
-  'conformance/fixtures/',
-  'conformance/scenarios/',
-  'conformance/benchmarks/',
-  'conformance/manual-acceptance.md',
-  'traceability.yaml',
-  'claims-and-evidence.yaml',
-  'package-manifest.yaml',
-];
-
-export const requiredSchemaPaths = [
-  'contracts/schemas/package-manifest.schema.json',
-  'contracts/schemas/package-state-observation.schema.json',
-  'contracts/schemas/requirements.schema.json',
-  'contracts/schemas/transition-table.schema.json',
-  'contracts/schemas/conformance-manifest.schema.json',
-  'contracts/schemas/conformance-fixture.schema.json',
-  'contracts/schemas/traceability.schema.json',
-  'contracts/schemas/traceability-report.schema.json',
-  'contracts/schemas/validation-report.schema.json',
-  'contracts/schemas/version-amendment-report.schema.json',
-  'contracts/schemas/recovery-report.schema.json',
-  'contracts/schemas/validator-extension-registry.schema.json',
-  'contracts/schemas/validator-invocation.schema.json',
-  'contracts/schemas/evidence-envelope.schema.json',
-  'contracts/schemas/claim-manifest.schema.json',
-  'contracts/schemas/claims-and-evidence.schema.json',
-  'contracts/schemas/verdict-table.schema.json',
-  'contracts/schemas/evidence-recovery-report.schema.json',
-  'contracts/schemas/evidence-transition-attempt.schema.json',
-];
-
-export const requiredCandidateFoundationSlots = [
-  'README.md',
-  'normative/package-contract.md',
-  'normative/requirements.json',
-  'contracts/schemas/',
-  'contracts/transitions/',
-  'conformance/',
-  'traceability.yaml',
-  'package-manifest.yaml',
-];
+export {requiredCandidateFoundationSlots, requiredReleaseSlots, requiredSchemaPaths};
 
 function result(id, codes) {
   const uniqueCodes = [...new Set(codes)];
@@ -69,14 +26,10 @@ function isRecord(value) {
 }
 
 function expectedAuthority(path, validatorEvidenceExtensionDeclared) {
-  const validatorEvidenceIsNormative = validatorEvidenceExtensionDeclared && (
-    path === 'claims-and-evidence.yaml' ||
-    path.startsWith('conformance/claim-manifests/') ||
-    path.startsWith('conformance/evidence/claims/') ||
-    path.startsWith('conformance/evidence/envelopes/') ||
-    path.startsWith('conformance/evidence/invocations/') ||
-    path === 'conformance/evidence/evidence-recovery-report.json'
-  );
+  const validatorEvidenceIsNormative = validatorEvidenceExtensionDeclared &&
+    (path === 'claims-and-evidence.yaml' ||
+      path.startsWith('conformance/claim-manifests/') ||
+      isReferenceEvidence(path));
   return path.startsWith('normative/') ||
     path.startsWith('contracts/') ||
     path === 'traceability.yaml' ||

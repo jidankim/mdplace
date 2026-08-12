@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:semantic-operation-kind-registry:v1",
+  "title": "mdplace semantic operation kind registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "package_series", "release_version", "kinds"],
+  "properties": {
+    "$schema": {"const": "schemas/semantic-operation-kind-registry.schema.json"},
+    "schema_id": {"const": "mdplace.semantic-operation-kind-registry/v1"},
+    "package_series": {"const": "mdplace-spec/v1"},
+    "release_version": {"const": "1.0.0"},
+    "kinds": {
+      "type": "array", "minItems": 3, "maxItems": 3, "uniqueItems": true,
+      "allOf": [
+        {"contains": {"properties": {"operation_kind": {"const": "semantic_assignment"}}, "required": ["operation_kind"]}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"operation_kind": {"const": "semantic_removal"}}, "required": ["operation_kind"]}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"operation_kind": {"const": "compatibility_marker"}}, "required": ["operation_kind"]}, "minContains": 1, "maxContains": 1}
+      ],
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["operation_kind", "payload_contract", "replay_effect", "forward_compatibility"],
+        "properties": {
+          "operation_kind": {"type": "string"},
+          "payload_contract": {"type": "string"},
+          "replay_effect": {"type": "string"},
+          "forward_compatibility": {"type": "string"}
+        },
+        "oneOf": [
+          {"properties": {
+            "operation_kind": {"const": "semantic_assignment"},
+            "payload_contract": {"const": "contracts/schemas/semantic-operation.schema.json#/$defs/assignmentEventList"},
+            "replay_effect": {"const": "assign_value"},
+            "forward_compatibility": {"const": "core_v1"}
+          }},
+          {"properties": {
+            "operation_kind": {"const": "semantic_removal"},
+            "payload_contract": {"const": "contracts/schemas/semantic-operation.schema.json#/$defs/removalEventList"},
+            "replay_effect": {"const": "remove_value"},
+            "forward_compatibility": {"const": "core_v1"}
+          }},
+          {"properties": {
+            "operation_kind": {"const": "compatibility_marker"},
+            "payload_contract": {"const": "contracts/schemas/semantic-operation.schema.json#/$defs/markerEventList"},
+            "replay_effect": {"const": "preserve_state"},
+            "forward_compatibility": {"const": "recognized_noop_v1"}
+          }}
+        ]
+      }
+    }
+  }
+}

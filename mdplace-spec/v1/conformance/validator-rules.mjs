@@ -40,6 +40,8 @@ const authorityByCommand = new Map([
   ['readback', {roles: ['conformance_validator'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
   ['mark_stale', {roles: ['conformance_validator'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
   ['supply_fresh_evidence', {roles: ['evidence_supplier'], quorum: 1, distinct_actors: false, delegation: 'permitted'}],
+  ['append_operation', {roles: ['semantic_kernel'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['recover_operation', {roles: ['semantic_kernel'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
 ]);
 
 const conformanceExecutables = new Set([
@@ -54,17 +56,28 @@ const conformanceExecutables = new Set([
   'conformance/evidence-transition-validation.mjs',
   'conformance/amendment-evidence.mjs',
   'conformance/fixture-observer.mjs',
+  'conformance/semantic-kernel-authority.mjs',
+  'conformance/semantic-kernel-checks.mjs',
+  'conformance/semantic-kernel-core.mjs',
+  'conformance/semantic-kernel-evidence.mjs',
+  'conformance/semantic-kernel-observer.mjs',
+  'conformance/semantic-kernel-receipts.mjs',
+  'conformance/semantic-kernel-replay.mjs',
   'conformance/json-schema.mjs',
   'conformance/package-checks.mjs',
+  'conformance/package-foundation.mjs',
   'conformance/pattern-evaluation.mjs',
   'conformance/requirement-checks.mjs',
+  'conformance/reference-evidence.mjs',
   'conformance/safe-path.mjs',
+  'conformance/schema-error-code.mjs',
   'conformance/schema-instances.mjs',
   'conformance/traceability-checks.mjs',
   'conformance/transition-observer.mjs',
   'conformance/transition-evidence.mjs',
   'conformance/validator-boundary-cases.mjs',
   'conformance/validator-contract-cases.mjs',
+  'conformance/validator-coderabbit-review-cases.mjs',
   'conformance/validator-evidence-cases.mjs',
   'conformance/validator-evidence-domain-invariants.mjs',
   'conformance/validator-evidence-envelope-integrity.mjs',
@@ -97,6 +110,9 @@ const conformanceExecutables = new Set([
   'conformance/validation-report.mjs',
   'conformance/validator.mjs',
   'conformance/validator.test.mjs',
+  'conformance/validator-semantic-kernel-cases.mjs',
+  'conformance/validator-semantic-kernel-boundary-cases.mjs',
+  'conformance/validator-semantic-kernel-review-cases.mjs',
 ]);
 
 export function authorityMatches(command, actual) {

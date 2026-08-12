@@ -1,0 +1,99 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-SK-NEG-010",
+  "category": "negative",
+  "requirement_ids": [
+    "REQ-SK-003",
+    "REQ-SK-004",
+    "REQ-SK-005"
+  ],
+  "subject": {
+    "kind": "semantic_kernel",
+    "schema": "contracts/schemas/semantic-kernel-scenario.schema.json",
+    "document": {
+      "schema_id": "mdplace.semantic-kernel-scenario/v1",
+      "scenario_id": "SK-003",
+      "initial": {
+        "lifecycle_state": "ready",
+        "head": {
+          "sequence": 0,
+          "operation_id": null
+        },
+        "semantic_state": [],
+        "bound_inputs": [],
+        "prior_receipts": [],
+        "operation_ids": []
+      },
+      "action": {
+        "kind": "append",
+        "actor": {
+          "actor_id": "person:owner-001",
+          "actor_kind": "vault_owner",
+          "authority_ref": "authority:vault-owner-001"
+        },
+        "command_id": "command:003",
+        "operation_id": "operation:003",
+        "operation_kind": "semantic_removal",
+        "base_references": [
+          {
+            "ordinal": 0,
+            "kind": "semantic_head",
+            "sequence": 0,
+            "operation_id": null,
+            "state_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        ],
+        "ordering": {
+          "sequence": 1,
+          "predecessor_operation_id": null,
+          "sort_key": "000001:command:003"
+        },
+        "idempotency_key": "idempotency:003",
+        "command_digest": "54ae0d3e2c4be13af51a29ca643e08708e3a1f2e691f593dd26c53a1b152f0b1",
+        "payload": {
+          "events": [
+            {
+              "event_id": "event:003-001",
+              "ordinal": 0,
+              "event_kind": "semantic_removal",
+              "schema_version": "1.0.0",
+              "payload": {
+                "key": "note:missing/placement",
+                "value": null
+              }
+            }
+          ]
+        },
+        "preconditions": [],
+        "records": [],
+        "snapshot": null,
+        "supplied_view": [],
+        "crash_point": null,
+        "recovery_id": null
+      }
+    }
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": [
+      "semantic.illegal_transition"
+    ],
+    "outputs": [
+      "append rejected",
+      "canonical_record:none",
+      "semantic_state:[]"
+    ],
+    "operations": [
+      "validate append command"
+    ],
+    "receipts": [
+      "{\"actor_kind\":\"vault_owner\",\"code\":\"semantic.illegal_transition\",\"command_id\":\"command:003\",\"filesystem_effects\":[\"none\"],\"operation_id\":\"operation:003\",\"outcome\":\"rejected\",\"receipt_id\":\"receipt:rejection-sk-003\",\"schema_id\":\"mdplace.semantic-rejection-receipt/v1\",\"semantic_head\":{\"operation_id\":null,\"sequence\":0,\"state_digest\":\"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"}}"
+    ],
+    "filesystem_effects": [
+      "none"
+    ],
+    "terminal_state": "ready",
+    "illegal_transition": true
+  }
+}

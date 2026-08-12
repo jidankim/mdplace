@@ -1,0 +1,266 @@
+{
+  "$schema": "../../contracts/schemas/semantic-kernel-recovery-report.schema.json",
+  "schema_id": "mdplace.semantic-kernel-recovery-report/v1",
+  "package_series": "mdplace-spec/v1",
+  "release_version": "1.0.0",
+  "validator_version": "1.1.0",
+  "scenario_count": 30,
+  "fixture_ids": [
+    "FIX-SK-POS-001",
+    "FIX-SK-POS-002",
+    "FIX-SK-NEG-010",
+    "FIX-SK-BND-001",
+    "FIX-SK-STATE-001",
+    "FIX-SK-NEG-001",
+    "FIX-SK-POS-004",
+    "FIX-SK-NEG-002",
+    "FIX-SK-NEG-003",
+    "FIX-SK-NEG-004",
+    "FIX-SK-NEG-005",
+    "FIX-SK-NEG-006",
+    "FIX-SK-AUTH-001",
+    "FIX-SK-AUTH-002",
+    "FIX-SK-AUTH-003",
+    "FIX-SK-AUTH-004",
+    "FIX-SK-AUTH-005",
+    "FIX-SK-AUTH-006",
+    "FIX-SK-POS-005",
+    "FIX-SK-POS-006",
+    "FIX-SK-STATE-002",
+    "FIX-SK-POS-007",
+    "FIX-SK-NEG-008",
+    "FIX-SK-NEG-009",
+    "FIX-SK-POS-010",
+    "FIX-SK-NEG-007",
+    "FIX-SK-ILLEGAL-001",
+    "FIX-SK-REC-001",
+    "FIX-SK-REC-002",
+    "FIX-SK-ILLEGAL-002"
+  ],
+  "fixture_bindings": [
+    {
+      "fixture_id": "FIX-SK-POS-001",
+      "path": "scenarios/semantic-kernel/valid-initial-append.json",
+      "fixture_sha256": "449098e68725afe787238c6d57060c80b75f64609249fb1363f79e4b364b517b",
+      "observable_result_sha256": "e6393e801318c012091896ec93ab5b53e9041a14a28408d133f0e54f1493eb0e"
+    },
+    {
+      "fixture_id": "FIX-SK-POS-002",
+      "path": "scenarios/semantic-kernel/valid-serialized-second-append.json",
+      "fixture_sha256": "6d1f6f9256cc524059a445774255068d865f5206dc7703d5e7f17d5d6c7fe48e",
+      "observable_result_sha256": "e65f4bc7e5417f782a0283c3d7a1e6efc9284817a5fa84f9d2c71cd208f5dee8"
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-010",
+      "path": "scenarios/semantic-kernel/illegal-removal-rejected.json",
+      "fixture_sha256": "4b2040d98e3b33a2606386c1aeb97be66286e339bf6fafd26b4f90e733bf48fc",
+      "observable_result_sha256": "4397318c81c131e9a8b151469599582e848f6379949675ddd2c0aa6f1a043ff5"
+    },
+    {
+      "fixture_id": "FIX-SK-BND-001",
+      "path": "scenarios/semantic-kernel/future-base-rejected.json",
+      "fixture_sha256": "c8d63f9176f45ddd945f44aa0907b9d61c44a3759df0938bdbd630e453d2eefc",
+      "observable_result_sha256": "7dd25e648b16e2061fcea77f28de7d4041f93c6accf7e939257d3a8b052e1f26"
+    },
+    {
+      "fixture_id": "FIX-SK-STATE-001",
+      "path": "scenarios/semantic-kernel/stale-base-rejected.json",
+      "fixture_sha256": "44ac54ff07c05b6fde11c2bd6be2ee16ca40002bd25e8a39aacd3468da637855",
+      "observable_result_sha256": "a4e2a1e06c852e6d2e6bbcef65ba6643aa82c121839873264d9b8e7386f717df"
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-001",
+      "path": "scenarios/semantic-kernel/noncontiguous-ordering-rejected.json",
+      "fixture_sha256": "690a3bc229f4b35c12c3ed66bb498b475c9c0587c94875243e66fbacbfa73bdd",
+      "observable_result_sha256": "aa672e79dcf4776a3e3bbeb70f4c6852eebffcdea487468cf8cc8b7fec143ec6"
+    },
+    {
+      "fixture_id": "FIX-SK-POS-004",
+      "path": "scenarios/semantic-kernel/duplicate-compatible-idempotent.json",
+      "fixture_sha256": "480b0d625d76b16c22027244188d23879c1796220bfa18ab4c8858f6bf76800d",
+      "observable_result_sha256": "c9d4b2d388e8802309182644a233b2a4ee0205f4afd48c523a5a826cfd4b9160"
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-002",
+      "path": "scenarios/semantic-kernel/duplicate-incompatible-rejected.json",
+      "fixture_sha256": "2d08f025ca91316494d8b81855ba3dc40f1529b2e8cc9175b6e580a7fa1ff0e7",
+      "observable_result_sha256": "ff904d1345dace8d08e53f1c0f9d80323d85b239b8bc09183f293cf1db6837b0"
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-003",
+      "path": "scenarios/semantic-kernel/unknown-operation-kind-rejected.json",
+      "fixture_sha256": "1afb7e3b73cc4238ed9a0fdd9f44b4ef5a1059cb81bf50e5b73e99f56f576615",
+      "observable_result_sha256": "2062f05a8265f6c4747a4697ffe7c19dc245e58137cf43d5a43692dddfa07cbb"
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-004",
+      "path": "scenarios/semantic-kernel/malformed-record-rejected.json",
+      "fixture_sha256": "8618231377e6e1e25d9145f4bdd65f00336045d9ecdc4e369f93e16fe32f44ed",
+      "observable_result_sha256": "b9fb10b57fab37d6b6797c75ba062605dcf89c567c98668195420374e1e0d6ec"
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-005",
+      "path": "scenarios/semantic-kernel/torn-record-rejected.json",
+      "fixture_sha256": "20bc961db268f0224bddd8f32a9fcd9f731ce889669b04370c60115b9a86e12a",
+      "observable_result_sha256": "3487d24a213a095b866389b49f8a5798f01a702af58d20edb12e166e5e07aaa4"
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-006",
+      "path": "scenarios/semantic-kernel/noncanonical-record-rejected.json",
+      "fixture_sha256": "6c22d1ad223282dc754742e4cafec901bbde27487bf4dc80444ec00c91c8635c",
+      "observable_result_sha256": "aa9b1a4af15c26444399e7300130535d26842bc4c29fed6d2eef5c989daf74d8"
+    },
+    {
+      "fixture_id": "FIX-SK-AUTH-001",
+      "path": "scenarios/semantic-kernel/capture-adapter-write-denied.json",
+      "fixture_sha256": "cf67ea450cd1ba3c85434de0d254d091852f2a9cd94a6b9074b3ef3ebab1514b",
+      "observable_result_sha256": "8a5b153bc8009975820e86ca48364f5519f5e9e8910c2bfc083ead9af2b842af"
+    },
+    {
+      "fixture_id": "FIX-SK-AUTH-002",
+      "path": "scenarios/semantic-kernel/intelligence-adapter-write-denied.json",
+      "fixture_sha256": "a5ba3e87ce8a80e2d84c6d4ae685f82fcd9bec8945ac4360729201ee247e4ba8",
+      "observable_result_sha256": "148ff5f4fb2e7caaecb92aa668d1771f8077c1f21e3c6313b98a7d50906e8005"
+    },
+    {
+      "fixture_id": "FIX-SK-AUTH-003",
+      "path": "scenarios/semantic-kernel/folder-projection-write-denied.json",
+      "fixture_sha256": "7f4441631697153e642f512cea81a37e7fc2431a4bc31b359ec1d56dafe628b5",
+      "observable_result_sha256": "fbcd7eb3eac2d0aa5eb50b347181e553162024035b1f81b0457b0541089a60bb"
+    },
+    {
+      "fixture_id": "FIX-SK-AUTH-004",
+      "path": "scenarios/semantic-kernel/projection-write-denied.json",
+      "fixture_sha256": "e905d737fac12e6f725e580c644efc5db3dfbba131bee23fd1e1d23b2ae3afe3",
+      "observable_result_sha256": "d2e6fbdbb26c431ca5458d69f97455983756f4764bf20eda7e74f4f8cacc8943"
+    },
+    {
+      "fixture_id": "FIX-SK-AUTH-005",
+      "path": "scenarios/semantic-kernel/frontmatter-bridge-write-denied.json",
+      "fixture_sha256": "acf5e4906d04f614857108afae79fda4122661bef9959742fe7bc26577d93fc0",
+      "observable_result_sha256": "85d2225831e8d4d57ab2a5b4a6c729fd914f6d5ef7aa06cae1e1a3c193a6fc27"
+    },
+    {
+      "fixture_id": "FIX-SK-AUTH-006",
+      "path": "scenarios/semantic-kernel/cache-write-denied.json",
+      "fixture_sha256": "1e3a7dbca34e216294c115720e2d65b8184540d6f00a5d4b229c3c4ad7d69fef",
+      "observable_result_sha256": "582b2137f268de25a5b2535098188f54403e82d3095edb4c319d99a156b7a217"
+    },
+    {
+      "fixture_id": "FIX-SK-POS-005",
+      "path": "scenarios/semantic-kernel/full-replay-snapshot-equivalence.json",
+      "fixture_sha256": "de4b8ef4ab1b079feb7bd751b514c6721b98e2c343ff294b3e730a0684694a01",
+      "observable_result_sha256": "87c255c81823bd2ffff3955641f107903fbae1050d306f945d60ac135ee216bd"
+    },
+    {
+      "fixture_id": "FIX-SK-POS-006",
+      "path": "scenarios/semantic-kernel/snapshot-suffix-equivalence.json",
+      "fixture_sha256": "275646dd079279f224809dfad5801b2ab2d2e3a15673ef26d0c57912d8ef5854",
+      "observable_result_sha256": "87c255c81823bd2ffff3955641f107903fbae1050d306f945d60ac135ee216bd"
+    },
+    {
+      "fixture_id": "FIX-SK-STATE-002",
+      "path": "scenarios/semantic-kernel/stale-snapshot-rejected.json",
+      "fixture_sha256": "55ed99d50f3c1dd38d408d81b78acee16ab136e4a7ead9d6f705ac3b77fd03c8",
+      "observable_result_sha256": "7b3c10fcef4c01d733a07de0a60aaf3542726f69d34770614daddcc494eee3c4"
+    },
+    {
+      "fixture_id": "FIX-SK-POS-007",
+      "path": "scenarios/semantic-kernel/deterministic-view-rebuild.json",
+      "fixture_sha256": "4607921c1bd50370ca636533313554d9fbe97316aa28b68d35fd17b05a4879c2",
+      "observable_result_sha256": "01fcb9143c66abb97d6ef5df9c9ebf5cadd96a7c537ad73c88b4d173873a8639"
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-008",
+      "path": "scenarios/semantic-kernel/snapshot-idempotency-conflict-rejected.json",
+      "fixture_sha256": "c8730e5a489f496dbc346219bd5dedb6589988c3cbe5dbea5969dd09f5b175fe",
+      "observable_result_sha256": "5b6d7b2edc69baee866795596d935ac46f4693f35410ec0a9438b1040e45e208"
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-009",
+      "path": "scenarios/semantic-kernel/failed-precondition-rejected.json",
+      "fixture_sha256": "aca3d961280594acb24241f9531e4e1b4742e3ceb7741ad65187c0f4df1e388d",
+      "observable_result_sha256": "32269b874159ce8cba57d0181bf54bc1dec74344f740b844426dc491b051d97a"
+    },
+    {
+      "fixture_id": "FIX-SK-POS-010",
+      "path": "scenarios/semantic-kernel/recognized-forward-compatible-record.json",
+      "fixture_sha256": "7c60f397a9b930ab6da435abbcf7f4280686e0bea9e6785a45e82c0219fdacd6",
+      "observable_result_sha256": "9a7d58c3096e1b16563a96fb787d10fce017079078ab26f66138798b033182ea"
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-007",
+      "path": "scenarios/semantic-kernel/unsupported-schema-version-rejected.json",
+      "fixture_sha256": "9c92a141e1608a65aa174d65f943f19b7b0e2f2e86aaca6ad166af1b9fea5dc0",
+      "observable_result_sha256": "ac5b2198b770b754da7672b59f484a45ecc67467c704fe3f568e03574fc31145"
+    },
+    {
+      "fixture_id": "FIX-SK-ILLEGAL-001",
+      "path": "scenarios/semantic-kernel/append-during-recovery-denied.json",
+      "fixture_sha256": "c290a210edb45421df1431e9c704597ba5ea4309c855e9a8353c1106b6298204",
+      "observable_result_sha256": "cd3366924d86cda5aec102fc509c0d42fe6f596d0b3eb6d08b4fe2571bd924d1"
+    },
+    {
+      "fixture_id": "FIX-SK-REC-001",
+      "path": "scenarios/semantic-kernel/crash-before-record-publish-recovery.json",
+      "fixture_sha256": "e9d5f59af0433f86539f34d7c5dce53ec641841aee637596d85319c95e4cdf47",
+      "observable_result_sha256": "858b4401671b73a260932ff43b85fdeaa9c7e111594f5689c24fcc59083d28eb"
+    },
+    {
+      "fixture_id": "FIX-SK-REC-002",
+      "path": "scenarios/semantic-kernel/crash-after-record-publish-recovery.json",
+      "fixture_sha256": "4ab693af274f97ae336e55f9e2d546e1ab49fb3b9fcf2cd2cef7a8ca2a340da5",
+      "observable_result_sha256": "f07ccec0e91e07457f2515b98d828c1df38d2dcde810adb77db357e91b7c3b50"
+    },
+    {
+      "fixture_id": "FIX-SK-ILLEGAL-002",
+      "path": "scenarios/semantic-kernel/recovery-while-ready-denied.json",
+      "fixture_sha256": "241344b11e4e58130b29e849768bb4c3ab57b4159271de0ed6a8ba8ffb1d437c",
+      "observable_result_sha256": "f23c5cf040d35e2707f2f6cd09b0570e1278f4c8dca749f8586d3ae4b8609d04"
+    }
+  ],
+  "claims": {
+    "replay_snapshot_equivalence": {
+      "fixture_ids": [
+        "FIX-SK-POS-005",
+        "FIX-SK-POS-006"
+      ],
+      "semantic_state_sha256": "58a6bd79bd97649bd1d10c3452f37ba4d52bc91eaaefacea0a5d26c382c14af8",
+      "semantic_snapshot_sha256": "bb24baf89086770698b53369c745d9e8c35c5ee2595c913c639480a551457c21",
+      "idempotency_history_sha256": "839f5aeb0cf27b0690877aed4109016ca4527b0dbe65e0b520e69ab699e48919",
+      "idempotency_probe_code": "semantic.operation_duplicate"
+    },
+    "rebuild_deterministic": {
+      "fixture_id": "FIX-SK-POS-007",
+      "observable_result_sha256": "01fcb9143c66abb97d6ef5df9c9ebf5cadd96a7c537ad73c88b4d173873a8639"
+    },
+    "crash_recovery": {
+      "fixture_ids": [
+        "FIX-SK-REC-001",
+        "FIX-SK-REC-002"
+      ],
+      "observable_result_sha256": [
+        "858b4401671b73a260932ff43b85fdeaa9c7e111594f5689c24fcc59083d28eb",
+        "f07ccec0e91e07457f2515b98d828c1df38d2dcde810adb77db357e91b7c3b50"
+      ]
+    },
+    "semantic_write_denials": {
+      "fixture_ids": [
+        "FIX-SK-AUTH-001",
+        "FIX-SK-AUTH-002",
+        "FIX-SK-AUTH-003",
+        "FIX-SK-AUTH-004",
+        "FIX-SK-AUTH-005",
+        "FIX-SK-AUTH-006"
+      ],
+      "observable_result_sha256": [
+        "8a5b153bc8009975820e86ca48364f5519f5e9e8910c2bfc083ead9af2b842af",
+        "148ff5f4fb2e7caaecb92aa668d1771f8077c1f21e3c6313b98a7d50906e8005",
+        "fbcd7eb3eac2d0aa5eb50b347181e553162024035b1f81b0457b0541089a60bb",
+        "d2e6fbdbb26c431ca5458d69f97455983756f4764bf20eda7e74f4f8cacc8943",
+        "85d2225831e8d4d57ab2a5b4a6c729fd914f6d5ef7aa06cae1e1a3c193a6fc27",
+        "582b2137f268de25a5b2535098188f54403e82d3095edb4c319d99a156b7a217"
+      ]
+    }
+  }
+}

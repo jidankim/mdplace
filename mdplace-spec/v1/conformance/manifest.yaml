@@ -789,161 +789,1004 @@
       "fixture_id": "FIX-VAL-POS-001",
       "path": "fixtures/positive/valid-evidence-envelope.json",
       "category": "positive",
-      "requirement_ids": ["REQ-VAL-001", "REQ-VAL-002", "REQ-VAL-003", "REQ-VAL-005", "REQ-VAL-007"],
+      "requirement_ids": [
+        "REQ-VAL-001",
+        "REQ-VAL-002",
+        "REQ-VAL-003",
+        "REQ-VAL-005",
+        "REQ-VAL-007"
+      ],
       "expected_verdict": "pass",
-      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
     },
     {
       "fixture_id": "FIX-VAL-NEG-001",
       "path": "fixtures/negative/mandatory-evidence-nonpass.json",
       "category": "negative",
-      "requirement_ids": ["REQ-VAL-004", "REQ-VAL-005"],
+      "requirement_ids": [
+        "REQ-VAL-004",
+        "REQ-VAL-005"
+      ],
       "expected_verdict": "fail",
-      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
     },
     {
       "fixture_id": "FIX-VAL-POS-002",
       "path": "fixtures/positive/valid-claim-manifest.json",
       "category": "positive",
-      "requirement_ids": ["REQ-VAL-004", "REQ-VAL-005", "REQ-VAL-007"],
+      "requirement_ids": [
+        "REQ-VAL-004",
+        "REQ-VAL-005",
+        "REQ-VAL-007"
+      ],
       "expected_verdict": "pass",
-      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
     },
     {
       "fixture_id": "FIX-VAL-NEG-002",
       "path": "fixtures/negative/claim-unknown-field.json",
       "category": "negative",
-      "requirement_ids": ["REQ-VAL-001", "REQ-VAL-004"],
+      "requirement_ids": [
+        "REQ-VAL-001",
+        "REQ-VAL-004"
+      ],
       "expected_verdict": "fail",
-      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
     },
     {
       "fixture_id": "FIX-VAL-STATE-001",
       "path": "scenarios/evidence-stale-version.json",
       "category": "stale_state",
-      "requirement_ids": ["REQ-VAL-002", "REQ-VAL-005", "REQ-VAL-006"],
+      "requirement_ids": [
+        "REQ-VAL-002",
+        "REQ-VAL-005",
+        "REQ-VAL-006"
+      ],
       "expected_verdict": "fail",
-      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
     },
     {
       "fixture_id": "FIX-VAL-AUTH-001",
       "path": "scenarios/evidence-authority-denial.json",
       "category": "authority_denial",
-      "requirement_ids": ["REQ-VAL-001", "REQ-VAL-002", "REQ-VAL-007"],
+      "requirement_ids": [
+        "REQ-VAL-001",
+        "REQ-VAL-002",
+        "REQ-VAL-007"
+      ],
       "expected_verdict": "fail",
-      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
     },
     {
       "fixture_id": "FIX-VAL-REC-001",
       "path": "scenarios/evidence-crash-recovery.json",
       "category": "crash_recovery",
-      "requirement_ids": ["REQ-VAL-002", "REQ-VAL-005", "REQ-VAL-006", "REQ-VAL-007"],
+      "requirement_ids": [
+        "REQ-VAL-002",
+        "REQ-VAL-005",
+        "REQ-VAL-006",
+        "REQ-VAL-007"
+      ],
       "expected_verdict": "pass",
-      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
     },
     {
       "fixture_id": "FIX-VAL-ILLEGAL-001",
       "path": "scenarios/evidence-illegal-awaiting-readback.json",
       "category": "illegal_transition",
-      "requirement_ids": ["REQ-VAL-006", "REQ-VAL-007"],
+      "requirement_ids": [
+        "REQ-VAL-006",
+        "REQ-VAL-007"
+      ],
       "expected_verdict": "fail",
-      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": true}
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": true
+      }
     },
     {
       "fixture_id": "FIX-VAL-ILLEGAL-002",
       "path": "scenarios/evidence-illegal-awaiting-stale.json",
       "category": "illegal_transition",
-      "requirement_ids": ["REQ-VAL-006", "REQ-VAL-007"],
+      "requirement_ids": [
+        "REQ-VAL-006",
+        "REQ-VAL-007"
+      ],
       "expected_verdict": "fail",
-      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": true}
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": true
+      }
     },
     {
       "fixture_id": "FIX-VAL-ILLEGAL-003",
       "path": "scenarios/evidence-illegal-replace-verdict.json",
       "category": "illegal_transition",
-      "requirement_ids": ["REQ-VAL-005", "REQ-VAL-006", "REQ-VAL-007"],
+      "requirement_ids": [
+        "REQ-VAL-005",
+        "REQ-VAL-006",
+        "REQ-VAL-007"
+      ],
       "expected_verdict": "fail",
-      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": true}
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": true
+      }
     },
     {
       "fixture_id": "FIX-VAL-ILLEGAL-004",
       "path": "scenarios/evidence-illegal-stale-verdict.json",
       "category": "illegal_transition",
-      "requirement_ids": ["REQ-VAL-005", "REQ-VAL-006", "REQ-VAL-007"],
+      "requirement_ids": [
+        "REQ-VAL-005",
+        "REQ-VAL-006",
+        "REQ-VAL-007"
+      ],
       "expected_verdict": "fail",
-      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": true}
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": true
+      }
     },
     {
       "fixture_id": "FIX-VAL-STATE-002",
       "path": "scenarios/evidence-stale-claim-binding.json",
       "category": "stale_state",
-      "requirement_ids": ["REQ-VAL-002", "REQ-VAL-004", "REQ-VAL-005", "REQ-VAL-006"],
+      "requirement_ids": [
+        "REQ-VAL-002",
+        "REQ-VAL-004",
+        "REQ-VAL-005",
+        "REQ-VAL-006"
+      ],
       "expected_verdict": "fail",
-      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
     },
     {
       "fixture_id": "FIX-VAL-NEG-003",
       "path": "fixtures/negative/duplicate-envelope-references.json",
       "category": "negative",
-      "requirement_ids": ["REQ-VAL-003", "REQ-VAL-005"],
+      "requirement_ids": [
+        "REQ-VAL-003",
+        "REQ-VAL-005"
+      ],
       "expected_verdict": "fail",
-      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
     },
     {
       "fixture_id": "FIX-VAL-POS-003",
       "path": "fixtures/positive/not-applicable-evidence.json",
       "category": "positive",
-      "requirement_ids": ["REQ-VAL-004", "REQ-VAL-005"],
+      "requirement_ids": [
+        "REQ-VAL-004",
+        "REQ-VAL-005"
+      ],
       "expected_verdict": "pass",
-      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
     },
     {
       "fixture_id": "FIX-VAL-REC-002",
       "path": "scenarios/evidence-stale-recovery-pass.json",
       "category": "crash_recovery",
-      "requirement_ids": ["REQ-VAL-002", "REQ-VAL-005", "REQ-VAL-006"],
+      "requirement_ids": [
+        "REQ-VAL-002",
+        "REQ-VAL-005",
+        "REQ-VAL-006"
+      ],
       "expected_verdict": "fail",
-      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
     },
     {
       "fixture_id": "FIX-VAL-REC-003",
       "path": "scenarios/evidence-unsupported-recovery.json",
       "category": "crash_recovery",
-      "requirement_ids": ["REQ-VAL-005", "REQ-VAL-006"],
+      "requirement_ids": [
+        "REQ-VAL-005",
+        "REQ-VAL-006"
+      ],
       "expected_verdict": "fail",
-      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
     },
     {
       "fixture_id": "FIX-VAL-ILLEGAL-005",
       "path": "scenarios/evidence-record-without-fresh-proof.json",
       "category": "illegal_transition",
-      "requirement_ids": ["REQ-VAL-005", "REQ-VAL-006"],
+      "requirement_ids": [
+        "REQ-VAL-005",
+        "REQ-VAL-006"
+      ],
       "expected_verdict": "fail",
-      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": true}
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": true
+      }
     },
     {
       "fixture_id": "FIX-VAL-NEG-004",
       "path": "fixtures/negative/verdict-row-missing-availability.json",
       "category": "negative",
-      "requirement_ids": ["REQ-VAL-002", "REQ-VAL-005"],
+      "requirement_ids": [
+        "REQ-VAL-002",
+        "REQ-VAL-005"
+      ],
       "expected_verdict": "fail",
-      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
     },
     {
       "fixture_id": "FIX-VAL-NEG-005",
       "path": "fixtures/negative/evidence-receipt-type-tampered.json",
       "category": "negative",
-      "requirement_ids": ["REQ-VAL-002", "REQ-VAL-003", "REQ-VAL-006"],
+      "requirement_ids": [
+        "REQ-VAL-002",
+        "REQ-VAL-003",
+        "REQ-VAL-006"
+      ],
       "expected_verdict": "fail",
-      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
     },
     {
       "fixture_id": "FIX-VAL-NEG-006",
       "path": "fixtures/negative/evidence-receipt-digest-tampered.json",
       "category": "negative",
-      "requirement_ids": ["REQ-VAL-002", "REQ-VAL-003", "REQ-VAL-006"],
+      "requirement_ids": [
+        "REQ-VAL-002",
+        "REQ-VAL-003",
+        "REQ-VAL-006"
+      ],
       "expected_verdict": "fail",
-      "observable_assertions": {"inputs": true, "outputs": true, "operations": true, "receipts": true, "filesystem_effects": true, "terminal_state": true, "illegal_transition": false}
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-POS-001",
+      "path": "scenarios/semantic-kernel/valid-initial-append.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-SK-001",
+        "REQ-SK-002",
+        "REQ-SK-003",
+        "REQ-SK-004",
+        "REQ-SK-005",
+        "REQ-SK-006"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-POS-002",
+      "path": "scenarios/semantic-kernel/valid-serialized-second-append.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-SK-002",
+        "REQ-SK-003",
+        "REQ-SK-004"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-010",
+      "path": "scenarios/semantic-kernel/illegal-removal-rejected.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-SK-003",
+        "REQ-SK-004",
+        "REQ-SK-005"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": true
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-BND-001",
+      "path": "scenarios/semantic-kernel/future-base-rejected.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-SK-002",
+        "REQ-SK-003",
+        "REQ-SK-004"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-STATE-001",
+      "path": "scenarios/semantic-kernel/stale-base-rejected.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-SK-002",
+        "REQ-SK-004"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-001",
+      "path": "scenarios/semantic-kernel/noncontiguous-ordering-rejected.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-SK-002",
+        "REQ-SK-004",
+        "REQ-SK-005"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-POS-004",
+      "path": "scenarios/semantic-kernel/duplicate-compatible-idempotent.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-SK-002",
+        "REQ-SK-003",
+        "REQ-SK-004"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-002",
+      "path": "scenarios/semantic-kernel/duplicate-incompatible-rejected.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-SK-002",
+        "REQ-SK-004"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-003",
+      "path": "scenarios/semantic-kernel/unknown-operation-kind-rejected.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-SK-001",
+        "REQ-SK-002",
+        "REQ-SK-004",
+        "REQ-SK-006"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-004",
+      "path": "scenarios/semantic-kernel/malformed-record-rejected.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-SK-001",
+        "REQ-SK-004"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-005",
+      "path": "scenarios/semantic-kernel/torn-record-rejected.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-SK-001",
+        "REQ-SK-004",
+        "REQ-SK-005"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-006",
+      "path": "scenarios/semantic-kernel/noncanonical-record-rejected.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-SK-001",
+        "REQ-SK-004"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-AUTH-001",
+      "path": "scenarios/semantic-kernel/capture-adapter-write-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-SK-002",
+        "REQ-SK-003",
+        "REQ-SK-004",
+        "REQ-SK-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-AUTH-002",
+      "path": "scenarios/semantic-kernel/intelligence-adapter-write-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-SK-002",
+        "REQ-SK-003",
+        "REQ-SK-004",
+        "REQ-SK-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-AUTH-003",
+      "path": "scenarios/semantic-kernel/folder-projection-write-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-SK-002",
+        "REQ-SK-003",
+        "REQ-SK-004",
+        "REQ-SK-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-AUTH-004",
+      "path": "scenarios/semantic-kernel/projection-write-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-SK-002",
+        "REQ-SK-003",
+        "REQ-SK-004",
+        "REQ-SK-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-AUTH-005",
+      "path": "scenarios/semantic-kernel/frontmatter-bridge-write-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-SK-002",
+        "REQ-SK-003",
+        "REQ-SK-004",
+        "REQ-SK-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-AUTH-006",
+      "path": "scenarios/semantic-kernel/cache-write-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-SK-002",
+        "REQ-SK-003",
+        "REQ-SK-004",
+        "REQ-SK-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-POS-005",
+      "path": "scenarios/semantic-kernel/full-replay-snapshot-equivalence.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-SK-003",
+        "REQ-SK-004",
+        "REQ-SK-005"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-POS-006",
+      "path": "scenarios/semantic-kernel/snapshot-suffix-equivalence.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-SK-003",
+        "REQ-SK-004",
+        "REQ-SK-005"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-STATE-002",
+      "path": "scenarios/semantic-kernel/stale-snapshot-rejected.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-SK-003",
+        "REQ-SK-004"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-POS-007",
+      "path": "scenarios/semantic-kernel/deterministic-view-rebuild.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-SK-003",
+        "REQ-SK-004",
+        "REQ-SK-005",
+        "REQ-SK-007"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-008",
+      "path": "scenarios/semantic-kernel/snapshot-idempotency-conflict-rejected.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-SK-003",
+        "REQ-SK-004",
+        "REQ-SK-005"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-009",
+      "path": "scenarios/semantic-kernel/failed-precondition-rejected.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-SK-002",
+        "REQ-SK-004",
+        "REQ-SK-005"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-POS-010",
+      "path": "scenarios/semantic-kernel/recognized-forward-compatible-record.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-SK-001",
+        "REQ-SK-003",
+        "REQ-SK-004"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-NEG-007",
+      "path": "scenarios/semantic-kernel/unsupported-schema-version-rejected.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-SK-001",
+        "REQ-SK-003",
+        "REQ-SK-004"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-ILLEGAL-001",
+      "path": "scenarios/semantic-kernel/append-during-recovery-denied.json",
+      "category": "illegal_transition",
+      "requirement_ids": [
+        "REQ-SK-002",
+        "REQ-SK-003",
+        "REQ-SK-004"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": true
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-REC-001",
+      "path": "scenarios/semantic-kernel/crash-before-record-publish-recovery.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-SK-002",
+        "REQ-SK-003",
+        "REQ-SK-004",
+        "REQ-SK-005"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-REC-002",
+      "path": "scenarios/semantic-kernel/crash-after-record-publish-recovery.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-SK-002",
+        "REQ-SK-003",
+        "REQ-SK-004",
+        "REQ-SK-005"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-SK-ILLEGAL-002",
+      "path": "scenarios/semantic-kernel/recovery-while-ready-denied.json",
+      "category": "illegal_transition",
+      "requirement_ids": [
+        "REQ-SK-002",
+        "REQ-SK-003",
+        "REQ-SK-004"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": true
+      }
     }
   ]
 }

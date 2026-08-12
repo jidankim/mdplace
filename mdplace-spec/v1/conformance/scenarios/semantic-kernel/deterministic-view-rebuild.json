@@ -1,0 +1,84 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-SK-POS-007",
+  "category": "positive",
+  "requirement_ids": [
+    "REQ-SK-003",
+    "REQ-SK-004",
+    "REQ-SK-005",
+    "REQ-SK-007"
+  ],
+  "subject": {
+    "kind": "semantic_kernel",
+    "schema": "contracts/schemas/semantic-kernel-scenario.schema.json",
+    "document": {
+      "schema_id": "mdplace.semantic-kernel-scenario/v1",
+      "scenario_id": "SK-022",
+      "initial": {
+        "lifecycle_state": "ready",
+        "head": {
+          "sequence": 0,
+          "operation_id": null
+        },
+        "semantic_state": [],
+        "bound_inputs": [],
+        "prior_receipts": [],
+        "operation_ids": []
+      },
+      "action": {
+        "kind": "rebuild_view",
+        "actor": {
+          "actor_id": "component:mdplace-agent-001",
+          "actor_kind": "mdplace_agent",
+          "authority_ref": "authority:mdplace-agent-001"
+        },
+        "command_id": null,
+        "operation_id": null,
+        "operation_kind": null,
+        "base_references": [],
+        "ordering": null,
+        "idempotency_key": null,
+        "command_digest": null,
+        "payload": null,
+        "preconditions": [],
+        "records": [
+          "{\"$schema\":\"semantic-operation.schema.json\",\"actor_authority\":{\"actor_id\":\"person:owner-001\",\"actor_kind\":\"vault_owner\",\"authority_ref\":\"authority:vault-owner-001\"},\"base_references\":[{\"kind\":\"semantic_head\",\"operation_id\":\"operation:001\",\"ordinal\":0,\"sequence\":1,\"state_digest\":\"fa346467e0189c1ff1b12a1c1294ca93ebee37500f9d7b704b92cc012ea91529\"}],\"closure_receipt\":{\"command_id\":\"command:002\",\"operation_id\":\"operation:002\",\"outcome\":\"accepted\",\"receipt_id\":\"receipt:002\",\"sequence\":2,\"state_digest\":\"3f71931a4733547b0614914672dbdb8f01975a5cc21190a00919d14153337460\"},\"command_id\":\"command:002\",\"idempotency\":{\"command_digest\":\"d0ffd236eddab83395f7c2c42c370ddc967d0af7f64aa50af1c4b7ba8879155e\",\"key\":\"idempotency:002\"},\"operation_digest\":\"16c93dc01fc3b5eba750bd14a3cc8446a581e62e12ca2182d793ccd2173381ee\",\"operation_id\":\"operation:002\",\"operation_kind\":\"semantic_assignment\",\"ordering\":{\"predecessor_operation_id\":\"operation:001\",\"sequence\":2,\"sort_key\":\"000002:command:002\"},\"payload\":{\"events\":[{\"event_id\":\"event:002-001\",\"event_kind\":\"semantic_assignment\",\"ordinal\":0,\"payload\":{\"key\":\"note:002/placement\",\"value\":\"cat:projects\"},\"schema_version\":\"1.0.0\"}]},\"preconditions\":[],\"schema_id\":\"mdplace.semantic-operation/v1\",\"schema_version\":\"1.0.0\"}\n",
+          "{\"$schema\":\"semantic-operation.schema.json\",\"actor_authority\":{\"actor_id\":\"person:owner-001\",\"actor_kind\":\"vault_owner\",\"authority_ref\":\"authority:vault-owner-001\"},\"base_references\":[{\"kind\":\"semantic_head\",\"operation_id\":null,\"ordinal\":0,\"sequence\":0,\"state_digest\":\"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"}],\"closure_receipt\":{\"command_id\":\"command:001\",\"operation_id\":\"operation:001\",\"outcome\":\"accepted\",\"receipt_id\":\"receipt:001\",\"sequence\":1,\"state_digest\":\"fa346467e0189c1ff1b12a1c1294ca93ebee37500f9d7b704b92cc012ea91529\"},\"command_id\":\"command:001\",\"idempotency\":{\"command_digest\":\"372e21c0f4e9a353d29eed992057369ec7f4cacc6de07aa070e1172271d43eb2\",\"key\":\"idempotency:001\"},\"operation_digest\":\"cfeed52063285cfc3d25775bc77675639195a10682b774e5ccf75c155893f6c9\",\"operation_id\":\"operation:001\",\"operation_kind\":\"semantic_assignment\",\"ordering\":{\"predecessor_operation_id\":null,\"sequence\":1,\"sort_key\":\"000001:command:001\"},\"payload\":{\"events\":[{\"event_id\":\"event:001-001\",\"event_kind\":\"semantic_assignment\",\"ordinal\":0,\"payload\":{\"key\":\"note:001/placement\",\"value\":\"cat:research\"},\"schema_version\":\"1.0.0\"}]},\"preconditions\":[],\"schema_id\":\"mdplace.semantic-operation/v1\",\"schema_version\":\"1.0.0\"}\n"
+        ],
+        "snapshot": null,
+        "supplied_view": [
+          {
+            "key": "note:001/placement",
+            "value": "cat:wrong"
+          }
+        ],
+        "crash_point": null,
+        "recovery_id": null
+      }
+    }
+  },
+  "expected": {
+    "verdict": "pass",
+    "codes": [],
+    "outputs": [
+      "view rebuilt",
+      "semantic_state:[{\"key\":\"note:001/placement\",\"value\":\"cat:research\"},{\"key\":\"note:002/placement\",\"value\":\"cat:projects\"}]",
+      "rebuilt_view:[{\"key\":\"note:001/placement\",\"value\":\"cat:research\"},{\"key\":\"note:002/placement\",\"value\":\"cat:projects\"}]"
+    ],
+    "operations": [
+      "validate canonical operation records",
+      "order operations deterministically",
+      "replay semantic state",
+      "rebuild disposable view"
+    ],
+    "receipts": [
+      "SemanticRebuildReceipt"
+    ],
+    "filesystem_effects": [
+      "none"
+    ],
+    "terminal_state": "ready",
+    "illegal_transition": false
+  }
+}

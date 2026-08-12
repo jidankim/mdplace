@@ -7,6 +7,7 @@ import {
 } from './package-checks.mjs';
 import {readPackageFile} from './safe-path.mjs';
 import {checkSchemaInstances} from './schema-instances.mjs';
+import {checkSemanticKernelContract} from './semantic-kernel-checks.mjs';
 import {checkTraceability, runConformance} from './traceability-checks.mjs';
 import {checkValidatorEvidence} from './validator-evidence-checks.mjs';
 
@@ -39,6 +40,7 @@ export async function buildValidationReport(packageRoot, options = {}) {
   const requirements = await readJson('normative/requirements.json', true);
   const table = await readJson('contracts/transitions/package-lifecycle.json', true);
   const evidenceTable = await readJson('contracts/transitions/evidence-lifecycle.json', true);
+  const semanticKernelTable = await readJson('contracts/transitions/semantic-kernel-lifecycle.json', true);
   const conformance = await readJson('conformance/manifest.yaml', true);
   const traceability = await readJson('traceability.yaml', true);
   const checks = [];
@@ -48,9 +50,11 @@ export async function buildValidationReport(packageRoot, options = {}) {
   if (requirements !== null) checks.push(await checkRequirements(packageRoot, requirements));
   if (table !== null) checks.push(checkTransitionTable(table));
   if (evidenceTable !== null) checks.push(checkTransitionTable(evidenceTable, 'evidence-lifecycle'));
+  if (semanticKernelTable !== null) checks.push(checkTransitionTable(semanticKernelTable, 'semantic-kernel-lifecycle'));
   checks.push(await checkSchemas(packageRoot));
   checks.push(await checkSchemaInstances(packageRoot, conformance ?? {fixtures: []}));
   checks.push(await checkValidatorEvidence(packageRoot));
+  checks.push(await checkSemanticKernelContract(packageRoot, manifest, conformance, traceability));
   if (traceability !== null) {
     checks.push(await checkTraceability(
       packageRoot,

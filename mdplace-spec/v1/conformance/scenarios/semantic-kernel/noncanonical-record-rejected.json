@@ -1,0 +1,74 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-SK-NEG-006",
+  "category": "negative",
+  "requirement_ids": [
+    "REQ-SK-001",
+    "REQ-SK-004"
+  ],
+  "subject": {
+    "kind": "semantic_kernel",
+    "schema": "contracts/schemas/semantic-kernel-scenario.schema.json",
+    "document": {
+      "schema_id": "mdplace.semantic-kernel-scenario/v1",
+      "scenario_id": "SK-012",
+      "initial": {
+        "lifecycle_state": "ready",
+        "head": {
+          "sequence": 0,
+          "operation_id": null
+        },
+        "semantic_state": [],
+        "bound_inputs": [],
+        "prior_receipts": [],
+        "operation_ids": []
+      },
+      "action": {
+        "kind": "replay",
+        "actor": {
+          "actor_id": "component:mdplace-agent-001",
+          "actor_kind": "mdplace_agent",
+          "authority_ref": "authority:mdplace-agent-001"
+        },
+        "command_id": null,
+        "operation_id": null,
+        "operation_kind": null,
+        "base_references": [],
+        "ordering": null,
+        "idempotency_key": null,
+        "command_digest": null,
+        "payload": null,
+        "preconditions": [],
+        "records": [
+          "{\n  \"$schema\": \"semantic-operation.schema.json\",\n  \"actor_authority\": {\n    \"actor_id\": \"person:owner-001\",\n    \"actor_kind\": \"vault_owner\",\n    \"authority_ref\": \"authority:vault-owner-001\"\n  },\n  \"base_references\": [\n    {\n      \"ordinal\": 0,\n      \"kind\": \"semantic_head\",\n      \"sequence\": 0,\n      \"operation_id\": null,\n      \"state_digest\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"\n    }\n  ],\n  \"closure_receipt\": {\n    \"command_id\": \"command:001\",\n    \"operation_id\": \"operation:001\",\n    \"outcome\": \"accepted\",\n    \"receipt_id\": \"receipt:001\",\n    \"sequence\": 1,\n    \"state_digest\": \"fa346467e0189c1ff1b12a1c1294ca93ebee37500f9d7b704b92cc012ea91529\"\n  },\n  \"command_id\": \"command:001\",\n  \"idempotency\": {\n    \"command_digest\": \"372e21c0f4e9a353d29eed992057369ec7f4cacc6de07aa070e1172271d43eb2\",\n    \"key\": \"idempotency:001\"\n  },\n  \"operation_id\": \"operation:001\",\n  \"operation_kind\": \"semantic_assignment\",\n  \"ordering\": {\n    \"predecessor_operation_id\": null,\n    \"sequence\": 1,\n    \"sort_key\": \"000001:command:001\"\n  },\n  \"payload\": {\n    \"events\": [\n      {\n        \"event_id\": \"event:001-001\",\n        \"ordinal\": 0,\n        \"event_kind\": \"semantic_assignment\",\n        \"schema_version\": \"1.0.0\",\n        \"payload\": {\n          \"key\": \"note:001/placement\",\n          \"value\": \"cat:research\"\n        }\n      }\n    ]\n  },\n  \"preconditions\": [],\n  \"schema_id\": \"mdplace.semantic-operation/v1\",\n  \"schema_version\": \"1.0.0\",\n  \"operation_digest\": \"cfeed52063285cfc3d25775bc77675639195a10682b774e5ccf75c155893f6c9\"\n}\n"
+        ],
+        "snapshot": null,
+        "supplied_view": [],
+        "crash_point": null,
+        "recovery_id": null
+      }
+    }
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": [
+      "semantic.record_noncanonical"
+    ],
+    "outputs": [
+      "replay rejected",
+      "semantic_state:[]"
+    ],
+    "operations": [
+      "validate canonical operation records"
+    ],
+    "receipts": [
+      "{\"actor_kind\":\"mdplace_agent\",\"code\":\"semantic.record_noncanonical\",\"command_id\":null,\"filesystem_effects\":[\"none\"],\"operation_id\":null,\"outcome\":\"rejected\",\"receipt_id\":\"receipt:rejection-sk-012\",\"schema_id\":\"mdplace.semantic-rejection-receipt/v1\",\"semantic_head\":{\"operation_id\":null,\"sequence\":0,\"state_digest\":\"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"}}"
+    ],
+    "filesystem_effects": [
+      "none"
+    ],
+    "terminal_state": "recovery_required",
+    "illegal_transition": false
+  }
+}

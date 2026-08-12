@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:semantic-receipt:v1",
+  "title": "mdplace Semantic Kernel rejection and recovery receipts",
+  "oneOf": [
+    {"$ref": "#/$defs/rejection"},
+    {"$ref": "#/$defs/recoveryBeforePublish"},
+    {"$ref": "#/$defs/recoveryAfterPublish"}
+  ],
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "semanticHead": {
+      "type": "object", "additionalProperties": false,
+      "required": ["sequence", "operation_id", "state_digest"],
+      "properties": {
+        "sequence": {"type": "integer", "minimum": 0, "maximum": 256},
+        "operation_id": {"type": ["string", "null"], "pattern": "^operation:[a-z0-9][a-z0-9-]{2,63}$"},
+        "state_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "rejection": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_id", "receipt_id", "outcome", "code", "actor_kind", "command_id", "operation_id", "semantic_head", "filesystem_effects"],
+      "properties": {
+        "schema_id": {"const": "mdplace.semantic-rejection-receipt/v1"},
+        "receipt_id": {"type": "string", "pattern": "^receipt:rejection-[a-z0-9][a-z0-9-]{2,63}$"},
+        "outcome": {"const": "rejected"},
+        "code": {"type": "string", "pattern": "^semantic\\.[a-z][a-z0-9_]{2,63}$"},
+        "actor_kind": {"enum": ["vault_owner", "mdplace_agent", "foreground_recovery", "capture_adapter", "intelligence_adapter", "folder_projection", "projection", "frontmatter_bridge", "cache"]},
+        "command_id": {"type": ["string", "null"], "pattern": "^command:[a-z0-9][a-z0-9-]{2,63}$"},
+        "operation_id": {"type": ["string", "null"], "pattern": "^operation:[a-z0-9][a-z0-9-]{2,63}$"},
+        "semantic_head": {"$ref": "#/$defs/semanticHead"},
+        "filesystem_effects": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"const": "none"}}
+      }
+    },
+    "recoveryBase": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_id", "receipt_id", "recovery_id", "outcome", "crash_point", "operation_id", "canonical_record_published", "closure_receipt_published", "state_digest", "filesystem_effects"],
+      "properties": {
+        "schema_id": {"const": "mdplace.semantic-recovery-receipt/v1"},
+        "receipt_id": {"type": "string", "pattern": "^receipt:recovery-[a-z0-9][a-z0-9-]{2,63}$"},
+        "recovery_id": {"type": "string", "pattern": "^recovery:[a-z0-9][a-z0-9-]{2,63}$"},
+        "outcome": {"const": "completed"},
+        "crash_point": {"enum": ["before_record_publish", "after_record_publish_before_receipt"]},
+        "operation_id": {"type": ["string", "null"], "pattern": "^operation:[a-z0-9][a-z0-9-]{2,63}$"},
+        "canonical_record_published": {"type": "boolean"},
+        "closure_receipt_published": {"type": "boolean"},
+        "state_digest": {"$ref": "#/$defs/digest"},
+        "filesystem_effects": {"type": "array", "minItems": 1, "maxItems": 2, "uniqueItems": true, "items": {"enum": ["discard uncommitted staging record", "preserve canonical operation", "publish missing closure receipt"]}}
+      }
+    },
+    "recoveryBeforePublish": {
+      "$ref": "#/$defs/recoveryBase",
+      "properties": {
+        "crash_point": {"const": "before_record_publish"}, "operation_id": {"const": null},
+        "canonical_record_published": {"const": false}, "closure_receipt_published": {"const": false},
+        "filesystem_effects": {"minItems": 1, "maxItems": 1, "items": {"const": "discard uncommitted staging record"}}
+      }
+    },
+    "recoveryAfterPublish": {
+      "$ref": "#/$defs/recoveryBase",
+      "properties": {
+        "crash_point": {"const": "after_record_publish_before_receipt"}, "operation_id": {"type": "string"},
+        "canonical_record_published": {"const": true}, "closure_receipt_published": {"const": true},
+        "filesystem_effects": {
+          "minItems": 2,
+          "maxItems": 2,
+          "allOf": [
+            {"contains": {"const": "preserve canonical operation"}},
+            {"contains": {"const": "publish missing closure receipt"}}
+          ]
+        }
+      }
+    }
+  }
+}

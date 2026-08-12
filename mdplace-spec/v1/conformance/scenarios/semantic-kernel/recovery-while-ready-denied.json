@@ -1,0 +1,74 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-SK-ILLEGAL-002",
+  "category": "illegal_transition",
+  "requirement_ids": [
+    "REQ-SK-002",
+    "REQ-SK-003",
+    "REQ-SK-004"
+  ],
+  "subject": {
+    "kind": "semantic_kernel",
+    "schema": "contracts/schemas/semantic-kernel-scenario.schema.json",
+    "document": {
+      "schema_id": "mdplace.semantic-kernel-scenario/v1",
+      "scenario_id": "SK-030",
+      "initial": {
+        "lifecycle_state": "ready",
+        "head": {
+          "sequence": 0,
+          "operation_id": null
+        },
+        "semantic_state": [],
+        "bound_inputs": [],
+        "prior_receipts": [],
+        "operation_ids": []
+      },
+      "action": {
+        "kind": "recover",
+        "actor": {
+          "actor_id": "component:foreground-recovery-001",
+          "actor_kind": "foreground_recovery",
+          "authority_ref": "authority:foreground-recovery-001"
+        },
+        "command_id": null,
+        "operation_id": null,
+        "operation_kind": null,
+        "base_references": [],
+        "ordering": null,
+        "idempotency_key": null,
+        "command_digest": null,
+        "payload": null,
+        "preconditions": [],
+        "records": [],
+        "snapshot": null,
+        "supplied_view": [],
+        "crash_point": null,
+        "recovery_id": "recovery:003"
+      }
+    }
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": [
+      "semantic.recovery_not_required"
+    ],
+    "outputs": [
+      "recovery rejected",
+      "canonical_record:none",
+      "semantic_state:[]"
+    ],
+    "operations": [
+      "validate recovery state"
+    ],
+    "receipts": [
+      "{\"actor_kind\":\"foreground_recovery\",\"code\":\"semantic.recovery_not_required\",\"command_id\":null,\"filesystem_effects\":[\"none\"],\"operation_id\":null,\"outcome\":\"rejected\",\"receipt_id\":\"receipt:rejection-sk-030\",\"schema_id\":\"mdplace.semantic-rejection-receipt/v1\",\"semantic_head\":{\"operation_id\":null,\"sequence\":0,\"state_digest\":\"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"}}"
+    ],
+    "filesystem_effects": [
+      "none"
+    ],
+    "terminal_state": "ready",
+    "illegal_transition": true
+  }
+}
