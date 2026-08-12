@@ -107,6 +107,7 @@ const conformanceExecutables = new Set([
   'conformance/validator.mjs',
   'conformance/validator.test.mjs',
   'conformance/validator-semantic-kernel-cases.mjs',
+  'conformance/validator-semantic-kernel-boundary-cases.mjs',
 ]);
 
 export function authorityMatches(command, actual) {

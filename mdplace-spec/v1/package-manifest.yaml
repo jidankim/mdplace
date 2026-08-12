@@ -201,13 +201,13 @@
       "path": "conformance/evidence/traceability-report.json",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "785c5c6c18434cbd2998a69018c7fda210d420e27ec6ec6caee131fb1f2665be"
+      "sha256": "c88a5c6f77e188f62789e687689281e74024962b4bd3f7e4e67ac4948c5c2411"
     },
     {
       "path": "conformance/evidence/validation-report.json",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "12d62a0b50c6878b16cc01623c5b3bf26449d4c7a284cbdc01b40ed2833af879"
+      "sha256": "c97ff2ec630fe0279d3b4ae2b50b694b78af1b181f920e76a5beff76f92364fb"
     },
     {
       "path": "conformance/evidence/version-amendment-report.json",
@@ -1197,25 +1197,25 @@
       "path": "conformance/state-observations/candidate/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "f5e569146535f33a9971e9397378e3260a13205d0269c2fd2acaf991a21189d9"
+      "sha256": "334c8a2b93d14a21b31e95e4b54fe925117f7c46cfb9e5bbde133907e793dbe8"
     },
     {
       "path": "conformance/state-observations/draft/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "7c97ef5e9451353f142657cb51ee041cbb40f628dd88d4557bcb453e793568c6"
+      "sha256": "d1ddf7b83df66634ab378c7c631e5c58ba32fae6bd0eb063670e79d8ca573d19"
     },
     {
       "path": "conformance/state-observations/release-ready/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "9b3b33c616c963fbad403d3929a80272e0aaba279d80b48ba72537af3f2a3189"
+      "sha256": "fb7e93a871dd1fc93e95cfa8fa2fbffb0418dadb8f79d8f6193c154094bfd41f"
     },
     {
       "path": "conformance/state-observations/released/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "029c9dbc33ffa1893510252bd8806888c8ce3ce72b5bfcd35d131f1e8d64fa93"
+      "sha256": "fa68ef47503d2a417fb08a056dc295521075e689b5faf92c5ff393cf62e7210e"
     },
     {
       "path": "conformance/traceability-checks.mjs",
@@ -1407,7 +1407,7 @@
       "path": "conformance/validator-rules.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "3167e7bafa5e482fdfd5d46b657e9a0a1509c1b63c4265f85e8bbc5adff7da37"
+      "sha256": "213bf4a297de415303474f6dd4d674445719222d9a683ebc20a832b297de4f93"
     },
     {
       "path": "conformance/validator-security-cases.mjs",
@@ -1416,10 +1416,16 @@
       "sha256": "30b53f92a25ece57b7514837fe2f75dd8399a9db2f9e737d68da5da7bda2ec34"
     },
     {
+      "path": "conformance/validator-semantic-kernel-boundary-cases.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "8d76b962bbe832e6d48ce31365e99754a2c4264a0b7ca9eabdc8c27f14a5e27b"
+    },
+    {
       "path": "conformance/validator-semantic-kernel-cases.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "a5b6d60eab91f1c4b01b2fef005818b8268f265d09932b2ded1e56461f7f7ce7"
+      "sha256": "042e9e11f7e2827c03c83d2201723aed72da3e8b2ab005f1488f2717193b7393"
     },
     {
       "path": "conformance/validator-test-support.mjs",
@@ -1443,7 +1449,7 @@
       "path": "conformance/validator.test.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "528bb69cb59b92123ad035d21e0f919aa3fde39410a01651ef2d2eed520dfec0"
+      "sha256": "b9fe4d068ed78d87d363324d9c2794971d0f7c0ef38ec2fd3eb399f438231390"
     },
     {
       "path": "contracts/schemas/claim-manifest.schema.json",
@@ -1527,7 +1533,7 @@
       "path": "contracts/schemas/semantic-kernel-scenario.schema.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "23581c23f494423d2f7cb427df33d59e3d44278fde0854ff6bcfc9cf4263eebf"
+      "sha256": "0ba6ede8ba5f395e738d51778965bb8401e47fa53ee5b91fe1f917c9729120f6"
     },
     {
       "path": "contracts/schemas/semantic-operation-kind-registry.schema.json",
@@ -1539,7 +1545,7 @@
       "path": "contracts/schemas/semantic-operation.schema.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "d39a2860f85502e42b44b982910a08aebdc451a9fd8aa308cc09ac9b6d3ae2ee"
+      "sha256": "989929dc2e60dbf91fe878eab150a035c8f80a3ef3cf2366cd8a0bfd5e25ab4e"
     },
     {
       "path": "contracts/schemas/semantic-receipt.schema.json",
@@ -1653,7 +1659,7 @@
       "path": "normative/semantic-kernel-contract.md",
       "authority": "normative",
       "media_type": "text/markdown",
-      "sha256": "47ed74ba2241409482e4b9dd244c13ac632b3ed6d850e149aa85313653d7563a"
+      "sha256": "0ba3eb4b8cc67b1bac068c5bb6493b5c69594f622bd4d3537502307b816b454e"
     },
     {
       "path": "normative/validator-evidence-contract.md",
@@ -1674,8 +1680,8 @@
       "sha256": "3c55967bb24afa407d924e9fc3ac5a1fd2c0423a1e553c1f564b9a729cb68d7a"
     }
   ],
-  "normative_digest": "8f8753becf06dbdbc71b7fde5c2a6347e9445534aff1182e671d599af951e984",
-  "conformance_digest": "b85c422a324f4e327ce2e3b9508908fdd31715bb95ffb521e7a22b7e2e9db41b",
+  "normative_digest": "ba4ff2e90f99e6cc447db54b419d21e1683c6aed0a2929ef68a6c82756b0f0c3",
+  "conformance_digest": "c842bd4b80f16b24f9a44848d8d18cb4576268d5f4d03bf796a47b39ed26da65",
   "amendment_policy": {
     "immutable_after_release": true,
     "in_place_mutation": "forbidden",

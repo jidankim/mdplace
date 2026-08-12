@@ -23,7 +23,7 @@
     "head": {
       "type": "object", "additionalProperties": false, "required": ["sequence", "operation_id"],
       "properties": {
-        "sequence": {"type": "integer", "minimum": 0},
+        "sequence": {"type": "integer", "minimum": 0, "maximum": 4096},
         "operation_id": {"type": ["string", "null"], "pattern": "^operation:[a-z0-9][a-z0-9-]{2,63}$"}
       }
     },
@@ -41,7 +41,7 @@
       "type": "object", "additionalProperties": false,
       "required": ["sequence", "operation_id", "operation_digest", "idempotency_key", "command_digest", "canonical_record"],
       "properties": {
-        "sequence": {"type": "integer", "minimum": 1},
+        "sequence": {"type": "integer", "minimum": 1, "maximum": 4096},
         "operation_id": {"type": "string", "pattern": "^operation:[a-z0-9][a-z0-9-]{2,63}$"},
         "operation_digest": {"$ref": "#/$defs/digest"},
         "idempotency_key": {"type": "string", "pattern": "^idempotency:[a-z0-9][a-z0-9-]{2,63}$"},
@@ -73,7 +73,7 @@
       "required": ["ordinal", "kind", "sequence", "operation_id", "state_digest"],
       "properties": {
         "ordinal": {"const": 0}, "kind": {"const": "semantic_head"},
-        "sequence": {"type": "integer", "minimum": 0},
+        "sequence": {"type": "integer", "minimum": 0, "maximum": 4096},
         "operation_id": {"type": ["string", "null"], "pattern": "^operation:[a-z0-9][a-z0-9-]{2,63}$"},
         "state_digest": {"$ref": "#/$defs/digest"}
       }
@@ -100,7 +100,7 @@
       "type": "object", "additionalProperties": false,
       "required": ["sequence", "predecessor_operation_id", "sort_key"],
       "properties": {
-        "sequence": {"type": "integer", "minimum": 1},
+        "sequence": {"type": "integer", "minimum": 1, "maximum": 4096},
         "predecessor_operation_id": {"type": ["string", "null"], "pattern": "^operation:[a-z0-9][a-z0-9-]{2,63}$"},
         "sort_key": {"type": "string", "pattern": "^[a-z0-9][a-z0-9:-]{2,127}$"}
       }
@@ -192,11 +192,11 @@
       "type": ["object", "null"], "additionalProperties": false,
       "required": ["sequence", "operation_id", "state_digest", "semantic_state", "history", "history_digest"],
       "properties": {
-        "sequence": {"type": "integer", "minimum": 0},
+        "sequence": {"type": "integer", "minimum": 0, "maximum": 4096},
         "operation_id": {"type": ["string", "null"], "pattern": "^operation:[a-z0-9][a-z0-9-]{2,63}$"},
         "state_digest": {"$ref": "#/$defs/digest"},
         "semantic_state": {"type": "array", "maxItems": 128, "items": {"$ref": "#/$defs/stateEntry"}},
-        "history": {"type": "array", "maxItems": 64, "items": {"$ref": "#/$defs/historyEntry"}},
+        "history": {"type": "array", "maxItems": 4096, "items": {"$ref": "#/$defs/historyEntry"}},
         "history_digest": {"$ref": "#/$defs/digest"}
       }
     },
