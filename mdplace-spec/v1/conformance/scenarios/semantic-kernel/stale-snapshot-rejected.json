@@ -58,10 +58,11 @@
               "operation_id": "operation:001",
               "idempotency_key": "idempotency:001",
               "command_digest": "372e21c0f4e9a353d29eed992057369ec7f4cacc6de07aa070e1172271d43eb2",
-              "operation_digest": "cfeed52063285cfc3d25775bc77675639195a10682b774e5ccf75c155893f6c9"
+              "operation_digest": "cfeed52063285cfc3d25775bc77675639195a10682b774e5ccf75c155893f6c9",
+              "canonical_record": "{\"$schema\":\"semantic-operation.schema.json\",\"actor_authority\":{\"actor_id\":\"person:owner-001\",\"actor_kind\":\"vault_owner\",\"authority_ref\":\"authority:vault-owner-001\"},\"base_references\":[{\"kind\":\"semantic_head\",\"operation_id\":null,\"ordinal\":0,\"sequence\":0,\"state_digest\":\"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"}],\"closure_receipt\":{\"command_id\":\"command:001\",\"operation_id\":\"operation:001\",\"outcome\":\"accepted\",\"receipt_id\":\"receipt:001\",\"sequence\":1,\"state_digest\":\"fa346467e0189c1ff1b12a1c1294ca93ebee37500f9d7b704b92cc012ea91529\"},\"command_id\":\"command:001\",\"idempotency\":{\"command_digest\":\"372e21c0f4e9a353d29eed992057369ec7f4cacc6de07aa070e1172271d43eb2\",\"key\":\"idempotency:001\"},\"operation_digest\":\"cfeed52063285cfc3d25775bc77675639195a10682b774e5ccf75c155893f6c9\",\"operation_id\":\"operation:001\",\"operation_kind\":\"semantic_assignment\",\"ordering\":{\"predecessor_operation_id\":null,\"sequence\":1,\"sort_key\":\"000001:command:001\"},\"payload\":{\"events\":[{\"event_id\":\"event:001-001\",\"event_kind\":\"semantic_assignment\",\"ordinal\":0,\"payload\":{\"key\":\"note:001/placement\",\"value\":\"cat:research\"},\"schema_version\":\"1.0.0\"}]},\"preconditions\":[],\"schema_id\":\"mdplace.semantic-operation/v1\",\"schema_version\":\"1.0.0\"}\n"
             }
           ],
-          "history_digest": "9219e3d40a7b39159cdfccdd522b8414bf4d63442681785cf58863fad07c6c5d"
+          "history_digest": "49ef4a03fb64b2cd9aa368db93e6fa1b27a5292ee54a174e9136f45a172ef4cb"
         },
         "supplied_view": [],
         "crash_point": null,

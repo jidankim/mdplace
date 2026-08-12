@@ -1,10 +1,12 @@
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {
   baseMatches,
+  canonicalJson,
   commandDigestFromAction,
   isRecognizedOperationKind,
   operationFromAction,
   preconditionsMatch,
+  semanticSnapshot,
   stateEntriesAreCanonical,
   stateFromEntries,
   stateLabel,
@@ -53,7 +55,7 @@ async function observeAppend(document, packageRoot) {
   if (result.code !== null) return rejected(result.code, document, state, {illegal: result.code === 'semantic.illegal_transition'});
   return observed({
     verdict: 'pass',
-    outputs: ['append accepted', `canonical_record:${result.operation.operation_id}`, `semantic_state:${stateLabel(result.state)}`, `snapshot_state:${stateLabel(result.state)}`],
+    outputs: ['append accepted', `canonical_record:${result.operation.operation_id}`, `semantic_state:${stateLabel(result.state)}`],
     operations: ['validate actor authority', 'resolve idempotency material', 'compare exact semantic head', 'validate operation preconditions', 'append canonical operation'],
     receipts: [`SemanticAppendReceipt:${result.operation.closure_receipt.receipt_id}`],
     effects: ['append one immutable canonical operation'],
@@ -83,6 +85,7 @@ async function observeReplay(document, packageRoot, rebuild = false) {
     });
   }
   const state = stateLabel(result.state);
+  const snapshot = semanticSnapshot(result.state, result.head, result.history);
   if (rebuild) {
     return observed({
       verdict: 'pass', outputs: ['view rebuilt', `semantic_state:${state}`, `rebuilt_view:${state}`],
@@ -91,7 +94,7 @@ async function observeReplay(document, packageRoot, rebuild = false) {
     });
   }
   return observed({
-    verdict: 'pass', outputs: ['replay accepted', `semantic_state:${state}`, `snapshot_state:${state}`],
+    verdict: 'pass', outputs: ['replay accepted', `semantic_state:${state}`, `semantic_snapshot:${canonicalJson(snapshot)}`],
     operations: ['validate canonical operation records', 'order operations deterministically', 'replay semantic state', 'emit Semantic Snapshot'],
     receipts: ['SemanticReplayReceipt'],
   });

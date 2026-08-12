@@ -72,7 +72,7 @@
       "required": ["key", "value"],
       "properties": {
         "key": {"type": "string", "pattern": "^[a-z][a-z0-9-]{1,31}:[a-z0-9][a-z0-9/._-]{1,127}$"},
-        "value": {"type": ["string", "null"], "maxLength": 1024}
+        "value": {"type": ["string", "null"], "maxLength": 1024, "pattern": "^(?!.*[\\uD800-\\uDFFF]).*$"}
       }
     },
     "assignmentEvent": {
@@ -88,7 +88,7 @@
           "required": ["key", "value"],
           "properties": {
             "key": {"type": "string", "pattern": "^[a-z][a-z0-9-]{1,31}:[a-z0-9][a-z0-9/._-]{1,127}$"},
-            "value": {"type": "string", "maxLength": 1024}
+            "value": {"type": "string", "maxLength": 1024, "pattern": "^(?!.*[\\uD800-\\uDFFF]).*$"}
           }
         }
       }
@@ -160,7 +160,7 @@
         "ordinal": {"type": "integer", "minimum": 0, "maximum": 31},
         "kind": {"const": "semantic_value"},
         "key": {"type": "string", "pattern": "^[a-z][a-z0-9-]{1,31}:[a-z0-9][a-z0-9/._-]{1,127}$"},
-        "expected_value": {"type": ["string", "null"], "maxLength": 1024}
+        "expected_value": {"type": ["string", "null"], "maxLength": 1024, "pattern": "^(?!.*[\\uD800-\\uDFFF]).*$"}
       }
     },
     "closureReceipt": {

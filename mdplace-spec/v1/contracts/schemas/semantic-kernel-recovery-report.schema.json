@@ -37,8 +37,14 @@
       "properties": {
         "replay_snapshot_equivalence": {
           "type": "object", "additionalProperties": false,
-          "required": ["fixture_ids", "semantic_state_sha256"],
-          "properties": {"fixture_ids": {"$ref": "#/$defs/fixtureIds", "minItems": 2, "maxItems": 2}, "semantic_state_sha256": {"$ref": "#/$defs/digest"}}
+          "required": ["fixture_ids", "semantic_state_sha256", "semantic_snapshot_sha256", "idempotency_history_sha256", "idempotency_probe_code"],
+          "properties": {
+            "fixture_ids": {"$ref": "#/$defs/fixtureIds", "minItems": 2, "maxItems": 2},
+            "semantic_state_sha256": {"$ref": "#/$defs/digest"},
+            "semantic_snapshot_sha256": {"$ref": "#/$defs/digest"},
+            "idempotency_history_sha256": {"$ref": "#/$defs/digest"},
+            "idempotency_probe_code": {"const": "semantic.operation_duplicate"}
+          }
         },
         "rebuild_deterministic": {
           "type": "object", "additionalProperties": false,

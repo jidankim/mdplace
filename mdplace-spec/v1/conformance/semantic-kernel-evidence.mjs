@@ -3,6 +3,7 @@ import {isDeepStrictEqual} from 'node:util';
 
 import {observeFixture} from './fixture-observer.mjs';
 import {canonicalJson} from './semantic-kernel-core.mjs';
+import {replayRecords} from './semantic-kernel-replay.mjs';
 import {readPackageFile} from './safe-path.mjs';
 
 const replayFixtureIds = ['FIX-SK-POS-005', 'FIX-SK-POS-006'];
@@ -58,8 +59,29 @@ export async function semanticKernelEvidenceCodes(packageRoot, evidence, entries
   const replay = evidence?.claims?.replay_snapshot_equivalence;
   const replayResults = replayFixtureIds.map((id) => observedById.get(id)?.observed);
   const replayStates = replayResults.map((result) => result?.outputs?.find((output) => output.startsWith('semantic_state:')));
+  const replaySnapshots = replayResults.map((result) => result?.outputs?.find((output) => output.startsWith('semantic_snapshot:')));
+  const parsedReplaySnapshots = replaySnapshots.map((snapshot) => {
+    if (snapshot === undefined) return undefined;
+    try {
+      return JSON.parse(snapshot.slice('semantic_snapshot:'.length));
+    } catch {
+      return undefined;
+    }
+  });
+  const replayHistories = parsedReplaySnapshots.map((snapshot) =>
+    snapshot === undefined ? undefined : canonicalJson(snapshot.history));
+  const probeRecord = observedById.get(replayFixtureIds[0])?.fixture?.subject?.document?.action?.records?.[0];
+  const probeInputs = observedById.get(replayFixtureIds[0])?.fixture?.subject?.document?.initial?.bound_inputs ?? [];
+  const probeResults = typeof probeRecord === 'string' && parsedReplaySnapshots.every((snapshot) => snapshot !== undefined)
+    ? await Promise.all(parsedReplaySnapshots.map((snapshot) => replayRecords([probeRecord], snapshot, probeInputs, packageRoot)))
+    : [];
   if (!sameOrder(replay?.fixture_ids, replayFixtureIds) || replayStates.some((state) => state === undefined) ||
-      replayStates[0] !== replayStates[1] || sha256(replayStates[0] ?? '') !== replay?.semantic_state_sha256) {
+      replaySnapshots.some((snapshot) => snapshot === undefined) || replayHistories.some((history) => history === undefined) ||
+      replayStates[0] !== replayStates[1] || replaySnapshots[0] !== replaySnapshots[1] || replayHistories[0] !== replayHistories[1] ||
+      sha256(replayStates[0] ?? '') !== replay?.semantic_state_sha256 ||
+      sha256(replaySnapshots[0] ?? '') !== replay?.semantic_snapshot_sha256 ||
+      sha256(replayHistories[0] ?? '') !== replay?.idempotency_history_sha256 ||
+      probeResults.length !== 2 || probeResults.some(({code}) => code !== replay?.idempotency_probe_code)) {
     codes.push('semantic.evidence_replay_equivalence_invalid');
   }
 

@@ -41,14 +41,14 @@
     {
       "fixture_id": "FIX-SK-POS-001",
       "path": "scenarios/semantic-kernel/valid-initial-append.json",
-      "fixture_sha256": "a06de7e407ae64901580d1afbba7fbd854d9451e3b51d28868d441b3a23447fe",
-      "observable_result_sha256": "43fd131464cc9489e613ef0432e308cd656493a3a8e8aa39d77a781692818ca0"
+      "fixture_sha256": "8b05e040103a7c12a718ffcbf95988f22c9f47e66b065f2a0d71317b7d5e0c1b",
+      "observable_result_sha256": "e6393e801318c012091896ec93ab5b53e9041a14a28408d133f0e54f1493eb0e"
     },
     {
       "fixture_id": "FIX-SK-POS-002",
       "path": "scenarios/semantic-kernel/valid-serialized-second-append.json",
-      "fixture_sha256": "45ed0ae72d68da71924e95d604893741e5b67e4d9a50769d0a7f39db3855c2e9",
-      "observable_result_sha256": "a68379469a43cf68a29e203cf994917e4da070bc04d9bfd6e0b727bce9c45bdf"
+      "fixture_sha256": "d63d236845bc2b09adacc77eadad09fd73b57413c406c394cab6810318396a42",
+      "observable_result_sha256": "e65f4bc7e5417f782a0283c3d7a1e6efc9284817a5fa84f9d2c71cd208f5dee8"
     },
     {
       "fixture_id": "FIX-SK-NEG-010",
@@ -149,19 +149,19 @@
     {
       "fixture_id": "FIX-SK-POS-005",
       "path": "scenarios/semantic-kernel/full-replay-snapshot-equivalence.json",
-      "fixture_sha256": "8a94c96832be52a9d3a5166c5b79d294ee3d6bb39227727eec88f70558ade2f1",
-      "observable_result_sha256": "399116d4c42b767f1dee15592a25e184941272c5bf70d2c1be1b5bbd1ca057a2"
+      "fixture_sha256": "236a597e8e88fdbb828e5e72377a78ca19cc6e32d0085454a2c99a1461b296cf",
+      "observable_result_sha256": "87c255c81823bd2ffff3955641f107903fbae1050d306f945d60ac135ee216bd"
     },
     {
       "fixture_id": "FIX-SK-POS-006",
       "path": "scenarios/semantic-kernel/snapshot-suffix-equivalence.json",
-      "fixture_sha256": "71833f49f29c7fb776dcfaaed119443ea949a722785ebce19dd672b411a96bfc",
-      "observable_result_sha256": "399116d4c42b767f1dee15592a25e184941272c5bf70d2c1be1b5bbd1ca057a2"
+      "fixture_sha256": "1b5dc653a285209d024d4cdf0f5ff6a7d4c19e2e989f009ee6d9cf9e5606bc03",
+      "observable_result_sha256": "87c255c81823bd2ffff3955641f107903fbae1050d306f945d60ac135ee216bd"
     },
     {
       "fixture_id": "FIX-SK-STATE-002",
       "path": "scenarios/semantic-kernel/stale-snapshot-rejected.json",
-      "fixture_sha256": "22e54123afe23cf1e40a15dad269d0adfd9cdd61192312099a9d6ee8d7419aa1",
+      "fixture_sha256": "c0d10702ae338a31e1650e601ddce6ddbac090dd3d7d903de3878b7021f580fc",
       "observable_result_sha256": "7b3c10fcef4c01d733a07de0a60aaf3542726f69d34770614daddcc494eee3c4"
     },
     {
@@ -173,7 +173,7 @@
     {
       "fixture_id": "FIX-SK-NEG-008",
       "path": "scenarios/semantic-kernel/snapshot-idempotency-conflict-rejected.json",
-      "fixture_sha256": "759981de1496f2280277e0b9b357fb744a19aed0384769ec62234e0e6e0d293c",
+      "fixture_sha256": "ec5cddb6d164e1ffaaec0ec9689c91d4e8a20c898d13abfa5dc10369793e962e",
       "observable_result_sha256": "5b6d7b2edc69baee866795596d935ac46f4693f35410ec0a9438b1040e45e208"
     },
     {
@@ -185,8 +185,8 @@
     {
       "fixture_id": "FIX-SK-POS-010",
       "path": "scenarios/semantic-kernel/recognized-forward-compatible-record.json",
-      "fixture_sha256": "2c7effa3ad1ca93a252601d68dc4eaafdf885a35c4dc9bd30858386301d7eadb",
-      "observable_result_sha256": "399116d4c42b767f1dee15592a25e184941272c5bf70d2c1be1b5bbd1ca057a2"
+      "fixture_sha256": "4f56762a00b78147e52a2bb2c57ed41dc4a728eea1ebcf307024ce2ba145e1e6",
+      "observable_result_sha256": "9a7d58c3096e1b16563a96fb787d10fce017079078ab26f66138798b033182ea"
     },
     {
       "fixture_id": "FIX-SK-NEG-007",
@@ -225,7 +225,10 @@
         "FIX-SK-POS-005",
         "FIX-SK-POS-006"
       ],
-      "semantic_state_sha256": "58a6bd79bd97649bd1d10c3452f37ba4d52bc91eaaefacea0a5d26c382c14af8"
+      "semantic_state_sha256": "58a6bd79bd97649bd1d10c3452f37ba4d52bc91eaaefacea0a5d26c382c14af8",
+      "semantic_snapshot_sha256": "bb24baf89086770698b53369c745d9e8c35c5ee2595c913c639480a551457c21",
+      "idempotency_history_sha256": "839f5aeb0cf27b0690877aed4109016ca4527b0dbe65e0b520e69ab699e48919",
+      "idempotency_probe_code": "semantic.operation_duplicate"
     },
     "rebuild_deterministic": {
       "fixture_id": "FIX-SK-POS-007",

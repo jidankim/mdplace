@@ -3,7 +3,10 @@ import {createHash} from 'node:crypto';
 export function canonicalJson(value) {
   if (Array.isArray(value)) return `[${value.map(canonicalJson).join(',')}]`;
   if (value !== null && typeof value === 'object') {
-    return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonicalJson(value[key])}`).join(',')}}`;
+    return `{${Object.keys(value).sort().map((key) => `${canonicalJson(key)}:${canonicalJson(value[key])}`).join(',')}}`;
+  }
+  if (typeof value === 'string' && /[\uD800-\uDFFF]/u.test(value)) {
+    throw new TypeError('canonical JSON rejects lone Unicode surrogates');
   }
   return JSON.stringify(value);
 }
@@ -119,6 +122,17 @@ export function snapshotHistoryIsCanonical(snapshot) {
     idempotencyKeys.add(entry.idempotency_key);
   }
   return (history.at(-1)?.operation_id ?? null) === snapshot.operation_id;
+}
+
+export function semanticSnapshot(state, head, history) {
+  return {
+    history,
+    history_digest: snapshotHistoryDigest(history),
+    operation_id: head.operationId,
+    semantic_state: stateEntries(state),
+    sequence: head.sequence,
+    state_digest: stateDigest(state),
+  };
 }
 
 export function baseMatches(baseReferences, head, state, boundInputs = []) {

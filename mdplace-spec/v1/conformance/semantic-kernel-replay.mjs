@@ -10,7 +10,7 @@ import {
   preconditionsMatch,
   snapshotHistoryIsCanonical,
   stateDigest,
-  stateFromEntries,
+  stateEntries,
 } from './semantic-kernel-core.mjs';
 import {semanticActorHasCapability} from './semantic-kernel-authority.mjs';
 
@@ -21,7 +21,13 @@ async function validateRecord(record, packageRoot) {
   } catch {
     return {code: 'semantic.record_torn', operation: null};
   }
-  if (`${canonicalJson(operation)}\n` !== record) return {code: 'semantic.record_noncanonical', operation: null};
+  let canonicalRecord;
+  try {
+    canonicalRecord = `${canonicalJson(operation)}\n`;
+  } catch {
+    return {code: 'semantic.record_noncanonical', operation: null};
+  }
+  if (canonicalRecord !== record) return {code: 'semantic.record_noncanonical', operation: null};
   const errors = await validateAgainstSchemaPath(packageRoot, 'contracts/schemas/semantic-operation.schema.json', operation);
   if (schemaErrorCode(errors) !== null) return {code: 'semantic.record_malformed', operation: null};
   if (operation.schema_version !== '1.0.0') return {code: 'semantic.schema_version_unsupported', operation: null};
@@ -35,25 +41,34 @@ async function validateRecord(record, packageRoot) {
 }
 
 export async function replayRecords(records, snapshot, boundInputs, packageRoot) {
-  const state = snapshot === null ? new Map() : stateFromEntries(snapshot.semantic_state);
-  let head = snapshot === null
-    ? {sequence: 0, operationId: null}
-    : {sequence: snapshot.sequence, operationId: snapshot.operation_id};
-  if (snapshot !== null && (stateDigest(state) !== snapshot.state_digest || !snapshotHistoryIsCanonical(snapshot))) {
-    return {code: 'semantic.snapshot_stale', state: new Map(), head: {sequence: 0, operationId: null}};
+  let state = new Map();
+  let head = {sequence: 0, operationId: null};
+  let history = [];
+  if (snapshot !== null) {
+    if (!snapshotHistoryIsCanonical(snapshot)) return {code: 'semantic.snapshot_stale', state, head};
+    const prefix = await replayRecords(snapshot.history.map(({canonical_record: record}) => record), null, boundInputs, packageRoot);
+    if (prefix.code !== null || prefix.head.sequence !== snapshot.sequence ||
+        prefix.head.operationId !== snapshot.operation_id || stateDigest(prefix.state) !== snapshot.state_digest ||
+        canonicalJson(stateEntries(prefix.state)) !== canonicalJson(snapshot.semantic_state) ||
+        canonicalJson(prefix.history) !== canonicalJson(snapshot.history)) {
+      return {code: 'semantic.snapshot_stale', state, head};
+    }
+    state = prefix.state;
+    head = prefix.head;
+    history = prefix.history;
   }
   const parsed = [];
   for (const record of records) {
     const result = await validateRecord(record, packageRoot);
     if (result.code !== null) return {code: result.code, state, head};
-    parsed.push(result.operation);
+    parsed.push({operation: result.operation, canonicalRecord: record});
   }
-  const ordered = parsed.toSorted((left, right) =>
+  const ordered = parsed.toSorted(({operation: left}, {operation: right}) =>
     left.ordering.sequence - right.ordering.sequence || compareCanonicalText(left.ordering.sort_key, right.ordering.sort_key));
-  const seenCommands = new Map((snapshot?.history ?? [])
+  const seenCommands = new Map(history
     .map(({idempotency_key: key, command_digest: digest}) => [key, digest]));
-  const seenOperations = new Set((snapshot?.history ?? []).map(({operation_id: operationId}) => operationId));
-  for (const operation of ordered) {
+  const seenOperations = new Set(history.map(({operation_id: operationId}) => operationId));
+  for (const {operation, canonicalRecord} of ordered) {
     if (!isRecognizedOperationKind(operation.operation_kind)) return {code: 'semantic.operation_unknown', state, head};
     if (!await semanticActorHasCapability(packageRoot, operation.actor_authority, 'append')) {
       return {code: 'semantic.authority_denied', state, head};
@@ -84,6 +99,14 @@ export async function replayRecords(records, snapshot, boundInputs, packageRoot)
     head = {sequence: operation.ordering.sequence, operationId: operation.operation_id};
     seenCommands.set(operation.idempotency.key, operation.idempotency.command_digest);
     seenOperations.add(operation.operation_id);
+    history.push({
+      sequence: operation.ordering.sequence,
+      operation_id: operation.operation_id,
+      operation_digest: operation.operation_digest,
+      idempotency_key: operation.idempotency.key,
+      command_digest: operation.idempotency.command_digest,
+      canonical_record: canonicalRecord,
+    });
   }
-  return {code: null, state, head};
+  return {code: null, state, head, history};
 }

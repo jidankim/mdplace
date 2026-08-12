@@ -8,11 +8,13 @@ import test from 'node:test';
 
 import {observeFixture} from './fixture-observer.mjs';
 import {validateAgainstSchemaPath} from './json-schema.mjs';
+import {semanticKernelEvidenceCodes} from './semantic-kernel-evidence.mjs';
 import {
   baseMatches,
   canonicalJson,
   commandDigestFromAction,
   commandDigestFromOperation,
+  snapshotHistoryDigest,
   stateDigest,
 } from './semantic-kernel-core.mjs';
 
@@ -157,6 +159,80 @@ test('public validator counts every manifest-owned semantic fixture regardless o
   } finally {
     await rm(temporaryRoot, {recursive: true, force: true});
   }
+});
+
+test('full replay and snapshot suffix expose the same complete idempotency-bound snapshot', async () => {
+  const [fullReplayFixture, suffixReplayFixture, evidence, manifest] = await Promise.all([
+    readFile(new URL('./scenarios/semantic-kernel/full-replay-snapshot-equivalence.json', import.meta.url), 'utf8'),
+    readFile(new URL('./scenarios/semantic-kernel/snapshot-suffix-equivalence.json', import.meta.url), 'utf8'),
+    readFile(new URL('./evidence/semantic-kernel-recovery-report.json', import.meta.url), 'utf8'),
+    readFile(new URL('./manifest.yaml', import.meta.url), 'utf8'),
+  ]).then((documents) => documents.map(JSON.parse));
+
+  const [fullReplay, suffixReplay] = await Promise.all([
+    observeFixture(fullReplayFixture, packageRoot),
+    observeFixture(suffixReplayFixture, packageRoot),
+  ]);
+  const snapshots = [fullReplay, suffixReplay].map((result) => {
+    const output = result.outputs.find((candidate) => candidate.startsWith('semantic_snapshot:'));
+    assert.notEqual(output, undefined);
+    return JSON.parse(output.slice('semantic_snapshot:'.length));
+  });
+
+  assert.deepEqual(snapshots[0], snapshots[1]);
+  assert.deepEqual(Object.keys(snapshots[0]), [
+    'history',
+    'history_digest',
+    'operation_id',
+    'semantic_state',
+    'sequence',
+    'state_digest',
+  ]);
+  assert.equal(snapshots[0].history.length, 2);
+  assert.ok(snapshots[0].history.every(({operation_digest: digest}) => /^[a-f0-9]{64}$/.test(digest)));
+
+  evidence.claims.replay_snapshot_equivalence.idempotency_history_sha256 = '0'.repeat(64);
+  const semanticEntries = manifest.fixtures.filter(({fixture_id: id}) => id.startsWith('FIX-SK-'));
+  const codes = await semanticKernelEvidenceCodes(packageRoot, evidence, semanticEntries);
+  assert.ok(codes.includes('semantic.evidence_replay_equivalence_invalid'));
+});
+
+test('snapshot replay revalidates canonical prefix records instead of trusting self-hashed history', async () => {
+  const fixture = JSON.parse(await readFile(
+    new URL('./scenarios/semantic-kernel/snapshot-suffix-equivalence.json', import.meta.url),
+    'utf8',
+  ));
+  fixture.subject.document.action.snapshot.history[0].operation_digest = 'a'.repeat(64);
+  fixture.subject.document.action.snapshot.history_digest = snapshotHistoryDigest(
+    fixture.subject.document.action.snapshot.history,
+  );
+
+  const observed = await observeFixture(fixture, packageRoot);
+
+  assert.deepEqual(observed.codes, ['semantic.snapshot_stale']);
+  assert.ok(observed.outputs.includes('semantic_state:[]'));
+});
+
+test('JCS boundary rejects lone Unicode surrogates without rejecting scalar Unicode', async () => {
+  const fixture = JSON.parse(await readFile(
+    new URL('./scenarios/semantic-kernel/valid-initial-append.json', import.meta.url),
+    'utf8',
+  ));
+  const scalarFixture = structuredClone(fixture);
+  scalarFixture.subject.document.action.payload.events[0].payload.value = '😀';
+  scalarFixture.subject.document.action.command_digest = commandDigestFromAction(scalarFixture.subject.document.action);
+  fixture.subject.document.action.payload.events[0].payload.value = '\uDEAD';
+
+  const [observed, scalarObserved] = await Promise.all([
+    observeFixture(fixture, packageRoot),
+    observeFixture(scalarFixture, packageRoot),
+  ]);
+
+  assert.deepEqual(observed.operations, ['validate Semantic Kernel scenario']);
+  assert.ok(observed.codes[0].startsWith('schema.'));
+  assert.equal(scalarObserved.verdict, 'pass');
+  assert.equal(canonicalJson({value: '😀'}), '{"value":"😀"}');
+  assert.throws(() => canonicalJson({value: '\uDEAD'}), /lone Unicode surrogates/);
 });
 
 test('exact base matching rejects duplicate substitution for an ordered input', () => {
