@@ -1,0 +1,62 @@
+{
+  "$schema": "../schemas/agent-state.schema.json",
+  "schema_id": "mdplace.agent-state/v1",
+  "persistent_agent_id": "agent:primary-001",
+  "instance_id": "agent-instance:001",
+  "vault_id": "vault:001",
+  "state": "ready",
+  "supervisor": "launchd_launchagent",
+  "semantic_authority": "none",
+  "writer_lock": {
+    "lock_id": "writer-lock:vault-001",
+    "epoch": 1,
+    "owner_agent_id": "agent:primary-001",
+    "token_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "retained": true
+  },
+  "readiness_gates": [
+    {
+      "ordinal": 1,
+      "gate": "exclusive_writer",
+      "verdict": "pass",
+      "receipt_id": "readiness-receipt:001"
+    },
+    {
+      "ordinal": 2,
+      "gate": "vault_filesystem",
+      "verdict": "pass",
+      "receipt_id": "readiness-receipt:002"
+    },
+    {
+      "ordinal": 3,
+      "gate": "semantic_kernel",
+      "verdict": "pass",
+      "receipt_id": "readiness-receipt:003"
+    },
+    {
+      "ordinal": 4,
+      "gate": "compatibility",
+      "verdict": "pass",
+      "receipt_id": "readiness-receipt:004"
+    },
+    {
+      "ordinal": 5,
+      "gate": "derived_views",
+      "verdict": "pass",
+      "receipt_id": "readiness-receipt:005"
+    },
+    {
+      "ordinal": 6,
+      "gate": "work_journal",
+      "verdict": "pass",
+      "receipt_id": "readiness-receipt:006"
+    },
+    {
+      "ordinal": 7,
+      "gate": "control_channel",
+      "verdict": "pass",
+      "receipt_id": "readiness-receipt:007"
+    }
+  ],
+  "control_channel_state": "open"
+}

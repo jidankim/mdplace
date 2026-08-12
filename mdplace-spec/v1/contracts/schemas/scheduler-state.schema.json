@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:scheduler-state:v1",
+  "title": "mdplace bounded Scheduler state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "scheduler_id", "agent_id", "journal_head_sequence", "journal_head_digest", "semantic_authority", "readiness", "limits", "eligible_queue", "active_leases"],
+  "properties": {
+    "$schema": {"const": "../schemas/scheduler-state.schema.json"},
+    "schema_id": {"const": "mdplace.scheduler-state/v1"},
+    "scheduler_id": {"type": "string", "pattern": "^scheduler:[a-z0-9-]{3,64}$"},
+    "agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
+    "journal_head_sequence": {"type": "integer", "minimum": 0, "maximum": 1000000},
+    "journal_head_digest": {"$ref": "#/$defs/digest"},
+    "semantic_authority": {"const": "none"},
+    "readiness": {"enum": ["blocked", "ready", "draining"]},
+    "limits": {"$ref": "#/$defs/limits"},
+    "eligible_queue": {"type": "array", "maxItems": 10000, "items": {"$ref": "#/$defs/queueEntry"}},
+    "active_leases": {"type": "array", "maxItems": 8, "items": {"$ref": "#/$defs/leaseRef"}}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_concurrent_work", "max_concurrent_child_work", "lease_duration_ticks", "max_recovery_interruptions", "retry_delays_ms"],
+      "properties": {
+        "max_concurrent_work": {"const": 8},
+        "max_concurrent_child_work": {"const": 4},
+        "lease_duration_ticks": {"const": 300},
+        "max_recovery_interruptions": {"const": 2},
+        "retry_delays_ms": {"const": [1000, 5000]}
+      }
+    },
+    "queueEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["work_id", "work_version", "priority", "eligible_tick", "input_digest"],
+      "properties": {
+        "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
+        "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "priority": {"type": "integer", "minimum": 0, "maximum": 7},
+        "eligible_tick": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "input_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "leaseRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lease_id", "work_id", "work_version", "owner_agent_id", "expires_tick"],
+      "properties": {
+        "lease_id": {"type": "string", "pattern": "^lease:[a-z0-9-]{3,64}$"},
+        "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
+        "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "owner_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
+        "expires_tick": {"type": "integer", "minimum": 1, "maximum": 1000300}
+      }
+    }
+  }
+}

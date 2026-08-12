@@ -1,0 +1,30 @@
+{
+  "$schema": "../schemas/control-channel-command.schema.json",
+  "schema_id": "mdplace.control-channel-command/v1",
+  "protocol_version": "1.0",
+  "transport": "unix_domain_socket",
+  "socket_directory_mode": "0700",
+  "socket_mode": "0600",
+  "vault_id": "vault:001",
+  "request_id": "request:status-001",
+  "command_id": "control-command:status-001",
+  "command_kind": "status",
+  "command_version": 1,
+  "idempotency_key": "idempotency:status-001",
+  "payload_digest": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "peer": {
+    "effective_uid": 501,
+    "peer_uid": 501,
+    "peer_credentials_verified": true,
+    "local_transport": true,
+    "vault_scope": "vault:001"
+  },
+  "base_references": [],
+  "limits": {
+    "request_bytes": 1024,
+    "response_bytes": 4096,
+    "timeout_ms": 5000,
+    "concurrency": 8
+  },
+  "semantic_authority": "none"
+}

@@ -1,0 +1,99 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-CP-BND-001",
+  "category": "exact_boundary",
+  "requirement_ids": [
+    "REQ-CP-001",
+    "REQ-CP-002",
+    "REQ-CP-003",
+    "REQ-CP-004",
+    "REQ-CP-005",
+    "REQ-CP-006",
+    "REQ-CP-007",
+    "REQ-CP-008",
+    "REQ-CP-009",
+    "REQ-CP-010"
+  ],
+  "subject": {
+    "kind": "control_plane",
+    "schema": "contracts/schemas/control-plane-scenario.schema.json",
+    "document": {
+      "schema_id": "mdplace.control-plane-scenario/v1",
+      "scenario_id": "CP-005",
+      "initial": {
+        "agent_state": "ready",
+        "persistent_agent_id": "agent:primary-001",
+        "writer_owner_agent_id": "agent:primary-001",
+        "writer_epoch": 1,
+        "journal_available": true,
+        "semantic_dependency_available": true,
+        "journal_head_sequence": 1,
+        "work": {
+          "work_id": "work:001",
+          "work_version": 4,
+          "state": "executing",
+          "idempotency_key": "idempotency:work-001",
+          "input_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "retry_count": 2,
+          "retry_ceiling": 2,
+          "lease_id": "lease:001",
+          "owner_agent_id": "agent:primary-001",
+          "cancellation_id": null,
+          "resume_count": 0,
+          "resume_ceiling": 1,
+          "completion_receipt_id": null
+        },
+        "control_channel": {
+          "state": "open",
+          "vault_id": "vault:001",
+          "protocol_version": "1.0",
+          "command_version": 1,
+          "same_user_authenticated": true,
+          "local_transport": true
+        },
+        "prior_receipts": [],
+        "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "action": {
+        "kind": "fail",
+        "actor_role": "mdplace_agent",
+        "work_id": "work:001",
+        "expected_work_version": 4,
+        "lease_id": "lease:001",
+        "idempotency_key": null,
+        "proposed_work_input_digest": null,
+        "retryable": true,
+        "command_version": null,
+        "command_vault_id": null,
+        "candidate_agent_id": null,
+        "completion_receipt_present": false,
+        "interruption_count": 0,
+        "semantic_write_requested": false,
+        "authority_source": "none"
+      }
+    }
+  },
+  "expected": {
+    "verdict": "pass",
+    "codes": [],
+    "outputs": [
+      "retry ceiling produced terminal failure",
+      "work_state:failed",
+      "semantic_state_digest:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    ],
+    "operations": [
+      "validate failure receipt",
+      "compare retry ceiling",
+      "append terminal failure"
+    ],
+    "receipts": [
+      "TerminalFailureReceipt:work:001"
+    ],
+    "filesystem_effects": [
+      "append durable terminal failure"
+    ],
+    "terminal_state": "failed",
+    "illegal_transition": false
+  }
+}

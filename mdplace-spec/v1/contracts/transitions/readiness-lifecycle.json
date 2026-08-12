@@ -1,0 +1,294 @@
+{
+  "$schema": "../schemas/transition-table.schema.json",
+  "schema_id": "mdplace.transition-table/v1",
+  "table_id": "TRANS-CP-READINESS",
+  "lifecycle": "fail-closed mdplace Agent Readiness Gate",
+  "version": "1.0.0",
+  "states": [
+    "starting",
+    "ready",
+    "blocked"
+  ],
+  "commands": [
+    "evaluate_readiness",
+    "dependency_lost"
+  ],
+  "transitions": [
+    {
+      "transition_id": "TR-CPREADY-001",
+      "command_or_event": "evaluate_readiness",
+      "from_state": "starting",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "evaluate_readiness exact bases and budgets validate"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "evaluate_readiness_receipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original receipt"
+      },
+      "terminal_state": "ready",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Re-read the durable receipt and exact current bases."
+    },
+    {
+      "transition_id": "TR-CPREADY-002",
+      "command_or_event": "dependency_lost",
+      "from_state": "starting",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "dependency_lost exact bases and budgets validate"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "dependency_lost_receipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original receipt"
+      },
+      "terminal_state": "blocked",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Re-read the durable receipt and exact current bases."
+    },
+    {
+      "transition_id": "TR-CPREADY-003",
+      "command_or_event": "evaluate_readiness",
+      "from_state": "ready",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "evaluate_readiness exact bases and budgets validate"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "evaluate_readiness_receipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original receipt"
+      },
+      "terminal_state": "ready",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Re-read the durable receipt and exact current bases."
+    },
+    {
+      "transition_id": "TR-CPREADY-004",
+      "command_or_event": "dependency_lost",
+      "from_state": "ready",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "dependency_lost exact bases and budgets validate"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "dependency_lost_receipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original receipt"
+      },
+      "terminal_state": "blocked",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Re-read the durable receipt and exact current bases."
+    },
+    {
+      "transition_id": "TR-CPREADY-005",
+      "command_or_event": "evaluate_readiness",
+      "from_state": "blocked",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "evaluate_readiness exact bases and budgets validate"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "evaluate_readiness_receipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original receipt"
+      },
+      "terminal_state": "ready",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Re-read the durable receipt and exact current bases."
+    },
+    {
+      "transition_id": "TR-CPREADY-006",
+      "command_or_event": "dependency_lost",
+      "from_state": "blocked",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "dependency_lost exact bases and budgets validate"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "dependency_lost_receipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original receipt"
+      },
+      "terminal_state": "blocked",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Re-read the durable receipt and exact current bases."
+    }
+  ]
+}

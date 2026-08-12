@@ -42,6 +42,13 @@ export const requiredSchemaPaths = [
   'contracts/schemas/semantic-kernel-scenario.schema.json',
   'contracts/schemas/semantic-kernel-recovery-report.schema.json',
   'contracts/schemas/semantic-receipt.schema.json',
+  'contracts/schemas/work-journal.schema.json',
+  'contracts/schemas/scheduler-state.schema.json',
+  'contracts/schemas/agent-state.schema.json',
+  'contracts/schemas/control-channel-command.schema.json',
+  'contracts/schemas/control-plane-recovery-matrix.schema.json',
+  'contracts/schemas/control-plane-scenario.schema.json',
+  'contracts/schemas/control-plane-recovery-report.schema.json',
 ];
 
 export const requiredCandidateFoundationSlots = [

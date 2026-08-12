@@ -1,0 +1,265 @@
+import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
+
+const authorityByAction = new Map([
+  ['enqueue', 'work_submitter'],
+  ['dispatch', 'scheduler'],
+  ['acknowledge', 'mdplace_agent'],
+  ['fail', 'mdplace_agent'],
+  ['retry', 'scheduler'],
+  ['cancel', 'vault_owner'],
+  ['resume', 'vault_owner'],
+  ['restart', 'launchd_supervisor'],
+  ['recover', 'mdplace_agent'],
+  ['readiness_check', 'mdplace_agent'],
+  ['control_command', 'control_client'],
+  ['acquire_writer', 'mdplace_agent'],
+]);
+
+function observed(initial, action, {
+  verdict = 'pass', codes = [], outputs, operations, receipts,
+  effects = ['none'], terminal, illegal = false, work = initial.work,
+}) {
+  const completeOutputs = [...outputs, `work_state:${work?.state ?? 'none'}`];
+  const completeOperations = [...operations];
+  if (action.semantic_write_requested) {
+    completeOutputs.push(`semantic_write:denied:${action.authority_source}`);
+    completeOperations.push('deny control-plane semantic write');
+  }
+  completeOutputs.push(`semantic_state_digest:${initial.semantic_state_digest}`);
+  return {
+    verdict, codes, outputs: completeOutputs, operations: completeOperations, receipts,
+    filesystem_effects: effects, terminal_state: terminal, illegal_transition: illegal,
+  };
+}
+
+function rejected(initial, action, code, {illegal = false, terminal = 'rejected'} = {}) {
+  return observed(initial, action, {
+    verdict: 'fail', codes: [code], outputs: [`${action.kind} rejected`],
+    operations: ['validate control-plane command and exact bases'],
+    receipts: [`ControlPlaneRejectionReceipt:${code}`], terminal, illegal,
+  });
+}
+
+function exactWorkBase(initial, action) {
+  return initial.work !== null && action.work_id === initial.work.work_id &&
+    action.expected_work_version === initial.work.work_version;
+}
+
+function workStateIsConsistent(work) {
+  if (work === null) return true;
+  const leased = work.state === 'leased' || work.state === 'executing';
+  return leased
+    ? typeof work.lease_id === 'string' && typeof work.owner_agent_id === 'string'
+    : work.lease_id === null && work.owner_agent_id === null;
+}
+
+function enqueue(initial, action) {
+  if (!initial.journal_available) return rejected(initial, action, 'control.journal_unavailable', {terminal: 'blocked'});
+  if (initial.work !== null) {
+    const compatible = action.work_id === initial.work.work_id &&
+      action.idempotency_key === initial.work.idempotency_key &&
+      action.proposed_work_input_digest === initial.work.input_digest;
+    if (!compatible) return rejected(initial, action, 'control.idempotency_incompatible');
+    return observed(initial, action, {
+      outputs: ['enqueue idempotent'], operations: ['read Work Journal', 'resolve idempotency binding'],
+      receipts: [`EnqueueReceipt:${initial.work.work_id}`], terminal: initial.work.state,
+    });
+  }
+  if (action.work_id === null || action.idempotency_key === null || action.proposed_work_input_digest === null) {
+    return rejected(initial, action, 'control.enqueue_binding_missing');
+  }
+  const work = {
+    work_id: action.work_id, work_version: 1, state: 'queued', idempotency_key: action.idempotency_key,
+    input_digest: action.proposed_work_input_digest, retry_count: 0, retry_ceiling: 2,
+    lease_id: null, owner_agent_id: null, cancellation_id: null,
+    resume_count: 0, resume_ceiling: 1, completion_receipt_id: null,
+  };
+  return observed(initial, action, {
+    outputs: [action.interruption_count > 0 ? 'enqueue recovered after process loss' : 'enqueue accepted'],
+    operations: ['validate Work Journal availability', 'resolve idempotency binding', 'append enqueue record', 'read committed enqueue after interruption'],
+    receipts: [`EnqueueReceipt:${work.work_id}`], effects: ['append durable Work Journal record'],
+    terminal: 'queued', work,
+  });
+}
+
+function dispatch(initial, action) {
+  if (initial.agent_state !== 'ready' || initial.writer_owner_agent_id !== initial.persistent_agent_id) {
+    return rejected(initial, action, 'control.agent_not_ready', {terminal: 'blocked'});
+  }
+  if (initial.work?.state === 'leased' || initial.work?.state === 'executing') {
+    return rejected(initial, action, 'control.owner_conflict', {terminal: initial.work.state});
+  }
+  if (!exactWorkBase(initial, action)) return rejected(initial, action, 'control.work_version_stale');
+  if (!['queued', 'retry_wait'].includes(initial.work.state) || action.lease_id === null) {
+    return rejected(initial, action, 'control.illegal_transition', {illegal: true, terminal: initial.work.state});
+  }
+  const work = {...initial.work, work_version: initial.work.work_version + 1, state: 'leased', lease_id: action.lease_id, owner_agent_id: initial.persistent_agent_id};
+  return observed(initial, action, {
+    outputs: ['dispatch accepted', 'dequeue acknowledged after receipt'],
+    operations: ['validate Agent readiness', 'compare Work Item version', 'publish Work Lease receipt', 'acknowledge dequeue'],
+    receipts: [`WorkLeaseReceipt:${action.lease_id}`], effects: ['append durable Work Lease record'], terminal: 'leased', work,
+  });
+}
+
+function acknowledge(initial, action) {
+  if (!exactWorkBase(initial, action)) return rejected(initial, action, 'control.work_version_stale');
+  if (initial.work.state !== 'leased' || action.lease_id !== initial.work.lease_id) {
+    return rejected(initial, action, 'control.lease_stale', {terminal: initial.work.state});
+  }
+  const work = {...initial.work, work_version: initial.work.work_version + 1, state: 'executing'};
+  return observed(initial, action, {
+    outputs: ['execution acknowledged'], operations: ['compare Work Lease', 'append execution receipt'],
+    receipts: [`ExecutionReceipt:${work.work_id}`], effects: ['append durable execution record'], terminal: 'executing', work,
+  });
+}
+
+function fail(initial, action) {
+  if (!exactWorkBase(initial, action)) return rejected(initial, action, 'control.work_version_stale');
+  if (initial.work.state !== 'executing' || action.lease_id !== initial.work.lease_id) {
+    return rejected(initial, action, 'control.lease_stale', {terminal: initial.work.state});
+  }
+  if (action.retryable && initial.work.retry_count < initial.work.retry_ceiling) {
+    const work = {...initial.work, work_version: initial.work.work_version + 1, state: 'retry_wait', retry_count: initial.work.retry_count + 1, lease_id: null, owner_agent_id: null};
+    return observed(initial, action, {
+      outputs: ['retry recorded', `retry_delay_ms:${work.retry_count === 1 ? 1000 : 5000}`],
+      operations: ['validate failure receipt', 'consume retry budget', 'append retry record'],
+      receipts: [`RetryReceipt:${work.work_id}:${work.retry_count}`], effects: ['append durable retry record'], terminal: 'retry_wait', work,
+    });
+  }
+  const work = {...initial.work, work_version: initial.work.work_version + 1, state: 'failed', lease_id: null, owner_agent_id: null, completion_receipt_id: 'receipt:terminal-failure'};
+  return observed(initial, action, {
+    outputs: ['retry ceiling produced terminal failure'],
+    operations: ['validate failure receipt', 'compare retry ceiling', 'append terminal failure'],
+    receipts: [`TerminalFailureReceipt:${work.work_id}`], effects: ['append durable terminal failure'], terminal: 'failed', work,
+  });
+}
+
+function retry(initial, action) {
+  if (initial.work?.state === 'failed' || initial.work?.retry_count >= initial.work?.retry_ceiling) {
+    return rejected(initial, action, 'control.retry_ceiling_exceeded', {illegal: true, terminal: initial.work?.state ?? 'rejected'});
+  }
+  if (!exactWorkBase(initial, action) || initial.work.state !== 'retry_wait') {
+    return rejected(initial, action, 'control.illegal_transition', {illegal: true, terminal: initial.work?.state ?? 'rejected'});
+  }
+  return dispatch(initial, {...action, kind: 'dispatch'});
+}
+
+function cancel(initial, action) {
+  if (!exactWorkBase(initial, action)) return rejected(initial, action, 'control.work_version_stale');
+  if (!['queued', 'leased', 'executing', 'retry_wait'].includes(initial.work.state)) {
+    return rejected(initial, action, 'control.illegal_transition', {illegal: true, terminal: initial.work.state});
+  }
+  const wasExecuting = initial.work.state === 'executing';
+  const work = {...initial.work, work_version: initial.work.work_version + 1, state: 'cancelled', lease_id: null, owner_agent_id: null, cancellation_id: `cancel:${initial.work.work_id.slice(5)}`};
+  return observed(initial, action, {
+    outputs: [wasExecuting ? 'in-flight cancellation durable' : 'queued cancellation durable'],
+    operations: ['compare Work Item version', 'append cancellation record', ...(wasExecuting ? ['revoke Child Work Invocation'] : [])],
+    receipts: [`CancellationReceipt:${work.cancellation_id}`], effects: ['append durable cancellation record', ...(wasExecuting ? ['terminate Child Work Invocation capability'] : [])],
+    terminal: 'cancelled', work,
+  });
+}
+
+function resume(initial, action) {
+  if (!exactWorkBase(initial, action)) return rejected(initial, action, 'control.work_version_stale');
+  if (initial.work.state !== 'cancelled' || initial.work.resume_count >= initial.work.resume_ceiling) {
+    return rejected(initial, action, 'control.resume_budget_exhausted', {illegal: true, terminal: initial.work.state});
+  }
+  const work = {...initial.work, work_version: initial.work.work_version + 1, state: 'queued', resume_count: initial.work.resume_count + 1};
+  return observed(initial, action, {
+    outputs: ['cancelled work resumed within bound'],
+    operations: ['authenticate vault owner', 'compare cancelled Work Item version', 'consume resume budget', 'append resume record'],
+    receipts: [`ResumeReceipt:${work.work_id}:${work.resume_count}`], effects: ['append durable resume record'], terminal: 'queued', work,
+  });
+}
+
+function restart(initial, action) {
+  if (!initial.journal_available || !initial.semantic_dependency_available) return rejected(initial, action, 'control.readiness_dependency_unavailable', {terminal: 'blocked'});
+  const outputs = initial.work?.state === 'cancelled' ? ['cancelled work preserved after restart']
+    : initial.work?.state === 'queued' ? ['queued work available after Agent restart']
+      : initial.work?.state === 'succeeded' ? ['completed work not repeated after restart'] : ['Agent restart reconciled'];
+  return observed(initial, action, {
+    outputs,
+    operations: ['acquire Exclusive Writer Lock', 'validate vault and filesystem profile', 'validate Semantic Kernel', 'validate compatibility', 'rebuild disposable views', 'reconcile Work Journal', 'open Control Channel'],
+    receipts: [`AgentRestartReceipt:${initial.persistent_agent_id}`], terminal: 'ready',
+  });
+}
+
+function recover(initial, action) {
+  if (!initial.journal_available) return rejected(initial, action, 'control.journal_unavailable', {terminal: 'blocked'});
+  if (initial.work === null || !exactWorkBase(initial, action)) return rejected(initial, action, 'control.work_version_stale');
+  if (action.completion_receipt_present || initial.work.state === 'succeeded') {
+    return observed(initial, action, {
+      outputs: ['terminal completion preserved without repeat'], operations: ['read completion receipt', 'preserve terminal Work Item'],
+      receipts: [`WorkRecoveryReceipt:${initial.work.work_id}`], terminal: initial.work.state,
+    });
+  }
+  if (!['leased', 'executing'].includes(initial.work.state)) return rejected(initial, action, 'control.recovery_not_required', {illegal: true, terminal: initial.work.state});
+  const nextState = initial.work.state === 'executing' ? 'retry_wait' : 'queued';
+  const work = {...initial.work, work_version: initial.work.work_version + 1, state: nextState, retry_count: initial.work.state === 'executing' ? initial.work.retry_count + 1 : initial.work.retry_count, lease_id: null, owner_agent_id: null};
+  return observed(initial, action, {
+    outputs: [initial.work.state === 'executing' ? 'in-flight work recovered without duplicate' : 'leased work remains recoverable'],
+    operations: ['read Work Journal recovery bases', 'compare Work Lease and receipts', 'consume recovery interruption budget', 'append Work Recovery receipt'],
+    receipts: [`WorkRecoveryReceipt:${work.work_id}:${action.interruption_count}`], effects: ['append durable Work Recovery record'], terminal: nextState, work,
+  });
+}
+
+function readinessCheck(initial, action) {
+  const unavailable = !initial.journal_available ? 'control.readiness_journal_unavailable'
+    : !initial.semantic_dependency_available ? 'control.readiness_semantic_dependency_unavailable'
+      : initial.writer_owner_agent_id !== initial.persistent_agent_id ? 'control.readiness_writer_absent' : null;
+  if (unavailable !== null) return rejected(initial, action, unavailable, {terminal: 'blocked'});
+  return observed(initial, action, {
+    outputs: ['Readiness Gate passed'], operations: ['check Work Journal', 'check semantic dependency', 'check Exclusive Writer Lock'],
+    receipts: ['ReadinessReceipt:ready'], terminal: 'ready',
+  });
+}
+
+function controlCommand(initial, action) {
+  if (initial.control_channel.state !== 'open' || !initial.control_channel.same_user_authenticated || !initial.control_channel.local_transport || action.command_vault_id !== initial.control_channel.vault_id) {
+    return rejected(initial, action, 'control.authentication_denied');
+  }
+  if (action.command_version !== initial.control_channel.command_version) return rejected(initial, action, 'control.command_stale');
+  return observed(initial, action, {
+    outputs: ['authenticated local Control Command accepted'],
+    operations: ['verify Unix-domain transport', 'verify same-user peer credentials', 'verify vault scope', 'compare command version', 'admit Control Command'],
+    receipts: [`ControlCommandReceipt:${action.command_version}`], terminal: 'ready',
+  });
+}
+
+function acquireWriter(initial, action) {
+  if (initial.writer_owner_agent_id !== null) return rejected(initial, action, 'control.writer_owner_conflict', {terminal: 'blocked'});
+  if (action.candidate_agent_id !== initial.persistent_agent_id) return rejected(initial, action, 'control.writer_identity_invalid', {terminal: 'blocked'});
+  return observed(initial, action, {
+    outputs: ['Exclusive Writer Lock acquired', 'Exclusive Writer Lock retained'],
+    operations: ['compare writer epoch', 'acquire Exclusive Writer Lock', 'revalidate lock token', 'retain Exclusive Writer Lock'],
+    receipts: [`WriterLockReceipt:${action.candidate_agent_id}:${initial.writer_epoch + 1}`],
+    effects: ['create protected per-vault writer lock'], terminal: 'ready',
+  });
+}
+
+export async function observeControlPlaneScenario(subject, packageRoot) {
+  const errors = await validateAgainstSchemaPath(packageRoot, subject.schema, subject.document);
+  const schemaCode = schemaErrorCode(errors);
+  if (schemaCode !== null) {
+    return {verdict: 'fail', codes: [schemaCode], outputs: ['scenario rejected'], operations: ['validate control-plane scenario'], receipts: ['ControlPlaneRejectionReceipt:schema'], filesystem_effects: ['none'], terminal_state: 'rejected', illegal_transition: false};
+  }
+  const {action, initial} = subject.document;
+  if (!workStateIsConsistent(initial.work)) return rejected(initial, action, 'control.work_state_invalid');
+  if (action.semantic_write_requested === (action.authority_source === 'none')) return rejected(initial, action, 'control.semantic_authority_binding_invalid');
+  if (authorityByAction.get(action.kind) !== action.actor_role) return rejected(initial, action, 'control.actor_authority_denied');
+  switch (action.kind) {
+    case 'enqueue': return enqueue(initial, action);
+    case 'dispatch': return dispatch(initial, action);
+    case 'acknowledge': return acknowledge(initial, action);
+    case 'fail': return fail(initial, action);
+    case 'retry': return retry(initial, action);
+    case 'cancel': return cancel(initial, action);
+    case 'resume': return resume(initial, action);
+    case 'restart': return restart(initial, action);
+    case 'recover': return recover(initial, action);
+    case 'readiness_check': return readinessCheck(initial, action);
+    case 'control_command': return controlCommand(initial, action);
+    case 'acquire_writer': return acquireWriter(initial, action);
+    default: throw new Error('scenario schema allowed an unknown control-plane action');
+  }
+}

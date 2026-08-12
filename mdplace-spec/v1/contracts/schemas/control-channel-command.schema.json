@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:control-channel-command:v1",
+  "title": "mdplace local authenticated Control Command",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "protocol_version", "transport", "socket_directory_mode", "socket_mode", "vault_id", "request_id", "command_id", "command_kind", "command_version", "idempotency_key", "payload_digest", "peer", "base_references", "limits", "semantic_authority"],
+  "properties": {
+    "$schema": {"const": "../schemas/control-channel-command.schema.json"},
+    "schema_id": {"const": "mdplace.control-channel-command/v1"},
+    "protocol_version": {"const": "1.0"},
+    "transport": {"const": "unix_domain_socket"},
+    "socket_directory_mode": {"const": "0700"},
+    "socket_mode": {"const": "0600"},
+    "vault_id": {"type": "string", "pattern": "^vault:[a-z0-9-]{3,64}$"},
+    "request_id": {"type": "string", "pattern": "^request:[a-z0-9-]{3,64}$"},
+    "command_id": {"type": "string", "pattern": "^control-command:[a-z0-9-]{3,64}$"},
+    "command_kind": {"enum": ["status", "doctor", "enqueue", "cancel", "resume", "shutdown"]},
+    "command_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
+    "idempotency_key": {"type": "string", "pattern": "^idempotency:[a-z0-9-]{3,64}$"},
+    "payload_digest": {"$ref": "#/$defs/digest"},
+    "peer": {"$ref": "#/$defs/peer"},
+    "base_references": {"type": "array", "maxItems": 16, "uniqueItems": true, "items": {"$ref": "#/$defs/baseReference"}},
+    "limits": {"$ref": "#/$defs/limits"},
+    "semantic_authority": {"const": "none"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "peer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["effective_uid", "peer_uid", "peer_credentials_verified", "local_transport", "vault_scope"],
+      "properties": {
+        "effective_uid": {"type": "integer", "minimum": 1, "maximum": 2147483647},
+        "peer_uid": {"type": "integer", "minimum": 1, "maximum": 2147483647},
+        "peer_credentials_verified": {"type": "boolean"},
+        "local_transport": {"type": "boolean"},
+        "vault_scope": {"type": "string", "pattern": "^vault:[a-z0-9-]{3,64}$"}
+      }
+    },
+    "baseReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "reference_id", "version", "digest"],
+      "properties": {
+        "kind": {"enum": ["work_item", "semantic_head", "policy", "mutation_plan"]},
+        "reference_id": {"type": "string", "pattern": "^(work|semantic|policy|plan):[a-z0-9-]{3,64}$"},
+        "version": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["request_bytes", "response_bytes", "timeout_ms", "concurrency"],
+      "properties": {
+        "request_bytes": {"type": "integer", "minimum": 1, "maximum": 65536},
+        "response_bytes": {"type": "integer", "minimum": 1, "maximum": 1048576},
+        "timeout_ms": {"type": "integer", "minimum": 1, "maximum": 5000},
+        "concurrency": {"type": "integer", "minimum": 1, "maximum": 8}
+      }
+    }
+  }
+}

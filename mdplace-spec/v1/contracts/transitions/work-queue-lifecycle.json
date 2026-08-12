@@ -1,0 +1,1173 @@
+{
+  "$schema": "../schemas/transition-table.schema.json",
+  "schema_id": "mdplace.transition-table/v1",
+  "table_id": "TRANS-CP-WORK-QUEUE",
+  "lifecycle": "Work Item durable queue and ownership",
+  "version": "1.0.0",
+  "states": [
+    "absent",
+    "queued",
+    "leased",
+    "executing",
+    "terminal"
+  ],
+  "commands": [
+    "enqueue_work",
+    "dispatch_work",
+    "acknowledge_work",
+    "complete_work",
+    "recover_work"
+  ],
+  "transitions": [
+    {
+      "transition_id": "TR-CPQUEUE-001",
+      "command_or_event": "enqueue_work",
+      "from_state": "absent",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "work_submitter"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "enqueue_work exact bases and budgets validate"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "enqueue_work_receipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original receipt"
+      },
+      "terminal_state": "queued",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Re-read the durable receipt and exact current bases."
+    },
+    {
+      "transition_id": "TR-CPQUEUE-002",
+      "command_or_event": "dispatch_work",
+      "from_state": "absent",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "scheduler"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "dispatch_work is not legal from absent"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original denial"
+      },
+      "terminal_state": "absent",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Use a command legal from the current durable state."
+    },
+    {
+      "transition_id": "TR-CPQUEUE-003",
+      "command_or_event": "acknowledge_work",
+      "from_state": "absent",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "acknowledge_work is not legal from absent"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original denial"
+      },
+      "terminal_state": "absent",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Use a command legal from the current durable state."
+    },
+    {
+      "transition_id": "TR-CPQUEUE-004",
+      "command_or_event": "complete_work",
+      "from_state": "absent",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "complete_work is not legal from absent"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original denial"
+      },
+      "terminal_state": "absent",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Use a command legal from the current durable state."
+    },
+    {
+      "transition_id": "TR-CPQUEUE-005",
+      "command_or_event": "recover_work",
+      "from_state": "absent",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "recover_work is not legal from absent"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original denial"
+      },
+      "terminal_state": "absent",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Use a command legal from the current durable state."
+    },
+    {
+      "transition_id": "TR-CPQUEUE-006",
+      "command_or_event": "enqueue_work",
+      "from_state": "queued",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "work_submitter"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "enqueue_work exact bases and budgets validate"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "enqueue_work_receipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original receipt"
+      },
+      "terminal_state": "queued",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Re-read the durable receipt and exact current bases."
+    },
+    {
+      "transition_id": "TR-CPQUEUE-007",
+      "command_or_event": "dispatch_work",
+      "from_state": "queued",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "scheduler"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "dispatch_work exact bases and budgets validate"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "dispatch_work_receipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original receipt"
+      },
+      "terminal_state": "leased",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Re-read the durable receipt and exact current bases."
+    },
+    {
+      "transition_id": "TR-CPQUEUE-008",
+      "command_or_event": "acknowledge_work",
+      "from_state": "queued",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "acknowledge_work is not legal from queued"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original denial"
+      },
+      "terminal_state": "queued",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Use a command legal from the current durable state."
+    },
+    {
+      "transition_id": "TR-CPQUEUE-009",
+      "command_or_event": "complete_work",
+      "from_state": "queued",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "complete_work is not legal from queued"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original denial"
+      },
+      "terminal_state": "queued",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Use a command legal from the current durable state."
+    },
+    {
+      "transition_id": "TR-CPQUEUE-010",
+      "command_or_event": "recover_work",
+      "from_state": "queued",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "recover_work exact bases and budgets validate"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "recover_work_receipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original receipt"
+      },
+      "terminal_state": "queued",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Re-read the durable receipt and exact current bases."
+    },
+    {
+      "transition_id": "TR-CPQUEUE-011",
+      "command_or_event": "enqueue_work",
+      "from_state": "leased",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "work_submitter"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "enqueue_work is not legal from leased"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original denial"
+      },
+      "terminal_state": "leased",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Use a command legal from the current durable state."
+    },
+    {
+      "transition_id": "TR-CPQUEUE-012",
+      "command_or_event": "dispatch_work",
+      "from_state": "leased",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "scheduler"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "dispatch_work is not legal from leased"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original denial"
+      },
+      "terminal_state": "leased",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Use a command legal from the current durable state."
+    },
+    {
+      "transition_id": "TR-CPQUEUE-013",
+      "command_or_event": "acknowledge_work",
+      "from_state": "leased",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "acknowledge_work exact bases and budgets validate"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "acknowledge_work_receipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original receipt"
+      },
+      "terminal_state": "executing",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Re-read the durable receipt and exact current bases."
+    },
+    {
+      "transition_id": "TR-CPQUEUE-014",
+      "command_or_event": "complete_work",
+      "from_state": "leased",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "complete_work is not legal from leased"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original denial"
+      },
+      "terminal_state": "leased",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Use a command legal from the current durable state."
+    },
+    {
+      "transition_id": "TR-CPQUEUE-015",
+      "command_or_event": "recover_work",
+      "from_state": "leased",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "recover_work exact bases and budgets validate"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "recover_work_receipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original receipt"
+      },
+      "terminal_state": "queued",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Re-read the durable receipt and exact current bases."
+    },
+    {
+      "transition_id": "TR-CPQUEUE-016",
+      "command_or_event": "enqueue_work",
+      "from_state": "executing",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "work_submitter"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "enqueue_work is not legal from executing"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original denial"
+      },
+      "terminal_state": "executing",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Use a command legal from the current durable state."
+    },
+    {
+      "transition_id": "TR-CPQUEUE-017",
+      "command_or_event": "dispatch_work",
+      "from_state": "executing",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "scheduler"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "dispatch_work is not legal from executing"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original denial"
+      },
+      "terminal_state": "executing",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Use a command legal from the current durable state."
+    },
+    {
+      "transition_id": "TR-CPQUEUE-018",
+      "command_or_event": "acknowledge_work",
+      "from_state": "executing",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "acknowledge_work is not legal from executing"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original denial"
+      },
+      "terminal_state": "executing",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Use a command legal from the current durable state."
+    },
+    {
+      "transition_id": "TR-CPQUEUE-019",
+      "command_or_event": "complete_work",
+      "from_state": "executing",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "complete_work exact bases and budgets validate"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "complete_work_receipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original receipt"
+      },
+      "terminal_state": "terminal",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Re-read the durable receipt and exact current bases."
+    },
+    {
+      "transition_id": "TR-CPQUEUE-020",
+      "command_or_event": "recover_work",
+      "from_state": "executing",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "recover_work exact bases and budgets validate"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "recover_work_receipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original receipt"
+      },
+      "terminal_state": "queued",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Re-read the durable receipt and exact current bases."
+    },
+    {
+      "transition_id": "TR-CPQUEUE-021",
+      "command_or_event": "enqueue_work",
+      "from_state": "terminal",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "work_submitter"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "enqueue_work is not legal from terminal"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original denial"
+      },
+      "terminal_state": "terminal",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Use a command legal from the current durable state."
+    },
+    {
+      "transition_id": "TR-CPQUEUE-022",
+      "command_or_event": "dispatch_work",
+      "from_state": "terminal",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "scheduler"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "dispatch_work is not legal from terminal"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original denial"
+      },
+      "terminal_state": "terminal",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Use a command legal from the current durable state."
+    },
+    {
+      "transition_id": "TR-CPQUEUE-023",
+      "command_or_event": "acknowledge_work",
+      "from_state": "terminal",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "acknowledge_work is not legal from terminal"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original denial"
+      },
+      "terminal_state": "terminal",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Use a command legal from the current durable state."
+    },
+    {
+      "transition_id": "TR-CPQUEUE-024",
+      "command_or_event": "complete_work",
+      "from_state": "terminal",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "complete_work is not legal from terminal"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original denial"
+      },
+      "terminal_state": "terminal",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Use a command legal from the current durable state."
+    },
+    {
+      "transition_id": "TR-CPQUEUE-025",
+      "command_or_event": "recover_work",
+      "from_state": "terminal",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "recover_work exact bases and budgets validate"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "recover_work_receipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original receipt"
+      },
+      "terminal_state": "terminal",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Re-read the durable receipt and exact current bases."
+    }
+  ]
+}

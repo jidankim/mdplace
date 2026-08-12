@@ -21,6 +21,18 @@ export async function checkSchemaInstances(packageRoot, conformance) {
     ['contracts/verdicts/validator-verdicts.json', 'contracts/schemas/verdict-table.schema.json'],
     ['contracts/semantic-operation-kinds.json', 'contracts/schemas/semantic-operation-kind-registry.schema.json'],
     ['contracts/transitions/semantic-kernel-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
+    ['contracts/control-plane/work-journal.json', 'contracts/schemas/work-journal.schema.json'],
+    ['contracts/control-plane/scheduler-state.json', 'contracts/schemas/scheduler-state.schema.json'],
+    ['contracts/control-plane/agent-state.json', 'contracts/schemas/agent-state.schema.json'],
+    ['contracts/control-plane/control-command.json', 'contracts/schemas/control-channel-command.schema.json'],
+    ['contracts/control-plane/recovery-matrix.json', 'contracts/schemas/control-plane-recovery-matrix.schema.json'],
+    ['contracts/transitions/work-queue-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
+    ['contracts/transitions/retry-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
+    ['contracts/transitions/cancellation-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
+    ['contracts/transitions/readiness-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
+    ['contracts/transitions/agent-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
+    ['contracts/transitions/control-channel-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
+    ['contracts/transitions/exclusive-writer-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
     ['conformance/manifest.yaml', 'contracts/schemas/conformance-manifest.schema.json'],
     ['traceability.yaml', 'contracts/schemas/traceability.schema.json'],
     ['claims-and-evidence.yaml', 'contracts/schemas/claims-and-evidence.schema.json'],
@@ -28,6 +40,7 @@ export async function checkSchemaInstances(packageRoot, conformance) {
     ['conformance/evidence/envelopes/validator-evidence-reference.json', 'contracts/schemas/evidence-envelope.schema.json'],
     ['conformance/evidence/evidence-recovery-report.json', 'contracts/schemas/evidence-recovery-report.schema.json'],
     ['conformance/evidence/semantic-kernel-recovery-report.json', 'contracts/schemas/semantic-kernel-recovery-report.schema.json'],
+    ['conformance/evidence/control-plane-recovery-report.json', 'contracts/schemas/control-plane-recovery-report.schema.json'],
   ];
   const fixtureEntries = Array.isArray(conformance?.fixtures) ? conformance.fixtures : [];
   for (const entry of fixtureEntries) {

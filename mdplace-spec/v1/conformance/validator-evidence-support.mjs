@@ -3,7 +3,7 @@ import {readFile, writeFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 
 export const extensionId = 'mdplace.validator-extension/evidence/v1';
-export const validatorVersion = '1.1.0';
+export const validatorVersion = '1.2.0';
 export const digest = (value) => createHash('sha256').update(value).digest('hex');
 export const committedPackageRoot = fileURLToPath(new URL('../', import.meta.url));
 

@@ -38,7 +38,7 @@ async function subjectArtifact(packageRoot, kind) {
     package_series: 'mdplace-spec/v1',
     release_version: '1.0.0',
     validator_id: 'mdplace.package-validator',
-    validator_version: '1.1.0',
+    validator_version: '1.2.0',
     table_ref: 'contracts/transitions/evidence-lifecycle.json',
     from_state: 'verdict_recorded',
     command: 'readback',

@@ -1,0 +1,294 @@
+{
+  "$schema": "../schemas/transition-table.schema.json",
+  "schema_id": "mdplace.transition-table/v1",
+  "table_id": "TRANS-CP-CONTROL-CHANNEL",
+  "lifecycle": "same-user local Control Channel",
+  "version": "1.0.0",
+  "states": [
+    "closed",
+    "open"
+  ],
+  "commands": [
+    "open_control_channel",
+    "submit_control_command",
+    "close_control_channel"
+  ],
+  "transitions": [
+    {
+      "transition_id": "TR-CPCHANNEL-001",
+      "command_or_event": "open_control_channel",
+      "from_state": "closed",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "open_control_channel exact bases and budgets validate"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "open_control_channel_receipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original receipt"
+      },
+      "terminal_state": "open",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Re-read the durable receipt and exact current bases."
+    },
+    {
+      "transition_id": "TR-CPCHANNEL-002",
+      "command_or_event": "submit_control_command",
+      "from_state": "closed",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "control_client"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "submit_control_command is not legal from closed"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original denial"
+      },
+      "terminal_state": "closed",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Use a command legal from the current durable state."
+    },
+    {
+      "transition_id": "TR-CPCHANNEL-003",
+      "command_or_event": "close_control_channel",
+      "from_state": "closed",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "close_control_channel exact bases and budgets validate"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "close_control_channel_receipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original receipt"
+      },
+      "terminal_state": "closed",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Re-read the durable receipt and exact current bases."
+    },
+    {
+      "transition_id": "TR-CPCHANNEL-004",
+      "command_or_event": "open_control_channel",
+      "from_state": "open",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "open_control_channel exact bases and budgets validate"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "open_control_channel_receipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original receipt"
+      },
+      "terminal_state": "open",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Re-read the durable receipt and exact current bases."
+    },
+    {
+      "transition_id": "TR-CPCHANNEL-005",
+      "command_or_event": "submit_control_command",
+      "from_state": "open",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "control_client"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "submit_control_command exact bases and budgets validate"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "submit_control_command_receipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original receipt"
+      },
+      "terminal_state": "open",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Re-read the durable receipt and exact current bases."
+    },
+    {
+      "transition_id": "TR-CPCHANNEL-006",
+      "command_or_event": "close_control_channel",
+      "from_state": "open",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "close_control_channel exact bases and budgets validate"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "close_control_channel_receipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original receipt"
+      },
+      "terminal_state": "closed",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Re-read the durable receipt and exact current bases."
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "$schema": "../schemas/work-journal.schema.json",
+  "schema_id": "mdplace.work-journal/v1",
+  "journal_id": "journal:vault-001",
+  "vault_id": "vault:001",
+  "head_sequence": 1,
+  "head_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "semantic_authority": "none",
+  "limits": {
+    "max_total_attempts": 3,
+    "retry_delays_ms": [
+      1000,
+      5000
+    ],
+    "max_recovery_interruptions": 2,
+    "max_resume_count": 1
+  },
+  "work_items": [
+    {
+      "work_id": "work:001",
+      "work_kind": "placement_evaluation",
+      "work_version": 1,
+      "state": "queued",
+      "idempotency_key": "idempotency:work-001",
+      "input_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "dependencies": [
+        "semantic:head-001"
+      ],
+      "budget": {
+        "max_attempts": 3,
+        "wall_time_ms": 900000,
+        "max_output_bytes": 10485760,
+        "max_child_processes": 1
+      },
+      "retry_count": 0,
+      "lease": null,
+      "cancellation": null,
+      "result": null
+    }
+  ],
+  "receipts": [
+    {
+      "receipt_id": "receipt:enqueue-001",
+      "receipt_kind": "enqueue",
+      "journal_sequence": 1,
+      "work_id": "work:001",
+      "work_version": 1,
+      "state": "queued",
+      "operation_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    }
+  ]
+}

@@ -1,0 +1,272 @@
+{
+  "$schema": "../../contracts/schemas/control-plane-recovery-report.schema.json",
+  "schema_id": "mdplace.control-plane-recovery-report/v1",
+  "package_series": "mdplace-spec/v1",
+  "release_version": "1.0.0",
+  "validator_version": "1.2.0",
+  "scenario_count": 25,
+  "fixture_ids": [
+    "FIX-CP-REC-001",
+    "FIX-CP-POS-001",
+    "FIX-CP-REC-002",
+    "FIX-CP-POS-002",
+    "FIX-CP-BND-001",
+    "FIX-CP-ILLEGAL-001",
+    "FIX-CP-POS-003",
+    "FIX-CP-POS-004",
+    "FIX-CP-REC-003",
+    "FIX-CP-POS-005",
+    "FIX-CP-REC-004",
+    "FIX-CP-REC-005",
+    "FIX-CP-REC-006",
+    "FIX-CP-POS-006",
+    "FIX-CP-NEG-001",
+    "FIX-CP-STATE-001",
+    "FIX-CP-STATE-002",
+    "FIX-CP-STATE-003",
+    "FIX-CP-AUTH-001",
+    "FIX-CP-AUTH-002",
+    "FIX-CP-AUTH-003",
+    "FIX-CP-POS-007",
+    "FIX-CP-AUTH-004",
+    "FIX-CP-POS-008",
+    "FIX-CP-AUTH-005"
+  ],
+  "fixture_bindings": [
+    {
+      "fixture_id": "FIX-CP-REC-001",
+      "path": "scenarios/control-plane/durable-enqueue-survives-process-loss.json",
+      "fixture_sha256": "bedca2a5ff49f55a1c3d77258e691f7fe86ed0b794ae66aa199185a2a5dac29e",
+      "observable_result_sha256": "8b6a55856e8e46cbe2f7695d179abfce229f3357611901ca9f259ab2be4b06c7"
+    },
+    {
+      "fixture_id": "FIX-CP-POS-001",
+      "path": "scenarios/control-plane/dequeue-acknowledges-after-receipt.json",
+      "fixture_sha256": "fba63a2af3638d77d8912bd0ea57326b8cb5959dba2338c42e9f829d878b1daa",
+      "observable_result_sha256": "f0521a55079c147cd2c188b571aa27035867489a5f3afdc8640e07fec1aa4f0d"
+    },
+    {
+      "fixture_id": "FIX-CP-REC-002",
+      "path": "scenarios/control-plane/leased-work-remains-recoverable.json",
+      "fixture_sha256": "1cbcdd16e89c23d822612d641468ff477d050d56aa963fe372e48201b2fff898",
+      "observable_result_sha256": "188dd1ea4e854f66f87e263e136b383ef1cf2a17792bf44aa3a215436bf7859e"
+    },
+    {
+      "fixture_id": "FIX-CP-POS-002",
+      "path": "scenarios/control-plane/first-retry-recorded.json",
+      "fixture_sha256": "e80a0df9dce1e353e849f86cd3ea7020761d00bca141aed6e477c4c29d96fe0e",
+      "observable_result_sha256": "997b20265a51ffb4e46f81627f529c7182eb8297bde09dc8c2141486e12d32d9"
+    },
+    {
+      "fixture_id": "FIX-CP-BND-001",
+      "path": "scenarios/control-plane/retry-ceiling-terminal-failure.json",
+      "fixture_sha256": "2180b742b69dcb35f629aced29bcc654738acd7d39791b7d36a50282fb14d347",
+      "observable_result_sha256": "0dcbfe24389c4d4d19e506874aa4cec594a3813965562889b4a522bb32fb5870"
+    },
+    {
+      "fixture_id": "FIX-CP-ILLEGAL-001",
+      "path": "scenarios/control-plane/retry-beyond-ceiling-denied.json",
+      "fixture_sha256": "0f9d60d6424de732755e9b0bdf0cc4fca3ea6a8ca4f94a15f3b352699fa6fb62",
+      "observable_result_sha256": "9744415332db50464f08faac3e7da35de99332bab34e1e042d018f977d7a038f"
+    },
+    {
+      "fixture_id": "FIX-CP-POS-003",
+      "path": "scenarios/control-plane/cancellation-before-dispatch-durable.json",
+      "fixture_sha256": "6ec15ea9034386cd08ffb6c7fc997e9c685775682eb515dac8afb11c0278e8bd",
+      "observable_result_sha256": "441c08152b2ea0841ea89fe32120d5a7919b599f422326e92ea454497d9e4874"
+    },
+    {
+      "fixture_id": "FIX-CP-POS-004",
+      "path": "scenarios/control-plane/cancellation-during-execution-durable.json",
+      "fixture_sha256": "eda3c3396e0fc36f33390178c655aa172f3f09f4880b86d5a55ba28743ba1e7a",
+      "observable_result_sha256": "2510d385db80c63ede4f259373d0900725ef763bfb0353fe7121b160a0c11531"
+    },
+    {
+      "fixture_id": "FIX-CP-REC-003",
+      "path": "scenarios/control-plane/cancelled-work-persists-restart.json",
+      "fixture_sha256": "8dd9391a25ce4a74c78181e0e7f141b17656314a0959bf635e31b19484552912",
+      "observable_result_sha256": "7c0a3524aa8e06d24a599738049772aa4e38f921a06ffeca8f6ce472f83b3347"
+    },
+    {
+      "fixture_id": "FIX-CP-POS-005",
+      "path": "scenarios/control-plane/authorized-bounded-resume-recorded.json",
+      "fixture_sha256": "91056aeb953450d3e809010dffa9603291b1ed3797b1de5cefb96839e1d4338a",
+      "observable_result_sha256": "68fd0b0245230c9bb4904de12f781628439d3c25486ea6b1d77d4e1d1ae13656"
+    },
+    {
+      "fixture_id": "FIX-CP-REC-004",
+      "path": "scenarios/control-plane/queued-work-resumes-agent-restart.json",
+      "fixture_sha256": "6329bb847a2d93a884d88f6c110dc19faefabd1afc454e39f5bc3b15d51b2195",
+      "observable_result_sha256": "58033c9e33deb7d6fe17b3d6252f59d0b80e3d89b1abe49c1a4641d1592c6c43"
+    },
+    {
+      "fixture_id": "FIX-CP-REC-005",
+      "path": "scenarios/control-plane/in-flight-work-recovers-agent-crash.json",
+      "fixture_sha256": "779f53cf1c0078b8517844b0726b0e4f2fd291d3ebb9464561bde4f1f94b0f29",
+      "observable_result_sha256": "516bde1bd9d1d780677dc5f67346bc6743472ec1d163db17d83a4fdb70b173dc"
+    },
+    {
+      "fixture_id": "FIX-CP-REC-006",
+      "path": "scenarios/control-plane/completed-work-not-repeated-restart.json",
+      "fixture_sha256": "d509d5063334e949544dda3d8643b5ddb004d2e34665c40614723176a949f54d",
+      "observable_result_sha256": "32d71f9600247084cf01edeee2630c82a5caf5028766d4523f941acfcd400016"
+    },
+    {
+      "fixture_id": "FIX-CP-POS-006",
+      "path": "scenarios/control-plane/duplicate-enqueue-idempotent.json",
+      "fixture_sha256": "7f21fc10a8a83105adb0efdc1d7036f7b62f0006900b33182d8681de93de2ec3",
+      "observable_result_sha256": "f0d1d29f765b32ff611e753cc7a869ed88d7a066f685a17934b7a4b0d838b0a7"
+    },
+    {
+      "fixture_id": "FIX-CP-NEG-001",
+      "path": "scenarios/control-plane/concurrent-duplicate-one-owner.json",
+      "fixture_sha256": "f7476b661594381d528aae297857103507ae7bdd09f09b8319fe77d83daa460c",
+      "observable_result_sha256": "ed4670f99e53441f258bb7a24e5e46a54f9496ee86e49223e95a3a61ba3ad49e"
+    },
+    {
+      "fixture_id": "FIX-CP-STATE-001",
+      "path": "scenarios/control-plane/stale-work-version-rejected.json",
+      "fixture_sha256": "80fa71954e88da833b4f8c4eb30c3ecb5e16320f32fc1660ffc7f2c7f238691a",
+      "observable_result_sha256": "478d24a53aaf20268e716f59b270f8156dd9dd5ecf1c3416009b3d5d9f6f28b2"
+    },
+    {
+      "fixture_id": "FIX-CP-STATE-002",
+      "path": "scenarios/control-plane/stale-lease-rejected.json",
+      "fixture_sha256": "3aaaa2055b9a06a1ab3a0600f308b1fd70ff590263396b68fb0dca82dfe5dbe9",
+      "observable_result_sha256": "20250447883932b53bc98d410f21a9fde05ee92c4cf58149e6ec99c1455fce51"
+    },
+    {
+      "fixture_id": "FIX-CP-STATE-003",
+      "path": "scenarios/control-plane/stale-control-command-rejected.json",
+      "fixture_sha256": "46917ae192901f5f4fac26452c648d06f6e301a1b9ff5d82b8dff0d80f108aee",
+      "observable_result_sha256": "8ae65b91aa91b92c49fd4d33fde6a424d6b009ca37b0477bf36458d4c983c6d8"
+    },
+    {
+      "fixture_id": "FIX-CP-AUTH-001",
+      "path": "scenarios/control-plane/readiness-work-journal-unavailable.json",
+      "fixture_sha256": "987ede72aaacd70abd89b81c406d6f08f11018b3a5f669106e020d48ce714e7d",
+      "observable_result_sha256": "5643b8847a183efef6192d9b0678968bf3406b2248c83190dc3501bc3bf08796"
+    },
+    {
+      "fixture_id": "FIX-CP-AUTH-002",
+      "path": "scenarios/control-plane/readiness-semantic-dependency-unavailable.json",
+      "fixture_sha256": "f24c56a5a652fbd2b38c1c7f6a9308e5b69a249182b677ba7efd45fd6cf997e4",
+      "observable_result_sha256": "bd8857c5282de5299fdfa8e854e15c747e31b46ac97c7fb9e56e2b546102dff6"
+    },
+    {
+      "fixture_id": "FIX-CP-AUTH-003",
+      "path": "scenarios/control-plane/readiness-exclusive-writer-absent.json",
+      "fixture_sha256": "89a0c7413534014c302b788475f568036d49cb69a7e45eb318f32211f03660b2",
+      "observable_result_sha256": "d9e7c6a5bbf71e22ed269b9304470dfcc1dc96fe76ff6d2255d76196b110f5d4"
+    },
+    {
+      "fixture_id": "FIX-CP-POS-007",
+      "path": "scenarios/control-plane/authenticated-local-control-access.json",
+      "fixture_sha256": "590a6d5db2e7249d60dab5febdcb9bbefb2f5a75c8259cecc52e24601f212d81",
+      "observable_result_sha256": "c0f40c41009d487ddb348c431bc505f5b851ec956e294a14605e6423d633ca7a"
+    },
+    {
+      "fixture_id": "FIX-CP-AUTH-004",
+      "path": "scenarios/control-plane/unauthenticated-nonlocal-control-denied.json",
+      "fixture_sha256": "94138974f7fa9e07ff9393232286f731721030a0e04160f3bb27f1a0b264f7b4",
+      "observable_result_sha256": "21a5ba15720e8923de9899b1578b50ff8e5e00d63511021e136de2ac5deba3b2"
+    },
+    {
+      "fixture_id": "FIX-CP-POS-008",
+      "path": "scenarios/control-plane/persistent-agent-acquires-retains-writer.json",
+      "fixture_sha256": "2661d55388833989e178e67c2b0bb2662c0a9f243b91542822736b356279e407",
+      "observable_result_sha256": "a83fa6a02d4e0bf6f24bda3af3a4fdd685ed53c8fceb93e22ffde61478c29d9e"
+    },
+    {
+      "fixture_id": "FIX-CP-AUTH-005",
+      "path": "scenarios/control-plane/competing-agent-writer-denied.json",
+      "fixture_sha256": "fa6af523306529ca13426bdfa35c6f7a3cc58bf90137fba97c5d4cc71a6e20f8",
+      "observable_result_sha256": "b5944b29d350b159e968a72680a0fe26c856de1f33e5aa24aa13c1f1d6c5826b"
+    }
+  ],
+  "recovery_matrix": {
+    "path": "contracts/control-plane/recovery-matrix.json",
+    "sha256": "fe6a84f46ebfab541060080f8da4e93f98065ebe35b65cf55fdbea5e2b91177a",
+    "case_ids": [
+      "RC-CP-001",
+      "RC-CP-002",
+      "RC-CP-003",
+      "RC-CP-004",
+      "RC-CP-005",
+      "RC-CP-006",
+      "RC-CP-007",
+      "RC-CP-008",
+      "RC-CP-009",
+      "RC-CP-010",
+      "RC-CP-011",
+      "RC-CP-012",
+      "RC-CP-013",
+      "RC-CP-014",
+      "RC-CP-015"
+    ]
+  },
+  "claims": {
+    "durable_queue": [
+      "FIX-CP-REC-001",
+      "FIX-CP-POS-001",
+      "FIX-CP-REC-002",
+      "FIX-CP-POS-006",
+      "FIX-CP-NEG-001"
+    ],
+    "retry_cancellation_resume": [
+      "FIX-CP-POS-002",
+      "FIX-CP-BND-001",
+      "FIX-CP-ILLEGAL-001",
+      "FIX-CP-POS-003",
+      "FIX-CP-POS-004",
+      "FIX-CP-REC-003",
+      "FIX-CP-POS-005"
+    ],
+    "stale_and_authority_denial": [
+      "FIX-CP-STATE-001",
+      "FIX-CP-STATE-002",
+      "FIX-CP-STATE-003",
+      "FIX-CP-AUTH-004",
+      "FIX-CP-AUTH-005"
+    ],
+    "readiness_and_writer": [
+      "FIX-CP-AUTH-001",
+      "FIX-CP-AUTH-002",
+      "FIX-CP-AUTH-003",
+      "FIX-CP-POS-008",
+      "FIX-CP-AUTH-005"
+    ],
+    "crash_recovery": [
+      "FIX-CP-REC-001",
+      "FIX-CP-REC-002",
+      "FIX-CP-REC-003",
+      "FIX-CP-REC-004",
+      "FIX-CP-REC-005",
+      "FIX-CP-REC-006"
+    ],
+    "semantic_truth_preserved": {
+      "authority_sources": [
+        "work_journal",
+        "scheduler",
+        "mdplace_agent",
+        "child_work",
+        "control_channel",
+        "readiness",
+        "retry",
+        "queue"
+      ],
+      "fixture_ids": [
+        "FIX-CP-REC-001",
+        "FIX-CP-POS-001",
+        "FIX-CP-POS-002",
+        "FIX-CP-REC-004",
+        "FIX-CP-REC-005",
+        "FIX-CP-POS-006",
+        "FIX-CP-AUTH-001",
+        "FIX-CP-POS-007"
+      ],
+      "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    }
+  }
+}
+

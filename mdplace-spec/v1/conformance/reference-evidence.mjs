@@ -3,5 +3,6 @@ export function isReferenceEvidence(path) {
     path.startsWith('conformance/evidence/claims/') ||
     path.startsWith('conformance/evidence/invocations/') ||
     path === 'conformance/evidence/evidence-recovery-report.json' ||
-    path === 'conformance/evidence/semantic-kernel-recovery-report.json';
+    path === 'conformance/evidence/semantic-kernel-recovery-report.json' ||
+    path === 'conformance/evidence/control-plane-recovery-report.json';
 }

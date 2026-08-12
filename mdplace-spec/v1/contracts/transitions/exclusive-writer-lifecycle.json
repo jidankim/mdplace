@@ -1,0 +1,294 @@
+{
+  "$schema": "../schemas/transition-table.schema.json",
+  "schema_id": "mdplace.transition-table/v1",
+  "table_id": "TRANS-CP-EXCLUSIVE-WRITER",
+  "lifecycle": "per-vault Exclusive Writer Lock",
+  "version": "1.0.0",
+  "states": [
+    "unheld",
+    "held"
+  ],
+  "commands": [
+    "acquire_writer",
+    "retain_writer",
+    "release_writer"
+  ],
+  "transitions": [
+    {
+      "transition_id": "TR-CPWRITER-001",
+      "command_or_event": "acquire_writer",
+      "from_state": "unheld",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "acquire_writer exact bases and budgets validate"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "acquire_writer_receipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original receipt"
+      },
+      "terminal_state": "held",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Re-read the durable receipt and exact current bases."
+    },
+    {
+      "transition_id": "TR-CPWRITER-002",
+      "command_or_event": "retain_writer",
+      "from_state": "unheld",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "retain_writer is not legal from unheld"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original denial"
+      },
+      "terminal_state": "unheld",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Use a command legal from the current durable state."
+    },
+    {
+      "transition_id": "TR-CPWRITER-003",
+      "command_or_event": "release_writer",
+      "from_state": "unheld",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "release_writer is not legal from unheld"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original denial"
+      },
+      "terminal_state": "unheld",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Use a command legal from the current durable state."
+    },
+    {
+      "transition_id": "TR-CPWRITER-004",
+      "command_or_event": "acquire_writer",
+      "from_state": "held",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "acquire_writer is not legal from held"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original denial"
+      },
+      "terminal_state": "held",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Use a command legal from the current durable state."
+    },
+    {
+      "transition_id": "TR-CPWRITER-005",
+      "command_or_event": "retain_writer",
+      "from_state": "held",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "retain_writer exact bases and budgets validate"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "retain_writer_receipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original receipt"
+      },
+      "terminal_state": "held",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Re-read the durable receipt and exact current bases."
+    },
+    {
+      "transition_id": "TR-CPWRITER-006",
+      "command_or_event": "release_writer",
+      "from_state": "held",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "release_writer exact bases and budgets validate"
+      ],
+      "base_references": [
+        "current Work Journal head",
+        "current lifecycle version"
+      ],
+      "emitted_records": [
+        "release_writer_receipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current lifecycle version"
+        ],
+        "retry_result": "return original receipt"
+      },
+      "terminal_state": "unheld",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Re-read the durable receipt and exact current bases."
+    }
+  ]
+}

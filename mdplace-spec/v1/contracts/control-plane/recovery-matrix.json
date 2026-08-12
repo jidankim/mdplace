@@ -1,0 +1,535 @@
+{
+  "$schema": "../schemas/control-plane-recovery-matrix.schema.json",
+  "schema_id": "mdplace.control-plane-recovery-matrix/v1",
+  "matrix_id": "RECOVERY-CP-001",
+  "version": "1.0.0",
+  "semantic_authority": "none",
+  "rows": [
+    {
+      "case_id": "RC-CP-001",
+      "interruption_point": "before_enqueue_commit",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "idempotency key",
+        "journal head"
+      ],
+      "preconditions": [
+        "Exclusive Writer Lock is current or recovery remains blocked"
+      ],
+      "base_references": [
+        "exact Work Journal head",
+        "exact Work Item version",
+        "current semantic dependency digest"
+      ],
+      "emitted_records": [
+        "WorkRecoveryDenied"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "deny with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "No Work Item was committed; return no accepted work.",
+      "default_decision": "deny"
+    },
+    {
+      "case_id": "RC-CP-002",
+      "interruption_point": "after_enqueue_commit",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "enqueue receipt",
+        "Work Item version"
+      ],
+      "preconditions": [
+        "Exclusive Writer Lock is current or recovery remains blocked"
+      ],
+      "base_references": [
+        "exact Work Journal head",
+        "exact Work Item version",
+        "current semantic dependency digest"
+      ],
+      "emitted_records": [
+        "WorkRecoveryReceipt"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "resume with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Preserve the queued Work Item after process restart.",
+      "default_decision": "resume"
+    },
+    {
+      "case_id": "RC-CP-003",
+      "interruption_point": "after_lease_receipt_before_ack",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "Work Lease receipt",
+        "Work Item version"
+      ],
+      "preconditions": [
+        "Exclusive Writer Lock is current or recovery remains blocked"
+      ],
+      "base_references": [
+        "exact Work Journal head",
+        "exact Work Item version",
+        "current semantic dependency digest"
+      ],
+      "emitted_records": [
+        "WorkRecoveryReceipt"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "preserve with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Return the existing Work Lease receipt before acknowledging dequeue.",
+      "default_decision": "preserve"
+    },
+    {
+      "case_id": "RC-CP-004",
+      "interruption_point": "after_dequeue_ack_before_execution",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "Work Lease receipt",
+        "lease expiry"
+      ],
+      "preconditions": [
+        "Exclusive Writer Lock is current or recovery remains blocked"
+      ],
+      "base_references": [
+        "exact Work Journal head",
+        "exact Work Item version",
+        "current semantic dependency digest"
+      ],
+      "emitted_records": [
+        "WorkRecoveryReceipt"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "requeue with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Requeue only after the exact Work Lease expires or is revoked.",
+      "default_decision": "requeue"
+    },
+    {
+      "case_id": "RC-CP-005",
+      "interruption_point": "during_execution_without_completion_receipt",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "Work Lease receipt",
+        "attempt budget"
+      ],
+      "preconditions": [
+        "Exclusive Writer Lock is current or recovery remains blocked"
+      ],
+      "base_references": [
+        "exact Work Journal head",
+        "exact Work Item version",
+        "current semantic dependency digest"
+      ],
+      "emitted_records": [
+        "WorkRecoveryReceipt"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "requeue with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Record one bounded retry without claiming completion.",
+      "default_decision": "requeue"
+    },
+    {
+      "case_id": "RC-CP-006",
+      "interruption_point": "after_completion_receipt_before_terminal_record",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "completion receipt",
+        "output digest"
+      ],
+      "preconditions": [
+        "Exclusive Writer Lock is current or recovery remains blocked"
+      ],
+      "base_references": [
+        "exact Work Journal head",
+        "exact Work Item version",
+        "current semantic dependency digest"
+      ],
+      "emitted_records": [
+        "WorkRecoveryReceipt"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "preserve with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Finalize the existing completion and never repeat work.",
+      "default_decision": "preserve"
+    },
+    {
+      "case_id": "RC-CP-007",
+      "interruption_point": "after_cancellation_receipt_before_child_stop",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "cancellation receipt",
+        "Work Item version"
+      ],
+      "preconditions": [
+        "Exclusive Writer Lock is current or recovery remains blocked"
+      ],
+      "base_references": [
+        "exact Work Journal head",
+        "exact Work Item version",
+        "current semantic dependency digest"
+      ],
+      "emitted_records": [
+        "WorkRecoveryReceipt"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "preserve with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Keep cancelled state and revoke child capability.",
+      "default_decision": "preserve"
+    },
+    {
+      "case_id": "RC-CP-008",
+      "interruption_point": "restart_with_cancelled_work",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "cancellation receipt",
+        "resume count"
+      ],
+      "preconditions": [
+        "Exclusive Writer Lock is current or recovery remains blocked"
+      ],
+      "base_references": [
+        "exact Work Journal head",
+        "exact Work Item version",
+        "current semantic dependency digest"
+      ],
+      "emitted_records": [
+        "WorkRecoveryReceipt"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "preserve with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Keep the Work Item cancelled until authorized resume.",
+      "default_decision": "preserve"
+    },
+    {
+      "case_id": "RC-CP-009",
+      "interruption_point": "repeated_interruption_with_budget",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "recovery receipts",
+        "interruption count"
+      ],
+      "preconditions": [
+        "Exclusive Writer Lock is current or recovery remains blocked"
+      ],
+      "base_references": [
+        "exact Work Journal head",
+        "exact Work Item version",
+        "current semantic dependency digest"
+      ],
+      "emitted_records": [
+        "WorkRecoveryReceipt"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "requeue with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Consume one recovery interruption and preserve one Work Item identity.",
+      "default_decision": "requeue"
+    },
+    {
+      "case_id": "RC-CP-010",
+      "interruption_point": "repeated_interruption_exhausted",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "recovery receipts",
+        "interruption count"
+      ],
+      "preconditions": [
+        "Exclusive Writer Lock is current or recovery remains blocked"
+      ],
+      "base_references": [
+        "exact Work Journal head",
+        "exact Work Item version",
+        "current semantic dependency digest"
+      ],
+      "emitted_records": [
+        "WorkRecoveryReceipt"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "fail with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Record terminal failure at the exact recovery ceiling.",
+      "default_decision": "fail"
+    },
+    {
+      "case_id": "RC-CP-011",
+      "interruption_point": "unknown_mutation_completion",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "mutation plan",
+        "filesystem observations",
+        "mutation receipts"
+      ],
+      "preconditions": [
+        "Exclusive Writer Lock is current or recovery remains blocked"
+      ],
+      "base_references": [
+        "exact Work Journal head",
+        "exact Work Item version",
+        "current semantic dependency digest"
+      ],
+      "emitted_records": [
+        "WorkRecoveryBlocked"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "block with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Block for explicit reconciliation; never retry blindly.",
+      "default_decision": "block"
+    },
+    {
+      "case_id": "RC-CP-012",
+      "interruption_point": "exclusive_writer_lost",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "writer epoch",
+        "writer token digest"
+      ],
+      "preconditions": [
+        "Exclusive Writer Lock is current or recovery remains blocked"
+      ],
+      "base_references": [
+        "exact Work Journal head",
+        "exact Work Item version",
+        "current semantic dependency digest"
+      ],
+      "emitted_records": [
+        "WorkRecoveryBlocked"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "block with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Stop claims and reacquire the Exclusive Writer Lock before recovery.",
+      "default_decision": "block"
+    },
+    {
+      "case_id": "RC-CP-013",
+      "interruption_point": "work_journal_unavailable",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "journal availability receipt",
+        "journal path binding"
+      ],
+      "preconditions": [
+        "Exclusive Writer Lock is current or recovery remains blocked"
+      ],
+      "base_references": [
+        "exact Work Journal head",
+        "exact Work Item version",
+        "current semantic dependency digest"
+      ],
+      "emitted_records": [
+        "WorkRecoveryBlocked"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "block with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Publish a blocked readiness result and accept no work.",
+      "default_decision": "block"
+    },
+    {
+      "case_id": "RC-CP-014",
+      "interruption_point": "stale_work_or_lease_base",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "Work Item version",
+        "Work Lease identity"
+      ],
+      "preconditions": [
+        "Exclusive Writer Lock is current or recovery remains blocked"
+      ],
+      "base_references": [
+        "exact Work Journal head",
+        "exact Work Item version",
+        "current semantic dependency digest"
+      ],
+      "emitted_records": [
+        "WorkRecoveryDenied"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "deny with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Reject stale recovery input without changing Work Journal state.",
+      "default_decision": "deny"
+    },
+    {
+      "case_id": "RC-CP-015",
+      "interruption_point": "child_output_without_completion_receipt",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "child output digest",
+        "completion receipt absence"
+      ],
+      "preconditions": [
+        "Exclusive Writer Lock is current or recovery remains blocked"
+      ],
+      "base_references": [
+        "exact Work Journal head",
+        "exact Work Item version",
+        "current semantic dependency digest"
+      ],
+      "emitted_records": [
+        "WorkRecoveryDenied"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "deny with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Treat child output as non-authoritative and retain recoverable work.",
+      "default_decision": "deny"
+    }
+  ]
+}

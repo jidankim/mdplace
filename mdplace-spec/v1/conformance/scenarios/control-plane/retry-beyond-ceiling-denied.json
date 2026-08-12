@@ -1,0 +1,99 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-CP-ILLEGAL-001",
+  "category": "illegal_transition",
+  "requirement_ids": [
+    "REQ-CP-001",
+    "REQ-CP-002",
+    "REQ-CP-003",
+    "REQ-CP-004",
+    "REQ-CP-005",
+    "REQ-CP-006",
+    "REQ-CP-007",
+    "REQ-CP-008",
+    "REQ-CP-009",
+    "REQ-CP-010"
+  ],
+  "subject": {
+    "kind": "control_plane",
+    "schema": "contracts/schemas/control-plane-scenario.schema.json",
+    "document": {
+      "schema_id": "mdplace.control-plane-scenario/v1",
+      "scenario_id": "CP-006",
+      "initial": {
+        "agent_state": "ready",
+        "persistent_agent_id": "agent:primary-001",
+        "writer_owner_agent_id": "agent:primary-001",
+        "writer_epoch": 1,
+        "journal_available": true,
+        "semantic_dependency_available": true,
+        "journal_head_sequence": 1,
+        "work": {
+          "work_id": "work:001",
+          "work_version": 5,
+          "state": "failed",
+          "idempotency_key": "idempotency:work-001",
+          "input_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "retry_count": 2,
+          "retry_ceiling": 2,
+          "lease_id": null,
+          "owner_agent_id": null,
+          "cancellation_id": null,
+          "resume_count": 0,
+          "resume_ceiling": 1,
+          "completion_receipt_id": "receipt:terminal-failure"
+        },
+        "control_channel": {
+          "state": "open",
+          "vault_id": "vault:001",
+          "protocol_version": "1.0",
+          "command_version": 1,
+          "same_user_authenticated": true,
+          "local_transport": true
+        },
+        "prior_receipts": [],
+        "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "action": {
+        "kind": "retry",
+        "actor_role": "scheduler",
+        "work_id": "work:001",
+        "expected_work_version": 5,
+        "lease_id": null,
+        "idempotency_key": null,
+        "proposed_work_input_digest": null,
+        "retryable": null,
+        "command_version": null,
+        "command_vault_id": null,
+        "candidate_agent_id": null,
+        "completion_receipt_present": false,
+        "interruption_count": 0,
+        "semantic_write_requested": false,
+        "authority_source": "none"
+      }
+    }
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": [
+      "control.retry_ceiling_exceeded"
+    ],
+    "outputs": [
+      "retry rejected",
+      "work_state:failed",
+      "semantic_state_digest:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    ],
+    "operations": [
+      "validate control-plane command and exact bases"
+    ],
+    "receipts": [
+      "ControlPlaneRejectionReceipt:control.retry_ceiling_exceeded"
+    ],
+    "filesystem_effects": [
+      "none"
+    ],
+    "terminal_state": "failed",
+    "illegal_transition": true
+  }
+}

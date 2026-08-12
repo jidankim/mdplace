@@ -5,12 +5,12 @@
   "package_series": "mdplace-spec/v1",
   "release_version": "1.0.0",
   "validator_id": "mdplace.package-validator",
-  "validator_version": "1.1.0",
+  "validator_version": "1.2.0",
   "claim_id": "CLAIM-RECOVERY-001",
   "claim": {
     "claim_id": "CLAIM-RECOVERY-001",
     "path": "conformance/evidence/claims/recovery-snapshot.json",
-    "sha256": "2bb631c599920be5c1f728d153e4695926c0ddc44b4add7c8375117ce4dae79f"
+    "sha256": "754c48b07a228823b06ac72ada4d4554b8726d0558741f1429fb01d96e714b91"
   },
   "recorded_claim": null,
   "prior_verdict": "pass",
@@ -19,38 +19,38 @@
   "recomputed_bindings": [
     {
       "path": "conformance/evidence/claims/recovery-snapshot.json",
-      "expected_sha256": "2bb631c599920be5c1f728d153e4695926c0ddc44b4add7c8375117ce4dae79f",
-      "observed_sha256": "2bb631c599920be5c1f728d153e4695926c0ddc44b4add7c8375117ce4dae79f",
+      "expected_sha256": "754c48b07a228823b06ac72ada4d4554b8726d0558741f1429fb01d96e714b91",
+      "observed_sha256": "754c48b07a228823b06ac72ada4d4554b8726d0558741f1429fb01d96e714b91",
       "matches": true
     },
     {
       "path": "conformance/evidence/envelopes/validator-evidence-reference.json",
-      "expected_sha256": "9e5685c629b24a94579e459071979ea2ec0a0d999a79a640165d2f0c8dac3a50",
-      "observed_sha256": "9e5685c629b24a94579e459071979ea2ec0a0d999a79a640165d2f0c8dac3a50",
+      "expected_sha256": "97d473116f3cc5d1c6832ce5785e8af0bce2d575704f3993d4e784cb7ecd794d",
+      "observed_sha256": "97d473116f3cc5d1c6832ce5785e8af0bce2d575704f3993d4e784cb7ecd794d",
       "matches": true
     },
     {
       "path": "conformance/evidence/invocations/validator-evidence-reference.json",
-      "expected_sha256": "87de658f3437aa0c0363fcb9485d256baa536894fbcad3ce09749267fe741c68",
-      "observed_sha256": "87de658f3437aa0c0363fcb9485d256baa536894fbcad3ce09749267fe741c68",
+      "expected_sha256": "c896d4152f0439a3622086a59666893bd926ce2e5de5faaf06921ee1cfddd7e5",
+      "observed_sha256": "c896d4152f0439a3622086a59666893bd926ce2e5de5faaf06921ee1cfddd7e5",
       "matches": true
     },
     {
       "path": "normative/requirements.json",
-      "expected_sha256": "ee3a8663aca573648fbf99d8a673f45c5ffd232374e2c574670742b8ff1a5394",
-      "observed_sha256": "ee3a8663aca573648fbf99d8a673f45c5ffd232374e2c574670742b8ff1a5394",
+      "expected_sha256": "6f602e447bbbdf82c82c474adeca32ef2e7664707a0a6e4a985c355ab25fc415",
+      "observed_sha256": "6f602e447bbbdf82c82c474adeca32ef2e7664707a0a6e4a985c355ab25fc415",
       "matches": true
     },
     {
       "path": "contracts/verdicts/validator-verdicts.json",
-      "expected_sha256": "caaeba680abdc21053da0bb727c6a56cde19779a3a4aaee05e66c2ac65f56158",
-      "observed_sha256": "caaeba680abdc21053da0bb727c6a56cde19779a3a4aaee05e66c2ac65f56158",
+      "expected_sha256": "0b8835675f0c24acae0207bd4cd34f4b584d742babcefcf6addad3e88bfa1761",
+      "observed_sha256": "0b8835675f0c24acae0207bd4cd34f4b584d742babcefcf6addad3e88bfa1761",
       "matches": true
     },
     {
       "path": "claims-and-evidence.yaml",
-      "expected_sha256": "9eb04d05991b773681314646b6e85d9cf7bccc34247714e7c1978708f67db370",
-      "observed_sha256": "9eb04d05991b773681314646b6e85d9cf7bccc34247714e7c1978708f67db370",
+      "expected_sha256": "57cc759832ddeec0c783deb194d722428c6b9032434b53c7c09351c67b676c7f",
+      "observed_sha256": "57cc759832ddeec0c783deb194d722428c6b9032434b53c7c09351c67b676c7f",
       "matches": true
     },
     {
@@ -61,8 +61,8 @@
     },
     {
       "path": "contracts/validator-extensions.json",
-      "expected_sha256": "1b00b497fdba947895cd890c32eddd1e7f63465b8d7be67504e636229b4c701a",
-      "observed_sha256": "1b00b497fdba947895cd890c32eddd1e7f63465b8d7be67504e636229b4c701a",
+      "expected_sha256": "79de28cb94fe805ba3d790e99075cf5a6face8809a8c2404683328bbb92d26e8",
+      "observed_sha256": "79de28cb94fe805ba3d790e99075cf5a6face8809a8c2404683328bbb92d26e8",
       "matches": true
     }
   ],

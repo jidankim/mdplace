@@ -1,0 +1,87 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-CP-AUTH-001",
+  "category": "authority_denial",
+  "requirement_ids": [
+    "REQ-CP-001",
+    "REQ-CP-002",
+    "REQ-CP-003",
+    "REQ-CP-004",
+    "REQ-CP-005",
+    "REQ-CP-006",
+    "REQ-CP-007",
+    "REQ-CP-008",
+    "REQ-CP-009",
+    "REQ-CP-010"
+  ],
+  "subject": {
+    "kind": "control_plane",
+    "schema": "contracts/schemas/control-plane-scenario.schema.json",
+    "document": {
+      "schema_id": "mdplace.control-plane-scenario/v1",
+      "scenario_id": "CP-019",
+      "initial": {
+        "agent_state": "starting",
+        "persistent_agent_id": "agent:primary-001",
+        "writer_owner_agent_id": "agent:primary-001",
+        "writer_epoch": 1,
+        "journal_available": false,
+        "semantic_dependency_available": true,
+        "journal_head_sequence": 1,
+        "work": null,
+        "control_channel": {
+          "state": "open",
+          "vault_id": "vault:001",
+          "protocol_version": "1.0",
+          "command_version": 1,
+          "same_user_authenticated": true,
+          "local_transport": true
+        },
+        "prior_receipts": [],
+        "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "action": {
+        "kind": "readiness_check",
+        "actor_role": "mdplace_agent",
+        "work_id": null,
+        "expected_work_version": null,
+        "lease_id": null,
+        "idempotency_key": null,
+        "proposed_work_input_digest": null,
+        "retryable": null,
+        "command_version": null,
+        "command_vault_id": null,
+        "candidate_agent_id": null,
+        "completion_receipt_present": false,
+        "interruption_count": 0,
+        "semantic_write_requested": true,
+        "authority_source": "readiness"
+      }
+    }
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": [
+      "control.readiness_journal_unavailable"
+    ],
+    "outputs": [
+      "readiness_check rejected",
+      "work_state:none",
+      "semantic_write:denied:readiness",
+      "semantic_state_digest:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    ],
+    "operations": [
+      "validate control-plane command and exact bases",
+      "deny control-plane semantic write"
+    ],
+    "receipts": [
+      "ControlPlaneRejectionReceipt:control.readiness_journal_unavailable"
+    ],
+    "filesystem_effects": [
+      "none"
+    ],
+    "terminal_state": "blocked",
+    "illegal_transition": false
+  }
+}

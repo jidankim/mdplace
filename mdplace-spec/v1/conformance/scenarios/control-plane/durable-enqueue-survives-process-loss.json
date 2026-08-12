@@ -1,0 +1,88 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-CP-REC-001",
+  "category": "crash_recovery",
+  "requirement_ids": [
+    "REQ-CP-001",
+    "REQ-CP-002",
+    "REQ-CP-003",
+    "REQ-CP-004",
+    "REQ-CP-005",
+    "REQ-CP-006",
+    "REQ-CP-007",
+    "REQ-CP-008",
+    "REQ-CP-009",
+    "REQ-CP-010"
+  ],
+  "subject": {
+    "kind": "control_plane",
+    "schema": "contracts/schemas/control-plane-scenario.schema.json",
+    "document": {
+      "schema_id": "mdplace.control-plane-scenario/v1",
+      "scenario_id": "CP-001",
+      "initial": {
+        "agent_state": "ready",
+        "persistent_agent_id": "agent:primary-001",
+        "writer_owner_agent_id": "agent:primary-001",
+        "writer_epoch": 1,
+        "journal_available": true,
+        "semantic_dependency_available": true,
+        "journal_head_sequence": 0,
+        "work": null,
+        "control_channel": {
+          "state": "open",
+          "vault_id": "vault:001",
+          "protocol_version": "1.0",
+          "command_version": 1,
+          "same_user_authenticated": true,
+          "local_transport": true
+        },
+        "prior_receipts": [],
+        "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "action": {
+        "kind": "enqueue",
+        "actor_role": "work_submitter",
+        "work_id": "work:001",
+        "expected_work_version": null,
+        "lease_id": null,
+        "idempotency_key": "idempotency:work-001",
+        "proposed_work_input_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "retryable": null,
+        "command_version": null,
+        "command_vault_id": null,
+        "candidate_agent_id": null,
+        "completion_receipt_present": false,
+        "interruption_count": 1,
+        "semantic_write_requested": true,
+        "authority_source": "work_journal"
+      }
+    }
+  },
+  "expected": {
+    "verdict": "pass",
+    "codes": [],
+    "outputs": [
+      "enqueue recovered after process loss",
+      "work_state:queued",
+      "semantic_write:denied:work_journal",
+      "semantic_state_digest:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    ],
+    "operations": [
+      "validate Work Journal availability",
+      "resolve idempotency binding",
+      "append enqueue record",
+      "read committed enqueue after interruption",
+      "deny control-plane semantic write"
+    ],
+    "receipts": [
+      "EnqueueReceipt:work:001"
+    ],
+    "filesystem_effects": [
+      "append durable Work Journal record"
+    ],
+    "terminal_state": "queued",
+    "illegal_transition": false
+  }
+}

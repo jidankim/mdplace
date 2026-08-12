@@ -1,0 +1,102 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-CP-REC-005",
+  "category": "crash_recovery",
+  "requirement_ids": [
+    "REQ-CP-001",
+    "REQ-CP-002",
+    "REQ-CP-003",
+    "REQ-CP-004",
+    "REQ-CP-005",
+    "REQ-CP-006",
+    "REQ-CP-007",
+    "REQ-CP-008",
+    "REQ-CP-009",
+    "REQ-CP-010"
+  ],
+  "subject": {
+    "kind": "control_plane",
+    "schema": "contracts/schemas/control-plane-scenario.schema.json",
+    "document": {
+      "schema_id": "mdplace.control-plane-scenario/v1",
+      "scenario_id": "CP-012",
+      "initial": {
+        "agent_state": "crashed",
+        "persistent_agent_id": "agent:primary-001",
+        "writer_owner_agent_id": null,
+        "writer_epoch": 1,
+        "journal_available": true,
+        "semantic_dependency_available": true,
+        "journal_head_sequence": 1,
+        "work": {
+          "work_id": "work:001",
+          "work_version": 2,
+          "state": "executing",
+          "idempotency_key": "idempotency:work-001",
+          "input_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "retry_count": 0,
+          "retry_ceiling": 2,
+          "lease_id": "lease:001",
+          "owner_agent_id": "agent:primary-001",
+          "cancellation_id": null,
+          "resume_count": 0,
+          "resume_ceiling": 1,
+          "completion_receipt_id": null
+        },
+        "control_channel": {
+          "state": "open",
+          "vault_id": "vault:001",
+          "protocol_version": "1.0",
+          "command_version": 1,
+          "same_user_authenticated": true,
+          "local_transport": true
+        },
+        "prior_receipts": [],
+        "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "action": {
+        "kind": "recover",
+        "actor_role": "mdplace_agent",
+        "work_id": "work:001",
+        "expected_work_version": 2,
+        "lease_id": "lease:001",
+        "idempotency_key": null,
+        "proposed_work_input_digest": null,
+        "retryable": null,
+        "command_version": null,
+        "command_vault_id": null,
+        "candidate_agent_id": null,
+        "completion_receipt_present": false,
+        "interruption_count": 2,
+        "semantic_write_requested": true,
+        "authority_source": "child_work"
+      }
+    }
+  },
+  "expected": {
+    "verdict": "pass",
+    "codes": [],
+    "outputs": [
+      "in-flight work recovered without duplicate",
+      "work_state:retry_wait",
+      "semantic_write:denied:child_work",
+      "semantic_state_digest:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    ],
+    "operations": [
+      "read Work Journal recovery bases",
+      "compare Work Lease and receipts",
+      "consume recovery interruption budget",
+      "append Work Recovery receipt",
+      "deny control-plane semantic write"
+    ],
+    "receipts": [
+      "WorkRecoveryReceipt:work:001:2"
+    ],
+    "filesystem_effects": [
+      "append durable Work Recovery record"
+    ],
+    "terminal_state": "retry_wait",
+    "illegal_transition": false
+  }
+}

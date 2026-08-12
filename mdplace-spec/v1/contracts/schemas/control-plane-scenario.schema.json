@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:control-plane-scenario:v1",
+  "title": "mdplace stateful control-plane scenario",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_id", "scenario_id", "initial", "action"],
+  "properties": {
+    "schema_id": {"const": "mdplace.control-plane-scenario/v1"},
+    "scenario_id": {"type": "string", "pattern": "^CP-[0-9]{3}$"},
+    "initial": {"$ref": "#/$defs/initial"},
+    "action": {"$ref": "#/$defs/action"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "work": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["work_id", "work_version", "state", "idempotency_key", "input_digest", "retry_count", "retry_ceiling", "lease_id", "owner_agent_id", "cancellation_id", "resume_count", "resume_ceiling", "completion_receipt_id"],
+      "properties": {
+        "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
+        "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "state": {"enum": ["queued", "leased", "executing", "retry_wait", "cancelled", "succeeded", "failed"]},
+        "idempotency_key": {"type": "string", "pattern": "^idempotency:[a-z0-9-]{3,64}$"},
+        "input_digest": {"$ref": "#/$defs/digest"},
+        "retry_count": {"type": "integer", "minimum": 0, "maximum": 2},
+        "retry_ceiling": {"const": 2},
+        "lease_id": {"type": ["string", "null"], "pattern": "^lease:[a-z0-9-]{3,64}$"},
+        "owner_agent_id": {"type": ["string", "null"], "pattern": "^agent:[a-z0-9-]{3,64}$"},
+        "cancellation_id": {"type": ["string", "null"], "pattern": "^cancel:[a-z0-9-]{3,64}$"},
+        "resume_count": {"type": "integer", "minimum": 0, "maximum": 1},
+        "resume_ceiling": {"const": 1},
+        "completion_receipt_id": {"type": ["string", "null"], "pattern": "^receipt:[a-z0-9-]{3,64}$"}
+      }
+    },
+    "controlChannel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "vault_id", "protocol_version", "command_version", "same_user_authenticated", "local_transport"],
+      "properties": {
+        "state": {"enum": ["closed", "open"]},
+        "vault_id": {"type": "string", "pattern": "^vault:[a-z0-9-]{3,64}$"},
+        "protocol_version": {"const": "1.0"},
+        "command_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "same_user_authenticated": {"type": "boolean"},
+        "local_transport": {"type": "boolean"}
+      }
+    },
+    "initial": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["agent_state", "persistent_agent_id", "writer_owner_agent_id", "writer_epoch", "journal_available", "semantic_dependency_available", "journal_head_sequence", "work", "control_channel", "prior_receipts", "semantic_state_digest"],
+      "properties": {
+        "agent_state": {"enum": ["stopped", "starting", "ready", "blocked", "crashed"]},
+        "persistent_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
+        "writer_owner_agent_id": {"type": ["string", "null"], "pattern": "^agent:[a-z0-9-]{3,64}$"},
+        "writer_epoch": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "journal_available": {"type": "boolean"},
+        "semantic_dependency_available": {"type": "boolean"},
+        "journal_head_sequence": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "work": {"$ref": "#/$defs/work"},
+        "control_channel": {"$ref": "#/$defs/controlChannel"},
+        "prior_receipts": {"type": "array", "maxItems": 64, "uniqueItems": true, "items": {"type": "string", "pattern": "^[A-Za-z]+Receipt:[a-z0-9:-]{3,96}$"}},
+        "semantic_state_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "actor_role", "work_id", "expected_work_version", "lease_id", "idempotency_key", "proposed_work_input_digest", "retryable", "command_version", "command_vault_id", "candidate_agent_id", "completion_receipt_present", "interruption_count", "semantic_write_requested", "authority_source"],
+      "properties": {
+        "kind": {"enum": ["enqueue", "dispatch", "acknowledge", "fail", "retry", "cancel", "resume", "restart", "recover", "readiness_check", "control_command", "acquire_writer"]},
+        "actor_role": {"enum": ["work_submitter", "scheduler", "mdplace_agent", "vault_owner", "control_client", "launchd_supervisor", "operating_system"]},
+        "work_id": {"type": ["string", "null"], "pattern": "^work:[a-z0-9-]{3,64}$"},
+        "expected_work_version": {"type": ["integer", "null"], "minimum": 1, "maximum": 1000000},
+        "lease_id": {"type": ["string", "null"], "pattern": "^lease:[a-z0-9-]{3,64}$"},
+        "idempotency_key": {"type": ["string", "null"], "pattern": "^idempotency:[a-z0-9-]{3,64}$"},
+        "proposed_work_input_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "retryable": {"type": ["boolean", "null"]},
+        "command_version": {"type": ["integer", "null"], "minimum": 1, "maximum": 1000000},
+        "command_vault_id": {"type": ["string", "null"], "pattern": "^vault:[a-z0-9-]{3,64}$"},
+        "candidate_agent_id": {"type": ["string", "null"], "pattern": "^agent:[a-z0-9-]{3,64}$"},
+        "completion_receipt_present": {"type": "boolean"},
+        "interruption_count": {"type": "integer", "minimum": 0, "maximum": 3},
+        "semantic_write_requested": {"type": "boolean"},
+        "authority_source": {"enum": ["none", "work_journal", "scheduler", "mdplace_agent", "child_work", "control_channel", "readiness", "retry", "queue"]}
+      }
+    }
+  }
+}
