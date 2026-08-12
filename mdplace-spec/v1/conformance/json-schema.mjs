@@ -167,7 +167,15 @@ function validateNode(schema, value, rootSchema, path, errors, state) {
       if (duplicate) addError(errors, path, 'uniqueItems');
     }
     if (schema.contains !== undefined) {
-      let containsMatch = false;
+      const minimumMatches = schema.minContains ?? 1;
+      const maximumMatches = schema.maxContains ?? Number.POSITIVE_INFINITY;
+      if (!Number.isInteger(minimumMatches) || minimumMatches < 0 ||
+          !(maximumMatches === Number.POSITIVE_INFINITY ||
+            (Number.isInteger(maximumMatches) && maximumMatches >= 0))) {
+        addError(errors, path, 'invalidSchema');
+        return;
+      }
+      let matchCount = 0;
       for (const [index, entry] of value.entries()) {
         const candidateErrors = [];
         validateNode(schema.contains, entry, rootSchema, `${path}/${index}`, candidateErrors, {
@@ -180,11 +188,17 @@ function validateNode(schema, value, rootSchema, path, errors, state) {
           return;
         }
         if (candidateErrors.length === 0) {
-          containsMatch = true;
-          break;
+          matchCount += 1;
+          if (matchCount > maximumMatches) {
+            addError(errors, path, 'maxContains');
+            break;
+          }
+          if (maximumMatches === Number.POSITIVE_INFINITY && matchCount >= minimumMatches) break;
         }
       }
-      if (!containsMatch) addError(errors, path, 'contains');
+      if (matchCount < minimumMatches) {
+        addError(errors, path, schema.minContains === undefined ? 'contains' : 'minContains');
+      }
     }
     if (schema.items !== undefined) {
       value.forEach((entry, index) => {
@@ -239,10 +253,4 @@ export async function validateAgainstSchemaPath(packageRoot, schemaPath, value) 
   return validateJsonSchema(schema, value);
 }
 
-export function schemaErrorCode(errors) {
-  if (errors.some(({keyword}) => keyword === 'additionalProperties')) return 'schema.unknown_field';
-  if (errors.some(({keyword}) => keyword === 'required')) return 'schema.required_field';
-  if (errors.some(({keyword}) => keyword === 'pattern')) return 'schema.pattern';
-  if (errors.some(({keyword}) => keyword === 'resourceLimit')) return 'schema.resource_limit';
-  return errors.length === 0 ? null : 'schema.constraint';
-}
+export {schemaErrorCode} from './schema-error-code.mjs';

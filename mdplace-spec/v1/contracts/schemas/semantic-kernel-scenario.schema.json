@@ -11,13 +11,26 @@
     "initial": {"$ref": "#/$defs/initial"},
     "action": {"$ref": "#/$defs/action"}
   },
+  "allOf": [{
+    "oneOf": [
+      {"properties": {
+        "initial": {"properties": {"lifecycle_state": {"const": "ready"}}},
+        "action": {"properties": {"kind": {"const": "recover"}, "crash_point": {"const": null}}}
+      }},
+      {"properties": {
+        "initial": {"properties": {"lifecycle_state": {"const": "recovery_required"}}},
+        "action": {"properties": {"kind": {"const": "recover"}, "crash_point": {"enum": ["before_record_publish", "after_record_publish_before_receipt"]}}}
+      }},
+      {"properties": {"action": {"properties": {"kind": {"enum": ["append", "replay", "rebuild_view"]}}}}}
+    ]
+  }],
   "$defs": {
     "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
     "stateEntry": {
       "type": "object", "additionalProperties": false, "required": ["key", "value"],
       "properties": {
         "key": {"type": "string", "pattern": "^[a-z][a-z0-9-]{1,31}:[a-z0-9][a-z0-9/._-]{1,127}$"},
-        "value": {"type": "string", "maxLength": 1024, "pattern": "^(?!.*[\\uD800-\\uDFFF]).*$"}
+        "value": {"type": "string", "maxLength": 1024, "pattern": "^(?![\\s\\S]*[\\uD800-\\uDFFF])[\\s\\S]*$"}
       }
     },
     "head": {
@@ -113,7 +126,7 @@
       "type": "object", "additionalProperties": false, "required": ["key", "value"],
       "properties": {
         "key": {"type": "string", "pattern": "^[a-z][a-z0-9-]{1,31}:[a-z0-9][a-z0-9/._-]{1,127}$"},
-        "value": {"type": ["string", "null"], "maxLength": 1024, "pattern": "^(?!.*[\\uD800-\\uDFFF]).*$"}
+        "value": {"type": ["string", "null"], "maxLength": 1024, "pattern": "^(?![\\s\\S]*[\\uD800-\\uDFFF])[\\s\\S]*$"}
       }
     },
     "assignmentEvent": {
@@ -128,7 +141,7 @@
           "type": "object", "additionalProperties": false, "required": ["key", "value"],
           "properties": {
             "key": {"type": "string", "pattern": "^[a-z][a-z0-9-]{1,31}:[a-z0-9][a-z0-9/._-]{1,127}$"},
-            "value": {"type": "string", "maxLength": 1024, "pattern": "^(?!.*[\\uD800-\\uDFFF]).*$"}
+            "value": {"type": "string", "maxLength": 1024, "pattern": "^(?![\\s\\S]*[\\uD800-\\uDFFF])[\\s\\S]*$"}
           }
         }
       }
@@ -189,7 +202,7 @@
       "properties": {
         "ordinal": {"type": "integer", "minimum": 0, "maximum": 31}, "kind": {"const": "semantic_value"},
         "key": {"type": "string", "pattern": "^[a-z][a-z0-9-]{1,31}:[a-z0-9][a-z0-9/._-]{1,127}$"},
-        "expected_value": {"type": ["string", "null"], "maxLength": 1024, "pattern": "^(?!.*[\\uD800-\\uDFFF]).*$"}
+        "expected_value": {"type": ["string", "null"], "maxLength": 1024, "pattern": "^(?![\\s\\S]*[\\uD800-\\uDFFF])[\\s\\S]*$"}
       }
     },
     "snapshot": {
@@ -275,6 +288,18 @@
             "preconditions": {"maxItems": 0}, "records": {"maxItems": 0},
             "snapshot": {"const": null}, "supplied_view": {"maxItems": 0},
             "crash_point": {"const": "before_record_publish"}, "recovery_id": {"type": "string"}
+          }
+        },
+        {
+          "properties": {
+            "kind": {"const": "recover"},
+            "command_id": {"const": null}, "operation_id": {"const": null},
+            "operation_kind": {"const": null}, "base_references": {"maxItems": 0},
+            "ordering": {"const": null}, "idempotency_key": {"const": null},
+            "command_digest": {"const": null}, "payload": {"const": null},
+            "preconditions": {"maxItems": 0}, "records": {"maxItems": 0},
+            "snapshot": {"const": null}, "supplied_view": {"maxItems": 0},
+            "crash_point": {"const": null}, "recovery_id": {"type": "string"}
           }
         },
         {

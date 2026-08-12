@@ -6,6 +6,7 @@ import {
   requiredReleaseSlots,
   requiredSchemaPaths,
 } from './package-foundation.mjs';
+import {isReferenceEvidence} from './reference-evidence.mjs';
 import {listPackageFiles, inspectPackageEntry, readPackageFile} from './safe-path.mjs';
 import {authorityMatches, manifestFields, packageArtifactPathAllowed, transitionFields} from './validator-rules.mjs';
 
@@ -25,15 +26,10 @@ function isRecord(value) {
 }
 
 function expectedAuthority(path, validatorEvidenceExtensionDeclared) {
-  const validatorEvidenceIsNormative = validatorEvidenceExtensionDeclared && (
-    path === 'claims-and-evidence.yaml' ||
-    path.startsWith('conformance/claim-manifests/') ||
-    path.startsWith('conformance/evidence/claims/') ||
-    path.startsWith('conformance/evidence/envelopes/') ||
-    path.startsWith('conformance/evidence/invocations/') ||
-    path === 'conformance/evidence/evidence-recovery-report.json' ||
-    path === 'conformance/evidence/semantic-kernel-recovery-report.json'
-  );
+  const validatorEvidenceIsNormative = validatorEvidenceExtensionDeclared &&
+    (path === 'claims-and-evidence.yaml' ||
+      path.startsWith('conformance/claim-manifests/') ||
+      isReferenceEvidence(path));
   return path.startsWith('normative/') ||
     path.startsWith('contracts/') ||
     path === 'traceability.yaml' ||

@@ -112,7 +112,14 @@ export function snapshotHistoryDigest(history) {
 
 export function snapshotHistoryIsCanonical(snapshot) {
   const history = snapshot.history;
-  if (history.length !== snapshot.sequence || snapshotHistoryDigest(history) !== snapshot.history_digest) return false;
+  let digest;
+  try {
+    digest = snapshotHistoryDigest(history);
+  } catch (error) {
+    if (!(error instanceof TypeError)) throw error;
+    return false;
+  }
+  if (history.length !== snapshot.sequence || digest !== snapshot.history_digest) return false;
   const operationIds = new Set();
   const idempotencyKeys = new Set();
   for (const [index, entry] of history.entries()) {

@@ -52,7 +52,8 @@ export async function checkSemanticKernelContract(packageRoot, manifest, conform
     ['semantic_removal', 'removalEventList', 'remove_value', 'core_v1'],
     ['compatibility_marker', 'markerEventList', 'preserve_state', 'recognized_noop_v1'],
   ];
-  if (!Array.isArray(registry?.kinds) || expectedKinds.some(([kind, payload, effect, compatibility], index) => {
+  if (!Array.isArray(registry?.kinds) || registry.kinds.length !== expectedKinds.length ||
+      expectedKinds.some(([kind, payload, effect, compatibility], index) => {
     const entry = registry.kinds[index];
     return entry?.operation_kind !== kind || entry?.replay_effect !== effect ||
       entry?.forward_compatibility !== compatibility ||
@@ -109,12 +110,11 @@ export async function checkSemanticKernelContract(packageRoot, manifest, conform
   let validRemovalCovered = false;
   let illegalRemovalCovered = false;
   for (const {entry, fixture} of semanticEntries) {
-    if (!(entry.fixture_id ?? '').startsWith('FIX-SK-') ||
-        !/^scenarios\/semantic-kernel\/[a-z0-9][a-z0-9-]*\.json$/.test(entry.path ?? '')) {
-      codes.push('semantic.scenario_manifest_pair_invalid');
-      codes.push('semantic.scenario_path_invalid');
-      continue;
-    }
+    const idValid = (entry.fixture_id ?? '').startsWith('FIX-SK-');
+    const pathValid = /^scenarios\/semantic-kernel\/[a-z0-9][a-z0-9-]*\.json$/.test(entry.path ?? '');
+    if (!idValid) codes.push('semantic.scenario_manifest_pair_invalid');
+    if (!pathValid) codes.push('semantic.scenario_path_invalid');
+    if (!idValid || !pathValid) continue;
     if (fixture?.subject?.kind !== 'semantic_kernel' ||
         fixture.subject.schema !== 'contracts/schemas/semantic-kernel-scenario.schema.json') {
       codes.push('semantic.scenario_subject_invalid');
@@ -124,7 +124,10 @@ export async function checkSemanticKernelContract(packageRoot, manifest, conform
       codes.push('semantic.scenario_manifest_pair_invalid');
     }
     const code = await schemaCode(packageRoot, fixture.subject.schema, fixture.subject.document);
-    if (code !== null) codes.push(code);
+    if (code !== null) {
+      codes.push(code);
+      continue;
+    }
     scenarioIds.push(fixture.subject.document?.scenario_id);
     for (const expectedCode of fixture.expected?.codes ?? []) observedCodes.add(expectedCode);
     for (const output of fixture.expected?.outputs ?? []) observedOutputs.add(output);
@@ -195,9 +198,9 @@ export async function checkSemanticKernelContract(packageRoot, manifest, conform
   const fixtureIds = entries.map(({fixture_id: id}) => id);
   if (recovery?.validator_version !== manifest?.validator_version ||
       recovery?.scenario_count !== 30 ||
-      !Array.isArray(recovery?.scenario_ids) ||
-      recovery.scenario_ids.length !== fixtureIds.length ||
-      fixtureIds.some((id) => !recovery.scenario_ids.includes(id))) {
+      !Array.isArray(recovery?.fixture_ids) ||
+      recovery.fixture_ids.length !== fixtureIds.length ||
+      fixtureIds.some((id) => !recovery.fixture_ids.includes(id))) {
     codes.push('semantic.recovery_evidence_invalid');
   }
   codes.push(...await semanticKernelEvidenceCodes(packageRoot, recovery, entries));

@@ -77,6 +77,12 @@ async function replayFixture(snapshot, records) {
     new URL('./scenarios/semantic-kernel/snapshot-suffix-equivalence.json', import.meta.url),
     'utf8',
   ));
+  assert.ok(fixture?.subject?.document?.action !== null &&
+    typeof fixture?.subject?.document?.action === 'object',
+  'snapshot-suffix-equivalence.json must supply action');
+  assert.ok(fixture.subject.document.action.snapshot !== null &&
+    typeof fixture.subject.document.action.snapshot === 'object',
+  'snapshot-suffix-equivalence.json must supply action.snapshot');
   fixture.subject.document.action.snapshot = snapshot;
   fixture.subject.document.action.records = records;
   return observeFixture(fixture, packageRoot);
@@ -87,6 +93,9 @@ test('Semantic Kernel rejects duplicate keys in initial and snapshot state', asy
     new URL('./scenarios/semantic-kernel/valid-initial-append.json', import.meta.url),
     'utf8',
   ));
+  assert.ok(initialFixture?.subject?.document?.initial !== null &&
+    typeof initialFixture?.subject?.document?.initial === 'object',
+  'valid-initial-append.json must supply initial');
   initialFixture.subject.document.initial.semantic_state = [
     {key: 'note:001/placement', value: 'cat:research'},
     {key: 'note:001/placement', value: 'cat:projects'},
@@ -95,6 +104,9 @@ test('Semantic Kernel rejects duplicate keys in initial and snapshot state', asy
     new URL('./scenarios/semantic-kernel/snapshot-suffix-equivalence.json', import.meta.url),
     'utf8',
   ));
+  assert.ok(snapshotFixture?.subject?.document?.action?.snapshot !== null &&
+    typeof snapshotFixture?.subject?.document?.action?.snapshot === 'object',
+  'snapshot-suffix-equivalence.json must supply action.snapshot');
   snapshotFixture.subject.document.action.snapshot.semantic_state.push(
     {key: 'note:001/placement', value: 'cat:projects'},
   );
@@ -147,11 +159,17 @@ test('Semantic Kernel accepts its exact sequence maximum and rejects every succe
     new URL('./scenarios/semantic-kernel/valid-initial-append.json', import.meta.url),
     'utf8',
   ));
+  assert.ok(fixture?.subject?.document?.initial?.head !== null &&
+    typeof fixture?.subject?.document?.initial?.head === 'object',
+  'valid-initial-append.json must supply initial.head');
+  assert.ok(fixture?.subject?.document?.action?.ordering !== null &&
+    typeof fixture?.subject?.document?.action?.ordering === 'object',
+  'valid-initial-append.json must supply action.ordering');
   fixture.subject.document.initial.head.sequence = supportedSequenceMaximum;
   fixture.subject.document.action.ordering.sequence = supportedSequenceMaximum + 1;
   const unsafeFixture = structuredClone(fixture);
-  unsafeFixture.subject.document.initial.head.sequence = Number.MAX_SAFE_INTEGER + 1;
-  unsafeFixture.subject.document.action.ordering.sequence = Number.MAX_SAFE_INTEGER + 1;
+  unsafeFixture.subject.document.initial.head.sequence = Number.MAX_SAFE_INTEGER + 0.5;
+  unsafeFixture.subject.document.action.ordering.sequence = Number.MAX_SAFE_INTEGER + 0.5;
 
   const [observed, unsafeObserved] = await Promise.all([
     observeFixture(fixture, packageRoot),

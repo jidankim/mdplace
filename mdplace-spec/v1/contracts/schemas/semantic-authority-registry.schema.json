@@ -15,6 +15,17 @@
       "minItems": 9,
       "maxItems": 9,
       "uniqueItems": true,
+      "allOf": [
+        {"contains": {"properties": {"actor_kind": {"const": "vault_owner"}}, "required": ["actor_kind"]}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"actor_kind": {"const": "mdplace_agent"}}, "required": ["actor_kind"]}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"actor_kind": {"const": "foreground_recovery"}}, "required": ["actor_kind"]}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"actor_kind": {"const": "capture_adapter"}}, "required": ["actor_kind"]}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"actor_kind": {"const": "intelligence_adapter"}}, "required": ["actor_kind"]}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"actor_kind": {"const": "folder_projection"}}, "required": ["actor_kind"]}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"actor_kind": {"const": "projection"}}, "required": ["actor_kind"]}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"actor_kind": {"const": "frontmatter_bridge"}}, "required": ["actor_kind"]}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"actor_kind": {"const": "cache"}}, "required": ["actor_kind"]}, "minContains": 1, "maxContains": 1}
+      ],
       "items": {"$ref": "#/$defs/authority"}
     }
   },

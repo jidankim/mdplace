@@ -1,11 +1,8 @@
 import {createHash} from 'node:crypto';
 
+import {isReferenceEvidence} from './reference-evidence.mjs';
+
 export function conformanceDigestForArtifacts(artifacts) {
-  const isReferenceEvidence = (path) => path.startsWith('conformance/evidence/envelopes/') ||
-    path.startsWith('conformance/evidence/claims/') ||
-    path.startsWith('conformance/evidence/invocations/') ||
-    path === 'conformance/evidence/evidence-recovery-report.json' ||
-    path === 'conformance/evidence/semantic-kernel-recovery-report.json';
   const bindings = artifacts
     .filter(({path}) => (path.startsWith('contracts/') || path.startsWith('conformance/')) &&
       (!path.startsWith('conformance/evidence/') || isReferenceEvidence(path)))

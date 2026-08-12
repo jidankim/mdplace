@@ -4,7 +4,7 @@
   "title": "mdplace Semantic Kernel result-bound recovery and equivalence evidence",
   "type": "object",
   "additionalProperties": false,
-  "required": ["$schema", "schema_id", "package_series", "release_version", "validator_version", "scenario_count", "scenario_ids", "fixture_bindings", "claims"],
+  "required": ["$schema", "schema_id", "package_series", "release_version", "validator_version", "scenario_count", "fixture_ids", "fixture_bindings", "claims"],
   "properties": {
     "$schema": {"const": "../../contracts/schemas/semantic-kernel-recovery-report.schema.json"},
     "schema_id": {"const": "mdplace.semantic-kernel-recovery-report/v1"},
@@ -12,7 +12,7 @@
     "release_version": {"const": "1.0.0"},
     "validator_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
     "scenario_count": {"const": 30},
-    "scenario_ids": {"type": "array", "minItems": 30, "maxItems": 30, "uniqueItems": true, "items": {"$ref": "#/$defs/fixtureId"}},
+    "fixture_ids": {"type": "array", "minItems": 30, "maxItems": 30, "uniqueItems": true, "items": {"$ref": "#/$defs/fixtureId"}},
     "fixture_bindings": {"type": "array", "minItems": 30, "maxItems": 30, "items": {"$ref": "#/$defs/fixtureBinding"}},
     "claims": {"$ref": "#/$defs/claims"}
   },
