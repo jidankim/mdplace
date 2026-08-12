@@ -56,6 +56,7 @@ const conformanceExecutables = new Set([
   'conformance/evidence-transition-validation.mjs',
   'conformance/amendment-evidence.mjs',
   'conformance/fixture-observer.mjs',
+  'conformance/semantic-kernel-authority.mjs',
   'conformance/semantic-kernel-checks.mjs',
   'conformance/semantic-kernel-core.mjs',
   'conformance/semantic-kernel-evidence.mjs',

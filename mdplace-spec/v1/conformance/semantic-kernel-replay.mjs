@@ -2,15 +2,17 @@ import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {
   baseMatches,
   canonicalJson,
+  commandDigestFromOperation,
   compareCanonicalText,
   isRecognizedOperationKind,
-  isSemanticWriter,
   operationEffect,
+  operationDigest,
   preconditionsMatch,
   snapshotHistoryIsCanonical,
   stateDigest,
   stateFromEntries,
 } from './semantic-kernel-core.mjs';
+import {semanticActorHasCapability} from './semantic-kernel-authority.mjs';
 
 async function validateRecord(record, packageRoot) {
   let operation;
@@ -23,6 +25,12 @@ async function validateRecord(record, packageRoot) {
   const errors = await validateAgainstSchemaPath(packageRoot, 'contracts/schemas/semantic-operation.schema.json', operation);
   if (schemaErrorCode(errors) !== null) return {code: 'semantic.record_malformed', operation: null};
   if (operation.schema_version !== '1.0.0') return {code: 'semantic.schema_version_unsupported', operation: null};
+  if (commandDigestFromOperation(operation) !== operation.idempotency.command_digest) {
+    return {code: 'semantic.command_digest_invalid', operation: null};
+  }
+  if (operationDigest(operation) !== operation.operation_digest) {
+    return {code: 'semantic.operation_digest_invalid', operation: null};
+  }
   return {code: null, operation};
 }
 
@@ -47,7 +55,9 @@ export async function replayRecords(records, snapshot, boundInputs, packageRoot)
   const seenOperations = new Set((snapshot?.history ?? []).map(({operation_id: operationId}) => operationId));
   for (const operation of ordered) {
     if (!isRecognizedOperationKind(operation.operation_kind)) return {code: 'semantic.operation_unknown', state, head};
-    if (!isSemanticWriter(operation.actor_authority.actor_kind)) return {code: 'semantic.authority_denied', state, head};
+    if (!await semanticActorHasCapability(packageRoot, operation.actor_authority, 'append')) {
+      return {code: 'semantic.authority_denied', state, head};
+    }
     const priorDigest = seenCommands.get(operation.idempotency.key);
     if (priorDigest !== undefined && priorDigest !== operation.idempotency.command_digest) {
       return {code: 'semantic.idempotency_incompatible', state, head};

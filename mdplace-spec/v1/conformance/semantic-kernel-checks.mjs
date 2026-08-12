@@ -34,10 +34,12 @@ async function schemaCode(packageRoot, schemaPath, document) {
 export async function checkSemanticKernelContract(packageRoot, manifest, conformance, traceability) {
   const codes = [];
   const registry = await readJson(packageRoot, 'contracts/semantic-operation-kinds.json');
+  const authorityRegistry = await readJson(packageRoot, 'contracts/semantic-authorities.json');
   const table = await readJson(packageRoot, 'contracts/transitions/semantic-kernel-lifecycle.json');
   const recovery = await readJson(packageRoot, 'conformance/evidence/semantic-kernel-recovery-report.json');
   const roots = [
     [registry, 'contracts/schemas/semantic-operation-kind-registry.schema.json'],
+    [authorityRegistry, 'contracts/schemas/semantic-authority-registry.schema.json'],
     [table, 'contracts/schemas/transition-table.schema.json'],
     [recovery, 'contracts/schemas/semantic-kernel-recovery-report.schema.json'],
   ];
@@ -46,21 +48,55 @@ export async function checkSemanticKernelContract(packageRoot, manifest, conform
     if (code !== null) codes.push(code);
   }
   const expectedKinds = [
-    ['semantic_assignment', 'assign_value', 'core_v1'],
-    ['semantic_removal', 'remove_value', 'core_v1'],
-    ['compatibility_marker', 'preserve_state', 'recognized_noop_v1'],
+    ['semantic_assignment', 'assignmentEventList', 'assign_value', 'core_v1'],
+    ['semantic_removal', 'removalEventList', 'remove_value', 'core_v1'],
+    ['compatibility_marker', 'markerEventList', 'preserve_state', 'recognized_noop_v1'],
   ];
-  if (!Array.isArray(registry?.kinds) || expectedKinds.some(([kind, effect, compatibility], index) => {
+  if (!Array.isArray(registry?.kinds) || expectedKinds.some(([kind, payload, effect, compatibility], index) => {
     const entry = registry.kinds[index];
     return entry?.operation_kind !== kind || entry?.replay_effect !== effect ||
-      entry?.forward_compatibility !== compatibility;
+      entry?.forward_compatibility !== compatibility ||
+      entry?.payload_contract !== `contracts/schemas/semantic-operation.schema.json#/$defs/${payload}`;
   })) {
     codes.push('semantic.operation_registry_invalid');
   }
 
-  const entries = Array.isArray(conformance?.fixtures)
-    ? conformance.fixtures.filter(({fixture_id: id}) => typeof id === 'string' && id.startsWith('FIX-SK-'))
-    : [];
+  const expectedAuthorities = [
+    ['person:owner-001', 'vault_owner', 'authority:vault-owner-001', ['append']],
+    ['component:mdplace-agent-001', 'mdplace_agent', 'authority:mdplace-agent-001', ['append', 'replay', 'rebuild_view']],
+    ['component:foreground-recovery-001', 'foreground_recovery', 'authority:foreground-recovery-001', ['recover']],
+    ['component:capture-adapter-001', 'capture_adapter', 'authority:capture-adapter-001', []],
+    ['component:intelligence-adapter-001', 'intelligence_adapter', 'authority:intelligence-adapter-001', []],
+    ['component:folder-projection-001', 'folder_projection', 'authority:folder-projection-001', []],
+    ['component:projection-001', 'projection', 'authority:projection-001', []],
+    ['component:frontmatter-bridge-001', 'frontmatter_bridge', 'authority:frontmatter-bridge-001', []],
+    ['component:cache-001', 'cache', 'authority:cache-001', []],
+  ];
+  if (!Array.isArray(authorityRegistry?.authorities) ||
+      authorityRegistry.authorities.length !== expectedAuthorities.length ||
+      expectedAuthorities.some(([actorId, actorKind, authorityRef, capabilities], index) => {
+        const entry = authorityRegistry.authorities[index];
+        return entry?.actor_id !== actorId || entry?.actor_kind !== actorKind ||
+          entry?.authority_ref !== authorityRef || !Array.isArray(entry?.capabilities) ||
+          entry.capabilities.length !== capabilities.length ||
+          capabilities.some((capability, capabilityIndex) => entry.capabilities[capabilityIndex] !== capability);
+      })) {
+    codes.push('semantic.authority_registry_invalid');
+  }
+
+  const declaredEntries = Array.isArray(conformance?.fixtures) ? conformance.fixtures : [];
+  const classifiedEntries = await Promise.all(declaredEntries.map(async (entry) => {
+    const fixture = typeof entry?.path === 'string'
+      ? await readJson(packageRoot, `conformance/${entry.path}`)
+      : null;
+    const semantic = (typeof entry?.fixture_id === 'string' && entry.fixture_id.startsWith('FIX-SK-')) ||
+      (typeof entry?.path === 'string' && entry.path.startsWith('scenarios/semantic-kernel/')) ||
+      fixture?.subject?.kind === 'semantic_kernel' ||
+      fixture?.subject?.schema === 'contracts/schemas/semantic-kernel-scenario.schema.json';
+    return {entry, fixture, semantic};
+  }));
+  const semanticEntries = classifiedEntries.filter(({semantic}) => semantic);
+  const entries = semanticEntries.map(({entry}) => entry);
   if (entries.length !== 30) codes.push('semantic.scenario_count_invalid');
   if ([...scenarioCategories].some((category) => !entries.some((entry) => entry.category === category))) {
     codes.push('semantic.scenario_category_missing');
@@ -70,16 +106,22 @@ export async function checkSemanticKernelContract(packageRoot, manifest, conform
   const baseCoverage = new Set();
   const observedCodes = new Set();
   const observedOutputs = new Set();
-  for (const entry of entries) {
-    if (!/^scenarios\/semantic-kernel\/[a-z0-9][a-z0-9-]*\.json$/.test(entry.path ?? '')) {
+  let validRemovalCovered = false;
+  let illegalRemovalCovered = false;
+  for (const {entry, fixture} of semanticEntries) {
+    if (!(entry.fixture_id ?? '').startsWith('FIX-SK-') ||
+        !/^scenarios\/semantic-kernel\/[a-z0-9][a-z0-9-]*\.json$/.test(entry.path ?? '')) {
+      codes.push('semantic.scenario_manifest_pair_invalid');
       codes.push('semantic.scenario_path_invalid');
       continue;
     }
-    const fixture = await readJson(packageRoot, `conformance/${entry.path}`);
     if (fixture?.subject?.kind !== 'semantic_kernel' ||
         fixture.subject.schema !== 'contracts/schemas/semantic-kernel-scenario.schema.json') {
       codes.push('semantic.scenario_subject_invalid');
       continue;
+    }
+    if (fixture.fixture_id !== entry.fixture_id || fixture.category !== entry.category) {
+      codes.push('semantic.scenario_manifest_pair_invalid');
     }
     const code = await schemaCode(packageRoot, fixture.subject.schema, fixture.subject.document);
     if (code !== null) codes.push(code);
@@ -87,6 +129,11 @@ export async function checkSemanticKernelContract(packageRoot, manifest, conform
     for (const expectedCode of fixture.expected?.codes ?? []) observedCodes.add(expectedCode);
     for (const output of fixture.expected?.outputs ?? []) observedOutputs.add(output);
     const {action, initial} = fixture.subject.document;
+    if (action?.kind === 'append' && action.operation_kind === 'semantic_removal') {
+      if (fixture.expected?.verdict === 'pass') validRemovalCovered = true;
+      if (fixture.expected?.codes?.includes('semantic.illegal_transition') &&
+          fixture.expected?.illegal_transition === true) illegalRemovalCovered = true;
+    }
     const base = action?.kind === 'append' ? action.base_references?.[0] : undefined;
     if (base?.kind === 'semantic_head') {
       const direction = base.sequence < initial.head.sequence ? 'past'
@@ -136,6 +183,7 @@ export async function checkSemanticKernelContract(packageRoot, manifest, conform
       requiredOutputs.some((output) => !observedOutputs.has(output))) {
     codes.push('semantic.required_behavior_uncovered');
   }
+  if (!validRemovalCovered || !illegalRemovalCovered) codes.push('semantic.operation_kind_uncovered');
   if (['exact:accepted', 'past:rejected', 'future:rejected'].some((coverage) => !baseCoverage.has(coverage))) {
     codes.push('semantic.base_direction_uncovered');
   }

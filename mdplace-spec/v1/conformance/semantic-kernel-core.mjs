@@ -8,6 +8,10 @@ export function canonicalJson(value) {
   return JSON.stringify(value);
 }
 
+export function canonicalDigest(value) {
+  return createHash('sha256').update(canonicalJson(value)).digest('hex');
+}
+
 export function compareCanonicalText(left, right) {
   return left < right ? -1 : left > right ? 1 : 0;
 }
@@ -18,8 +22,63 @@ export function isRecognizedOperationKind(operationKind) {
     operationKind === 'compatibility_marker';
 }
 
-export function isSemanticWriter(actorKind) {
-  return actorKind === 'vault_owner' || actorKind === 'mdplace_agent';
+function commandPreimage({
+  commandId,
+  operationId,
+  actorAuthority,
+  operationKind,
+  baseReferences,
+  ordering,
+  payload,
+  idempotencyKey,
+  preconditions,
+}) {
+  return {
+    schema_id: 'mdplace.semantic-command-preimage/v1',
+    command_id: commandId,
+    operation_id: operationId,
+    actor_authority: actorAuthority,
+    operation_kind: operationKind,
+    base_references: baseReferences,
+    ordering,
+    payload,
+    idempotency_key: idempotencyKey,
+    preconditions,
+  };
+}
+
+export function commandDigestFromAction(action) {
+  return canonicalDigest(commandPreimage({
+    commandId: action.command_id,
+    operationId: action.operation_id,
+    actorAuthority: action.actor,
+    operationKind: action.operation_kind,
+    baseReferences: action.base_references,
+    ordering: action.ordering,
+    payload: action.payload,
+    idempotencyKey: action.idempotency_key,
+    preconditions: action.preconditions,
+  }));
+}
+
+export function commandDigestFromOperation(operation) {
+  return canonicalDigest(commandPreimage({
+    commandId: operation.command_id,
+    operationId: operation.operation_id,
+    actorAuthority: operation.actor_authority,
+    operationKind: operation.operation_kind,
+    baseReferences: operation.base_references,
+    ordering: operation.ordering,
+    payload: operation.payload,
+    idempotencyKey: operation.idempotency.key,
+    preconditions: operation.preconditions,
+  }));
+}
+
+export function operationDigest(operation) {
+  const preimage = {...operation};
+  delete preimage.operation_digest;
+  return canonicalDigest(preimage);
 }
 
 export function stateEntries(state) {
@@ -82,52 +141,61 @@ export function preconditionsMatch(preconditions, state) {
 
 export function operationEffect(operation, state) {
   const nextState = new Map(state);
-  switch (operation.operation_kind) {
-    case 'semantic_assignment':
-      if (typeof operation.payload.value !== 'string') return {code: 'semantic.payload_invalid', state};
-      nextState.set(operation.payload.key, operation.payload.value);
-      return {code: null, state: nextState};
-    case 'semantic_removal':
-      if (operation.payload.value !== null) return {code: 'semantic.payload_invalid', state};
-      if (!nextState.has(operation.payload.key)) return {code: 'semantic.illegal_transition', state};
-      nextState.delete(operation.payload.key);
-      return {code: null, state: nextState};
-    case 'compatibility_marker':
-      if (operation.payload.value !== null) return {code: 'semantic.payload_invalid', state};
-      return {code: null, state: nextState};
-    default:
-      return {code: 'semantic.operation_unknown', state};
+  const eventIds = new Set();
+  for (const [index, event] of operation.payload.events.entries()) {
+    if (event.schema_version !== '1.0.0') return {code: 'semantic.schema_version_unsupported', state};
+    if (event.ordinal !== index || eventIds.has(event.event_id) ||
+        event.event_kind !== operation.operation_kind) {
+      return {code: 'semantic.event_invalid', state};
+    }
+    eventIds.add(event.event_id);
+    switch (event.event_kind) {
+      case 'semantic_assignment':
+        nextState.set(event.payload.key, event.payload.value);
+        break;
+      case 'semantic_removal':
+        if (!nextState.has(event.payload.key)) return {code: 'semantic.illegal_transition', state};
+        nextState.delete(event.payload.key);
+        break;
+      case 'compatibility_marker':
+        break;
+      default:
+        return {code: 'semantic.operation_unknown', state};
+    }
   }
+  return {code: null, state: nextState};
 }
 
 export function operationFromAction(action, state) {
   const effect = operationEffect({operation_kind: action.operation_kind, payload: action.payload}, state);
   if (effect.code !== null) return {code: effect.code, operation: null, state};
   const receiptId = `receipt:${action.command_id.slice('command:'.length)}`;
+  const operation = {
+    $schema: 'semantic-operation.schema.json',
+    schema_id: 'mdplace.semantic-operation/v1',
+    operation_id: action.operation_id,
+    schema_version: '1.0.0',
+    command_id: action.command_id,
+    actor_authority: action.actor,
+    operation_kind: action.operation_kind,
+    base_references: action.base_references,
+    ordering: action.ordering,
+    payload: action.payload,
+    idempotency: {key: action.idempotency_key, command_digest: commandDigestFromAction(action)},
+    preconditions: action.preconditions,
+    closure_receipt: {
+      receipt_id: receiptId,
+      command_id: action.command_id,
+      operation_id: action.operation_id,
+      outcome: 'accepted',
+      sequence: action.ordering.sequence,
+      state_digest: stateDigest(effect.state),
+    },
+  };
+  operation.operation_digest = operationDigest(operation);
   return {
     code: null,
     state: effect.state,
-    operation: {
-      $schema: 'semantic-operation.schema.json',
-      schema_id: 'mdplace.semantic-operation/v1',
-      operation_id: action.operation_id,
-      schema_version: '1.0.0',
-      command_id: action.command_id,
-      actor_authority: action.actor,
-      operation_kind: action.operation_kind,
-      base_references: action.base_references,
-      ordering: action.ordering,
-      payload: action.payload,
-      idempotency: {key: action.idempotency_key, command_digest: action.command_digest},
-      preconditions: action.preconditions,
-      closure_receipt: {
-        receipt_id: receiptId,
-        command_id: action.command_id,
-        operation_id: action.operation_id,
-        outcome: 'accepted',
-        sequence: action.ordering.sequence,
-        state_digest: stateDigest(effect.state),
-      },
-    },
+    operation,
   };
 }

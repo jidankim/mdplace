@@ -50,10 +50,20 @@
           "sort_key": "000001:command:001"
         },
         "idempotency_key": "idempotency:001",
-        "command_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "command_digest": "ea289c632345b3711680153c156f5f78f78e17a52092bcd10894d874df176d50",
         "payload": {
-          "key": "note:001/placement",
-          "value": "cat:research"
+          "events": [
+            {
+              "event_id": "event:001-001",
+              "ordinal": 0,
+              "event_kind": "semantic_assignment",
+              "schema_version": "1.0.0",
+              "payload": {
+                "key": "note:001/placement",
+                "value": "cat:research"
+              }
+            }
+          ]
         },
         "preconditions": [],
         "records": [],

@@ -53,10 +53,20 @@
           "sort_key": "000002:command:002"
         },
         "idempotency_key": "idempotency:002",
-        "command_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "command_digest": "cc1917337d1cb36b17121384cd2edbcdc5e12afc45426b22b29986d3a1a217cd",
         "payload": {
-          "key": "note:002/placement",
-          "value": "cat:projects"
+          "events": [
+            {
+              "event_id": "event:002-001",
+              "ordinal": 0,
+              "event_kind": "semantic_assignment",
+              "schema_version": "1.0.0",
+              "payload": {
+                "key": "note:002/placement",
+                "value": "cat:projects"
+              }
+            }
+          ]
         },
         "preconditions": [],
         "records": [],

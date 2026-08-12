@@ -43,6 +43,7 @@ export const requiredSchemaPaths = [
   'contracts/schemas/evidence-recovery-report.schema.json',
   'contracts/schemas/evidence-transition-attempt.schema.json',
   'contracts/schemas/semantic-operation.schema.json',
+  'contracts/schemas/semantic-authority-registry.schema.json',
   'contracts/schemas/semantic-operation-kind-registry.schema.json',
   'contracts/schemas/semantic-kernel-scenario.schema.json',
   'contracts/schemas/semantic-kernel-recovery-report.schema.json',

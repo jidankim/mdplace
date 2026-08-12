@@ -1,14 +1,15 @@
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {
   baseMatches,
+  commandDigestFromAction,
   isRecognizedOperationKind,
-  isSemanticWriter,
   operationFromAction,
   preconditionsMatch,
   stateEntriesAreCanonical,
   stateFromEntries,
   stateLabel,
 } from './semantic-kernel-core.mjs';
+import {semanticActorHasCapability} from './semantic-kernel-authority.mjs';
 import {semanticRecoveryReceipt, semanticRejectionReceipt} from './semantic-kernel-receipts.mjs';
 import {replayRecords} from './semantic-kernel-replay.mjs';
 
@@ -24,12 +25,13 @@ function rejected(code, document, state, {terminal = 'ready', illegal = false, o
   });
 }
 
-function observeAppend(document) {
+async function observeAppend(document, packageRoot) {
   const {action, initial} = document;
   const state = stateFromEntries(initial.semantic_state);
   if (initial.lifecycle_state !== 'ready') return rejected('semantic.recovery_required', document, state, {terminal: 'recovery_required', illegal: true});
   if (!isRecognizedOperationKind(action.operation_kind)) return rejected('semantic.operation_unknown', document, state);
-  if (!isSemanticWriter(action.actor.actor_kind)) return rejected('semantic.authority_denied', document, state);
+  if (!await semanticActorHasCapability(packageRoot, action.actor, 'append')) return rejected('semantic.authority_denied', document, state);
+  if (commandDigestFromAction(action) !== action.command_digest) return rejected('semantic.command_digest_invalid', document, state);
   const prior = initial.prior_receipts.find(({idempotency_key: key}) => key === action.idempotency_key);
   if (prior !== undefined) {
     if (prior.command_digest !== action.command_digest) return rejected('semantic.idempotency_incompatible', document, state);
@@ -59,6 +61,17 @@ function observeAppend(document) {
 }
 
 async function observeReplay(document, packageRoot, rebuild = false) {
+  const capability = rebuild ? 'rebuild_view' : 'replay';
+  if (!await semanticActorHasCapability(packageRoot, document.action.actor, capability)) {
+    const state = stateFromEntries(document.initial.semantic_state);
+    return observed({
+      verdict: 'fail',
+      codes: ['semantic.authority_denied'],
+      outputs: [rebuild ? 'view rebuild rejected' : 'replay rejected', `semantic_state:${stateLabel(state)}`],
+      operations: [`validate ${capability} authority`],
+      receipts: [semanticRejectionReceipt('semantic.authority_denied', document, state)],
+    });
+  }
   const result = await replayRecords(document.action.records, document.action.snapshot, document.initial.bound_inputs, packageRoot);
   if (result.code !== null) {
     const state = stateLabel(result.state);
@@ -94,7 +107,7 @@ async function observeRecovery(document, packageRoot) {
       receipts: [semanticRejectionReceipt('semantic.recovery_not_required', document, state)], illegal: true,
     });
   }
-  if (document.action.actor.actor_kind !== 'foreground_recovery') {
+  if (!await semanticActorHasCapability(packageRoot, document.action.actor, 'recover')) {
     return observed({
       verdict: 'fail', codes: ['semantic.authority_denied'],
       outputs: ['recovery rejected', 'canonical_record:none', `semantic_state:${stateLabel(state)}`],
@@ -140,7 +153,7 @@ export async function observeSemanticKernelScenario(subject, packageRoot) {
     });
   }
   switch (document.action.kind) {
-    case 'append': return observeAppend(document);
+    case 'append': return observeAppend(document, packageRoot);
     case 'replay': return observeReplay(document, packageRoot);
     case 'rebuild_view': return observeReplay(document, packageRoot, true);
     case 'recover': return observeRecovery(document, packageRoot);

@@ -17,7 +17,7 @@
         "required": ["operation_kind", "payload_contract", "replay_effect", "forward_compatibility"],
         "properties": {
           "operation_kind": {"enum": ["semantic_assignment", "semantic_removal", "compatibility_marker"]},
-          "payload_contract": {"const": "contracts/schemas/semantic-operation.schema.json#/$defs/payload"},
+          "payload_contract": {"enum": ["contracts/schemas/semantic-operation.schema.json#/$defs/assignmentEventList", "contracts/schemas/semantic-operation.schema.json#/$defs/removalEventList", "contracts/schemas/semantic-operation.schema.json#/$defs/markerEventList"]},
           "replay_effect": {"enum": ["assign_value", "remove_value", "preserve_state"]},
           "forward_compatibility": {"enum": ["core_v1", "recognized_noop_v1"]}
         }

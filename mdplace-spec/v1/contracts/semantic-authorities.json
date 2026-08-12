@@ -1,0 +1,17 @@
+{
+  "$schema": "schemas/semantic-authority-registry.schema.json",
+  "schema_id": "mdplace.semantic-authority-registry/v1",
+  "package_series": "mdplace-spec/v1",
+  "release_version": "1.0.0",
+  "authorities": [
+    {"actor_id": "person:owner-001", "actor_kind": "vault_owner", "authority_ref": "authority:vault-owner-001", "capabilities": ["append"]},
+    {"actor_id": "component:mdplace-agent-001", "actor_kind": "mdplace_agent", "authority_ref": "authority:mdplace-agent-001", "capabilities": ["append", "replay", "rebuild_view"]},
+    {"actor_id": "component:foreground-recovery-001", "actor_kind": "foreground_recovery", "authority_ref": "authority:foreground-recovery-001", "capabilities": ["recover"]},
+    {"actor_id": "component:capture-adapter-001", "actor_kind": "capture_adapter", "authority_ref": "authority:capture-adapter-001", "capabilities": []},
+    {"actor_id": "component:intelligence-adapter-001", "actor_kind": "intelligence_adapter", "authority_ref": "authority:intelligence-adapter-001", "capabilities": []},
+    {"actor_id": "component:folder-projection-001", "actor_kind": "folder_projection", "authority_ref": "authority:folder-projection-001", "capabilities": []},
+    {"actor_id": "component:projection-001", "actor_kind": "projection", "authority_ref": "authority:projection-001", "capabilities": []},
+    {"actor_id": "component:frontmatter-bridge-001", "actor_kind": "frontmatter_bridge", "authority_ref": "authority:frontmatter-bridge-001", "capabilities": []},
+    {"actor_id": "component:cache-001", "actor_kind": "cache", "authority_ref": "authority:cache-001", "capabilities": []}
+  ]
+}

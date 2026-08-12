@@ -4,8 +4,8 @@
   "package_series": "mdplace-spec/v1",
   "release_version": "1.0.0",
   "kinds": [
-    {"operation_kind": "semantic_assignment", "payload_contract": "contracts/schemas/semantic-operation.schema.json#/$defs/payload", "replay_effect": "assign_value", "forward_compatibility": "core_v1"},
-    {"operation_kind": "semantic_removal", "payload_contract": "contracts/schemas/semantic-operation.schema.json#/$defs/payload", "replay_effect": "remove_value", "forward_compatibility": "core_v1"},
-    {"operation_kind": "compatibility_marker", "payload_contract": "contracts/schemas/semantic-operation.schema.json#/$defs/payload", "replay_effect": "preserve_state", "forward_compatibility": "recognized_noop_v1"}
+    {"operation_kind": "semantic_assignment", "payload_contract": "contracts/schemas/semantic-operation.schema.json#/$defs/assignmentEventList", "replay_effect": "assign_value", "forward_compatibility": "core_v1"},
+    {"operation_kind": "semantic_removal", "payload_contract": "contracts/schemas/semantic-operation.schema.json#/$defs/removalEventList", "replay_effect": "remove_value", "forward_compatibility": "core_v1"},
+    {"operation_kind": "compatibility_marker", "payload_contract": "contracts/schemas/semantic-operation.schema.json#/$defs/markerEventList", "replay_effect": "preserve_state", "forward_compatibility": "recognized_noop_v1"}
   ]
 }

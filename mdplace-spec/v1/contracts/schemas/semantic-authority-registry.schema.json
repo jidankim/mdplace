@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:semantic-authority-registry:v1",
+  "title": "mdplace Semantic Kernel authority registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "package_series", "release_version", "authorities"],
+  "properties": {
+    "$schema": {"const": "schemas/semantic-authority-registry.schema.json"},
+    "schema_id": {"const": "mdplace.semantic-authority-registry/v1"},
+    "package_series": {"const": "mdplace-spec/v1"},
+    "release_version": {"const": "1.0.0"},
+    "authorities": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/authority"}
+    }
+  },
+  "$defs": {
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actor_id", "actor_kind", "authority_ref", "capabilities"],
+      "properties": {
+        "actor_id": {"type": "string", "pattern": "^(person|component):[a-z0-9][a-z0-9-]{2,63}$"},
+        "actor_kind": {"enum": ["vault_owner", "mdplace_agent", "foreground_recovery", "capture_adapter", "intelligence_adapter", "folder_projection", "projection", "frontmatter_bridge", "cache"]},
+        "authority_ref": {"type": "string", "pattern": "^authority:[a-z0-9][a-z0-9-]{2,63}$"},
+        "capabilities": {
+          "type": "array",
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {"enum": ["append", "replay", "rebuild_view", "recover"]}
+        }
+      }
+    }
+  }
+}

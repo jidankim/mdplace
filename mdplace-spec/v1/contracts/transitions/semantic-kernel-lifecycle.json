@@ -10,9 +10,9 @@
     {
       "transition_id": "TR-SK-001", "command_or_event": "append_operation", "from_state": "ready", "allowed": true,
       "actor_authority": {"roles": ["semantic_kernel"], "quorum": 1, "distinct_actors": false, "delegation": "forbidden"},
-      "preconditions": ["actor authority is explicit", "idempotency is compatible", "base equals current semantic head", "operation kind and preconditions are valid"],
+      "preconditions": ["complete actor tuple has append capability in the package authority registry", "command digest is independently recomputed", "idempotency is compatible", "base equals current semantic head", "operation kind typed events and preconditions are valid"],
       "base_references": ["semantic_head_sequence", "semantic_head_operation_id", "semantic_state_digest", "ordered_bound_inputs"],
-      "emitted_records": ["CanonicalSemanticOperation", "SemanticAppendReceipt"], "filesystem_effects": ["append one immutable .op.json record"],
+      "emitted_records": ["OperationCommit", "SemanticAppendReceipt"], "filesystem_effects": ["append one immutable .op.json record"],
       "idempotency": {"key_fields": ["idempotency_key", "command_digest"], "retry_result": "return the original receipt without another operation"},
       "terminal_state": "ready", "failure_result": {"code": "semantic.append_rejected", "state_effect": "unchanged", "emitted_records": ["SemanticRejectionReceipt"], "filesystem_effects": ["none"]},
       "recovery": "Reject without a semantic write, or enter recovery_required only when crash evidence proves an unresolved publication boundary."
@@ -38,7 +38,7 @@
     {
       "transition_id": "TR-SK-004", "command_or_event": "recover_operation", "from_state": "recovery_required", "allowed": true,
       "actor_authority": {"roles": ["semantic_kernel"], "quorum": 1, "distinct_actors": false, "delegation": "forbidden"},
-      "preconditions": ["crash journal and canonical namespace are read back", "canonical record bytes are validated when present"],
+      "preconditions": ["complete actor tuple has recover capability in the package authority registry", "crash journal and canonical namespace are read back", "canonical record bytes and operation digest are validated when present"],
       "base_references": ["recovery_id", "semantic_head_sequence", "semantic_state_digest", "journal_digest"],
       "emitted_records": ["SemanticRecoveryReport", "SemanticAppendReceipt"], "filesystem_effects": ["discard uncommitted staging or publish only a missing receipt"],
       "idempotency": {"key_fields": ["recovery_id", "journal_digest"], "retry_result": "return the original recovery report without another operation"},

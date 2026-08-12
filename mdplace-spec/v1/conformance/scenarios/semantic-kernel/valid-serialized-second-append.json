@@ -38,7 +38,7 @@
         },
         "command_id": "command:002",
         "operation_id": "operation:002",
-        "operation_kind": "semantic_assignment",
+        "operation_kind": "semantic_removal",
         "base_references": [
           {
             "ordinal": 0,
@@ -54,10 +54,20 @@
           "sort_key": "000002:command:002"
         },
         "idempotency_key": "idempotency:002",
-        "command_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "command_digest": "46cd42e37d854c2e27619343e55b352b3d21bbafddbde8e506e41e3db4ca7474",
         "payload": {
-          "key": "note:002/placement",
-          "value": "cat:projects"
+          "events": [
+            {
+              "event_id": "event:002-001",
+              "ordinal": 0,
+              "event_kind": "semantic_removal",
+              "schema_version": "1.0.0",
+              "payload": {
+                "key": "note:001/placement",
+                "value": null
+              }
+            }
+          ]
         },
         "preconditions": [],
         "records": [],
@@ -74,8 +84,8 @@
     "outputs": [
       "append accepted",
       "canonical_record:operation:002",
-      "semantic_state:[{\"key\":\"note:001/placement\",\"value\":\"cat:research\"},{\"key\":\"note:002/placement\",\"value\":\"cat:projects\"}]",
-      "snapshot_state:[{\"key\":\"note:001/placement\",\"value\":\"cat:research\"},{\"key\":\"note:002/placement\",\"value\":\"cat:projects\"}]"
+      "semantic_state:[]",
+      "snapshot_state:[]"
     ],
     "operations": [
       "validate actor authority",

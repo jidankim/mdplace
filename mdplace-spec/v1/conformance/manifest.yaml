@@ -1224,15 +1224,15 @@
       }
     },
     {
-      "fixture_id": "FIX-SK-POS-003",
-      "path": "scenarios/semantic-kernel/deterministic-ordered-replay.json",
-      "category": "positive",
+      "fixture_id": "FIX-SK-NEG-010",
+      "path": "scenarios/semantic-kernel/illegal-removal-rejected.json",
+      "category": "negative",
       "requirement_ids": [
         "REQ-SK-003",
         "REQ-SK-004",
         "REQ-SK-005"
       ],
-      "expected_verdict": "pass",
+      "expected_verdict": "fail",
       "observable_assertions": {
         "inputs": true,
         "outputs": true,
@@ -1240,7 +1240,7 @@
         "receipts": true,
         "filesystem_effects": true,
         "terminal_state": true,
-        "illegal_transition": false
+        "illegal_transition": true
       }
     },
     {
