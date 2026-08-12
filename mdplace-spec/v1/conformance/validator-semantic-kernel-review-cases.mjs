@@ -34,6 +34,15 @@ test('Semantic Kernel scenario bounds reject an oversized batch, state, and reco
     value: 'cat:research',
   }));
   fixture.subject.document.action.records[0] = 'x'.repeat(32_769);
+  fixture.subject.document.initial.prior_receipts = Array.from({length: 257}, (_, index) => {
+    const id = String(index).padStart(3, '0');
+    return {
+      idempotency_key: `idempotency:boundary-${id}`,
+      command_digest: 'a'.repeat(64),
+      operation_id: `operation:boundary-${id}`,
+      receipt_id: `receipt:boundary-${id}`,
+    };
+  });
 
   const errors = await validateAgainstSchemaPath(
     packageRoot,
@@ -44,6 +53,7 @@ test('Semantic Kernel scenario bounds reject an oversized batch, state, and reco
   assert.ok(errors.some(({path, keyword}) => path === '$/action/records' && keyword === 'maxItems'));
   assert.ok(errors.some(({path, keyword}) => path === '$/action/records/0' && keyword === 'maxLength'));
   assert.ok(errors.some(({path, keyword}) => path === '$/action/snapshot/semantic_state' && keyword === 'maxItems'));
+  assert.ok(errors.some(({path, keyword}) => path === '$/initial/prior_receipts' && keyword === 'maxItems'));
 });
 
 test('duplicate prior receipt identities are rejected independently of array order', async () => {
@@ -67,6 +77,29 @@ test('duplicate prior receipt identities are rejected independently of array ord
   assert.deepEqual(backward.codes, forward.codes);
 });
 
+test('compatible retry binds the prior receipt to the same operation identity', async () => {
+  const fixture = await semanticFixture('duplicate-compatible-idempotent.json');
+  fixture.subject.document.initial.head.operation_id = 'operation:other-001';
+  fixture.subject.document.initial.operation_ids = ['operation:other-001'];
+  fixture.subject.document.initial.prior_receipts[0].operation_id = 'operation:other-001';
+
+  const observed = await observeFixture(fixture, packageRoot);
+
+  assert.deepEqual(observed.codes, ['semantic.idempotency_incompatible']);
+  assert.ok(observed.outputs.includes('canonical_record:none'));
+});
+
+test('append rejects an incomplete prior receipt history before idempotency reuse', async () => {
+  const fixture = await semanticFixture('valid-serialized-second-append.json');
+  fixture.subject.document.initial.prior_receipts = [];
+  fixture.subject.document.action.idempotency_key = 'idempotency:001';
+  fixture.subject.document.action.command_digest = commandDigestFromAction(fixture.subject.document.action);
+
+  const observed = await observeFixture(fixture, packageRoot);
+
+  assert.deepEqual(observed.codes, ['semantic.identity_history_invalid']);
+});
+
 test('append rejects reuse of an immutable operation identity', async () => {
   const fixture = await semanticFixture('valid-serialized-second-append.json');
   fixture.subject.document.action.operation_id = fixture.subject.document.initial.head.operation_id;
@@ -74,6 +107,12 @@ test('append rejects reuse of an immutable operation identity', async () => {
   const earlierFixture = structuredClone(fixture);
   earlierFixture.subject.document.initial.head = {sequence: 2, operation_id: 'operation:002'};
   earlierFixture.subject.document.initial.operation_ids = ['operation:001', 'operation:002'];
+  earlierFixture.subject.document.initial.prior_receipts.push({
+    idempotency_key: 'idempotency:history-002',
+    command_digest: 'a'.repeat(64),
+    operation_id: 'operation:002',
+    receipt_id: 'receipt:history-002',
+  });
   earlierFixture.subject.document.action.base_references[0].sequence = 2;
   earlierFixture.subject.document.action.base_references[0].operation_id = 'operation:002';
   earlierFixture.subject.document.action.ordering = {

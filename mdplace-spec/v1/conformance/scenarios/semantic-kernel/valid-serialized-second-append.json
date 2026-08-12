@@ -27,7 +27,14 @@
           }
         ],
         "bound_inputs": [],
-        "prior_receipts": [],
+        "prior_receipts": [
+          {
+            "idempotency_key": "idempotency:001",
+            "command_digest": "372e21c0f4e9a353d29eed992057369ec7f4cacc6de07aa070e1172271d43eb2",
+            "operation_id": "operation:001",
+            "receipt_id": "receipt:001"
+          }
+        ],
         "operation_ids": [
           "operation:001"
         ]

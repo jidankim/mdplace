@@ -31,9 +31,11 @@ function identityHistoryIsValid(initial) {
   const receiptKeys = ['idempotency_key', 'operation_id', 'receipt_id'];
   const identitiesAreUnique = receiptKeys.every((key) =>
     new Set(initial.prior_receipts.map((receipt) => receipt[key])).size === initial.prior_receipts.length);
+  const receiptOperations = new Set(initial.prior_receipts.map(({operation_id: operationId}) => operationId));
   return identitiesAreUnique && initial.operation_ids.length === initial.head.sequence &&
+    initial.prior_receipts.length === initial.operation_ids.length &&
     (initial.operation_ids.at(-1) ?? null) === initial.head.operation_id &&
-    initial.prior_receipts.every(({operation_id: operationId}) => initial.operation_ids.includes(operationId));
+    initial.operation_ids.every((operationId) => receiptOperations.has(operationId));
 }
 
 async function observeAppend(document, packageRoot) {
@@ -45,7 +47,9 @@ async function observeAppend(document, packageRoot) {
   if (commandDigestFromAction(action) !== action.command_digest) return rejected('semantic.command_digest_invalid', document, state);
   const prior = initial.prior_receipts.find(({idempotency_key: key}) => key === action.idempotency_key);
   if (prior !== undefined) {
-    if (prior.command_digest !== action.command_digest) return rejected('semantic.idempotency_incompatible', document, state);
+    if (prior.command_digest !== action.command_digest || prior.operation_id !== action.operation_id) {
+      return rejected('semantic.idempotency_incompatible', document, state);
+    }
     return observed({
       verdict: 'pass', outputs: ['append idempotent', 'canonical_record:none', `semantic_state:${stateLabel(state)}`],
       operations: ['validate actor authority', 'resolve idempotency material'],
