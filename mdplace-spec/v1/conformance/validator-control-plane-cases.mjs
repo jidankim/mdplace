@@ -848,6 +848,64 @@ test('dispatch revalidates current journal writer readiness dependency and capac
   reversedAction.expected_scheduler_state_digest = reversedInitial.scheduler_state_digest;
   assert.deepEqual((await observeControlPlaneScenario(reversedLiveDispatch, packageRoot)).codes,
     ['control.lease_tick_stale']);
+
+  const reversedQueuedCancellation = structuredClone(reversedLiveDispatch);
+  const cancellationInitial = reversedQueuedCancellation.document.initial;
+  const cancellationAction = reversedQueuedCancellation.document.action;
+  Object.assign(cancellationAction, {
+    kind: 'cancel', actor_role: 'vault_owner', lease_id: null,
+    idempotency_key: cancellationInitial.work.idempotency_key,
+  });
+  cancellationAction.vault_owner_receipt = {
+    receipt_id: 'vault-owner-receipt:reversed-cancel-001',
+    principal_id: 'person:owner-001', vault_id: cancellationInitial.vault_id,
+    action_kind: 'cancel', work_id: cancellationInitial.work.work_id,
+    work_version: cancellationInitial.work.work_version, lease_id: null,
+    idempotency_key: cancellationInitial.work.idempotency_key,
+  };
+  Object.assign(cancellationAction.vault_owner_receipt, signControlPlaneReceipt(
+    'vault_owner_authorization', vaultOwnerFields(cancellationAction.vault_owner_receipt),
+  ));
+  assert.deepEqual((await observeControlPlaneScenario(reversedQueuedCancellation, packageRoot)).codes,
+    ['control.lease_tick_stale']);
+
+  const futurePrefixCapacity = structuredClone(fixture.subject);
+  const capacityInitial = futurePrefixCapacity.document.initial;
+  const capacityAction = futurePrefixCapacity.document.action;
+  const capacityPrefix = capacityInitial.journal_prefix_receipt;
+  Object.assign(capacityPrefix, {
+    head_sequence: 8, head_digest: 'e'.repeat(64),
+    active_leases: Array.from({length: 8}, (_, index) => ({
+      lease_id: `lease:future-capacity-${index + 1}`,
+      work_id: `work:future-capacity-${index + 1}`, work_version: 1,
+      owner_agent_id: capacityInitial.persistent_agent_id,
+      acquired_tick: 100, expires_tick: 400, status: 'active',
+    })),
+  });
+  Object.assign(capacityPrefix, signControlPlaneReceipt(
+    'work_journal_prefix', journalPrefixFields(capacityPrefix),
+  ));
+  const capacityEnqueue = capacityInitial.work.enqueue_receipt;
+  Object.assign(capacityEnqueue, {
+    base_head_sequence: 8, base_head_digest: capacityPrefix.head_digest, journal_sequence: 9,
+  });
+  Object.assign(capacityEnqueue, signControlPlaneReceipt('work_enqueue', [
+    capacityEnqueue.receipt_id, capacityEnqueue.work_id, capacityEnqueue.work_version,
+    capacityEnqueue.idempotency_key, capacityEnqueue.input_digest,
+    capacityEnqueue.base_head_sequence, capacityEnqueue.base_head_digest,
+    capacityEnqueue.journal_sequence,
+  ]));
+  capacityInitial.journal_head_sequence = 9;
+  authenticateScenarioHead(capacityInitial);
+  Object.assign(capacityAction, {
+    expected_journal_head_sequence: 9,
+    expected_journal_head_digest: capacityInitial.journal_head_digest,
+    lease_id: 'lease:ninth-001', current_tick: 1,
+  });
+  authenticateScenarioScheduler(capacityInitial, capacityAction.current_tick);
+  capacityAction.expected_scheduler_state_digest = capacityInitial.scheduler_state_digest;
+  assert.deepEqual((await observeControlPlaneScenario(futurePrefixCapacity, packageRoot)).codes,
+    ['control.lease_tick_stale']);
 });
 
 test('stateful dependency and Scheduler snapshots are derived from durable Work evidence', async () => {
@@ -1828,7 +1886,7 @@ test('acknowledgement and Scheduler observations reject pre-acquisition and expi
   acknowledgement.subject.document.action.expected_scheduler_state_digest =
     acknowledgement.subject.document.initial.scheduler_state_digest;
   assert.deepEqual((await observeControlPlaneScenario(acknowledgement.subject, packageRoot)).codes,
-    ['control.lease_stale']);
+    ['control.lease_tick_stale']);
 
   const dispatchFixture = JSON.parse(await readFile(new URL(
     './scenarios/control-plane/dequeue-acknowledges-after-receipt.json', import.meta.url,
@@ -1869,7 +1927,7 @@ test('acknowledgement and Scheduler observations reject pre-acquisition and expi
     head_sequence: 1, head_digest: 'f'.repeat(64), active_leases: [{
     lease_id: 'lease:prefix-001', work_id: 'work:prefix-001', work_version: 1,
     owner_agent_id: recoveryInitial.persistent_agent_id,
-    acquired_tick: 1, expires_tick: 1000, status: 'active',
+    acquired_tick: 1, expires_tick: 301, status: 'active',
   }],
   });
   Object.assign(recoveryInitial.journal_prefix_receipt, signControlPlaneReceipt(
@@ -1915,7 +1973,7 @@ test('acknowledgement and Scheduler observations reject pre-acquisition and expi
   futureTerminal.subject.document.action.expected_scheduler_state_digest =
     futureInitial.scheduler_state_digest;
   assert.deepEqual((await observeControlPlaneScenario(futureTerminal.subject, packageRoot)).codes,
-    ['control.scheduler_base_stale']);
+    ['control.lease_tick_stale']);
 });
 
 test('terminal recover_work remains illegal while restart preserves completion', async () => {

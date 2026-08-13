@@ -1141,6 +1141,13 @@ export async function observeControlPlaneScenario(subject, packageRoot) {
   if (!journalHeadIsAuthenticated(initial)) return rejected(initial, action, 'control.journal_evidence_invalid', {terminal: 'blocked'});
   if (!dependencyStateIsAuthenticated(initial)) return rejected(initial, action, 'control.dependency_evidence_invalid', {terminal: 'blocked'});
   if (!leaseHistoryIsValid(initial)) return rejected(initial, action, 'control.lease_history_invalid', {terminal: 'blocked'});
+  const lifecycleActionTick = action.kind === 'recover' ? action.recovery_tick
+    : ['dispatch', 'acknowledge', 'complete_work', 'fail', 'retry', 'cancel'].includes(action.kind)
+      ? action.current_tick : null;
+  if (Number.isInteger(lifecycleActionTick) &&
+      lifecycleActionTick < scenarioLifecycleLastObservedTick(initial)) {
+    return rejected(initial, action, 'control.lease_tick_stale', {terminal: 'blocked'});
+  }
   const schedulerTick = action.kind === 'recover' ? action.recovery_tick
     : ['dispatch', 'acknowledge', 'complete_work', 'fail', 'retry', 'cancel'].includes(action.kind)
       ? action.current_tick : initial.scheduler_observed_tick;

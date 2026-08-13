@@ -114,7 +114,12 @@ export function scenarioLifecycleIsValid(initial) {
 }
 
 export function scenarioLifecycleLastObservedTick(initial) {
-  return replayScenarioLifecycle(initial)?.current.lastObservedTick ?? null;
+  const replay = replayScenarioLifecycle(initial);
+  if (replay === null) return null;
+  return initial.journal_prefix_receipt.active_leases.reduce(
+    (latest, lease) => Math.max(latest, lease.acquired_tick),
+    replay.current.lastObservedTick,
+  );
 }
 
 function replayScenarioLifecycle(initial) {
