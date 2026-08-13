@@ -24,7 +24,7 @@
         "journal_head_sequence": 1,
         "work": {
           "work_id": "work:001",
-          "work_version": 2,
+          "work_version": 1,
           "state": "queued",
           "idempotency_key": "idempotency:work-001",
           "input_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
@@ -74,7 +74,7 @@
         "dependency_state_digest": "c289e61ad636413a47b06ff09a505fd15701b9302e0fe955557e4b7b45ad4111",
         "active_work_count": 0,
         "max_concurrent_work": 8,
-        "journal_head_digest": "a37ec54bcef281a61afc8b70e00ac6f0a5a4e76ebc1839589090a4200d21cc10",
+        "journal_head_digest": "2b3dd20626e7d70140607279a5e7d3e3f603ba8fc543257b7cb562baf3c51912",
         "active_lease_ids": [],
         "scheduler_state_digest": "6974ab1c0f4e5f5cfbb45d9756a8756121a07522cf16a73e07b08dc281ea1c43",
         "prior_lease_receipts": [],
@@ -82,11 +82,11 @@
           "receipt_id": "journal-head-receipt:vault-001",
           "journal_id": "journal:vault-001",
           "head_sequence": 1,
-          "head_digest": "a37ec54bcef281a61afc8b70e00ac6f0a5a4e76ebc1839589090a4200d21cc10",
+          "head_digest": "2b3dd20626e7d70140607279a5e7d3e3f603ba8fc543257b7cb562baf3c51912",
           "signature_scheme": "hmac-sha256",
           "signing_key_id": "signer-key:primary-001",
           "signer_agent_id": "agent:primary-001",
-          "signature_digest": "b0a9e1aaae63fdb3f0bfed49a958b73017fe3e01b98daca63826065681556f6d",
+          "signature_digest": "9f4084d40e075c3bba9d1afa4fce9bbc4961a105d811682de421981a0610befd",
           "authenticated": true
         },
         "dependency_state_receipt": {
@@ -104,13 +104,16 @@
           "signer_agent_id": "agent:primary-001",
           "signature_digest": "fa9d267dcd2489df35f7fac9c3db98a57f46b002d016e9245bbf3bc296e0634a",
           "authenticated": true
-        }
+        },
+        "prior_retry_receipts": [],
+        "prior_recovery_receipts": [],
+        "vault_id": "vault:001"
       },
       "action": {
         "kind": "cancel",
         "actor_role": "vault_owner",
         "work_id": "work:001",
-        "expected_work_version": 1,
+        "expected_work_version": 2,
         "lease_id": null,
         "idempotency_key": "idempotency:work-001",
         "proposed_work_input_digest": null,
@@ -242,12 +245,12 @@
           "vault_id": "vault:001",
           "action_kind": "cancel",
           "work_id": "work:001",
-          "work_version": 1,
+          "work_version": 2,
           "idempotency_key": "idempotency:work-001",
           "signature_scheme": "hmac-sha256",
           "signing_key_id": "signer-key:primary-001",
           "signer_agent_id": "agent:primary-001",
-          "signature_digest": "b31d72a4e602f2bf7e41105510afe117f673935898c0e90fddb666a4c932eaae",
+          "signature_digest": "b89e05bcb1274c474ac6dca75eab0f94de1bc95547f72d1f96b117209c48c7cd",
           "authenticated": true,
           "lease_id": null
         }

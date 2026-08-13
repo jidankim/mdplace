@@ -23,10 +23,10 @@
         "writer_epoch": 1,
         "journal_available": true,
         "semantic_dependency_available": true,
-        "journal_head_sequence": 1,
+        "journal_head_sequence": 3,
         "work": {
           "work_id": "work:001",
-          "work_version": 2,
+          "work_version": 3,
           "state": "executing",
           "idempotency_key": "idempotency:work-001",
           "input_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
@@ -38,7 +38,7 @@
           "resume_count": 0,
           "resume_ceiling": 1,
           "retry_eligible_tick": null,
-          "recovery_interruption_count": 1,
+          "recovery_interruption_count": 0,
           "lease_status": "expired",
           "lease_acquired_tick": 1,
           "lease_expires_tick": 301,
@@ -76,37 +76,54 @@
         "dependency_state_digest": "c289e61ad636413a47b06ff09a505fd15701b9302e0fe955557e4b7b45ad4111",
         "active_work_count": 0,
         "max_concurrent_work": 8,
-        "journal_head_digest": "a37ec54bcef281a61afc8b70e00ac6f0a5a4e76ebc1839589090a4200d21cc10",
+        "journal_head_digest": "308484f0cde0bff7fa5af84bbeae79b0ee9706ac0877b841b27158149d1eff47",
         "active_lease_ids": [],
         "scheduler_state_digest": "6974ab1c0f4e5f5cfbb45d9756a8756121a07522cf16a73e07b08dc281ea1c43",
         "prior_lease_receipts": [
           {
-            "receipt_id": "lease-receipt:001",
+            "receipt_id": "lease-receipt:attempt-1",
             "receipt_kind": "lease",
             "lease_id": "lease:001",
             "work_id": "work:001",
             "work_version": 2,
-            "journal_sequence": 1,
+            "journal_sequence": 2,
             "owner_agent_id": "agent:primary-001",
+            "acquired_tick": 1,
+            "expires_tick": 301,
+            "status": "expired",
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "a113798e3efb0c39f97669186cf73f6946da245c22c3c4d7443a4d3d4de8566e",
-            "authenticated": true,
+            "signature_digest": "667e77d5f13d7b96482ecc7e6b7eba78f1746d1b9531f429eb0c354d578995e4",
+            "authenticated": true
+          },
+          {
+            "receipt_id": "lease-receipt:start-1",
+            "receipt_kind": "start",
+            "lease_id": "lease:001",
+            "work_id": "work:001",
+            "work_version": 3,
+            "journal_sequence": 3,
+            "owner_agent_id": "agent:primary-001",
             "acquired_tick": 1,
             "expires_tick": 301,
-            "status": "expired"
+            "status": "expired",
+            "signature_scheme": "hmac-sha256",
+            "signing_key_id": "signer-key:primary-001",
+            "signer_agent_id": "agent:primary-001",
+            "signature_digest": "42b943b75dab0e4a865ccaa75bf747122232e12b977d1be8e56b044fea0f9673",
+            "authenticated": true
           }
         ],
         "journal_head_receipt": {
           "receipt_id": "journal-head-receipt:vault-001",
           "journal_id": "journal:vault-001",
-          "head_sequence": 1,
-          "head_digest": "a37ec54bcef281a61afc8b70e00ac6f0a5a4e76ebc1839589090a4200d21cc10",
+          "head_sequence": 3,
+          "head_digest": "308484f0cde0bff7fa5af84bbeae79b0ee9706ac0877b841b27158149d1eff47",
           "signature_scheme": "hmac-sha256",
           "signing_key_id": "signer-key:primary-001",
           "signer_agent_id": "agent:primary-001",
-          "signature_digest": "b0a9e1aaae63fdb3f0bfed49a958b73017fe3e01b98daca63826065681556f6d",
+          "signature_digest": "ba94ac7d5e4c8f69eb45c927339c76d894e6aa16a8efc0b06e488145a749a32c",
           "authenticated": true
         },
         "dependency_state_receipt": {
@@ -124,13 +141,16 @@
           "signer_agent_id": "agent:primary-001",
           "signature_digest": "fa9d267dcd2489df35f7fac9c3db98a57f46b002d016e9245bbf3bc296e0634a",
           "authenticated": true
-        }
+        },
+        "prior_retry_receipts": [],
+        "prior_recovery_receipts": [],
+        "vault_id": "vault:001"
       },
       "action": {
         "kind": "recover",
         "actor_role": "mdplace_agent",
         "work_id": "work:001",
-        "expected_work_version": 2,
+        "expected_work_version": 3,
         "lease_id": "lease:001",
         "idempotency_key": null,
         "proposed_work_input_digest": null,
@@ -138,10 +158,10 @@
         "command_version": null,
         "command_vault_id": null,
         "candidate_agent_id": null,
-        "interruption_count": 2,
+        "interruption_count": 1,
         "semantic_write_requested": true,
         "authority_source": "child_work",
-        "expected_journal_head_sequence": 1,
+        "expected_journal_head_sequence": 3,
         "expected_writer_epoch": 1,
         "recovery_tick": 301,
         "writer_lock_receipt": {
@@ -266,7 +286,7 @@
         ],
         "current_tick": 301,
         "expected_dependency_state_digest": "c289e61ad636413a47b06ff09a505fd15701b9302e0fe955557e4b7b45ad4111",
-        "expected_journal_head_digest": "a37ec54bcef281a61afc8b70e00ac6f0a5a4e76ebc1839589090a4200d21cc10",
+        "expected_journal_head_digest": "308484f0cde0bff7fa5af84bbeae79b0ee9706ac0877b841b27158149d1eff47",
         "expected_scheduler_state_digest": null,
         "vault_owner_receipt": null
       }
@@ -289,7 +309,7 @@
       "deny control-plane semantic write"
     ],
     "receipts": [
-      "WorkRecoveryReceipt:work:001:2"
+      "WorkRecoveryReceipt:work:001:1"
     ],
     "filesystem_effects": [
       "append durable Work Recovery record"

@@ -65,7 +65,8 @@
           "signer_agent_id": "agent:primary-001",
           "signature_digest": "fa9d267dcd2489df35f7fac9c3db98a57f46b002d016e9245bbf3bc296e0634a",
           "authenticated": true
-        }
+        },
+        "vault_id": "vault:001"
       },
       "action": {
         "kind": "control_command",
@@ -204,18 +205,16 @@
   "expected": {
     "verdict": "fail",
     "codes": [
-      "control.command_stale"
+      "schema.constraint"
     ],
     "outputs": [
-      "control_command rejected",
-      "work_state:none",
-      "semantic_state_digest:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      "scenario rejected"
     ],
     "operations": [
-      "validate control-plane command and exact bases"
+      "validate control-plane scenario"
     ],
     "receipts": [
-      "ControlPlaneRejectionReceipt:control.command_stale"
+      "ControlPlaneRejectionReceipt:schema"
     ],
     "filesystem_effects": [
       "none"

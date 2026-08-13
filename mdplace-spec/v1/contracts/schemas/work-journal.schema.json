@@ -59,7 +59,7 @@
     "cancellation": {
       "type": ["object", "null"],
       "additionalProperties": false,
-      "required": ["receipt_id", "cancellation_id", "work_id", "work_version", "idempotency_key", "requested_by", "vault_owner_receipt", "journal_sequence", "reason_code", "resume_count", "resume_ceiling", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
+      "required": ["receipt_id", "cancellation_id", "work_id", "work_version", "idempotency_key", "requested_by", "vault_owner_receipt", "journal_sequence", "cancellation_tick", "reason_code", "resume_count", "resume_ceiling", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
       "properties": {
         "receipt_id": {"type": "string", "pattern": "^cancellation-receipt:[a-z0-9-]{3,64}$"},
         "cancellation_id": {"type": "string", "pattern": "^cancel:[a-z0-9-]{3,64}$"},
@@ -69,6 +69,7 @@
         "requested_by": {"const": "person:owner-001"},
         "vault_owner_receipt": {"$ref": "#/$defs/vaultOwnerReceipt"},
         "journal_sequence": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "cancellation_tick": {"type": "integer", "minimum": 0, "maximum": 1000000},
         "reason_code": {"const": "user_requested"},
         "resume_count": {"type": "integer", "minimum": 0, "maximum": 1},
         "resume_ceiling": {"const": 1},

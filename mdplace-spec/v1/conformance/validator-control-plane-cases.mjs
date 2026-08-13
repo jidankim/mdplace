@@ -12,6 +12,7 @@ import {childWorkInvocationIsValid} from './child-work-validation.mjs';
 import {signControlPlaneReceipt} from './control-plane-authentication.mjs';
 import {copyCommittedPackage} from './validator-test-support.mjs';
 import {canonicalJson} from './semantic-kernel-core.mjs';
+import {scenarioLifecycleDigest} from './control-plane-scenario-history.mjs';
 
 const packageRoot = fileURLToPath(new URL('../', import.meta.url));
 const validator = fileURLToPath(new URL('./validator.mjs', import.meta.url));
@@ -51,12 +52,21 @@ function journalCancellationFields(cancellation) {
   return [cancellation.receipt_id, cancellation.cancellation_id, cancellation.work_id,
     cancellation.work_version, cancellation.idempotency_key, cancellation.requested_by,
     cancellation.vault_owner_receipt.receipt_id, cancellation.vault_owner_receipt.signature_digest,
-    cancellation.journal_sequence, cancellation.reason_code, cancellation.resume_count,
+    cancellation.journal_sequence, cancellation.cancellation_tick, cancellation.reason_code, cancellation.resume_count,
     cancellation.resume_ceiling];
 }
 
 function journalHeadFields(receipt) {
   return [receipt.receipt_id, receipt.journal_id, receipt.head_sequence, receipt.head_digest];
+}
+
+function authenticateScenarioHead(initial) {
+  initial.journal_head_digest = scenarioLifecycleDigest(initial);
+  initial.journal_head_receipt.head_sequence = initial.journal_head_sequence;
+  initial.journal_head_receipt.head_digest = initial.journal_head_digest;
+  Object.assign(initial.journal_head_receipt, signControlPlaneReceipt(
+    'work_journal_head', journalHeadFields(initial.journal_head_receipt),
+  ));
 }
 
 function leaseFields(receipt) {
@@ -71,6 +81,13 @@ function recoveryFields(receipt) {
     receipt.prior_retry_count, receipt.recovery_interruption_count,
     receipt.resulting_retry_count, receipt.recovery_tick, receipt.recovery_lease_status,
     receipt.recovery_decision, receipt.selected_retry_delay_ticks ?? '', receipt.resulting_state];
+}
+
+function retryFields(receipt) {
+  return [receipt.receipt_id, receipt.receipt_kind, receipt.lease_id, receipt.work_id,
+    receipt.work_version, receipt.journal_sequence, receipt.prior_retry_count,
+    receipt.resulting_retry_count, receipt.failure_tick, receipt.selected_retry_delay_ticks,
+    receipt.retry_eligible_tick];
 }
 
 function completionFields(receipt) {
@@ -444,6 +461,14 @@ test('actionable Control Commands validate and require an exact durable base', a
   const wrongResumeIdempotencyReport = await buildValidationReport(resumeRoot);
   assert.ok(wrongResumeIdempotencyReport.checks.find(({id}) => id === 'control-plane-contract').codes
     .includes('control.command_state_invalid'));
+
+  const pairedUnsupported = JSON.parse(await readFile(new URL(
+    './scenarios/control-plane/authenticated-local-control-access.json', import.meta.url,
+  )));
+  pairedUnsupported.subject.document.initial.control_channel.command_version = 2;
+  pairedUnsupported.subject.document.action.command_version = 2;
+  assert.deepEqual((await observeControlPlaneScenario(pairedUnsupported.subject, packageRoot)).codes,
+    ['schema.constraint']);
 });
 
 test('restart fails closed on a competing writer or incomplete readiness sequence', async () => {
@@ -468,13 +493,15 @@ test('recovery rejects stale leases and forged completion receipts', async () =>
   const completionFixture = JSON.parse(await readFile(new URL('./scenarios/control-plane/completed-work-not-repeated-restart.json', import.meta.url)));
   completionFixture.subject.document.initial.work.completion_receipt.signature_digest = '0'.repeat(64);
   completionFixture.subject.document.initial.work.completion_history.at(-1).signature_digest = '0'.repeat(64);
+  authenticateScenarioHead(completionFixture.subject.document.initial);
   const completionResult = await observeControlPlaneScenario(completionFixture.subject, packageRoot);
-  assert.deepEqual(completionResult.codes, ['control.completion_receipt_invalid']);
+  assert.deepEqual(completionResult.codes, ['control.lease_history_invalid']);
 
   const leaseFixture = JSON.parse(await readFile(new URL('./scenarios/control-plane/completed-work-not-repeated-restart.json', import.meta.url)));
   leaseFixture.subject.document.initial.prior_lease_receipts[0].signature_digest = '0'.repeat(64);
+  authenticateScenarioHead(leaseFixture.subject.document.initial);
   assert.deepEqual((await observeControlPlaneScenario(leaseFixture.subject, packageRoot)).codes,
-    ['control.completion_receipt_invalid']);
+    ['control.lease_history_invalid']);
 });
 
 test('recovery evidence binds every validator-owned denied transition row', async () => {
@@ -523,20 +550,42 @@ test('retry timing and lease freshness reject early or stale mutations', async (
 
   const earlyRetry = structuredClone(failureFixture.subject);
   const {initial, action} = earlyRetry.document;
-  initial.work = {...initial.work, state: 'retry_wait', retry_count: 1, retry_eligible_tick: 50,
+  const retryReceipt = {
+    receipt_id: 'retry-receipt:early-001', receipt_kind: 'retry', lease_id: initial.work.lease_id,
+    work_id: initial.work.work_id, work_version: 4, journal_sequence: 4,
+    prior_retry_count: 0, resulting_retry_count: 1, failure_tick: 1,
+    selected_retry_delay_ticks: 1000, retry_eligible_tick: 1001,
+  };
+  Object.assign(retryReceipt, signControlPlaneReceipt('work_retry', retryFields(retryReceipt)));
+  initial.prior_retry_receipts = [retryReceipt];
+  initial.work = {...initial.work, work_version: 4, state: 'retry_wait', retry_count: 1,
+    retry_eligible_tick: 1001,
     lease_id: null, lease_status: null, lease_acquired_tick: null, lease_expires_tick: null,
     owner_agent_id: null};
-  Object.assign(action, {kind: 'retry', actor_role: 'scheduler', lease_id: 'lease:retry-001', current_tick: 49});
+  initial.journal_head_sequence = 4;
+  authenticateScenarioHead(initial);
+  Object.assign(action, {kind: 'retry', actor_role: 'scheduler', expected_work_version: 4,
+    lease_id: 'lease:retry-001', current_tick: 1000});
   const retryResult = await observeControlPlaneScenario(earlyRetry, packageRoot);
   assert.deepEqual(retryResult.codes, ['control.retry_not_eligible']);
 
   const dispatchFixture = JSON.parse(await readFile(new URL('./scenarios/control-plane/dequeue-acknowledges-after-receipt.json', import.meta.url)));
+  const retryHistory = JSON.parse(await readFile(new URL('./scenarios/control-plane/retry-ceiling-terminal-failure.json', import.meta.url)));
   const secondRetry = structuredClone(dispatchFixture.subject);
-  secondRetry.document.initial.work = {...secondRetry.document.initial.work, state: 'retry_wait', retry_count: 2,
-    retry_eligible_tick: 50, lease_id: null, lease_status: null, lease_acquired_tick: null,
-    lease_expires_tick: null, owner_agent_id: null};
+  const secondInitial = secondRetry.document.initial;
+  const historyInitial = retryHistory.subject.document.initial;
+  secondInitial.prior_lease_receipts = structuredClone(historyInitial.prior_lease_receipts.slice(0, -2));
+  secondInitial.prior_retry_receipts = structuredClone(historyInitial.prior_retry_receipts);
+  secondInitial.work = {...structuredClone(historyInitial.work), work_version: 7,
+    state: 'retry_wait', retry_eligible_tick: historyInitial.prior_retry_receipts.at(-1).retry_eligible_tick,
+    lease_id: null, lease_status: null, lease_acquired_tick: null, lease_expires_tick: null,
+    owner_agent_id: null};
+  secondInitial.journal_head_sequence = 7;
+  authenticateScenarioHead(secondInitial);
   Object.assign(secondRetry.document.action, {kind: 'retry', actor_role: 'scheduler',
-    lease_id: 'lease:retry-002', current_tick: 50});
+    expected_work_version: 7, expected_journal_head_sequence: 7,
+    expected_journal_head_digest: secondInitial.journal_head_digest,
+    lease_id: 'lease:retry-002', current_tick: secondInitial.work.retry_eligible_tick});
   const secondRetryResult = await observeControlPlaneScenario(secondRetry, packageRoot);
   assert.equal(secondRetryResult.verdict, 'pass');
   assert.equal(secondRetryResult.terminal_state, 'leased');
@@ -662,6 +711,7 @@ test('scenario terminal failure codes must match their durable exhaustion counte
     'work_completion', completionFields(work.completion_receipt),
   ));
   work.completion_history = [structuredClone(work.completion_receipt)];
+  authenticateScenarioHead(fixture.subject.document.initial);
 
   assert.deepEqual((await observeControlPlaneScenario(fixture.subject, packageRoot)).codes,
     ['control.completion_receipt_invalid']);
@@ -689,28 +739,30 @@ test('scenario terminal failure codes must match their durable exhaustion counte
   ));
   obsoleteLease.subject.document.action.expected_journal_head_sequence = 3;
   assert.deepEqual((await observeControlPlaneScenario(obsoleteLease.subject, packageRoot)).codes,
-    ['control.completion_receipt_invalid']);
+    ['control.lease_history_invalid']);
 });
 
 test('leased work requires authenticated durable lease evidence', async () => {
   const fixture = JSON.parse(await readFile(new URL('./scenarios/control-plane/first-retry-recorded.json', import.meta.url)));
   fixture.subject.document.initial.prior_lease_receipts[0].signature_digest = '0'.repeat(64);
+  authenticateScenarioHead(fixture.subject.document.initial);
   assert.deepEqual((await observeControlPlaneScenario(fixture.subject, packageRoot)).codes,
-    ['control.lease_receipt_invalid']);
+    ['control.lease_history_invalid']);
 
   const staleCurrentTicks = JSON.parse(await readFile(new URL('./scenarios/control-plane/first-retry-recorded.json', import.meta.url)));
   staleCurrentTicks.subject.document.initial.work.lease_acquired_tick += 1;
   staleCurrentTicks.subject.document.initial.work.lease_expires_tick += 1;
   assert.deepEqual((await observeControlPlaneScenario(staleCurrentTicks.subject, packageRoot)).codes,
-    ['control.lease_receipt_invalid']);
+    ['control.lease_history_invalid']);
 
   const staleSignedTicks = JSON.parse(await readFile(new URL('./scenarios/control-plane/first-retry-recorded.json', import.meta.url)));
   const signedLease = staleSignedTicks.subject.document.initial.prior_lease_receipts[0];
   signedLease.acquired_tick += 1;
   signedLease.expires_tick += 1;
   Object.assign(signedLease, signControlPlaneReceipt('work_lease', leaseFields(signedLease)));
+  authenticateScenarioHead(staleSignedTicks.subject.document.initial);
   assert.deepEqual((await observeControlPlaneScenario(staleSignedTicks.subject, packageRoot)).codes,
-    ['control.lease_receipt_invalid']);
+    ['control.lease_history_invalid']);
 
   const duplicateAcquisition = JSON.parse(await readFile(new URL('./scenarios/control-plane/completed-work-not-repeated-restart.json', import.meta.url)));
   const duplicateLease = structuredClone(duplicateAcquisition.subject.document.initial.prior_lease_receipts[0]);
@@ -719,14 +771,84 @@ test('leased work requires authenticated durable lease evidence', async () => {
   duplicateAcquisition.subject.document.initial.prior_lease_receipts.push(duplicateLease);
   assert.deepEqual((await observeControlPlaneScenario(duplicateAcquisition.subject, packageRoot)).codes,
     ['control.lease_history_invalid']);
+
+  const orphanAcquisition = JSON.parse(await readFile(new URL('./scenarios/control-plane/completed-work-not-repeated-restart.json', import.meta.url)));
+  const orphanLease = structuredClone(orphanAcquisition.subject.document.initial.prior_lease_receipts[0]);
+  Object.assign(orphanLease, {
+    receipt_id: 'lease-receipt:orphan-001', lease_id: 'lease:orphan-001',
+    work_id: 'work:other-001', signature_digest: '0'.repeat(64),
+  });
+  orphanAcquisition.subject.document.initial.prior_lease_receipts.push(orphanLease);
+  assert.deepEqual((await observeControlPlaneScenario(orphanAcquisition.subject, packageRoot)).codes,
+    ['control.lease_history_invalid']);
 });
 
 test('recovery exhaustion commits an authenticated terminal failure', async () => {
   const fixture = JSON.parse(await readFile(new URL('./scenarios/control-plane/in-flight-work-recovers-agent-crash.json', import.meta.url)));
 
+  function installPriorRecoveryChain(subject, count) {
+    const {initial, action} = subject.document;
+    const acquisitions = [];
+    const recoveries = [];
+    for (let index = 1; index <= count; index += 1) {
+      const acquiredTick = index * 400;
+      const acquisition = {
+        receipt_id: `lease-receipt:prior-${index}`, receipt_kind: 'lease',
+        lease_id: `lease:prior-${index}`, work_id: initial.work.work_id,
+        work_version: index * 2, journal_sequence: index * 2,
+        owner_agent_id: initial.persistent_agent_id, acquired_tick: acquiredTick,
+        expires_tick: acquiredTick + 300, status: 'expired',
+      };
+      Object.assign(acquisition, signControlPlaneReceipt('work_lease', leaseFields(acquisition)));
+      acquisitions.push(acquisition);
+      const recovery = {
+        receipt_id: `recovery-receipt:prior-${index}`, receipt_kind: 'recovery',
+        lease_id: acquisition.lease_id, work_id: initial.work.work_id,
+        work_version: index * 2 + 1, journal_sequence: index * 2 + 1,
+        prior_state: 'leased', prior_retry_count: 0, recovery_interruption_count: index,
+        resulting_retry_count: 0, recovery_tick: acquisition.expires_tick,
+        recovery_lease_status: 'expired', recovery_decision: 'requeue',
+        selected_retry_delay_ticks: null, resulting_state: 'queued',
+      };
+      Object.assign(recovery, signControlPlaneReceipt('work_recovery', recoveryFields(recovery)));
+      recoveries.push(recovery);
+    }
+    const currentLease = structuredClone(initial.prior_lease_receipts[0]);
+    const currentVersion = count * 2 + 2;
+    const currentSequence = count * 2 + 2;
+    const acquiredTick = (count + 1) * 400;
+    Object.assign(currentLease, {
+      receipt_id: 'lease-receipt:current-001', work_version: currentVersion,
+      journal_sequence: currentSequence, acquired_tick: acquiredTick,
+      expires_tick: acquiredTick + 300, status: 'expired',
+    });
+    Object.assign(currentLease, signControlPlaneReceipt('work_lease', leaseFields(currentLease)));
+    const currentStart = {
+      ...structuredClone(currentLease), receipt_id: 'lease-receipt:current-start-001',
+      receipt_kind: 'start', work_version: currentVersion + 1,
+      journal_sequence: currentSequence + 1,
+    };
+    Object.assign(currentStart, signControlPlaneReceipt('work_lease', leaseFields(currentStart)));
+    initial.prior_lease_receipts = [...acquisitions, currentLease, currentStart];
+    initial.prior_recovery_receipts = recoveries;
+    Object.assign(initial.work, {
+      work_version: currentVersion + 1, recovery_interruption_count: count,
+      lease_acquired_tick: currentLease.acquired_tick,
+      lease_expires_tick: currentLease.expires_tick, lease_status: 'expired',
+    });
+    initial.journal_head_sequence = currentSequence + 1;
+    authenticateScenarioHead(initial);
+    Object.assign(action, {
+      expected_work_version: currentVersion + 1,
+      expected_journal_head_sequence: currentSequence + 1,
+      expected_journal_head_digest: initial.journal_head_digest,
+      recovery_tick: currentLease.expires_tick,
+      interruption_count: count + 1,
+    });
+  }
+
   const recoveryExhausted = structuredClone(fixture.subject);
-  recoveryExhausted.document.initial.work.recovery_interruption_count = 2;
-  recoveryExhausted.document.action.interruption_count = 3;
+  installPriorRecoveryChain(recoveryExhausted, 2);
   const recoveryResult = await observeControlPlaneScenario(recoveryExhausted, packageRoot);
   assert.equal(recoveryResult.verdict, 'pass');
   assert.equal(recoveryResult.terminal_state, 'failed');
@@ -738,7 +860,31 @@ test('recovery exhaustion commits an authenticated terminal failure', async () =
   assert.equal(recoveryResult.codes.length, 0);
 
   const retryExhausted = structuredClone(fixture.subject);
-  retryExhausted.document.initial.work.retry_count = 2;
+  const retryHistoryFixture = JSON.parse(await readFile(new URL(
+    './scenarios/control-plane/retry-ceiling-terminal-failure.json', import.meta.url,
+  )));
+  Object.assign(retryExhausted.document.initial, {
+    work: structuredClone(retryHistoryFixture.subject.document.initial.work),
+    prior_lease_receipts: structuredClone(retryHistoryFixture.subject.document.initial.prior_lease_receipts),
+    prior_retry_receipts: structuredClone(retryHistoryFixture.subject.document.initial.prior_retry_receipts),
+  });
+  const retryInitial = retryExhausted.document.initial;
+  retryInitial.work.lease_status = 'expired';
+  for (const receipt of retryInitial.prior_lease_receipts.filter((candidate) =>
+    candidate.lease_id === retryInitial.work.lease_id)) {
+    receipt.status = 'expired';
+    Object.assign(receipt, signControlPlaneReceipt('work_lease', leaseFields(receipt)));
+  }
+  retryInitial.journal_head_sequence = 9;
+  authenticateScenarioHead(retryInitial);
+  Object.assign(retryExhausted.document.action, {
+    expected_work_version: retryInitial.work.work_version,
+    expected_journal_head_sequence: retryInitial.journal_head_sequence,
+    expected_journal_head_digest: retryInitial.journal_head_digest,
+    lease_id: retryInitial.work.lease_id,
+    recovery_tick: retryInitial.work.lease_expires_tick,
+    interruption_count: 1,
+  });
   const retryResult = await observeControlPlaneScenario(retryExhausted, packageRoot);
   assert.equal(retryResult.verdict, 'pass');
   assert.equal(retryResult.terminal_state, 'failed');
@@ -747,10 +893,14 @@ test('recovery exhaustion commits an authenticated terminal failure', async () =
   const persistedInitial = persistedOverflow.subject.document.initial;
   const persistedWork = persistedInitial.work;
   Object.assign(persistedWork, {state: 'failed', retry_count: 0, recovery_interruption_count: 1});
+  for (const leaseReceipt of persistedInitial.prior_lease_receipts) {
+    leaseReceipt.status = 'expired';
+    Object.assign(leaseReceipt, signControlPlaneReceipt('work_lease', leaseFields(leaseReceipt)));
+  }
   const persistedRecovery = {
     receipt_id: 'recovery-receipt:overflow-001', receipt_kind: 'recovery',
-    lease_id: 'lease:001', work_id: persistedWork.work_id, work_version: persistedWork.work_version,
-    journal_sequence: 2, prior_state: 'executing', prior_retry_count: 0,
+    lease_id: 'lease:001', work_id: persistedWork.work_id, work_version: 4,
+    journal_sequence: 4, prior_state: 'executing', prior_retry_count: 0,
     recovery_interruption_count: 1, resulting_retry_count: 0, recovery_tick: 999000,
     recovery_lease_status: 'expired', recovery_decision: 'fail',
     selected_retry_delay_ticks: 1000, resulting_state: 'failed',
@@ -760,7 +910,7 @@ test('recovery exhaustion commits an authenticated terminal failure', async () =
   ));
   persistedInitial.prior_recovery_receipts = [persistedRecovery];
   Object.assign(persistedWork.completion_receipt, {
-    journal_sequence: 3, outcome: 'failed', output_digest: null,
+    work_version: 4, journal_sequence: 5, outcome: 'failed', output_digest: null,
     code: 'control.retry_tick_overflow', failure_retryable: true,
     failure_observed_tick: 999000, selected_retry_delay_ticks: 1000,
   });
@@ -768,19 +918,42 @@ test('recovery exhaustion commits an authenticated terminal failure', async () =
     'work_completion', completionFields(persistedWork.completion_receipt),
   ));
   persistedWork.completion_history = [structuredClone(persistedWork.completion_receipt)];
-  persistedInitial.journal_head_sequence = 3;
-  persistedInitial.journal_head_receipt.head_sequence = 3;
-  Object.assign(persistedInitial.journal_head_receipt, signControlPlaneReceipt(
-    'work_journal_head', journalHeadFields(persistedInitial.journal_head_receipt),
-  ));
-  persistedOverflow.subject.document.action.expected_journal_head_sequence = 3;
+  persistedInitial.journal_head_sequence = 5;
+  authenticateScenarioHead(persistedInitial);
+  persistedOverflow.subject.document.action.expected_journal_head_sequence = 5;
+  persistedOverflow.subject.document.action.expected_journal_head_digest = persistedInitial.journal_head_digest;
   const persistedOverflowResult = await observeControlPlaneScenario(persistedOverflow.subject, packageRoot);
   assert.equal(persistedOverflowResult.verdict, 'pass');
   assert.equal(persistedOverflowResult.terminal_state, 'ready');
 
   persistedInitial.prior_recovery_receipts = [];
   assert.deepEqual((await observeControlPlaneScenario(persistedOverflow.subject, packageRoot)).codes,
-    ['control.completion_receipt_invalid']);
+    ['control.lease_history_invalid']);
+
+  const isolatedCeiling = structuredClone(persistedOverflow.subject);
+  const isolatedInitial = isolatedCeiling.document.initial;
+  const isolatedWork = isolatedInitial.work;
+  Object.assign(isolatedWork, {recovery_interruption_count: 3});
+  Object.assign(isolatedWork.completion_receipt, {
+    code: 'control.recovery_ceiling_exceeded', failure_retryable: null,
+    failure_observed_tick: null, selected_retry_delay_ticks: null,
+  });
+  Object.assign(isolatedWork.completion_receipt, signControlPlaneReceipt(
+    'work_completion', completionFields(isolatedWork.completion_receipt),
+  ));
+  isolatedWork.completion_history = [structuredClone(isolatedWork.completion_receipt)];
+  const isolatedRecovery = {
+    ...persistedRecovery, receipt_id: 'recovery-receipt:isolated-003',
+    recovery_interruption_count: 3, recovery_decision: 'fail',
+    selected_retry_delay_ticks: null, resulting_state: 'failed',
+  };
+  Object.assign(isolatedRecovery, signControlPlaneReceipt(
+    'work_recovery', recoveryFields(isolatedRecovery),
+  ));
+  isolatedInitial.prior_recovery_receipts = [isolatedRecovery];
+  authenticateScenarioHead(isolatedInitial);
+  assert.deepEqual((await observeControlPlaneScenario(isolatedCeiling, packageRoot)).codes,
+    ['control.lease_history_invalid']);
 });
 
 test('idempotent cancellation and readiness lifecycle observations match their matrices', async () => {
@@ -807,6 +980,68 @@ test('idempotent cancellation and readiness lifecycle observations match their m
   assert.deepEqual((await observeControlPlaneScenario(forgedOwner, packageRoot)).codes,
     ['control.vault_owner_authentication_denied']);
 
+  const expiryBoundary = JSON.parse(await readFile(new URL(
+    './scenarios/control-plane/cancellation-during-execution-durable.json', import.meta.url,
+  )));
+  expiryBoundary.subject.document.action.current_tick =
+    expiryBoundary.subject.document.initial.work.lease_expires_tick;
+  authenticateVaultOwnerAction(expiryBoundary.subject);
+  assert.deepEqual((await observeControlPlaneScenario(expiryBoundary.subject, packageRoot)).codes,
+    ['control.lease_stale']);
+
+  const crossVault = JSON.parse(await readFile(new URL(
+    './scenarios/control-plane/cancellation-before-dispatch-durable.json', import.meta.url,
+  )));
+  crossVault.subject.document.initial.control_channel.vault_id = 'vault:other-001';
+  crossVault.subject.document.action.vault_owner_receipt.vault_id = 'vault:other-001';
+  Object.assign(crossVault.subject.document.action.vault_owner_receipt, signControlPlaneReceipt(
+    'vault_owner_authorization', vaultOwnerFields(crossVault.subject.document.action.vault_owner_receipt),
+  ));
+  assert.deepEqual((await observeControlPlaneScenario(crossVault.subject, packageRoot)).codes,
+    ['control.vault_binding_invalid']);
+
+  const expiredPersistedCancellation = structuredClone(cancelled);
+  const expiredInitial = expiredPersistedCancellation.document.initial;
+  const expiredWork = expiredInitial.work;
+  const executionFixture = JSON.parse(await readFile(new URL('./scenarios/control-plane/cancellation-during-execution-durable.json', import.meta.url)));
+  expiredInitial.prior_lease_receipts = structuredClone(
+    executionFixture.subject.document.initial.prior_lease_receipts,
+  );
+  for (const receipt of expiredInitial.prior_lease_receipts) {
+    receipt.status = 'expired';
+    Object.assign(receipt, signControlPlaneReceipt('work_lease', leaseFields(receipt)));
+  }
+  const expiredLease = expiredInitial.prior_lease_receipts[0];
+  Object.assign(expiredWork, {work_version: 4});
+  Object.assign(expiredWork.cancellation_receipt, {work_version: 4, journal_sequence: 4,
+    cancellation_tick: 1});
+  Object.assign(expiredWork.cancellation_receipt.vault_owner_receipt, {
+    work_version: 3, lease_id: expiredLease.lease_id,
+  });
+  Object.assign(expiredWork.cancellation_receipt.vault_owner_receipt, signControlPlaneReceipt(
+    'vault_owner_authorization', vaultOwnerFields(expiredWork.cancellation_receipt.vault_owner_receipt),
+  ));
+  Object.assign(expiredWork.cancellation_receipt, signControlPlaneReceipt(
+    'work_journal_cancellation', journalCancellationFields(expiredWork.cancellation_receipt),
+  ));
+  expiredWork.cancellation_history = [structuredClone(expiredWork.cancellation_receipt)];
+  Object.assign(expiredWork.completion_receipt, {
+    work_version: 4, journal_sequence: 5, lease_id: expiredLease.lease_id,
+  });
+  Object.assign(expiredWork.completion_receipt, signControlPlaneReceipt(
+    'work_completion', completionFields(expiredWork.completion_receipt),
+  ));
+  expiredWork.completion_history = [structuredClone(expiredWork.completion_receipt)];
+  expiredInitial.journal_head_sequence = 5;
+  authenticateScenarioHead(expiredInitial);
+  Object.assign(expiredPersistedCancellation.document.action, {
+    expected_work_version: 4, expected_journal_head_sequence: 5,
+    expected_journal_head_digest: expiredInitial.journal_head_digest,
+  });
+  authenticateVaultOwnerAction(expiredPersistedCancellation);
+  assert.deepEqual((await observeControlPlaneScenario(expiredPersistedCancellation, packageRoot)).codes,
+    ['control.lease_history_invalid']);
+
   const staleCancellation = structuredClone(cancelledFixture.subject);
   Object.assign(staleCancellation.document.action, {kind: 'cancel', actor_role: 'vault_owner',
     work_id: staleCancellation.document.initial.work.work_id,
@@ -819,14 +1054,16 @@ test('idempotent cancellation and readiness lifecycle observations match their m
   const forgedCancellation = structuredClone(cancelled);
   forgedCancellation.document.initial.work.cancellation_receipt.signature_digest = '0'.repeat(64);
   forgedCancellation.document.initial.work.cancellation_history.at(-1).signature_digest = '0'.repeat(64);
+  authenticateScenarioHead(forgedCancellation.document.initial);
   assert.deepEqual((await observeControlPlaneScenario(forgedCancellation, packageRoot)).codes,
-    ['control.cancellation_receipt_invalid']);
+    ['control.lease_history_invalid']);
 
   const forgedRestart = structuredClone(cancelledFixture.subject);
   forgedRestart.document.initial.work.cancellation_receipt.signature_digest = '0'.repeat(64);
   forgedRestart.document.initial.work.cancellation_history.at(-1).signature_digest = '0'.repeat(64);
+  authenticateScenarioHead(forgedRestart.document.initial);
   assert.deepEqual((await observeControlPlaneScenario(forgedRestart, packageRoot)).codes,
-    ['control.cancellation_receipt_invalid']);
+    ['control.lease_history_invalid']);
 
   const resumeFixture = JSON.parse(await readFile(new URL('./scenarios/control-plane/authorized-bounded-resume-recorded.json', import.meta.url)));
   resumeFixture.subject.document.action.idempotency_key = 'idempotency:other-001';
@@ -848,18 +1085,19 @@ test('idempotent cancellation and readiness lifecycle observations match their m
 
   const reverseOrder = JSON.parse(await readFile(new URL('./scenarios/control-plane/authorized-bounded-resume-recorded.json', import.meta.url)));
   const reverseWork = reverseOrder.subject.document.initial.work;
-  reverseWork.cancellation_receipt.journal_sequence = 2;
+  reverseWork.cancellation_receipt.journal_sequence = 3;
   Object.assign(reverseWork.cancellation_receipt, signControlPlaneReceipt(
     'work_journal_cancellation', journalCancellationFields(reverseWork.cancellation_receipt),
   ));
   reverseWork.cancellation_history = [structuredClone(reverseWork.cancellation_receipt)];
-  reverseWork.completion_receipt.journal_sequence = 1;
+  reverseWork.completion_receipt.journal_sequence = 2;
   Object.assign(reverseWork.completion_receipt, signControlPlaneReceipt(
     'work_completion', completionFields(reverseWork.completion_receipt),
   ));
   reverseWork.completion_history = [structuredClone(reverseWork.completion_receipt)];
+  authenticateScenarioHead(reverseOrder.subject.document.initial);
   assert.deepEqual((await observeControlPlaneScenario(reverseOrder.subject, packageRoot)).codes,
-    ['control.work_history_invalid']);
+    ['control.lease_history_invalid']);
 
   const staleLease = JSON.parse(await readFile(new URL('./scenarios/control-plane/cancellation-during-execution-durable.json', import.meta.url)));
   staleLease.subject.document.action.lease_id = 'lease:stale-999';
@@ -869,10 +1107,10 @@ test('idempotent cancellation and readiness lifecycle observations match their m
 
   const expiredCancellation = JSON.parse(await readFile(new URL('./scenarios/control-plane/cancellation-during-execution-durable.json', import.meta.url)));
   expiredCancellation.subject.document.initial.work.lease_status = 'expired';
-  expiredCancellation.subject.document.initial.prior_lease_receipts[0].status = 'expired';
-  Object.assign(expiredCancellation.subject.document.initial.prior_lease_receipts[0], signControlPlaneReceipt(
-    'work_lease', leaseFields(expiredCancellation.subject.document.initial.prior_lease_receipts[0]),
-  ));
+  for (const receipt of expiredCancellation.subject.document.initial.prior_lease_receipts) {
+    receipt.status = 'expired';
+    Object.assign(receipt, signControlPlaneReceipt('work_lease', leaseFields(receipt)));
+  }
   assert.deepEqual((await observeControlPlaneScenario(expiredCancellation.subject, packageRoot)).codes,
     ['control.lease_stale']);
 
@@ -956,7 +1194,7 @@ test('idempotent cancellation and readiness lifecycle observations match their m
     'work_resume', resumeFields(phantomWork.resume_receipt),
   ));
   assert.deepEqual((await observeControlPlaneScenario(phantomLeaseHistory, packageRoot)).codes,
-    ['control.work_history_invalid']);
+    ['control.lease_history_invalid']);
 
   const invalidCancellationOutcome = structuredClone(replayFixture.subject);
   const invalidOutcomeWork = invalidCancellationOutcome.document.initial.work;
@@ -985,13 +1223,13 @@ test('idempotent cancellation and readiness lifecycle observations match their m
     'work_journal_head', journalHeadFields(nonAdjacentResume.document.initial.journal_head_receipt),
   ));
   assert.deepEqual((await observeControlPlaneScenario(nonAdjacentResume, packageRoot)).codes,
-    ['control.resume_receipt_invalid']);
+    ['control.lease_history_invalid']);
 
   const nonQueuedReplay = structuredClone(replayFixture.subject);
   Object.assign(nonQueuedReplay.document.initial.work,
     {state: 'retry_wait', retry_eligible_tick: 1000});
   assert.deepEqual((await observeControlPlaneScenario(nonQueuedReplay, packageRoot)).codes,
-    ['control.work_version_stale']);
+    ['control.lease_history_invalid']);
 
   const recancellation = structuredClone(replayFixture.subject);
   Object.assign(recancellation.document.action, {
@@ -1009,7 +1247,7 @@ test('idempotent cancellation and readiness lifecycle observations match their m
 
   replayInitial.work.resume_receipt.signature_digest = '0'.repeat(64);
   assert.deepEqual((await observeControlPlaneScenario(replayFixture.subject, packageRoot)).codes,
-    ['control.resume_receipt_invalid']);
+    ['control.lease_history_invalid']);
 
   const readinessFixture = JSON.parse(await readFile(new URL('./scenarios/control-plane/readiness-work-journal-unavailable.json', import.meta.url)));
   readinessFixture.subject.document.initial.agent_state = 'ready';
@@ -1256,7 +1494,8 @@ test('Work Journal completion binds outcome fields and one unique durable comple
     work_id: cancelled.work.work_id, work_version: cancelled.work.work_version,
     idempotency_key: cancelled.work.idempotency_key, requested_by: 'person:owner-001',
     vault_owner_receipt: cancellationAuthorization,
-    journal_sequence: 4, reason_code: 'user_requested', resume_count: 0, resume_ceiling: 1,
+    journal_sequence: 4, cancellation_tick: 1, reason_code: 'user_requested',
+    resume_count: 0, resume_ceiling: 1,
   };
   Object.assign(cancelled.work.cancellation, signControlPlaneReceipt(
     'work_journal_cancellation', journalCancellationFields(cancelled.work.cancellation),
@@ -1565,7 +1804,7 @@ test('Work Journal authenticates and correlates bounded resume history', async (
     receipt_id: 'cancellation-receipt:001', cancellation_id: 'cancel:001',
     work_id: work.work_id, work_version: 2, idempotency_key: work.idempotency_key,
     requested_by: 'person:owner-001', vault_owner_receipt: authorization,
-    journal_sequence: 2, reason_code: 'user_requested',
+    journal_sequence: 2, cancellation_tick: 1, reason_code: 'user_requested',
     resume_count: 0, resume_ceiling: 1,
   };
   Object.assign(work.cancellation, signControlPlaneReceipt(
@@ -1642,7 +1881,8 @@ test('Work Journal authenticates and correlates bounded resume history', async (
     receipt_id: 'cancellation-receipt:001-v4', cancellation_id: 'cancel:001-v4',
     work_id: recancelWork.work_id, work_version: 4, idempotency_key: recancelWork.idempotency_key,
     requested_by: 'person:owner-001', vault_owner_receipt: recancelAuthorization,
-    journal_sequence: 5, reason_code: 'user_requested', resume_count: 1, resume_ceiling: 1,
+    journal_sequence: 5, cancellation_tick: 1, reason_code: 'user_requested',
+    resume_count: 1, resume_ceiling: 1,
   };
   Object.assign(laterCancellation, signControlPlaneReceipt(
     'work_journal_cancellation', journalCancellationFields(laterCancellation),
@@ -1784,12 +2024,10 @@ test('retry eligibility arithmetic remains within the closed tick range', async 
   const fixture = JSON.parse(await readFile(new URL('./scenarios/control-plane/first-retry-recorded.json', import.meta.url)));
   const subject = structuredClone(fixture.subject);
   Object.assign(subject.document.initial.work, {lease_acquired_tick: 999698, lease_expires_tick: 999998});
-  Object.assign(subject.document.initial.prior_lease_receipts[0], {
-    acquired_tick: 999698, expires_tick: 999998,
-  });
-  Object.assign(subject.document.initial.prior_lease_receipts[0], signControlPlaneReceipt(
-    'work_lease', leaseFields(subject.document.initial.prior_lease_receipts[0]),
-  ));
+  for (const receipt of subject.document.initial.prior_lease_receipts) {
+    Object.assign(receipt, {acquired_tick: 999698, expires_tick: 999998});
+    Object.assign(receipt, signControlPlaneReceipt('work_lease', leaseFields(receipt)));
+  }
   subject.document.action.current_tick = 999997;
   const observed = await observeControlPlaneScenario(subject, packageRoot);
   assert.equal(observed.verdict, 'pass');
@@ -1801,12 +2039,10 @@ test('retry eligibility arithmetic remains within the closed tick range', async 
   Object.assign(horizon.subject.document.initial.work, {
     lease_acquired_tick: 998600, lease_expires_tick: 998900,
   });
-  Object.assign(horizon.subject.document.initial.prior_lease_receipts[0], {
-    acquired_tick: 998600, expires_tick: 998900,
-  });
-  Object.assign(horizon.subject.document.initial.prior_lease_receipts[0], signControlPlaneReceipt(
-    'work_lease', leaseFields(horizon.subject.document.initial.prior_lease_receipts[0]),
-  ));
+  for (const receipt of horizon.subject.document.initial.prior_lease_receipts) {
+    Object.assign(receipt, {acquired_tick: 998600, expires_tick: 998900});
+    Object.assign(receipt, signControlPlaneReceipt('work_lease', leaseFields(receipt)));
+  }
   horizon.subject.document.action.current_tick = 998701;
   const horizonResult = await observeControlPlaneScenario(horizon.subject, packageRoot);
   assert.equal(horizonResult.verdict, 'pass');
@@ -1834,8 +2070,7 @@ test('dispatch and journal append reject arithmetic beyond their closed domains'
 
   const recoveryFixture = JSON.parse(await readFile(new URL('./scenarios/control-plane/in-flight-work-recovers-agent-crash.json', import.meta.url)));
   const recoveryInitial = recoveryFixture.subject.document.initial;
-  recoveryInitial.work.recovery_interruption_count = 2;
-  recoveryFixture.subject.document.action.interruption_count = 3;
+  recoveryFixture.subject.document.action.recovery_tick = 999000;
   recoveryInitial.journal_head_sequence = 999999;
   recoveryInitial.journal_head_digest = 'f'.repeat(64);
   Object.assign(recoveryInitial.journal_head_receipt, {
