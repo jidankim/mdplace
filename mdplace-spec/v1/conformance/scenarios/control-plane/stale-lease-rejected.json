@@ -59,7 +59,15 @@
             "authenticated": true
           },
           "cancellation_history": [],
-          "completion_history": []
+          "completion_history": [],
+          "dependencies": [
+            {
+              "kind": "semantic_head",
+              "reference_id": "semantic:head-001",
+              "version": 1,
+              "digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+            }
+          ]
         },
         "control_channel": {
           "state": "open",
@@ -74,7 +82,7 @@
         "dependency_state_digest": "c289e61ad636413a47b06ff09a505fd15701b9302e0fe955557e4b7b45ad4111",
         "active_work_count": 1,
         "max_concurrent_work": 8,
-        "journal_head_digest": "9f84f29ee10129c06ac635b9061d29fe8276a44b3726662b066f5174d724a4a2",
+        "journal_head_digest": "ad0ae94a42821d564adddb42d8c83fa56bc57339884c8475754b1b5370119911",
         "active_lease_ids": [
           "lease:current"
         ],
@@ -103,11 +111,11 @@
           "receipt_id": "journal-head-receipt:vault-001",
           "journal_id": "journal:vault-001",
           "head_sequence": 2,
-          "head_digest": "9f84f29ee10129c06ac635b9061d29fe8276a44b3726662b066f5174d724a4a2",
+          "head_digest": "ad0ae94a42821d564adddb42d8c83fa56bc57339884c8475754b1b5370119911",
           "signature_scheme": "hmac-sha256",
           "signing_key_id": "signer-key:primary-001",
           "signer_agent_id": "agent:primary-001",
-          "signature_digest": "528cdb188e4544d23bc0efe42a31cea7f60581f7591e31bfe2ab3a1a7eecdf01",
+          "signature_digest": "f55d6613b05b607de719e438c20005fbff82ded62e5a4c5475ccce91b98f6dbf",
           "authenticated": true
         },
         "dependency_state_receipt": {
@@ -128,7 +136,36 @@
         },
         "prior_retry_receipts": [],
         "prior_recovery_receipts": [],
-        "vault_id": "vault:001"
+        "vault_id": "vault:001",
+        "journal_prefix_receipt": {
+          "receipt_id": "journal-prefix-receipt:vault-001",
+          "journal_id": "journal:vault-001",
+          "head_sequence": 0,
+          "head_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "signature_scheme": "hmac-sha256",
+          "signing_key_id": "signer-key:primary-001",
+          "signer_agent_id": "agent:primary-001",
+          "signature_digest": "0435d123364b4850ef3d367b2e6038b9a6965da387bf7c2779d3d054f8884eb8",
+          "authenticated": true
+        },
+        "scheduler_active_lease_receipts": [
+          {
+            "receipt_id": "scheduler-lease-receipt:current",
+            "vault_id": "vault:001",
+            "lease_id": "lease:current",
+            "work_id": "work:001",
+            "work_version": 2,
+            "owner_agent_id": "agent:primary-001",
+            "acquired_tick": 1,
+            "expires_tick": 301,
+            "status": "active",
+            "signature_scheme": "hmac-sha256",
+            "signing_key_id": "signer-key:primary-001",
+            "signer_agent_id": "agent:primary-001",
+            "signature_digest": "5a1a31d28f11904d39287dda997a34e217a83470ff45afe7ef4232d51179a545",
+            "authenticated": true
+          }
+        ]
       },
       "action": {
         "kind": "acknowledge",
@@ -260,7 +297,8 @@
         "expected_dependency_state_digest": null,
         "expected_journal_head_digest": null,
         "expected_scheduler_state_digest": null,
-        "vault_owner_receipt": null
+        "vault_owner_receipt": null,
+        "completion_output_digest": null
       }
     }
   },

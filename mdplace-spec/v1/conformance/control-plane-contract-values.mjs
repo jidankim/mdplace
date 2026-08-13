@@ -1,4 +1,5 @@
 export const controlPlaneLimits = Object.freeze({
+  maxJournalSequence: 20_000,
   maxTick: 1_000_000,
   leaseDurationTicks: 300,
   maxLeaseExpiryTick: 1_000_300,
@@ -13,9 +14,37 @@ export const controlPlaneLimits = Object.freeze({
 export function completionReceiptFields(receipt) {
   return [
     receipt.receipt_id, receipt.work_id, receipt.work_version, receipt.lease_id ?? '',
-    receipt.journal_sequence, receipt.outcome, receipt.output_digest ?? '', receipt.code ?? '',
+    receipt.journal_sequence, receipt.completion_tick, receipt.outcome,
+    receipt.output_digest ?? '', receipt.code ?? '',
     receipt.failure_retryable ?? '', receipt.failure_observed_tick ?? '',
     receipt.selected_retry_delay_ticks ?? '',
+  ];
+}
+
+export function journalPrefixReceiptFields(receipt) {
+  return [receipt.receipt_id, receipt.journal_id, receipt.head_sequence, receipt.head_digest];
+}
+
+export function schedulerLeaseReceiptFields(receipt) {
+  return [
+    receipt.receipt_id, receipt.vault_id, receipt.lease_id, receipt.work_id,
+    receipt.work_version, receipt.owner_agent_id, receipt.acquired_tick,
+    receipt.expires_tick, receipt.status,
+  ];
+}
+
+export function writerLockReceiptFields(receipt, vaultId) {
+  return [
+    receipt.lock_id, receipt.prior_epoch, receipt.epoch, receipt.owner_agent_id,
+    receipt.token_digest, receipt.retained, vaultId,
+  ];
+}
+
+export function readinessGateReceiptFields(receipt) {
+  return [
+    receipt.receipt_id, receipt.agent_id, receipt.vault_id, receipt.ordinal,
+    receipt.gate, receipt.verdict, receipt.observation_digest,
+    receipt.previous_receipt_digest,
   ];
 }
 

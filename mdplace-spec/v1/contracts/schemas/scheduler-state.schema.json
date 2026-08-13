@@ -11,7 +11,7 @@
     "scheduler_id": {"type": "string", "pattern": "^scheduler:[a-z0-9-]{3,64}$"},
     "agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
     "vault_id": {"type": "string", "pattern": "^vault:[a-z0-9-]{3,64}$"},
-    "journal_head_sequence": {"type": "integer", "minimum": 0, "maximum": 1000000},
+    "journal_head_sequence": {"type": "integer", "minimum": 0, "maximum": 20000},
     "journal_head_digest": {"$ref": "#/$defs/digest"},
     "semantic_authority": {"const": "none"},
     "readiness": {"enum": ["blocked", "ready", "draining"]},

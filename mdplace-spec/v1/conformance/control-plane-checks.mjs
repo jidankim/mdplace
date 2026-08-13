@@ -8,8 +8,10 @@ import {
   completionReceiptFields,
   controlPlaneLimits,
   enqueueReceiptFields,
+  readinessGateReceiptFields,
   resumeReceiptFields,
   vaultOwnerReceiptFields,
+  writerLockReceiptFields,
 } from './control-plane-contract-values.mjs';
 import {controlPlaneOutcomeFieldsAreValid} from './control-plane-outcome.mjs';
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
@@ -242,6 +244,7 @@ function workReceiptChainIsValid(work, receipts, journal) {
   let rejectionCount = 0;
   let currentLeaseId = null;
   let currentLeaseReceipt = null;
+  let currentStartReceipt = null;
   let failedRecovery = null;
   for (const receipt of receipts) {
     if (!journalRecordIsAuthenticated(receipt)) return false;
@@ -258,14 +261,14 @@ function workReceiptChainIsValid(work, receipts, journal) {
             receipt.expires_tick <= receipt.acquired_tick ||
             receipt.expires_tick - receipt.acquired_tick > journal.limits.lease_duration_ticks) return false;
         state = 'leased'; version = receipt.work_version; currentLeaseId = receipt.lease_id;
-        currentLeaseReceipt = receipt;
+        currentLeaseReceipt = receipt; currentStartReceipt = null;
         break;
       case 'start':
         if (state !== 'leased' || receipt.work_version !== version + 1 || receipt.state !== 'executing' ||
             receipt.lease_id !== currentLeaseId || receipt.owner_agent_id !== currentLeaseReceipt.owner_agent_id ||
             receipt.started_tick < currentLeaseReceipt.acquired_tick ||
             receipt.started_tick >= currentLeaseReceipt.expires_tick) return false;
-        state = 'executing'; version = receipt.work_version;
+        state = 'executing'; version = receipt.work_version; currentStartReceipt = receipt;
         break;
       case 'retry': {
         const expectedDelay = journal.limits.retry_delays_ms[retryCount];
@@ -274,11 +277,12 @@ function workReceiptChainIsValid(work, receipts, journal) {
             receipt.failure_retryable !== true || receipt.selected_retry_delay_ticks !== expectedDelay ||
             receipt.retry_eligible_tick !== receipt.failure_observed_tick + expectedDelay ||
             receipt.retry_eligible_tick > controlPlaneLimits.latestDispatchTick ||
-            receipt.failure_observed_tick < currentLeaseReceipt.acquired_tick ||
+            receipt.failure_observed_tick < currentStartReceipt.started_tick ||
             receipt.failure_observed_tick >= currentLeaseReceipt.expires_tick) return false;
         state = 'retry_wait'; version = receipt.work_version; retryCount = receipt.retry_count;
         currentLeaseId = null;
         currentLeaseReceipt = null;
+        currentStartReceipt = null;
         break;
       }
       case 'cancellation': {
@@ -318,7 +322,11 @@ function workReceiptChainIsValid(work, receipts, journal) {
         } else {
           if (state !== 'executing' || receipt.work_version !== version + 1 ||
               !['succeeded', 'failed'].includes(completion.outcome) ||
-              receipt.lease_id !== currentLeaseId) return false;
+              receipt.lease_id !== currentLeaseId ||
+              completion.completion_tick < currentStartReceipt.started_tick ||
+              completion.completion_tick >= currentLeaseReceipt.expires_tick ||
+              (completion.outcome === 'failed' &&
+                completion.completion_tick !== completion.failure_observed_tick)) return false;
           state = completion.outcome; version = receipt.work_version;
         }
         break;
@@ -330,6 +338,7 @@ function workReceiptChainIsValid(work, receipts, journal) {
             resume.resumed_work_version !== receipt.work_version) return false;
         state = 'queued'; version = receipt.work_version; currentLeaseId = null;
         currentLeaseReceipt = null;
+        currentStartReceipt = null;
         break;
       }
       case 'recovery': {
@@ -337,7 +346,8 @@ function workReceiptChainIsValid(work, receipts, journal) {
             receipt.lease_id !== currentLeaseId || receipt.recovery_interruption_count !== recoveryCount + 1 ||
             !['revoked', 'expired'].includes(receipt.recovery_lease_status) ||
             !['requeue', 'fail'].includes(receipt.recovery_decision) ||
-            receipt.recovery_tick < currentLeaseReceipt.acquired_tick ||
+            receipt.recovery_tick < (state === 'executing'
+              ? currentStartReceipt.started_tick : currentLeaseReceipt.acquired_tick) ||
             (receipt.recovery_lease_status === 'expired' && receipt.recovery_tick < currentLeaseReceipt.expires_tick)) return false;
         const wasExecuting = state === 'executing';
         const expectedDelay = journal.limits.retry_delays_ms[retryCount];
@@ -374,6 +384,7 @@ function workReceiptChainIsValid(work, receipts, journal) {
         if (['queued', 'retry_wait'].includes(state)) {
           currentLeaseId = null;
           currentLeaseReceipt = null;
+          currentStartReceipt = null;
         }
         break;
       }
@@ -463,9 +474,14 @@ function workJournalStateValid(journal) {
         const applicableLease = authorization.lease_id === null ? null : journal.receipts.find((receipt) =>
           receipt.receipt_kind === 'lease' && receipt.lease_id === authorization.lease_id &&
           receipt.work_id === work.work_id && receipt.journal_sequence < cancellation.journal_sequence);
+        const applicableStart = authorization.lease_id === null ? null : journal.receipts
+          .filter((receipt) => receipt.receipt_kind === 'start' &&
+            receipt.lease_id === authorization.lease_id && receipt.work_id === work.work_id &&
+            receipt.journal_sequence < cancellation.journal_sequence)
+          .at(-1);
         const leaseTimingIsValid = authorization.lease_id === null || applicableLease !== undefined &&
           applicableLease.lease_status === 'active' &&
-          cancellation.cancellation_tick >= applicableLease.acquired_tick &&
+          cancellation.cancellation_tick >= (applicableStart?.started_tick ?? applicableLease.acquired_tick) &&
           cancellation.cancellation_tick < applicableLease.expires_tick;
         return record(authorization) && cancellation.work_id === work.work_id && cancellation.idempotency_key === work.idempotency_key &&
           cancellation.work_version <= work.work_version && cancellation.journal_sequence <= journal.head_sequence &&
@@ -527,11 +543,22 @@ function workJournalStateValid(journal) {
       const matchingLeaseReceipt = completion.lease_id === null ? null : journal.receipts.find((receipt) =>
         receipt.receipt_kind === 'lease' && receipt.lease_id === completion.lease_id &&
         receipt.work_id === work.work_id && receipt.journal_sequence < completion.journal_sequence);
+      const matchingStartReceipt = completion.lease_id === null ? null : journal.receipts
+        .filter((receipt) => receipt.receipt_kind === 'start' &&
+          receipt.lease_id === completion.lease_id && receipt.work_id === work.work_id &&
+          receipt.journal_sequence < completion.journal_sequence)
+        .at(-1);
       const matchingFailedRecovery = journal.receipts.find((receipt) =>
         receipt.receipt_kind === 'recovery' && receipt.recovery_decision === 'fail' &&
         receipt.work_id === work.work_id && receipt.work_version === completion.work_version &&
         receipt.lease_id === completion.lease_id &&
         receipt.journal_sequence + 1 === completion.journal_sequence);
+      const completionTimingIsValid = matchingFailedRecovery !== undefined
+        ? completion.completion_tick === matchingFailedRecovery.recovery_tick
+        : completion.outcome === 'cancelled'
+          ? completion.completion_tick === cancellation?.cancellation_tick
+          : matchingStartReceipt !== null && completion.completion_tick >= matchingStartReceipt.started_tick &&
+            completion.completion_tick < matchingLeaseReceipt?.expires_tick;
       const failureTickIsWithinLease = completion.outcome !== 'failed' ||
         completion.code === 'control.recovery_ceiling_exceeded' ||
         matchingFailedRecovery !== undefined &&
@@ -547,7 +574,7 @@ function workJournalStateValid(journal) {
           recoveryCeiling: journal.limits.max_recovery_interruptions,
           retryDelays: journal.limits.retry_delays_ms,
           latestDispatchTick: controlPlaneLimits.latestDispatchTick,
-        }) && failureTickIsWithinLease && matching?.receipt_kind === 'completion' &&
+        }) && completionTimingIsValid && failureTickIsWithinLease && matching?.receipt_kind === 'completion' &&
         matching.journal_sequence === completion.journal_sequence &&
         matching.work_id === work.work_id && matching.work_version === completion.work_version &&
         matching.lease_id === completion.lease_id && matching.state === completion.outcome &&
@@ -624,17 +651,15 @@ function agentStateValid(agent) {
   const writer = agent.writer_lock;
   if (writer?.owner_agent_id !== agent.persistent_agent_id || writer.epoch <= 0 || writer.prior_epoch !== writer.epoch - 1 ||
       writer.retained !== true || typeof writer.token_digest !== 'string' ||
-      !verifyControlPlaneReceipt('writer_lock', [
-        writer.lock_id, writer.prior_epoch, writer.epoch, writer.owner_agent_id,
-        writer.token_digest, writer.retained, agent.vault_id,
-      ], writer, agent.persistent_agent_id)) return false;
+      !verifyControlPlaneReceipt(
+        'writer_lock', writerLockReceiptFields(writer, agent.vault_id), writer, agent.persistent_agent_id,
+      )) return false;
   let previousReceiptDigest = writer.signature_digest;
   const gatesValid = agent.readiness_gates.every((gate) => {
     const valid = gate.verdict === 'pass' && gate.agent_id === agent.persistent_agent_id && gate.vault_id === agent.vault_id &&
-      gate.previous_receipt_digest === previousReceiptDigest && verifyControlPlaneReceipt('readiness_gate', [
-        gate.receipt_id, gate.agent_id, gate.vault_id, gate.ordinal, gate.gate,
-        gate.verdict, gate.observation_digest, gate.previous_receipt_digest,
-      ], gate, agent.persistent_agent_id);
+      gate.previous_receipt_digest === previousReceiptDigest && verifyControlPlaneReceipt(
+        'readiness_gate', readinessGateReceiptFields(gate), gate, agent.persistent_agent_id,
+      );
     previousReceiptDigest = gate.signature_digest;
     return valid;
   });

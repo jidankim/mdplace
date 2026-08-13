@@ -6,8 +6,11 @@ import {
   completionReceiptFields as completionFields,
   controlPlaneLimits,
   enqueueReceiptFields as enqueueFields,
+  readinessGateReceiptFields as readinessFields,
   resumeReceiptFields as resumeFields,
+  schedulerLeaseReceiptFields as schedulerLeaseFields,
   vaultOwnerReceiptFields as vaultOwnerFields,
+  writerLockReceiptFields as writerLockFields,
 } from './control-plane-contract-values.mjs';
 import {controlPlaneOutcomeFieldsAreValid} from './control-plane-outcome.mjs';
 import {
@@ -22,6 +25,7 @@ const authorityByAction = new Map([
   ['enqueue', 'work_submitter'],
   ['dispatch', 'scheduler'],
   ['acknowledge', 'mdplace_agent'],
+  ['complete_work', 'mdplace_agent'],
   ['fail', 'mdplace_agent'],
   ['retry', 'scheduler'],
   ['cancel', 'vault_owner'],
@@ -60,8 +64,25 @@ function journalHeadIsAuthenticated(initial) {
 
 function dependencyStateIsAuthenticated(initial) {
   const receipt = initial.dependency_state_receipt;
-  return digestCanonical(receipt.dependencies) === initial.dependency_state_digest &&
+  const semanticDependencies = receipt.dependencies.filter(({kind}) => kind === 'semantic_head');
+  const workDependenciesAreExact = initial.work === null ||
+    canonicalJson(initial.work.dependencies) === canonicalJson(receipt.dependencies);
+  return semanticDependencies.length === 1 &&
+    semanticDependencies[0].reference_id === 'semantic:head-001' &&
+    semanticDependencies[0].digest === initial.semantic_state_digest &&
+    workDependenciesAreExact &&
+    digestCanonical(receipt.dependencies) === initial.dependency_state_digest &&
     verifyControlPlaneReceipt('dependency_state', dependencyStateFields(receipt), receipt, initial.persistent_agent_id);
+}
+
+function latestPriorStartReceipt(initial, work, leaseId, beforeSequence) {
+  return initial.prior_lease_receipts.filter((prior) =>
+    prior.receipt_kind === 'start' && prior.lease_id === leaseId &&
+    prior.work_id === work.work_id && prior.work_version <= work.work_version &&
+    prior.journal_sequence < beforeSequence && prior.owner_agent_id === initial.persistent_agent_id &&
+    verifyControlPlaneReceipt('work_lease', leaseFields(prior), prior, initial.persistent_agent_id))
+    .reduce((latest, receipt) => latest === null || receipt.journal_sequence > latest.journal_sequence
+      ? receipt : latest, null);
 }
 
 function validPriorLeaseReceipt(initial, work, leaseId, beforeSequence, observedTick = null,
@@ -80,7 +101,7 @@ function validPriorLeaseReceipt(initial, work, leaseId, beforeSequence, observed
     work.lease_acquired_tick === latest?.acquired_tick && work.lease_expires_tick === latest?.expires_tick &&
     ['active', 'expired', 'revoked'].includes(work.lease_status);
   const observedWithinLease = observedTick === null || latest !== null &&
-    observedTick >= latest.acquired_tick && observedTick < latest.expires_tick;
+    observedTick >= (latest.started_tick ?? latest.acquired_tick) && observedTick < latest.expires_tick;
   const statusIsApplicable = requiredStatus === null || latest?.status === requiredStatus &&
     (work.lease_id !== leaseId || work.lease_status === requiredStatus);
   return latest?.lease_id === leaseId && currentLeaseMatches && observedWithinLease && statusIsApplicable;
@@ -246,6 +267,7 @@ function validStoredCancellationReceipt(initial, work) {
     receipt.journal_sequence <= initial.journal_head_sequence &&
     receipt.requested_by === 'person:owner-001' && receipt.resume_count === work.resume_count &&
     receipt.resume_ceiling === work.resume_ceiling &&
+    receipt.vault_owner_receipt.action_kind === 'cancel' &&
     work.cancellation_history.at(-1)?.receipt_id === receipt.receipt_id &&
     verifyControlPlaneReceipt('vault_owner_authorization', vaultOwnerFields(receipt.vault_owner_receipt),
       receipt.vault_owner_receipt, initial.persistent_agent_id) &&
@@ -265,11 +287,30 @@ function schedulerSnapshotDigest(initial) {
 }
 
 function schedulerSnapshotIsConsistent(initial) {
+  const receipts = initial.scheduler_active_lease_receipts;
+  const receiptLeaseIds = receipts.map(({lease_id: id}) => id);
   const activeWorkLease = ['leased', 'executing'].includes(initial.work?.state) &&
     initial.work.lease_status === 'active' ? initial.work.lease_id : null;
-  return initial.active_work_count === initial.active_lease_ids.length &&
+  const currentWorkReceipt = activeWorkLease === null ? null
+    : receipts.find(({lease_id: id}) => id === activeWorkLease);
+  const currentWorkIsExact = activeWorkLease === null || currentWorkReceipt !== undefined &&
+    currentWorkReceipt.work_id === initial.work.work_id &&
+    currentWorkReceipt.work_version === initial.work.work_version &&
+    currentWorkReceipt.owner_agent_id === initial.work.owner_agent_id &&
+    currentWorkReceipt.acquired_tick === initial.work.lease_acquired_tick &&
+    currentWorkReceipt.expires_tick === initial.work.lease_expires_tick;
+  return new Set(receiptLeaseIds).size === receipts.length &&
+    receipts.every((receipt) => receipt.vault_id === initial.vault_id &&
+      receipt.owner_agent_id === initial.persistent_agent_id &&
+      receipt.status === 'active' && receipt.expires_tick > receipt.acquired_tick &&
+      receipt.expires_tick - receipt.acquired_tick <= controlPlaneLimits.leaseDurationTicks &&
+      verifyControlPlaneReceipt(
+        'scheduler_active_lease', schedulerLeaseFields(receipt), receipt, initial.persistent_agent_id,
+      )) &&
+    canonicalJson([...initial.active_lease_ids].sort()) === canonicalJson([...receiptLeaseIds].sort()) &&
+    initial.active_work_count === receipts.length &&
     initial.scheduler_state_digest === schedulerSnapshotDigest(initial) &&
-    (activeWorkLease === null || initial.active_lease_ids.includes(activeWorkLease));
+    currentWorkIsExact;
 }
 
 function completionReceiptFor(initial, work, outcome, outputDigest = null, leaseId = work.lease_id, code = null,
@@ -280,6 +321,7 @@ function completionReceiptFor(initial, work, outcome, outputDigest = null, lease
     work_version: work.work_version,
     lease_id: leaseId,
     journal_sequence: initial.journal_head_sequence + sequenceOffset,
+    completion_tick: failureBasis.completionTick,
     outcome,
     output_digest: outputDigest,
     code,
@@ -298,8 +340,7 @@ function validCompletionReceipt(initial, work) {
     {...work, owner_agent_id: initial.persistent_agent_id},
     receipt?.lease_id,
     receipt?.journal_sequence,
-    !recoveryReceiptIsValid && receipt?.outcome === 'failed' && receipt?.code !== 'control.recovery_ceiling_exceeded'
-      ? receipt.failure_observed_tick : null,
+    recoveryReceiptIsValid ? null : receipt?.completion_tick,
     recoveryReceiptIsValid ? null : 'active',
   );
   const outputIsValid = controlPlaneOutcomeFieldsAreValid(receipt, {
@@ -327,10 +368,9 @@ function writerReceiptIsCurrent(initial, action) {
   return receipt !== null && receipt.prior_epoch === initial.writer_epoch &&
     receipt.epoch === initial.writer_epoch + 1 && receipt.owner_agent_id === initial.persistent_agent_id &&
     receipt.retained === true && action.expected_writer_epoch === initial.writer_epoch &&
-    verifyControlPlaneReceipt('writer_lock', [
-      receipt.lock_id, receipt.prior_epoch, receipt.epoch, receipt.owner_agent_id,
-      receipt.token_digest, receipt.retained, initial.vault_id,
-    ], receipt, initial.persistent_agent_id);
+    verifyControlPlaneReceipt(
+      'writer_lock', writerLockFields(receipt, initial.vault_id), receipt, initial.persistent_agent_id,
+    );
 }
 
 function writerReceiptIsRetained(initial, action) {
@@ -338,10 +378,9 @@ function writerReceiptIsRetained(initial, action) {
   return receipt !== null && initial.writer_epoch > 0 && receipt.prior_epoch === initial.writer_epoch - 1 &&
     receipt.epoch === initial.writer_epoch && receipt.owner_agent_id === initial.persistent_agent_id &&
     receipt.retained === true && action.expected_writer_epoch === initial.writer_epoch &&
-    verifyControlPlaneReceipt('writer_lock', [
-      receipt.lock_id, receipt.prior_epoch, receipt.epoch, receipt.owner_agent_id,
-      receipt.token_digest, receipt.retained, initial.vault_id,
-    ], receipt, initial.persistent_agent_id);
+    verifyControlPlaneReceipt(
+      'writer_lock', writerLockFields(receipt, initial.vault_id), receipt, initial.persistent_agent_id,
+    );
 }
 
 function readinessObservationsAreExact(initial, action, failedGate = null) {
@@ -363,11 +402,9 @@ function readinessObservationsAreExact(initial, action, failedGate = null) {
     const valid = observation.agent_id === initial.persistent_agent_id &&
       observation.vault_id === initial.vault_id &&
       observation.previous_receipt_digest === previousReceiptDigest &&
-      verifyControlPlaneReceipt('readiness_gate', [
-        observation.receipt_id, observation.agent_id, observation.vault_id, observation.ordinal,
-        observation.gate, observation.verdict, observation.observation_digest,
-        observation.previous_receipt_digest,
-      ], observation, initial.persistent_agent_id);
+      verifyControlPlaneReceipt(
+        'readiness_gate', readinessFields(observation), observation, initial.persistent_agent_id,
+      );
     previousReceiptDigest = observation.signature_digest;
     return valid;
   });
@@ -414,7 +451,7 @@ function exactWorkBase(initial, action) {
 }
 
 function journalCanAppend(initial, count = 1) {
-  return initial.journal_head_sequence <= controlPlaneLimits.maxTick - count;
+  return initial.journal_head_sequence <= controlPlaneLimits.maxJournalSequence - count;
 }
 
 function controlChannelIsCurrent(initial) {
@@ -452,7 +489,7 @@ function workStateIsConsistent(work) {
   const terminal = ['cancelled', 'succeeded', 'failed'].includes(work.state);
   const completionIsValid = terminal ? work.completion_receipt !== null : work.completion_receipt === null;
   const completionBoundsAreValid = !terminal ||
-    work.completion_receipt.journal_sequence <= controlPlaneLimits.maxTick;
+    work.completion_receipt.journal_sequence <= controlPlaneLimits.maxJournalSequence;
   const cancellationIsValid = work.state === 'cancelled'
     ? work.cancellation_receipt !== null && work.cancellation_id === work.cancellation_receipt.cancellation_id
     : work.cancellation_receipt === null || work.resume_count > 0;
@@ -487,6 +524,7 @@ function workHistoryIsAuthenticated(initial, work) {
         receipt.cancellation_tick, 'active');
     return receipt.work_id === work.work_id && receipt.idempotency_key === work.idempotency_key &&
     receipt.requested_by === receipt.vault_owner_receipt.principal_id &&
+    receipt.vault_owner_receipt.action_kind === 'cancel' &&
     receipt.vault_owner_receipt.work_id === receipt.work_id &&
     receipt.vault_owner_receipt.work_version === receipt.work_version - 1 &&
     receipt.vault_owner_receipt.idempotency_key === receipt.idempotency_key &&
@@ -540,7 +578,9 @@ function enqueue(initial, action) {
   if (!journalCanAppend(initial)) return rejected(initial, action, 'control.journal_capacity_exhausted', {terminal: 'blocked'});
   const work = {
     work_id: action.work_id, work_version: 1, state: 'queued', idempotency_key: action.idempotency_key,
-    input_digest: action.proposed_work_input_digest, enqueue_receipt: null, retry_count: 0,
+    input_digest: action.proposed_work_input_digest,
+    dependencies: structuredClone(initial.dependency_state_receipt.dependencies),
+    enqueue_receipt: null, retry_count: 0,
     retry_ceiling: controlPlaneLimits.retryCeiling,
     retry_eligible_tick: null, recovery_interruption_count: 0,
     lease_id: null, lease_status: null, lease_acquired_tick: null, lease_expires_tick: null,
@@ -633,7 +673,9 @@ function fail(initial, action) {
   if (!exactWorkBase(initial, action)) return rejected(initial, action, 'control.work_version_stale');
   if (initial.work.state !== 'executing' || action.lease_id !== initial.work.lease_id ||
       initial.work.lease_status !== 'active' || !Number.isInteger(action.current_tick) ||
-      action.current_tick >= initial.work.lease_expires_tick) {
+      action.current_tick < latestPriorStartReceipt(
+        initial, initial.work, initial.work.lease_id, initial.journal_head_sequence + 1,
+      )?.started_tick || action.current_tick >= initial.work.lease_expires_tick) {
     return rejected(initial, action, 'control.lease_stale', {terminal: initial.work.state});
   }
   if (!journalCanAppend(initial)) return rejected(initial, action, 'control.journal_capacity_exhausted', {terminal: 'blocked'});
@@ -662,6 +704,7 @@ function fail(initial, action) {
       : action.retryable ? 'control.retry_ceiling_exceeded' : 'control.execution_failed', 1, {
       retryable: action.retryable,
       observedTick: action.current_tick,
+      completionTick: action.current_tick,
       selectedDelay: action.retryable && initial.work.retry_count < initial.work.retry_ceiling
         ? controlPlaneLimits.retryDelays[initial.work.retry_count] : null,
     });
@@ -696,7 +739,11 @@ function cancel(initial, action) {
   if ((requiresLease && action.lease_id !== initial.work.lease_id) ||
       (requiresLease && initial.work.lease_status !== 'active') ||
       (requiresLease && (!Number.isInteger(action.current_tick) ||
-        action.current_tick < initial.work.lease_acquired_tick ||
+        action.current_tick < (initial.work.state === 'executing'
+          ? latestPriorStartReceipt(
+            initial, initial.work, initial.work.lease_id, initial.journal_head_sequence + 1,
+          )?.started_tick
+          : initial.work.lease_acquired_tick) ||
         action.current_tick >= initial.work.lease_expires_tick)) ||
       (!requiresLease && action.lease_id !== null)) {
     return rejected(initial, action, 'control.lease_stale', {terminal: initial.work.state});
@@ -725,7 +772,7 @@ function cancel(initial, action) {
     retry_eligible_tick: null, lease_id: null, lease_status: null, lease_acquired_tick: null,
     lease_expires_tick: null, owner_agent_id: null};
   work.completion_receipt = completionReceiptFor(initial, {...work, lease_id: initial.work.lease_id}, 'cancelled', null,
-    initial.work.lease_id, 'control.cancelled', 2);
+    initial.work.lease_id, 'control.cancelled', 2, {completionTick: action.current_tick});
   work.cancellation_receipt = cancellationReceiptFor(initial, work, action);
   work.cancellation_id = work.cancellation_receipt.cancellation_id;
   work.cancellation_history = [...initial.work.cancellation_history, work.cancellation_receipt];
@@ -814,8 +861,14 @@ function recover(initial, action) {
     });
   }
   if (!['leased', 'executing'].includes(initial.work.state)) return rejected(initial, action, 'control.recovery_not_required', {illegal: true, terminal: initial.work.state});
-  if (action.lease_id !== initial.work.lease_id || !['expired', 'revoked'].includes(initial.work.lease_status) ||
-      action.recovery_tick === null || (initial.work.lease_status === 'expired' && action.recovery_tick < initial.work.lease_expires_tick)) {
+  const recoveryStartTick = initial.work.state === 'executing'
+    ? latestPriorStartReceipt(
+      initial, initial.work, initial.work.lease_id, initial.journal_head_sequence + 1,
+    )?.started_tick
+    : initial.work.lease_acquired_tick;
+  if (action.lease_id !== initial.work.lease_id || initial.work.lease_status !== 'active' ||
+      action.recovery_tick === null || action.recovery_tick < recoveryStartTick ||
+      action.recovery_tick < initial.work.lease_expires_tick) {
     return rejected(initial, action, 'control.lease_not_recoverable', {terminal: 'blocked'});
   }
   if (action.interruption_count !== initial.work.recovery_interruption_count + 1) {
@@ -839,6 +892,7 @@ function recover(initial, action) {
         : retryExhausted ? 'control.retry_ceiling_exceeded' : 'control.retry_tick_overflow', 2, {
         retryable: recoveryExhausted ? null : true,
         observedTick: recoveryExhausted ? null : action.recovery_tick,
+        completionTick: action.recovery_tick,
         selectedDelay: retryTickOverflow ? recoveryRetryDelay : null,
       });
     work.completion_history = [...initial.work.completion_history, work.completion_receipt];
@@ -868,6 +922,42 @@ function recover(initial, action) {
     outputs: [initial.work.state === 'executing' ? 'in-flight work recovered without duplicate' : 'leased work remains recoverable'],
     operations: ['read Work Journal recovery bases', 'compare Work Lease and receipts', 'consume recovery interruption budget', 'append Work Recovery receipt'],
     receipts: [`WorkRecoveryReceipt:${work.work_id}:${action.interruption_count}`], effects: ['append durable Work Recovery record'], terminal: nextState, work,
+  });
+}
+
+function completeWork(initial, action) {
+  if (!exactWorkBase(initial, action)) return rejected(initial, action, 'control.work_version_stale');
+  if (action.expected_journal_head_sequence !== initial.journal_head_sequence ||
+      action.expected_journal_head_digest !== initial.journal_head_digest) {
+    return rejected(initial, action, 'control.journal_head_stale', {terminal: 'blocked'});
+  }
+  const start = latestPriorStartReceipt(
+    initial, initial.work, initial.work?.lease_id, initial.journal_head_sequence + 1,
+  );
+  if (initial.work?.state !== 'executing' || initial.work.lease_status !== 'active' ||
+      action.lease_id !== initial.work.lease_id || action.idempotency_key !== initial.work.idempotency_key ||
+      action.completion_output_digest === null || !Number.isInteger(action.current_tick) ||
+      start === null || action.current_tick < start.started_tick ||
+      action.current_tick >= initial.work.lease_expires_tick) {
+    return rejected(initial, action, 'control.precondition_failed', {terminal: initial.work?.state ?? 'rejected'});
+  }
+  if (!journalCanAppend(initial)) {
+    return rejected(initial, action, 'control.journal_capacity_exhausted', {terminal: 'blocked'});
+  }
+  const work = {...initial.work, work_version: initial.work.work_version + 1, state: 'succeeded',
+    retry_eligible_tick: null, lease_id: null, lease_status: null, lease_acquired_tick: null,
+    lease_expires_tick: null, owner_agent_id: null};
+  work.completion_receipt = completionReceiptFor(
+    initial, work, 'succeeded', action.completion_output_digest, initial.work.lease_id,
+    null, 1, {completionTick: action.current_tick},
+  );
+  work.completion_history = [...initial.work.completion_history, work.completion_receipt];
+  return observed(initial, action, {
+    outputs: ['authenticated completion recorded'],
+    operations: ['compare Work Item version', 'compare active Work Lease',
+      'validate completion receipt', 'append terminal Work Item result'],
+    receipts: [`CompletionReceipt:${work.completion_receipt.receipt_id}`],
+    effects: ['append terminal Work Item result'], terminal: 'succeeded', work,
   });
 }
 
@@ -960,6 +1050,7 @@ export async function observeControlPlaneScenario(subject, packageRoot) {
     case 'enqueue': return enqueue(initial, action);
     case 'dispatch': return dispatch(initial, action);
     case 'acknowledge': return acknowledge(initial, action);
+    case 'complete_work': return completeWork(initial, action);
     case 'fail': return fail(initial, action);
     case 'retry': return retry(initial, action);
     case 'cancel': return cancel(initial, action);

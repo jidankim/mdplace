@@ -31,7 +31,7 @@
         "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
         "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
         "lease_id": {"type": "string", "pattern": "^lease:[a-z0-9-]{3,64}$"},
-        "journal_head_sequence": {"type": "integer", "minimum": 1, "maximum": 1000000}
+        "journal_head_sequence": {"type": "integer", "minimum": 1, "maximum": 20000}
       }
     },
     "processingEnvelope": {
@@ -109,7 +109,7 @@
         "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
         "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
         "lease_id": {"type": "string", "pattern": "^lease:[a-z0-9-]{3,64}$"},
-        "journal_head_sequence": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "journal_head_sequence": {"type": "integer", "minimum": 1, "maximum": 20000},
         "output_digest": {"$ref": "#/$defs/digest"},
         "signature_scheme": {"const": "hmac-sha256"},
         "signing_key_id": {"const": "signer-key:primary-001"},

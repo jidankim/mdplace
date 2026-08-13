@@ -58,7 +58,15 @@
             "authenticated": true
           },
           "cancellation_history": [],
-          "completion_history": []
+          "completion_history": [],
+          "dependencies": [
+            {
+              "kind": "semantic_head",
+              "reference_id": "semantic:head-001",
+              "version": 1,
+              "digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+            }
+          ]
         },
         "control_channel": {
           "state": "open",
@@ -73,7 +81,7 @@
         "dependency_state_digest": "c289e61ad636413a47b06ff09a505fd15701b9302e0fe955557e4b7b45ad4111",
         "active_work_count": 0,
         "max_concurrent_work": 8,
-        "journal_head_digest": "2b3dd20626e7d70140607279a5e7d3e3f603ba8fc543257b7cb562baf3c51912",
+        "journal_head_digest": "1cf8bf1a543e4eca4d5b3a537e83c1cd82d3d42f064e1f4da6cb6f2ba55ab01b",
         "active_lease_ids": [],
         "scheduler_state_digest": "6974ab1c0f4e5f5cfbb45d9756a8756121a07522cf16a73e07b08dc281ea1c43",
         "prior_lease_receipts": [],
@@ -81,11 +89,11 @@
           "receipt_id": "journal-head-receipt:vault-001",
           "journal_id": "journal:vault-001",
           "head_sequence": 1,
-          "head_digest": "2b3dd20626e7d70140607279a5e7d3e3f603ba8fc543257b7cb562baf3c51912",
+          "head_digest": "1cf8bf1a543e4eca4d5b3a537e83c1cd82d3d42f064e1f4da6cb6f2ba55ab01b",
           "signature_scheme": "hmac-sha256",
           "signing_key_id": "signer-key:primary-001",
           "signer_agent_id": "agent:primary-001",
-          "signature_digest": "9f4084d40e075c3bba9d1afa4fce9bbc4961a105d811682de421981a0610befd",
+          "signature_digest": "be99a42724feb4911899b37087303a682ac02c42e6f6689b2c51efadd0abe06b",
           "authenticated": true
         },
         "dependency_state_receipt": {
@@ -106,7 +114,19 @@
         },
         "prior_retry_receipts": [],
         "prior_recovery_receipts": [],
-        "vault_id": "vault:001"
+        "vault_id": "vault:001",
+        "journal_prefix_receipt": {
+          "receipt_id": "journal-prefix-receipt:vault-001",
+          "journal_id": "journal:vault-001",
+          "head_sequence": 0,
+          "head_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "signature_scheme": "hmac-sha256",
+          "signing_key_id": "signer-key:primary-001",
+          "signer_agent_id": "agent:primary-001",
+          "signature_digest": "0435d123364b4850ef3d367b2e6038b9a6965da387bf7c2779d3d054f8884eb8",
+          "authenticated": true
+        },
+        "scheduler_active_lease_receipts": []
       },
       "action": {
         "kind": "cancel",
@@ -252,7 +272,8 @@
           "signature_digest": "b31d72a4e602f2bf7e41105510afe117f673935898c0e90fddb666a4c932eaae",
           "authenticated": true,
           "lease_id": null
-        }
+        },
+        "completion_output_digest": null
       }
     }
   },

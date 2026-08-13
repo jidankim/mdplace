@@ -50,14 +50,15 @@
             "outcome": "failed",
             "output_digest": null,
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "ba847bcd455e373145a91f8a8313c50683de35ab8081f6e62be783e8af3ae709",
+            "signature_digest": "74ead908f1f023373355dbf50477b827345113a134e33ffef8c70673358f0c8b",
             "authenticated": true,
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
             "code": "control.retry_ceiling_exceeded",
             "failure_retryable": true,
             "failure_observed_tick": 6004,
-            "selected_retry_delay_ticks": null
+            "selected_retry_delay_ticks": null,
+            "completion_tick": 6004
           },
           "cancellation_receipt": null,
           "resume_receipt": null,
@@ -87,14 +88,23 @@
               "outcome": "failed",
               "output_digest": null,
               "signer_agent_id": "agent:primary-001",
-              "signature_digest": "ba847bcd455e373145a91f8a8313c50683de35ab8081f6e62be783e8af3ae709",
+              "signature_digest": "74ead908f1f023373355dbf50477b827345113a134e33ffef8c70673358f0c8b",
               "authenticated": true,
               "signature_scheme": "hmac-sha256",
               "signing_key_id": "signer-key:primary-001",
               "code": "control.retry_ceiling_exceeded",
               "failure_retryable": true,
               "failure_observed_tick": 6004,
-              "selected_retry_delay_ticks": null
+              "selected_retry_delay_ticks": null,
+              "completion_tick": 6004
+            }
+          ],
+          "dependencies": [
+            {
+              "kind": "semantic_head",
+              "reference_id": "semantic:head-001",
+              "version": 1,
+              "digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
             }
           ]
         },
@@ -111,7 +121,7 @@
         "dependency_state_digest": "c289e61ad636413a47b06ff09a505fd15701b9302e0fe955557e4b7b45ad4111",
         "active_work_count": 0,
         "max_concurrent_work": 8,
-        "journal_head_digest": "292701a31c9209091b85165ef7b4fff4d9457774d4fe2441ef239e72180b3157",
+        "journal_head_digest": "b4a9b9f675097d632171c1f55ec3662003b1c9bf19eae2d0d9da3c49129aa294",
         "active_lease_ids": [],
         "scheduler_state_digest": "6974ab1c0f4e5f5cfbb45d9756a8756121a07522cf16a73e07b08dc281ea1c43",
         "prior_lease_receipts": [
@@ -228,11 +238,11 @@
           "receipt_id": "journal-head-receipt:vault-001",
           "journal_id": "journal:vault-001",
           "head_sequence": 10,
-          "head_digest": "292701a31c9209091b85165ef7b4fff4d9457774d4fe2441ef239e72180b3157",
+          "head_digest": "b4a9b9f675097d632171c1f55ec3662003b1c9bf19eae2d0d9da3c49129aa294",
           "signature_scheme": "hmac-sha256",
           "signing_key_id": "signer-key:primary-001",
           "signer_agent_id": "agent:primary-001",
-          "signature_digest": "76fa597eaf8acb65c40311ae90874595eade094db086f4cdb5908a99f5640e62",
+          "signature_digest": "e08e8f83155c53b766bbcf409574ebacf51a76d719d1ae3b9ec009ac5ecc5628",
           "authenticated": true
         },
         "dependency_state_receipt": {
@@ -290,7 +300,19 @@
           }
         ],
         "prior_recovery_receipts": [],
-        "vault_id": "vault:001"
+        "vault_id": "vault:001",
+        "journal_prefix_receipt": {
+          "receipt_id": "journal-prefix-receipt:vault-001",
+          "journal_id": "journal:vault-001",
+          "head_sequence": 0,
+          "head_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "signature_scheme": "hmac-sha256",
+          "signing_key_id": "signer-key:primary-001",
+          "signer_agent_id": "agent:primary-001",
+          "signature_digest": "0435d123364b4850ef3d367b2e6038b9a6965da387bf7c2779d3d054f8884eb8",
+          "authenticated": true
+        },
+        "scheduler_active_lease_receipts": []
       },
       "action": {
         "kind": "retry",
@@ -422,7 +444,8 @@
         "expected_dependency_state_digest": "c289e61ad636413a47b06ff09a505fd15701b9302e0fe955557e4b7b45ad4111",
         "expected_journal_head_digest": "292701a31c9209091b85165ef7b4fff4d9457774d4fe2441ef239e72180b3157",
         "expected_scheduler_state_digest": "6974ab1c0f4e5f5cfbb45d9756a8756121a07522cf16a73e07b08dc281ea1c43",
-        "vault_owner_receipt": null
+        "vault_owner_receipt": null,
+        "completion_output_digest": null
       }
     }
   },

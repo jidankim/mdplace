@@ -48,14 +48,15 @@
             "outcome": "cancelled",
             "output_digest": null,
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "e27f003e0c7fb8efc88a16d13281cbaf7a25e478696ecec1e091d40a7e80e3c1",
+            "signature_digest": "1d75150616bc3168bec477efe0805f5e56682f633929966244f488b963751859",
             "authenticated": true,
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
             "code": "control.cancelled",
             "failure_retryable": null,
             "failure_observed_tick": null,
-            "selected_retry_delay_ticks": null
+            "selected_retry_delay_ticks": null,
+            "completion_tick": 1
           },
           "cancellation_receipt": {
             "receipt_id": "cancellation-receipt:001",
@@ -151,14 +152,23 @@
               "outcome": "cancelled",
               "output_digest": null,
               "signer_agent_id": "agent:primary-001",
-              "signature_digest": "e27f003e0c7fb8efc88a16d13281cbaf7a25e478696ecec1e091d40a7e80e3c1",
+              "signature_digest": "1d75150616bc3168bec477efe0805f5e56682f633929966244f488b963751859",
               "authenticated": true,
               "signature_scheme": "hmac-sha256",
               "signing_key_id": "signer-key:primary-001",
               "code": "control.cancelled",
               "failure_retryable": null,
               "failure_observed_tick": null,
-              "selected_retry_delay_ticks": null
+              "selected_retry_delay_ticks": null,
+              "completion_tick": 1
+            }
+          ],
+          "dependencies": [
+            {
+              "kind": "semantic_head",
+              "reference_id": "semantic:head-001",
+              "version": 1,
+              "digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
             }
           ]
         },
@@ -175,7 +185,7 @@
         "dependency_state_digest": "c289e61ad636413a47b06ff09a505fd15701b9302e0fe955557e4b7b45ad4111",
         "active_work_count": 0,
         "max_concurrent_work": 8,
-        "journal_head_digest": "a039de0f927c7ca78c16b207d5433645cb2e70e0306c0691f1139a5b1a500577",
+        "journal_head_digest": "a843f52c1c0e923a9257c772973bf392ff2d28791d1c6dce789458a40cab8f32",
         "active_lease_ids": [],
         "scheduler_state_digest": "6974ab1c0f4e5f5cfbb45d9756a8756121a07522cf16a73e07b08dc281ea1c43",
         "prior_lease_receipts": [],
@@ -183,11 +193,11 @@
           "receipt_id": "journal-head-receipt:vault-001",
           "journal_id": "journal:vault-001",
           "head_sequence": 3,
-          "head_digest": "a039de0f927c7ca78c16b207d5433645cb2e70e0306c0691f1139a5b1a500577",
+          "head_digest": "a843f52c1c0e923a9257c772973bf392ff2d28791d1c6dce789458a40cab8f32",
           "signature_scheme": "hmac-sha256",
           "signing_key_id": "signer-key:primary-001",
           "signer_agent_id": "agent:primary-001",
-          "signature_digest": "90eccab7a1a59034a6d7f83a28f4f82751fed3433a5f7127e2cb96f906652bd3",
+          "signature_digest": "9e4e7075619ca5a19368a8e626c0890710e0caf9b8213ccc7fc54e40ff1cb28f",
           "authenticated": true
         },
         "dependency_state_receipt": {
@@ -208,7 +218,19 @@
         },
         "prior_retry_receipts": [],
         "prior_recovery_receipts": [],
-        "vault_id": "vault:001"
+        "vault_id": "vault:001",
+        "journal_prefix_receipt": {
+          "receipt_id": "journal-prefix-receipt:vault-001",
+          "journal_id": "journal:vault-001",
+          "head_sequence": 0,
+          "head_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "signature_scheme": "hmac-sha256",
+          "signing_key_id": "signer-key:primary-001",
+          "signer_agent_id": "agent:primary-001",
+          "signature_digest": "0435d123364b4850ef3d367b2e6038b9a6965da387bf7c2779d3d054f8884eb8",
+          "authenticated": true
+        },
+        "scheduler_active_lease_receipts": []
       },
       "action": {
         "kind": "resume",
@@ -354,7 +376,8 @@
           "signature_digest": "88b6a51e91eb03ca6ed1b8bd2a2ba29edec15ba8c237c6a739702ad3a87db82f",
           "authenticated": true,
           "lease_id": null
-        }
+        },
+        "completion_output_digest": null
       }
     }
   },
