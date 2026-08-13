@@ -3,6 +3,10 @@ import {isDeepStrictEqual} from 'node:util';
 
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {readPackageFile} from './safe-path.mjs';
+import {
+  boundaryModeEvidenceIsValid,
+  matrixRecoveryRowsAreValid,
+} from './vault-mutation-recovery-checks.mjs';
 
 const requiredFaults = new Set([
   'symlink_swap', 'pathname_swap', 'traversal', 'collision', 'ownership_drift',
@@ -44,29 +48,6 @@ function tableIsComplete(table) {
   return validRows.length === rows.length && rows.length === states.length * commands.length &&
     new Set(pairs).size === rows.length &&
     states.every((state) => commands.every((command) => pairs.includes(`${state}:${command}`)));
-}
-
-function expectedRecoveryAction(boundaryId, mode) {
-  if (boundaryId === 'after_commit') return 'resume';
-  if (mode === 'cancel') return 'exact_rollback';
-  if (mode === 'cancel_and_resume') return 'resume';
-  if (mode === 'repeated_interruption') return 'terminal_manual_repair';
-  if (boundaryId === 'after_metadata') return 'exact_rollback';
-  if (boundaryId === 'after_receipt') return 'compensate';
-  return 'resume';
-}
-
-function expectedTerminalState(action) {
-  return new Map([
-    ['resume', 'committed'],
-    ['exact_rollback', 'rolled_back'],
-    ['compensate', 'compensated'],
-    ['terminal_manual_repair', 'terminal_manual_repair'],
-  ]).get(action);
-}
-
-function durableObservation(prefix, event) {
-  return prefix.includes(event) ? 'present' : 'absent';
 }
 
 export async function checkVaultMutationGateContract(packageRoot, manifest, conformance, traceability) {
@@ -163,29 +144,15 @@ export async function checkVaultMutationGateContract(packageRoot, manifest, conf
     packageRoot, 'contracts/vault-mutation-gate/crash-boundary-matrix.json');
   const expectedBoundaries = ['journal', 'validation', 'data', 'metadata', 'receipt', 'echo', 'readback', 'commit']
     .flatMap((event) => [`before_${event}`, `after_${event}`]);
-  const boundaryIds = matrix?.boundaries?.filter(isRecord).map(({boundary_id: id}) => id) ?? [];
+  const matrixBoundaries = Array.isArray(matrix?.boundaries) ? matrix.boundaries.filter(isRecord) : [];
+  const boundaryIds = matrixBoundaries.map(({boundary_id: id}) => id);
   const interruptionModes = ['cancel', 'cancel_and_resume', 'restart', 'repeated_interruption'];
-  const matrixModeResults = (matrix?.boundaries ?? []).filter(isRecord).flatMap((boundary) =>
-    (Array.isArray(boundary.mode_results) ? boundary.mode_results : []).filter(isRecord).map((modeResult) => ({
-      boundary,
-      modeResult,
-      pair: `${boundary.boundary_id}:${modeResult.mode}`,
-    })));
   const expectedBoundaryModePairs = expectedBoundaries.flatMap((boundaryId) =>
     interruptionModes.map((mode) => `${boundaryId}:${mode}`));
-  const matrixModeResultsValid = matrixModeResults.length === 64 &&
-    new Set(matrixModeResults.map(({pair}) => pair)).size === 64 &&
-    expectedBoundaryModePairs.every((pair) => matrixModeResults.some((result) => result.pair === pair)) &&
-    matrixModeResults.every(({boundary, modeResult}) => {
-      const action = expectedRecoveryAction(boundary.boundary_id, modeResult.mode);
-      return modeResult.recovery_action === action &&
-        modeResult.terminal_state === expectedTerminalState(action) &&
-        modeResult.effect_obligation ===
-          'preserve at-most-once effect identity; pathname and console text are non-authoritative';
-    });
   if (boundaryIds.length !== 16 || new Set(boundaryIds).size !== 16 ||
       expectedBoundaries.some((id) => !boundaryIds.includes(id)) ||
-      !isDeepStrictEqual(matrix?.interruption_modes, interruptionModes) || !matrixModeResultsValid) {
+      !isDeepStrictEqual(matrix?.interruption_modes, interruptionModes) ||
+      !matrixRecoveryRowsAreValid(matrix, expectedBoundaryModePairs)) {
     codes.push('vault_mutation.crash_matrix_incomplete');
   }
   const {document: recovery} = await readJson(packageRoot, 'conformance/evidence/vault-mutation-recovery-report.json');
@@ -198,49 +165,14 @@ export async function checkVaultMutationGateContract(packageRoot, manifest, conf
       JSON.stringify(reportIds) !== JSON.stringify(fixtureIds)) {
     codes.push('vault_mutation.recovery_evidence_invalid');
   }
-  const entryById = new Map(entries.map((entry) => [entry.fixture_id, entry]));
-  const boundaryById = new Map((matrix?.boundaries ?? []).filter(isRecord)
-    .map((boundary) => [boundary.boundary_id, boundary]));
-  const boundaryModeResults = Array.isArray(recovery?.boundary_mode_results)
-    ? recovery.boundary_mode_results.filter(isRecord)
-    : [];
-  const boundaryModePairs = boundaryModeResults.map(({boundary_id: boundaryId, mode}) =>
-    `${boundaryId}:${mode}`);
-  const samplePrecondition = plan?.expected_precondition;
-  const sampleResult = plan?.expected_result;
-  const boundaryModeEvidenceValid = boundaryModeResults.length === 64 &&
-    new Set(boundaryModePairs).size === 64 &&
-    expectedBoundaryModePairs.every((pair) => boundaryModePairs.includes(pair)) &&
-    (await Promise.all(boundaryModeResults.map(async (evidence) => {
-      const boundary = boundaryById.get(evidence.boundary_id);
-      const entry = entryById.get(evidence.fixture_id);
-      const fixtureRead = entry === undefined
-        ? {status: 'absent'}
-        : await readPackageFile(packageRoot, `conformance/${entry.path}`);
-      const action = expectedRecoveryAction(evidence.boundary_id, evidence.mode);
-      const binding = evidence.operation_binding;
-      return boundary !== undefined && entry?.category === 'crash_recovery' &&
-        entry.expected_verdict === (action === 'terminal_manual_repair' ? 'fail' : 'pass') &&
-        fixtureRead.status === 'present' &&
-        createHash('sha256').update(fixtureRead.content).digest('hex') === evidence.fixture_sha256 &&
-        isDeepStrictEqual(evidence.durable_prefix, boundary.durable_prefix) &&
-        isDeepStrictEqual(evidence.observed_evidence, boundary.required_observations) &&
-        binding?.plan_sha256 === plan?.immutable_inputs?.plan_sha256 &&
-        binding?.idempotency_key === plan?.idempotency_key &&
-        binding?.ownership_receipt_sha256 === plan?.ownership?.exclusive_writer_receipt_sha256 &&
-        isDeepStrictEqual(binding?.expected_precondition_identity, samplePrecondition) &&
-        isDeepStrictEqual(binding?.expected_result_identity, sampleResult) &&
-        isDeepStrictEqual(binding?.observed_effect_identity,
-          boundary.durable_prefix.includes('data') ? sampleResult : samplePrecondition) &&
-        evidence.receipt_echo_readback?.receipt === durableObservation(boundary.durable_prefix, 'receipt') &&
-        evidence.receipt_echo_readback?.echo === durableObservation(boundary.durable_prefix, 'echo') &&
-        evidence.receipt_echo_readback?.readback === durableObservation(boundary.durable_prefix, 'readback') &&
-        evidence.expected_outcome === action && evidence.observed_outcome === action &&
-        evidence.terminal_state === expectedTerminalState(action) &&
-        evidence.duplicate_effect === false && evidence.pathname_reopened === false &&
-        evidence.console_success_authoritative === false && evidence.verdict === 'pass';
-    }))).every(Boolean);
-  if (!boundaryModeEvidenceValid) codes.push('vault_mutation.boundary_mode_evidence_invalid');
+  if (!await boundaryModeEvidenceIsValid({
+    packageRoot,
+    recovery,
+    matrix,
+    entries,
+    plan,
+    expectedPairs: expectedBoundaryModePairs,
+  })) codes.push('vault_mutation.boundary_mode_evidence_invalid');
   const recoveryOutcomes = new Set(recovery?.scenario_results?.filter(isRecord)
     .map(({recovery_outcome: outcome}) => outcome) ?? []);
   const requiredRecoveryOutcomes = ['recovered', 'rolled_back', 'compensated', 'terminal_manual_repair'];

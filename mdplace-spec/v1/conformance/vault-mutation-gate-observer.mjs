@@ -55,9 +55,15 @@ function callerMayInvoke(caller, operation, recoveryMode) {
   return false;
 }
 
+function isRecord(value) {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
 function recoveryEvidenceMatches(recovery, matrix) {
-  const boundary = matrix?.boundaries?.find(({boundary_id: id}) => id === recovery.crash_boundary);
-  const modeResult = boundary?.mode_results?.find(({mode}) => mode === recovery.mode);
+  const boundaries = Array.isArray(matrix?.boundaries) ? matrix.boundaries.filter(isRecord) : [];
+  const boundary = boundaries.find(({boundary_id: id}) => id === recovery.crash_boundary);
+  const modeResults = Array.isArray(boundary?.mode_results) ? boundary.mode_results.filter(isRecord) : [];
+  const modeResult = modeResults.find(({mode}) => mode === recovery.mode);
   return boundary !== undefined && modeResult !== undefined &&
     isDeepStrictEqual(recovery.durable_prefix, boundary.durable_prefix) &&
     recovery.declared_intent === modeResult.recovery_action &&
@@ -72,6 +78,17 @@ function invalidRecoveryObservation() {
     receipts: ['TerminalManualRepairReport'], filesystem_effects: ['preserve observed physical state'],
     terminal_state: 'terminal_manual_repair', illegal_transition: false,
   };
+}
+
+function descriptorProbeIsValid(probe) {
+  return probe.trusted_root_opened && probe.resolution === 'openat_each_component' && probe.nofollow &&
+    !probe.pathname_reopened && probe.receipt_echo === 'complete' && probe.readback === 'match' &&
+    isDeepStrictEqual(probe.expected_precondition_identity, probe.first_fstat) &&
+    isDeepStrictEqual(probe.first_fstat, probe.second_fstat) &&
+    probe.same_handle_hash === probe.expected_precondition_identity.content_sha256 &&
+    isDeepStrictEqual(probe.receipt_precondition_identity, probe.expected_precondition_identity) &&
+    isDeepStrictEqual(probe.receipt_result_identity, probe.expected_result_identity) &&
+    isDeepStrictEqual(probe.readback_identity, probe.expected_result_identity);
 }
 
 function recoveryObservation(recovery, matrix) {
@@ -142,7 +159,9 @@ export async function observeVaultMutationScenario(subject, packageRoot) {
       terminal_state: 'denied', illegal_transition: false,
     };
   }
+  const probeValid = descriptorProbeIsValid(scenario.probe);
   if (scenario.recovery.mode !== 'none') {
+    if (!probeValid) return invalidRecoveryObservation();
     const matrixRead = await readPackageFile(packageRoot, 'contracts/vault-mutation-gate/crash-boundary-matrix.json');
     if (matrixRead.status !== 'present') return invalidRecoveryObservation();
     let matrix;
@@ -153,16 +172,6 @@ export async function observeVaultMutationScenario(subject, packageRoot) {
     }
     return recoveryObservation(scenario.recovery, matrix);
   }
-  const probeValid = scenario.probe.trusted_root_opened &&
-    scenario.probe.resolution === 'openat_each_component' && scenario.probe.nofollow &&
-    !scenario.probe.pathname_reopened &&
-    isDeepStrictEqual(scenario.probe.expected_precondition_identity, scenario.probe.first_fstat) &&
-    isDeepStrictEqual(scenario.probe.first_fstat, scenario.probe.second_fstat) &&
-    scenario.probe.same_handle_hash === scenario.probe.expected_precondition_identity.content_sha256 &&
-    isDeepStrictEqual(scenario.probe.receipt_precondition_identity,
-      scenario.probe.expected_precondition_identity) &&
-    isDeepStrictEqual(scenario.probe.receipt_result_identity, scenario.probe.expected_result_identity) &&
-    isDeepStrictEqual(scenario.probe.readback_identity, scenario.probe.expected_result_identity);
   const faultCode = denialByFault.get(scenario.fault);
   if (faultCode !== undefined || !probeValid || scenario.plan_state !== 'authorized') {
     const code = faultCode ?? (scenario.plan_state === 'stale' ? 'plan.stale' : 'descriptor.probe_invalid');

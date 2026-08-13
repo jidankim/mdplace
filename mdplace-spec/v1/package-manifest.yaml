@@ -291,19 +291,19 @@
       "path": "conformance/evidence/traceability-report.json",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "74042733a00f67cf09efab117f09baf76832205c9ec6d90f29ac3e1ef884b7c1"
+      "sha256": "c59e8daeef6e7cc7b1afbba0529d3841e56544fabc385c443e959bcce35c7d59"
     },
     {
       "path": "conformance/evidence/validation-report.json",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "dbf128208b0a362e1d4f108f7c55d696a1ec1e7c22abe148c45ed280b575532d"
+      "sha256": "9e2c8ca51c8d353f0bee706b604cd0140e9688997c4cc2084100a1aa8d0f38d5"
     },
     {
       "path": "conformance/evidence/vault-mutation-recovery-report.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "12a973415c9cb1f8f537ab8a63f99b43aa49efc69df6343441507e53cebb2cff"
+      "sha256": "4840cbf32d8ef58dc18487f6cb8274e15ac4e38697aa826be025c11ee16cc6f8"
     },
     {
       "path": "conformance/evidence/version-amendment-report.json",
@@ -2355,25 +2355,25 @@
       "path": "conformance/state-observations/candidate/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "945f40b1841db2301212ae588351c4880fde310035b1c30685eeadebb66decf9"
+      "sha256": "a42a286818cd15cea2d59d85acb44c997a316feb24fae0d14fdb8cad32175c77"
     },
     {
       "path": "conformance/state-observations/draft/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "891b5c11efa71c5f92316840dc5164bacbe2abb65f88d7ada972deaafc2e63af"
+      "sha256": "f3b10bbdd8557ce5aefe12c9cc91acca13df9abbd50ef8fc7d648544dc8ac607"
     },
     {
       "path": "conformance/state-observations/release-ready/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "1110cb7d08538f63bac4577e06b0bed3e94dc6382043e827308598e5861f77d4"
+      "sha256": "f3b0197f3a6e5a84a003323ce5a169343f5393fcb20e6900d4292d5e626b00ff"
     },
     {
       "path": "conformance/state-observations/released/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "32b43190356c8a482e73b0fa38ad48472a473ed22ae59102c41c5cf2b66077c7"
+      "sha256": "351de6860e49c22833eec965a0e1320c528f04e476c07c8a512369d5b5c65d48"
     },
     {
       "path": "conformance/traceability-checks.mjs",
@@ -2607,7 +2607,7 @@
       "path": "conformance/validator-rules.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "9e7a15d83337c798b6929fea34a5f61f1eb12d6bcc44a7e1b008d63cbb1f5d65"
+      "sha256": "20fd750aaeb7c4c1d246ea01f64d88d7e7cf1d5c7dff8ca7c1ad7e911a5df1fd"
     },
     {
       "path": "conformance/validator-security-cases.mjs",
@@ -2649,7 +2649,7 @@
       "path": "conformance/validator-vault-mutation-gate-cases.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "a1fbee043f285f407101a23b3a705e91ba4ede00beb4c9ddd8b7109ff4a05c5c"
+      "sha256": "5ed3c273d7d88334900fbfae174194e9f5839f7a3af098a7ba1e9b8f2dc59d97"
     },
     {
       "path": "conformance/validator.mjs",
@@ -2667,13 +2667,19 @@
       "path": "conformance/vault-mutation-gate-checks.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "d79eca7b72edec36eaea1bda7e2b5755c9d43cfaf90fa7bcde50e03ab10f22c6"
+      "sha256": "0edee8702668ab547630a5f9c2ed1b861546d93553c8f8661d4a66d9251aa75c"
     },
     {
       "path": "conformance/vault-mutation-gate-observer.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "e8917b34f379f6fd1464dd0a09f0078d6449c7ff582f309991da1333c8b1be63"
+      "sha256": "86608999692c60c21809a213a89e5d3a07c1b61e31ab81425725c42054eda589"
+    },
+    {
+      "path": "conformance/vault-mutation-recovery-checks.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "3e9243f783311620b7fe83e5085a03f49013fb03868eff0e3b4b5bc5be864278"
     },
     {
       "path": "contracts/control-plane/agent-state.json",
@@ -3159,7 +3165,7 @@
       "path": "contracts/vault-mutation-gate/crash-boundary-matrix.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "be99c9dfc25e3379de459868f1d32fee3ebe8bc2845918ea648211d8510e4e2b"
+      "sha256": "a044f51f385c2fb7e09473010bc1afe0c9b175dbdd4060714bab3fdffe174de3"
     },
     {
       "path": "contracts/vault-mutation-gate/mutation-journal.json",
@@ -3234,8 +3240,8 @@
       "sha256": "131ef4a1662b21721b6e7502ff72455b759e06978113d20ec03a48100b6f51a1"
     }
   ],
-  "normative_digest": "33879ec6253f8a5fbd76e7c34e5975cb84a1daded6a23599358ae8105c6e9e79",
-  "conformance_digest": "8710bc6b73d6a24812ab22d215d3d45820d11cf9075309bb687d06be2f61b7fe",
+  "normative_digest": "879d6d085bf3b7506a08d835dd759d04d7198b98438229ff79074cf406c77433",
+  "conformance_digest": "b0217bbc26428d298348b79f573f415cfd03797132627afd5bcfa2c521f5647f",
   "amendment_policy": {
     "immutable_after_release": true,
     "in_place_mutation": "forbidden",

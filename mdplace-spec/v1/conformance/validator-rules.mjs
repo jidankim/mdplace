@@ -187,6 +187,7 @@ const conformanceExecutables = new Set([
   'conformance/vault-mutation-gate-checks.mjs',
   'conformance/vault-mutation-gate-observer.mjs',
   'conformance/validator-vault-mutation-gate-cases.mjs',
+  'conformance/vault-mutation-recovery-checks.mjs',
 ]);
 
 export function authorityMatches(command, actual) {

@@ -1,11 +1,16 @@
 import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
-import {readFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {readFile, writeFile} from 'node:fs/promises';
+import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import test from 'node:test';
 
 import {observeFixture} from './fixture-observer.mjs';
 import {validateAgainstSchemaPath} from './json-schema.mjs';
+import {buildValidationReport} from './validation-report.mjs';
+import {checkVaultMutationGateContract} from './vault-mutation-gate-checks.mjs';
+import {copyCommittedPackage} from './validator-test-support.mjs';
 
 const packageRoot = fileURLToPath(new URL('../', import.meta.url));
 const validator = fileURLToPath(new URL('./validator.mjs', import.meta.url));
@@ -111,4 +116,71 @@ test('crash and recovery evidence covers every boundary-mode pair', async () => 
     .filter(({boundary_id: boundaryId}) => boundaryId === 'after_commit')
     .every(({observed_outcome: outcome, terminal_state: state}) =>
       outcome === 'resume' && state === 'committed'));
+  for (const {allowed_outcomes: allowedOutcomes, mode_results: results} of matrix.boundaries) {
+    assert.deepEqual(allowedOutcomes, [...new Set(results.map(({recovery_action: action}) => action))]);
+  }
+});
+
+test('recovery validates exact descriptor receipt and readback tuples', async () => {
+  // Given an otherwise valid recovery scenario whose readback tuple drifted.
+  const fixture = await readPackageJson(
+    'conformance/scenarios/vault-mutation-gate/before-journal-cancel.json',
+  );
+  fixture.subject.document.probe.readback_identity.content_sha256 = 'f'.repeat(64);
+
+  // When recovery evaluates the retained-descriptor evidence.
+  const observation = await observeFixture(fixture, packageRoot);
+
+  // Then recovery halts instead of accepting the matrix row alone.
+  assert.equal(observation.verdict, 'fail');
+  assert.deepEqual(observation.codes, ['recovery.evidence_mismatch']);
+});
+
+test('recovery evidence binds each boundary-mode row to its exact fixture behavior', async () => {
+  // Given a copied package whose first evidence row is repointed to another valid crash fixture.
+  const copiedRoot = await copyCommittedPackage();
+  const conformance = JSON.parse(await readFile(join(copiedRoot, 'conformance/manifest.yaml'), 'utf8'));
+  const recoveryPath = join(copiedRoot, 'conformance/evidence/vault-mutation-recovery-report.json');
+  const recovery = JSON.parse(await readFile(recoveryPath, 'utf8'));
+  const first = recovery.boundary_mode_results[0];
+  const second = recovery.boundary_mode_results[1];
+  const secondEntry = conformance.fixtures.find(({fixture_id: fixtureId}) =>
+    fixtureId === second.fixture_id);
+  const secondBytes = await readFile(join(copiedRoot, 'conformance', secondEntry.path));
+  first.fixture_id = second.fixture_id;
+  first.fixture_sha256 = createHash('sha256').update(secondBytes).digest('hex');
+  await writeFile(recoveryPath, `${JSON.stringify(recovery, null, 2)}\n`);
+
+  // When the contract checker validates the recovery proof.
+  const [manifest, traceability] = await Promise.all([
+    readFile(join(copiedRoot, 'package-manifest.yaml'), 'utf8').then(JSON.parse),
+    readFile(join(copiedRoot, 'traceability.yaml'), 'utf8').then(JSON.parse),
+  ]);
+  const contract = await checkVaultMutationGateContract(
+    copiedRoot,
+    manifest,
+    conformance,
+    traceability,
+  );
+
+  // Then fixture reuse cannot stand in for the claimed boundary-mode observation.
+  assert.equal(contract.verdict, 'fail');
+  assert.ok(contract.codes.includes('vault_mutation.boundary_mode_evidence_invalid'));
+});
+
+test('malformed crash recovery rows fail deterministically without throwing', async () => {
+  // Given a copied package whose crash matrix contains a non-object mode row.
+  const copiedRoot = await copyCommittedPackage();
+  const matrixPath = join(copiedRoot, 'contracts/vault-mutation-gate/crash-boundary-matrix.json');
+  const matrix = JSON.parse(await readFile(matrixPath, 'utf8'));
+  matrix.boundaries[0].mode_results = [null];
+  await writeFile(matrixPath, `${JSON.stringify(matrix, null, 2)}\n`);
+
+  // When the full report evaluates both the contract and public recovery fixtures.
+  const report = await buildValidationReport(copiedRoot);
+
+  // Then the malformed boundary is contained as a structured contract failure.
+  assert.equal(report.verdict, 'fail');
+  assert.ok(report.checks.some(({id, verdict}) =>
+    id === 'vault-mutation-gate-contract' && verdict === 'fail'));
 });
