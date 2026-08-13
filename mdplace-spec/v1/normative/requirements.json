@@ -236,6 +236,69 @@
       "canonical_terms": ["Specification Package", "Conformance Fixture", "mdplace Agent", "Semantic Kernel", "Control Channel", "Vault Mutation Gate", "Capture Adapter", "Folder Projection", "Intelligence Adapter"],
       "acceptance_gate": "Only specification, schemas, registries, fixtures, conformance-only observers, traceability, and evidence are added; no production mdplace boundary or vault mutation is implemented or invoked.",
       "scope": "semantic-kernel"
+    },
+    {
+      "id": "REQ-CPP-001",
+      "title": "Stable requirements use canonical policy vocabulary",
+      "normative_anchor": "normative/core-processing-policy-contract.md#req-cpp-001-stable-requirements-use-canonical-policy-vocabulary",
+      "decision_urls": ["https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"],
+      "canonical_terms": ["Processing Policy", "Source Profile", "Capture Source", "Capture Adapter", "Capture Candidate", "Capture Intake", "Intelligence Adapter", "Specification Package"],
+      "acceptance_gate": "Stable REQ-CPP identifiers use only canonical vocabulary and distinguish Processing Policy permission, Source Profile approval, compatibility evidence, and semantic authority.",
+      "scope": "core-processing-policy"
+    },
+    {
+      "id": "REQ-CPP-002",
+      "title": "Processing Policy and Source Profile contracts are closed and complete",
+      "normative_anchor": "normative/core-processing-policy-contract.md#req-cpp-002-processing-policy-and-source-profile-contracts-are-closed-and-complete",
+      "decision_urls": ["https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"],
+      "canonical_terms": ["Processing Policy", "Source Profile", "Capture Source", "Capture Adapter", "Capture Candidate", "Placement Automation Permission", "Automation Grant"],
+      "acceptance_gate": "Closed policy, Source Profile, request, rule, receipt, scenario, lifecycle, and recovery contracts enumerate every version, grant, obligation, binding, authority, transition, and failure without ambient defaults.",
+      "scope": "core-processing-policy"
+    },
+    {
+      "id": "REQ-CPP-003",
+      "title": "Every ungranted or stale request is denied before effect",
+      "normative_anchor": "normative/core-processing-policy-contract.md#req-cpp-003-every-ungranted-or-stale-request-is-denied-before-effect",
+      "decision_urls": ["https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"],
+      "canonical_terms": ["Processing Policy", "Source Profile", "Capture Intake", "Capture Candidate", "Intelligence Adapter"],
+      "acceptance_gate": "All absent, unknown, unpermitted, over-budget, over-retry, over-fallback, unredacted, retention-unproven, stale, hostile, or authority-widening requests deny before transmission, semantic operation, or filesystem effect.",
+      "scope": "core-processing-policy"
+    },
+    {
+      "id": "REQ-CPP-004",
+      "title": "Descendant policies narrow monotonically",
+      "normative_anchor": "normative/core-processing-policy-contract.md#req-cpp-004-descendant-policies-narrow-monotonically",
+      "decision_urls": ["https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"],
+      "canonical_terms": ["Processing Policy", "Placement Automation Permission", "Automation Grant", "Intelligence Adapter"],
+      "acceptance_gate": "Canary and policy-pair fixtures prove exact parent binding, preservation or reduction of every permission dimension, and deterministic denial of each attempted widening.",
+      "scope": "core-processing-policy"
+    },
+    {
+      "id": "REQ-CPP-005",
+      "title": "Source Profile approval and readback precede intake",
+      "normative_anchor": "normative/core-processing-policy-contract.md#req-cpp-005-source-profile-approval-and-readback-precede-intake",
+      "decision_urls": ["https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"],
+      "canonical_terms": ["Source Profile", "Capture Source", "Capture Adapter", "Capture Candidate", "Capture Intake", "Processing Policy"],
+      "acceptance_gate": "Every intake decision follows nondelegated vault-owner approval and exact digest readback of all Source Profile bindings; absent, stale, mismatched, revoked, or compatibility-claim-substituted binding denies intake.",
+      "scope": "core-processing-policy"
+    },
+    {
+      "id": "REQ-CPP-006",
+      "title": "Fixtures and machine evidence prove public closure",
+      "normative_anchor": "normative/core-processing-policy-contract.md#req-cpp-006-fixtures-and-machine-evidence-prove-public-closure",
+      "decision_urls": ["https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"],
+      "canonical_terms": ["Conformance Fixture", "Traceability Record", "Processing Policy", "Source Profile", "Specification Package"],
+      "acceptance_gate": "Exactly 50 fixture and result digest bindings prove public inputs, decisions, receipts, filesystem effects, boundaries, stale states, policy pairs, illegal transitions, and recovery without private assertions.",
+      "scope": "core-processing-policy"
+    },
+    {
+      "id": "REQ-CPP-007",
+      "title": "Issue number 8 is not reopened and no production code is added",
+      "normative_anchor": "normative/core-processing-policy-contract.md#req-cpp-007-issue-number-8-is-not-reopened-and-no-production-code-is-added",
+      "decision_urls": ["https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"],
+      "canonical_terms": ["Specification Package", "Conformance Fixture", "mdplace Agent", "Semantic Kernel", "Control Channel", "Vault Mutation Gate", "Capture Adapter", "Intelligence Adapter", "Folder Projection"],
+      "acceptance_gate": "Every REQ-CPP record cites only the exact accepted issue #8 resolution as input_without_reopening and all additions remain specification and conformance artifacts with zero production or vault effects.",
+      "scope": "core-processing-policy"
     }
   ]
 }

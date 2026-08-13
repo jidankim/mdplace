@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:processing-request:v1",
+  "title": "mdplace policy decision request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "request_id", "vault_id", "adapter_id", "consent_binding_id", "policy_binding", "provider_id", "purpose_id", "field_ids", "field_grants", "artifact_kinds", "destination_id", "destination", "credential_ref", "credential_boundary", "payload", "budget", "retry", "attempt_chain", "fallback_position", "capabilities", "semantic_authority", "automation_scope", "redaction_receipt_ids", "redaction_receipt_refs", "retention_fact_ids", "retention_facts", "untrusted_content"],
+  "properties": {
+    "$schema": {"const": "contracts/schemas/processing-request.schema.json"},
+    "schema_id": {"const": "mdplace.processing-request/v1"},
+    "request_id": {"type": "string", "pattern": "^request:[a-z][a-z0-9-]{2,63}$"},
+    "vault_id": {"type": "string", "pattern": "^vault:[a-z][a-z0-9-]{2,63}$"},
+    "adapter_id": {"type": "string", "pattern": "^adapter:[a-z][a-z0-9-]{2,63}$"},
+    "consent_binding_id": {"type": "string", "pattern": "^consent:[a-z][a-z0-9-]{2,63}$"},
+    "policy_binding": {"$ref": "#/$defs/policyRef"},
+    "provider_id": {"type": "string", "pattern": "^provider:[a-z][a-z0-9-]{2,63}$"},
+    "purpose_id": {"type": "string", "pattern": "^purpose:[a-z][a-z0-9-]{2,63}$"},
+    "field_ids": {"$ref": "#/$defs/stringSet"},
+    "field_grants": {"type": "array", "maxItems": 64, "uniqueItems": true, "items": {"$ref": "#/$defs/fieldGrant"}},
+    "artifact_kinds": {"$ref": "#/$defs/stringSet"},
+    "destination_id": {"type": "string", "pattern": "^destination:[a-z][a-z0-9-]{2,63}$"},
+    "destination": {"$ref": "#/$defs/destination"},
+    "credential_ref": {"type": "string", "pattern": "^credential-ref:[a-z][a-z0-9-]{2,63}$"},
+    "credential_boundary": {"$ref": "#/$defs/credentialBoundary"},
+    "payload": {"$ref": "#/$defs/payload"},
+    "budget": {"$ref": "#/$defs/budget"},
+    "retry": {"$ref": "#/$defs/retry"},
+    "attempt_chain": {"type": "array", "minItems": 1, "maxItems": 3, "uniqueItems": true, "items": {"$ref": "#/$defs/attempt"}},
+    "fallback_position": {"type": "integer", "minimum": 0, "maximum": 1},
+    "capabilities": {"type": "array", "maxItems": 1, "uniqueItems": true, "items": {"enum": ["capability:produce-proposal"]}},
+    "semantic_authority": {"$ref": "#/$defs/stringSet"},
+    "automation_scope": {"$ref": "#/$defs/stringSet"},
+    "redaction_receipt_ids": {"$ref": "#/$defs/stringSet"},
+    "redaction_receipt_refs": {"type": "array", "maxItems": 64, "uniqueItems": true, "items": {"$ref": "#/$defs/receiptRef"}},
+    "retention_fact_ids": {"$ref": "#/$defs/stringSet"},
+    "retention_facts": {"type": "array", "maxItems": 32, "uniqueItems": true, "items": {"$ref": "#/$defs/retention"}},
+    "untrusted_content": {"$ref": "#/$defs/untrustedContent"}
+  },
+  "$defs": {
+    "semver": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "stringSet": {"type": "array", "maxItems": 64, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_.:-]{1,95}$"}},
+    "policyRef": {
+      "type": "object", "additionalProperties": false,
+      "required": ["policy_id", "policy_version", "policy_sha256"],
+      "properties": {
+        "policy_id": {"type": "string", "pattern": "^policy:[a-z][a-z0-9-]{2,63}$"},
+        "policy_version": {"$ref": "#/$defs/semver"},
+        "policy_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "fieldGrant": {
+      "type": "object", "additionalProperties": false,
+      "required": ["field_id", "data_class", "disclosure", "redaction_rule_id"],
+      "properties": {
+        "field_id": {"type": "string", "pattern": "^field:[a-z][a-z0-9_.-]{2,63}$"},
+        "data_class": {"type": "string", "pattern": "^data:[a-z][a-z0-9_.-]{2,63}$"},
+        "disclosure": {"enum": ["local_only", "remote"]},
+        "redaction_rule_id": {"type": "string", "pattern": "^redaction:[a-z][a-z0-9-]{2,63}$"}
+      }
+    },
+    "destination": {
+      "type": "object", "additionalProperties": false,
+      "required": ["destination_id", "provider_id", "locality", "endpoint", "retention_fact_id"],
+      "oneOf": [
+        {"properties": {"locality": {"const": "remote"}, "endpoint": {"pattern": "^https://"}}},
+        {"properties": {"locality": {"const": "local"}, "endpoint": {"pattern": "^local://"}}}
+      ],
+      "properties": {
+        "destination_id": {"type": "string", "pattern": "^destination:[a-z][a-z0-9-]{2,63}$"},
+        "provider_id": {"type": "string", "pattern": "^provider:[a-z][a-z0-9-]{2,63}$"},
+        "locality": {"enum": ["local", "remote"]},
+        "endpoint": {"type": "string", "pattern": "^(https|local)://[A-Za-z0-9._~:/?#@!$&'()+,;=%-]{1,512}$"},
+        "retention_fact_id": {"type": "string", "pattern": "^retention:[a-z][a-z0-9-]{2,63}$"}
+      }
+    },
+    "credentialBoundary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["credential_ref", "store", "authentication_method", "provider_id", "purpose_ids"],
+      "properties": {
+        "credential_ref": {"type": "string", "pattern": "^credential-ref:[a-z][a-z0-9-]{2,63}$"},
+        "store": {"const": "os_credential_store"},
+        "authentication_method": {"enum": ["api_key", "delegated_login", "local_process"]},
+        "provider_id": {"type": "string", "pattern": "^provider:[a-z][a-z0-9-]{2,63}$"},
+        "purpose_ids": {"$ref": "#/$defs/stringSet"}
+      }
+    },
+    "payload": {
+      "type": "object", "additionalProperties": false,
+      "required": ["media_type", "bytes", "sha256"],
+      "properties": {
+        "media_type": {"const": "text/markdown"},
+        "bytes": {"type": "string", "maxLength": 10000000},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "receiptRef": {
+      "type": "object", "additionalProperties": false,
+      "required": ["receipt_id", "receipt_sha256"],
+      "properties": {
+        "receipt_id": {"type": "string", "pattern": "^redaction-receipt:[a-z][a-z0-9-]{2,63}$"},
+        "receipt_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "retention": {
+      "type": "object", "additionalProperties": false,
+      "required": ["retention_fact_id", "destination_id", "status", "max_days", "risk_acknowledged", "data_use", "region", "subprocessors"],
+      "oneOf": [
+        {"properties": {"status": {"const": "known"}, "data_use": {"const": "request_only"}}},
+        {"properties": {"status": {"const": "known"}, "data_use": {"const": "provider_training"}, "risk_acknowledged": {"const": true}}},
+        {"properties": {"status": {"const": "known"}, "data_use": {"const": "unknown"}, "risk_acknowledged": {"const": true}}},
+        {"properties": {"status": {"const": "unknown"}, "risk_acknowledged": {"const": true}}}
+      ],
+      "properties": {
+        "retention_fact_id": {"type": "string", "pattern": "^retention:[a-z][a-z0-9-]{2,63}$"},
+        "destination_id": {"type": "string", "pattern": "^destination:[a-z][a-z0-9-]{2,63}$"},
+        "status": {"enum": ["known", "unknown"]},
+        "max_days": {"type": "integer", "minimum": 0, "maximum": 36500},
+        "risk_acknowledged": {"type": "boolean"},
+        "data_use": {"enum": ["request_only", "provider_training", "unknown"]},
+        "region": {"type": "string", "pattern": "^(local|global|[A-Z]{2})$"},
+        "subprocessors": {"type": "array", "maxItems": 16, "uniqueItems": true, "items": {"type": "string", "pattern": "^(none|unknown|provider:[a-z][a-z0-9-]{2,63})$"}}
+      }
+    },
+    "budget": {
+      "type": "object", "additionalProperties": false,
+      "required": ["input_bytes", "output_bytes", "runtime_ms", "cost_microunits"],
+      "properties": {
+        "input_bytes": {"type": "integer", "minimum": 0, "maximum": 10000000},
+        "output_bytes": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "runtime_ms": {"type": "integer", "minimum": 0, "maximum": 3600000},
+        "cost_microunits": {"type": "integer", "minimum": 0, "maximum": 1000000000}
+      }
+    },
+    "retry": {
+      "type": "object", "additionalProperties": false,
+      "required": ["attempts", "input_bytes", "output_bytes", "elapsed_ms", "cumulative_cost_microunits"],
+      "properties": {
+        "attempts": {"type": "integer", "minimum": 0, "maximum": 1},
+        "input_bytes": {"type": "integer", "minimum": 0, "maximum": 10000000},
+        "output_bytes": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "elapsed_ms": {"type": "integer", "minimum": 0, "maximum": 3600000},
+        "cumulative_cost_microunits": {"type": "integer", "minimum": 0, "maximum": 1000000000}
+      }
+    },
+    "attempt": {
+      "type": "object", "additionalProperties": false,
+      "required": ["sequence", "adapter_id", "consent_binding_id", "fallback_position", "outcome", "receipt_id", "receipt_sha256"],
+      "properties": {
+        "sequence": {"type": "integer", "minimum": 0, "maximum": 2},
+        "adapter_id": {"type": "string", "pattern": "^adapter:[a-z][a-z0-9-]{2,63}$"},
+        "consent_binding_id": {"type": "string", "pattern": "^consent:[a-z][a-z0-9-]{2,63}$"},
+        "fallback_position": {"type": "integer", "minimum": 0, "maximum": 1},
+        "outcome": {"enum": ["safe_transient_failure", "pending"]},
+        "receipt_id": {"type": "string", "pattern": "^attempt-receipt:[a-z][a-z0-9-]{2,63}$"},
+        "receipt_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "untrustedContent": {
+      "type": "object", "additionalProperties": false,
+      "required": ["present", "requested_actions"],
+      "properties": {
+        "present": {"type": "boolean"},
+        "requested_actions": {"$ref": "#/$defs/stringSet"}
+      }
+    }
+  }
+}

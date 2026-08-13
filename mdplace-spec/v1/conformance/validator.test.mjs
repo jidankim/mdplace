@@ -14,3 +14,5 @@ import './validator-semantic-kernel-cases.mjs';
 import './validator-semantic-kernel-boundary-cases.mjs';
 import './validator-semantic-kernel-review-cases.mjs';
 import './validator-coderabbit-review-cases.mjs';
+import './validator-processing-policy-cases.mjs';
+import './validator-processing-policy-boundary-cases.mjs';

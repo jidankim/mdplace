@@ -21,6 +21,10 @@ export async function checkSchemaInstances(packageRoot, conformance) {
     ['contracts/verdicts/validator-verdicts.json', 'contracts/schemas/verdict-table.schema.json'],
     ['contracts/semantic-operation-kinds.json', 'contracts/schemas/semantic-operation-kind-registry.schema.json'],
     ['contracts/transitions/semantic-kernel-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
+    ['contracts/processing-policy-rules.json', 'contracts/schemas/processing-policy-rules.schema.json'],
+    ['contracts/processing-policy-trust-store.json', 'contracts/schemas/processing-policy-trust-store.schema.json'],
+    ['contracts/transitions/processing-policy-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
+    ['contracts/transitions/source-profile-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
     ['conformance/manifest.yaml', 'contracts/schemas/conformance-manifest.schema.json'],
     ['traceability.yaml', 'contracts/schemas/traceability.schema.json'],
     ['claims-and-evidence.yaml', 'contracts/schemas/claims-and-evidence.schema.json'],
@@ -28,6 +32,7 @@ export async function checkSchemaInstances(packageRoot, conformance) {
     ['conformance/evidence/envelopes/validator-evidence-reference.json', 'contracts/schemas/evidence-envelope.schema.json'],
     ['conformance/evidence/evidence-recovery-report.json', 'contracts/schemas/evidence-recovery-report.schema.json'],
     ['conformance/evidence/semantic-kernel-recovery-report.json', 'contracts/schemas/semantic-kernel-recovery-report.schema.json'],
+    ['conformance/evidence/core-processing-policy-recovery-report.json', 'contracts/schemas/core-processing-policy-recovery-report.schema.json'],
   ];
   const fixtureEntries = Array.isArray(conformance?.fixtures) ? conformance.fixtures : [];
   for (const entry of fixtureEntries) {

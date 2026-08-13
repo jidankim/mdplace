@@ -48,7 +48,7 @@
       "required": ["code", "state_effect", "emitted_records", "filesystem_effects"],
       "properties": {
         "code": {"type": "string", "pattern": "^[a-z][a-z0-9_.]*$"},
-        "state_effect": {"const": "unchanged"},
+        "state_effect": {"enum": ["unchanged", "recovery_required"]},
         "emitted_records": {"$ref": "#/$defs/stringList"},
         "filesystem_effects": {"$ref": "#/$defs/stringList"}
       }

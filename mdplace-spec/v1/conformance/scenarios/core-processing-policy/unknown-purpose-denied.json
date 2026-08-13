@@ -1,0 +1,569 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-CPP-NEG-002",
+  "category": "negative",
+  "requirement_ids": [
+    "REQ-CPP-001",
+    "REQ-CPP-002",
+    "REQ-CPP-003",
+    "REQ-CPP-004",
+    "REQ-CPP-005",
+    "REQ-CPP-006",
+    "REQ-CPP-007"
+  ],
+  "subject": {
+    "kind": "processing_policy",
+    "schema": "contracts/schemas/processing-policy-scenario.schema.json",
+    "document": {
+      "scenario_id": "CPP-010",
+      "operation": "processing_decision",
+      "policy": {
+        "$schema": "contracts/schemas/processing-policy.schema.json",
+        "schema_id": "mdplace.processing-policy/v1",
+        "policy_id": "policy:core-processing",
+        "policy_version": "1.0.0",
+        "vault_id": "vault:fixture-vault",
+        "parent_policy": null,
+        "lifecycle_state": "active",
+        "grants": {
+          "provider_ids": [
+            "provider:remote-alpha",
+            "provider:local-alpha"
+          ],
+          "purpose_ids": [
+            "purpose:placement",
+            "purpose:taxonomy"
+          ],
+          "fields": [
+            {
+              "field_id": "field:source-url",
+              "data_class": "data:source-url",
+              "disclosure": "remote",
+              "redaction_rule_id": "redaction:sanitize-url"
+            },
+            {
+              "field_id": "field:title",
+              "data_class": "data:title",
+              "disclosure": "remote",
+              "redaction_rule_id": "redaction:remove-identifiers"
+            },
+            {
+              "field_id": "field:source-content",
+              "data_class": "data:source-content",
+              "disclosure": "remote",
+              "redaction_rule_id": "redaction:remove-secrets"
+            },
+            {
+              "field_id": "field:filesystem-path",
+              "data_class": "data:filesystem-path",
+              "disclosure": "local_only",
+              "redaction_rule_id": "redaction:mask-path"
+            }
+          ],
+          "artifact_kinds": [
+            "artifact:intelligence-proposal",
+            "artifact:raw-provider-response"
+          ],
+          "destinations": [
+            {
+              "destination_id": "destination:remote-alpha",
+              "provider_id": "provider:remote-alpha",
+              "endpoint": "https://api.remote-alpha.test/v1/process",
+              "retention_fact_id": "retention:remote-alpha",
+              "locality": "remote"
+            },
+            {
+              "destination_id": "destination:local-alpha",
+              "provider_id": "provider:local-alpha",
+              "endpoint": "local://local-alpha",
+              "retention_fact_id": "retention:local-alpha",
+              "locality": "local"
+            }
+          ],
+          "credential_boundaries": [
+            {
+              "credential_ref": "credential-ref:remote-alpha",
+              "store": "os_credential_store",
+              "provider_id": "provider:remote-alpha",
+              "purpose_ids": [
+                "purpose:placement",
+                "purpose:taxonomy"
+              ],
+              "authentication_method": "api_key"
+            },
+            {
+              "credential_ref": "credential-ref:local-alpha",
+              "store": "os_credential_store",
+              "provider_id": "provider:local-alpha",
+              "purpose_ids": [
+                "purpose:placement"
+              ],
+              "authentication_method": "local_process"
+            }
+          ],
+          "budget": {
+            "input_bytes": 100000,
+            "output_bytes": 10000,
+            "runtime_ms": 30000,
+            "cost_microunits": 500000
+          },
+          "retry": {
+            "attempts": 1,
+            "elapsed_ms": 60000,
+            "cumulative_cost_microunits": 750000,
+            "input_bytes": 100000,
+            "output_bytes": 10000
+          },
+          "fallback_chain": [
+            {
+              "position": 1,
+              "provider_id": "provider:local-alpha",
+              "purpose_id": "purpose:placement",
+              "destination_id": "destination:local-alpha",
+              "credential_ref": "credential-ref:local-alpha",
+              "adapter_id": "adapter:local-alpha",
+              "consent_binding_id": "consent:fallback"
+            }
+          ],
+          "capabilities": [
+            "capability:produce-proposal"
+          ],
+          "semantic_authority": [
+            "produce_advisory_evidence"
+          ],
+          "automation_scope": [
+            "initial_existing_category_placement",
+            "new_leaf_promotion",
+            "alias_promotion"
+          ],
+          "adapter_ids": [
+            "adapter:remote-alpha",
+            "adapter:local-alpha"
+          ],
+          "consent_bindings": [
+            {
+              "consent_binding_id": "consent:primary",
+              "adapter_id": "adapter:remote-alpha",
+              "provider_id": "provider:remote-alpha",
+              "purpose_id": "purpose:placement",
+              "field_ids": [
+                "field:source-url",
+                "field:title",
+                "field:source-content"
+              ],
+              "artifact_kinds": [
+                "artifact:intelligence-proposal",
+                "artifact:raw-provider-response"
+              ],
+              "destination_id": "destination:remote-alpha",
+              "credential_ref": "credential-ref:remote-alpha",
+              "retention_fact_id": "retention:remote-alpha"
+            },
+            {
+              "consent_binding_id": "consent:fallback",
+              "adapter_id": "adapter:local-alpha",
+              "provider_id": "provider:local-alpha",
+              "purpose_id": "purpose:placement",
+              "field_ids": [
+                "field:source-url",
+                "field:title",
+                "field:source-content",
+                "field:filesystem-path"
+              ],
+              "artifact_kinds": [
+                "artifact:intelligence-proposal",
+                "artifact:raw-provider-response"
+              ],
+              "destination_id": "destination:local-alpha",
+              "credential_ref": "credential-ref:local-alpha",
+              "retention_fact_id": "retention:local-alpha"
+            }
+          ]
+        },
+        "redaction_obligations": [
+          {
+            "redaction_rule_id": "redaction:sanitize-url",
+            "method": "remove",
+            "failure_mode": "deny"
+          },
+          {
+            "redaction_rule_id": "redaction:remove-identifiers",
+            "method": "mask",
+            "failure_mode": "deny"
+          },
+          {
+            "redaction_rule_id": "redaction:remove-secrets",
+            "method": "remove",
+            "failure_mode": "deny"
+          },
+          {
+            "redaction_rule_id": "redaction:mask-path",
+            "method": "mask",
+            "failure_mode": "deny"
+          }
+        ],
+        "retention_facts": [
+          {
+            "retention_fact_id": "retention:remote-alpha",
+            "destination_id": "destination:remote-alpha",
+            "status": "known",
+            "max_days": 30,
+            "risk_acknowledged": true,
+            "data_use": "request_only",
+            "region": "global",
+            "subprocessors": [
+              "none"
+            ]
+          },
+          {
+            "retention_fact_id": "retention:local-alpha",
+            "destination_id": "destination:local-alpha",
+            "status": "known",
+            "max_days": 0,
+            "risk_acknowledged": true,
+            "data_use": "request_only",
+            "region": "local",
+            "subprocessors": [
+              "none"
+            ]
+          }
+        ],
+        "approval": {
+          "approved": true,
+          "principal_id": "person:vault-owner",
+          "role": "vault_owner",
+          "delegated": false,
+          "receipt_id": "approval:policy-core",
+          "policy_payload_sha256": "66b00a230a76265cb12e0f4797a3c875c325ab7f58048a28474dfca042437c75",
+          "receipt_sha256": "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+        }
+      },
+      "source_profile": null,
+      "request": {
+        "$schema": "contracts/schemas/processing-request.schema.json",
+        "schema_id": "mdplace.processing-request/v1",
+        "request_id": "request:cpp-010",
+        "policy_binding": {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766"
+        },
+        "provider_id": "provider:remote-alpha",
+        "purpose_id": "purpose:unknown",
+        "field_ids": [
+          "field:source-url",
+          "field:title",
+          "field:source-content"
+        ],
+        "artifact_kinds": [
+          "artifact:intelligence-proposal"
+        ],
+        "destination_id": "destination:remote-alpha",
+        "credential_ref": "credential-ref:remote-alpha",
+        "budget": {
+          "input_bytes": 50000,
+          "output_bytes": 5000,
+          "runtime_ms": 15000,
+          "cost_microunits": 250000
+        },
+        "retry": {
+          "attempts": 1,
+          "elapsed_ms": 30000,
+          "cumulative_cost_microunits": 250000,
+          "input_bytes": 50000,
+          "output_bytes": 5000
+        },
+        "fallback_position": 0,
+        "capabilities": [
+          "capability:produce-proposal"
+        ],
+        "semantic_authority": [
+          "produce_advisory_evidence"
+        ],
+        "automation_scope": [
+          "initial_existing_category_placement"
+        ],
+        "redaction_receipt_ids": [
+          "redaction:sanitize-url",
+          "redaction:remove-identifiers",
+          "redaction:remove-secrets"
+        ],
+        "retention_fact_ids": [
+          "retention:remote-alpha"
+        ],
+        "untrusted_content": {
+          "present": true,
+          "requested_actions": []
+        },
+        "vault_id": "vault:fixture-vault",
+        "adapter_id": "adapter:remote-alpha",
+        "field_grants": [
+          {
+            "field_id": "field:source-url",
+            "data_class": "data:source-url",
+            "disclosure": "remote",
+            "redaction_rule_id": "redaction:sanitize-url"
+          },
+          {
+            "field_id": "field:title",
+            "data_class": "data:title",
+            "disclosure": "remote",
+            "redaction_rule_id": "redaction:remove-identifiers"
+          },
+          {
+            "field_id": "field:source-content",
+            "data_class": "data:source-content",
+            "disclosure": "remote",
+            "redaction_rule_id": "redaction:remove-secrets"
+          }
+        ],
+        "destination": {
+          "destination_id": "destination:remote-alpha",
+          "provider_id": "provider:remote-alpha",
+          "endpoint": "https://api.remote-alpha.test/v1/process",
+          "retention_fact_id": "retention:remote-alpha",
+          "locality": "remote"
+        },
+        "credential_boundary": {
+          "credential_ref": "credential-ref:remote-alpha",
+          "store": "os_credential_store",
+          "provider_id": "provider:remote-alpha",
+          "purpose_ids": [
+            "purpose:placement",
+            "purpose:taxonomy"
+          ],
+          "authentication_method": "api_key"
+        },
+        "payload": {
+          "media_type": "text/markdown",
+          "bytes": "# Fixture payload\n",
+          "sha256": "8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c"
+        },
+        "retention_facts": [
+          {
+            "retention_fact_id": "retention:remote-alpha",
+            "destination_id": "destination:remote-alpha",
+            "status": "known",
+            "max_days": 30,
+            "risk_acknowledged": true,
+            "data_use": "request_only",
+            "region": "global",
+            "subprocessors": [
+              "none"
+            ]
+          }
+        ],
+        "redaction_receipt_refs": [
+          {
+            "receipt_id": "redaction-receipt:source-url",
+            "receipt_sha256": "34710d2095e0823be7892893f2911327d3a784739280b31dbd0068952d997b5c"
+          },
+          {
+            "receipt_id": "redaction-receipt:title",
+            "receipt_sha256": "6aaaf881dda453b65686e89b651afa09c331592b0196d303ad14649d522e59b6"
+          },
+          {
+            "receipt_id": "redaction-receipt:source-content",
+            "receipt_sha256": "ab2922aa0d78db66fab047db39c6ca374e3cab8188868cd389d0836b3ade6876"
+          }
+        ],
+        "consent_binding_id": "consent:primary",
+        "attempt_chain": [
+          {
+            "sequence": 0,
+            "adapter_id": "adapter:remote-alpha",
+            "consent_binding_id": "consent:primary",
+            "fallback_position": 0,
+            "outcome": "safe_transient_failure",
+            "receipt_id": "attempt-receipt:cpp-010-0",
+            "receipt_sha256": "71f7a54552efeccb3e92a6b89c4b0971281dd78c133e4935f4e6736631627d31"
+          },
+          {
+            "sequence": 1,
+            "adapter_id": "adapter:remote-alpha",
+            "consent_binding_id": "consent:primary",
+            "fallback_position": 0,
+            "outcome": "pending",
+            "receipt_id": "attempt-receipt:cpp-010-1",
+            "receipt_sha256": "73837e10e3f22804a84d8101e3be82f2246ba464c3e983c9f3898474ba2057f7"
+          }
+        ]
+      },
+      "descendant_policy": null,
+      "observed_binding": null,
+      "compatibility_claim_ref": null,
+      "lifecycle": {
+        "policy_state": "active",
+        "source_profile_state": "unbound"
+      },
+      "recovery": null,
+      "redaction_receipts": [
+        {
+          "$schema": "contracts/schemas/redaction-receipt.schema.json",
+          "schema_id": "mdplace.redaction-receipt/v1",
+          "receipt_id": "redaction-receipt:source-url",
+          "request_id": "request:cpp-010",
+          "policy_ref": {
+            "policy_id": "policy:core-processing",
+            "policy_version": "1.0.0",
+            "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766"
+          },
+          "payload_sha256": "8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c",
+          "field_grant": {
+            "field_id": "field:source-url",
+            "data_class": "data:source-url",
+            "disclosure": "remote",
+            "redaction_rule_id": "redaction:sanitize-url"
+          },
+          "outcome": "applied",
+          "issuer": "mdplace_local_redactor",
+          "receipt_sha256": "34710d2095e0823be7892893f2911327d3a784739280b31dbd0068952d997b5c",
+          "identity_assurance": "trusted_local_redactor",
+          "verification_method": "local_redaction_digest_readback"
+        },
+        {
+          "$schema": "contracts/schemas/redaction-receipt.schema.json",
+          "schema_id": "mdplace.redaction-receipt/v1",
+          "receipt_id": "redaction-receipt:title",
+          "request_id": "request:cpp-010",
+          "policy_ref": {
+            "policy_id": "policy:core-processing",
+            "policy_version": "1.0.0",
+            "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766"
+          },
+          "payload_sha256": "8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c",
+          "field_grant": {
+            "field_id": "field:title",
+            "data_class": "data:title",
+            "disclosure": "remote",
+            "redaction_rule_id": "redaction:remove-identifiers"
+          },
+          "outcome": "applied",
+          "issuer": "mdplace_local_redactor",
+          "receipt_sha256": "6aaaf881dda453b65686e89b651afa09c331592b0196d303ad14649d522e59b6",
+          "identity_assurance": "trusted_local_redactor",
+          "verification_method": "local_redaction_digest_readback"
+        },
+        {
+          "$schema": "contracts/schemas/redaction-receipt.schema.json",
+          "schema_id": "mdplace.redaction-receipt/v1",
+          "receipt_id": "redaction-receipt:source-content",
+          "request_id": "request:cpp-010",
+          "policy_ref": {
+            "policy_id": "policy:core-processing",
+            "policy_version": "1.0.0",
+            "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766"
+          },
+          "payload_sha256": "8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c",
+          "field_grant": {
+            "field_id": "field:source-content",
+            "data_class": "data:source-content",
+            "disclosure": "remote",
+            "redaction_rule_id": "redaction:remove-secrets"
+          },
+          "outcome": "applied",
+          "issuer": "mdplace_local_redactor",
+          "receipt_sha256": "ab2922aa0d78db66fab047db39c6ca374e3cab8188868cd389d0836b3ade6876",
+          "identity_assurance": "trusted_local_redactor",
+          "verification_method": "local_redaction_digest_readback"
+        }
+      ],
+      "approval_receipts": [
+        {
+          "$schema": "contracts/schemas/approval-receipt.schema.json",
+          "schema_id": "mdplace.approval-receipt/v1",
+          "receipt_id": "approval:policy-core",
+          "subject_kind": "processing_policy",
+          "subject_id": "policy:core-processing",
+          "subject_version": "1.0.0",
+          "vault_id": "vault:fixture-vault",
+          "subject_payload_sha256": "66b00a230a76265cb12e0f4797a3c875c325ab7f58048a28474dfca042437c75",
+          "approved": true,
+          "principal_id": "person:vault-owner",
+          "role": "vault_owner",
+          "delegated": false,
+          "receipt_sha256": "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1",
+          "identity_assurance": "canonical_authenticated_human",
+          "verification_method": "authenticated_foreground_approval"
+        }
+      ],
+      "lifecycle_denials": [],
+      "recovery_denials": [],
+      "attempt_receipts": [
+        {
+          "$schema": "contracts/schemas/processing-attempt-receipt.schema.json",
+          "schema_id": "mdplace.processing-attempt-receipt/v1",
+          "receipt_id": "attempt-receipt:cpp-010-0",
+          "request_id": "request:cpp-010",
+          "sequence": 0,
+          "adapter_id": "adapter:remote-alpha",
+          "consent_binding_id": "consent:primary",
+          "fallback_position": 0,
+          "outcome": "safe_transient_failure",
+          "accounting_kind": "measured",
+          "payload_sha256": "8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c",
+          "usage": {
+            "input_bytes": 25000,
+            "output_bytes": 2500,
+            "elapsed_ms": 15000,
+            "cost_microunits": 125000
+          },
+          "issuer": "mdplace_local_attempt_accountant",
+          "identity_assurance": "trusted_local_accountant",
+          "verification_method": "manifest_bound_attempt_accounting_readback",
+          "receipt_sha256": "71f7a54552efeccb3e92a6b89c4b0971281dd78c133e4935f4e6736631627d31",
+          "request_sha256": "bbe88a1e2e1cc0a2318b8c6c1183e968078d7adf0723d6eba3e750ef723c275d"
+        },
+        {
+          "$schema": "contracts/schemas/processing-attempt-receipt.schema.json",
+          "schema_id": "mdplace.processing-attempt-receipt/v1",
+          "receipt_id": "attempt-receipt:cpp-010-1",
+          "request_id": "request:cpp-010",
+          "sequence": 1,
+          "adapter_id": "adapter:remote-alpha",
+          "consent_binding_id": "consent:primary",
+          "fallback_position": 0,
+          "outcome": "pending",
+          "accounting_kind": "reserved",
+          "payload_sha256": "8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c",
+          "usage": {
+            "input_bytes": 25000,
+            "output_bytes": 2500,
+            "elapsed_ms": 15000,
+            "cost_microunits": 125000
+          },
+          "issuer": "mdplace_local_attempt_accountant",
+          "identity_assurance": "trusted_local_accountant",
+          "verification_method": "manifest_bound_attempt_accounting_readback",
+          "receipt_sha256": "73837e10e3f22804a84d8101e3be82f2246ba464c3e983c9f3898474ba2057f7",
+          "request_sha256": "bbe88a1e2e1cc0a2318b8c6c1183e968078d7adf0723d6eba3e750ef723c275d"
+        }
+      ]
+    }
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": [
+      "policy.purpose_denied"
+    ],
+    "outputs": [
+      "processing denied"
+    ],
+    "operations": [
+      "validate processing request",
+      "apply default-deny Processing Policy"
+    ],
+    "receipts": [
+      "{\"code\":\"policy.purpose_denied\",\"consent_binding_id\":\"consent:primary\",\"consent_binding_sha256\":\"11a22d43c5ca437235ebb8b683c05e89404565ffdbcc866a259e80cec31f0f51\",\"decision\":\"denied\",\"network_effect\":\"none\",\"operation\":\"processing_decision\",\"payload_sha256\":\"8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c\",\"policy_ref\":{\"policy_id\":\"policy:core-processing\",\"policy_sha256\":\"27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766\",\"policy_version\":\"1.0.0\"},\"receipt_id\":\"receipt:cpp-010\",\"receipt_sha256\":\"1dc9f2df282489075277828124dd7225b6713ecfb8d3a239aab9a284c954ce9c\",\"request_id\":\"request:cpp-010\",\"request_sha256\":\"c91667fbcb906045eb19cc39dd8f14bf5e7b261e1f27edec82343e56942fb5f7\",\"scenario_id\":\"CPP-010\",\"schema_id\":\"mdplace.processing-policy-receipt/v1\",\"source_profile_ref\":null}"
+    ],
+    "filesystem_effects": [
+      "none"
+    ],
+    "network_effects": [
+      "none"
+    ],
+    "terminal_state": "denied",
+    "illegal_transition": false
+  }
+}

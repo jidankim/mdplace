@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:processing-policy-rules:v1",
+  "title": "mdplace Processing Policy rule registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "default_deny_precedence", "narrowing_dimensions", "source_profile_bindings"],
+  "properties": {
+    "$schema": {"const": "schemas/processing-policy-rules.schema.json"},
+    "schema_id": {"const": "mdplace.processing-policy-rules/v1"},
+    "default_deny_precedence": {"type": "array", "minItems": 19, "maxItems": 19, "uniqueItems": true, "items": {"$ref": "#/$defs/denial"}},
+    "narrowing_dimensions": {"type": "array", "minItems": 14, "maxItems": 14, "uniqueItems": true, "items": {"$ref": "#/$defs/narrowing"}},
+    "source_profile_bindings": {"type": "array", "minItems": 11, "maxItems": 11, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]{2,95}$"}}
+  },
+  "$defs": {
+    "denial": {
+      "type": "object", "additionalProperties": false,
+      "required": ["order", "condition", "code"],
+      "properties": {
+        "order": {"type": "integer", "minimum": 1, "maximum": 19},
+        "condition": {"type": "string", "pattern": "^[a-z][a-z0-9_]{2,63}$"},
+        "code": {"type": "string", "pattern": "^[a-z][a-z0-9_.]{2,95}$"}
+      }
+    },
+    "narrowing": {
+      "type": "object", "additionalProperties": false,
+      "required": ["dimension", "rule"],
+      "properties": {
+        "dimension": {"enum": ["provider", "purpose", "disclosure", "artifact", "destination", "credential_boundary", "budget", "retry", "fallback", "capability", "semantic_authority", "automation_scope", "redaction", "retention"]},
+        "rule": {"type": "string", "pattern": "^[a-z][a-z0-9_]{2,95}$"}
+      }
+    }
+  }
+}

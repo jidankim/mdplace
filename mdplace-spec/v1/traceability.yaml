@@ -15,6 +15,12 @@
       "url": "https://github.com/jidankim/mdplace/issues/2#issuecomment-5012541174",
       "status": "accepted",
       "use": "input_without_reopening"
+    },
+    {
+      "decision_id": "DEC-008",
+      "url": "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093",
+      "status": "accepted",
+      "use": "input_without_reopening"
     }
   ],
   "records": [
@@ -344,6 +350,90 @@
       "acceptance_gate": "Only specification, schemas, registries, fixtures, conformance-only observers, traceability, and evidence are added; no production mdplace boundary or vault mutation is implemented or invoked.",
       "scope": "semantic-kernel",
       "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/semantic-kernel-recovery-report.json"]
+    },
+    {
+      "requirement_id": "REQ-CPP-001",
+      "decision_ids": ["DEC-008"],
+      "canonical_terms": ["Processing Policy", "Source Profile", "Capture Source", "Capture Adapter", "Capture Candidate", "Capture Intake", "Intelligence Adapter", "Specification Package"],
+      "normative_anchors": ["normative/core-processing-policy-contract.md#req-cpp-001-stable-requirements-use-canonical-policy-vocabulary"],
+      "schema_or_transition_refs": ["contracts/schemas/processing-policy.schema.json", "contracts/schemas/source-profile.schema.json"],
+      "positive_fixture_ids": ["FIX-CPP-POS-001", "FIX-CPP-POS-002"],
+      "negative_fixture_ids": ["FIX-CPP-NEG-001", "FIX-CPP-STATE-001"],
+      "acceptance_gate": "Stable REQ-CPP identifiers use only canonical vocabulary and distinguish Processing Policy permission, Source Profile approval, compatibility evidence, and semantic authority.",
+      "scope": "core-processing-policy",
+      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/core-processing-policy-recovery-report.json"]
+    },
+    {
+      "requirement_id": "REQ-CPP-002",
+      "decision_ids": ["DEC-008"],
+      "canonical_terms": ["Processing Policy", "Source Profile", "Capture Source", "Capture Adapter", "Capture Candidate", "Placement Automation Permission", "Automation Grant"],
+      "normative_anchors": ["normative/core-processing-policy-contract.md#req-cpp-002-processing-policy-and-source-profile-contracts-are-closed-and-complete"],
+      "schema_or_transition_refs": ["contracts/processing-policy-rules.json", "contracts/schemas/processing-policy.schema.json", "contracts/schemas/source-profile.schema.json", "contracts/schemas/processing-request.schema.json", "contracts/schemas/processing-policy-receipt.schema.json", "contracts/schemas/processing-policy-scenario.schema.json", "contracts/transitions/processing-policy-lifecycle.json", "contracts/transitions/source-profile-lifecycle.json"],
+      "positive_fixture_ids": ["FIX-CPP-POS-001", "FIX-CPP-POS-002", "FIX-CPP-POS-004"],
+      "negative_fixture_ids": ["FIX-CPP-NEG-014", "FIX-CPP-ILLEGAL-001", "FIX-CPP-AUTH-005"],
+      "acceptance_gate": "Closed policy, Source Profile, request, rule, receipt, scenario, lifecycle, and recovery contracts enumerate every version, grant, obligation, binding, authority, transition, and failure without ambient defaults.",
+      "scope": "core-processing-policy",
+      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/core-processing-policy-recovery-report.json"]
+    },
+    {
+      "requirement_id": "REQ-CPP-003",
+      "decision_ids": ["DEC-008"],
+      "canonical_terms": ["Processing Policy", "Source Profile", "Capture Intake", "Capture Candidate", "Intelligence Adapter"],
+      "normative_anchors": ["normative/core-processing-policy-contract.md#req-cpp-003-every-ungranted-or-stale-request-is-denied-before-effect"],
+      "schema_or_transition_refs": ["contracts/processing-policy-rules.json", "contracts/schemas/processing-request.schema.json", "contracts/schemas/processing-policy-receipt.schema.json"],
+      "positive_fixture_ids": ["FIX-CPP-BND-001"],
+      "negative_fixture_ids": ["FIX-CPP-NEG-001", "FIX-CPP-NEG-002", "FIX-CPP-NEG-003", "FIX-CPP-NEG-004", "FIX-CPP-NEG-005", "FIX-CPP-NEG-006", "FIX-CPP-NEG-007", "FIX-CPP-NEG-008", "FIX-CPP-NEG-009", "FIX-CPP-NEG-010", "FIX-CPP-NEG-011", "FIX-CPP-NEG-012", "FIX-CPP-NEG-013", "FIX-CPP-NEG-014", "FIX-CPP-AUTH-001", "FIX-CPP-AUTH-002", "FIX-CPP-AUTH-003", "FIX-CPP-AUTH-005"],
+      "acceptance_gate": "All absent, unknown, unpermitted, over-budget, over-retry, over-fallback, unredacted, retention-unproven, stale, hostile, or authority-widening requests deny before transmission, semantic operation, or filesystem effect.",
+      "scope": "core-processing-policy",
+      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/core-processing-policy-recovery-report.json"]
+    },
+    {
+      "requirement_id": "REQ-CPP-004",
+      "decision_ids": ["DEC-008"],
+      "canonical_terms": ["Processing Policy", "Placement Automation Permission", "Automation Grant", "Intelligence Adapter"],
+      "normative_anchors": ["normative/core-processing-policy-contract.md#req-cpp-004-descendant-policies-narrow-monotonically"],
+      "schema_or_transition_refs": ["contracts/processing-policy-rules.json", "contracts/schemas/processing-policy.schema.json", "contracts/schemas/processing-policy-scenario.schema.json"],
+      "positive_fixture_ids": ["FIX-CPP-POS-004", "FIX-CPP-POS-005"],
+      "negative_fixture_ids": ["FIX-CPP-PAIR_PROVIDER-001", "FIX-CPP-PAIR_PURPOSE-001", "FIX-CPP-PAIR_DISCLOSURE-001", "FIX-CPP-PAIR_ARTIFACT-001", "FIX-CPP-PAIR_DESTINATION-001", "FIX-CPP-PAIR_CREDENTIAL-001", "FIX-CPP-PAIR_BUDGET-001", "FIX-CPP-PAIR_RETRY-001", "FIX-CPP-PAIR_FALLBACK-001", "FIX-CPP-PAIR_CAPABILITY-001", "FIX-CPP-PAIR_SEMANTIC-001", "FIX-CPP-PAIR_AUTOMATION-001", "FIX-CPP-PAIR_REDACTION-001", "FIX-CPP-PAIR_RETENTION-001"],
+      "acceptance_gate": "Canary and policy-pair fixtures prove exact parent binding, preservation or reduction of every permission dimension, and deterministic denial of each attempted widening.",
+      "scope": "core-processing-policy",
+      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/core-processing-policy-recovery-report.json"]
+    },
+    {
+      "requirement_id": "REQ-CPP-005",
+      "decision_ids": ["DEC-008"],
+      "canonical_terms": ["Source Profile", "Capture Source", "Capture Adapter", "Capture Candidate", "Capture Intake", "Processing Policy"],
+      "normative_anchors": ["normative/core-processing-policy-contract.md#req-cpp-005-source-profile-approval-and-readback-precede-intake"],
+      "schema_or_transition_refs": ["contracts/schemas/source-profile.schema.json", "contracts/schemas/processing-policy-scenario.schema.json", "contracts/transitions/source-profile-lifecycle.json"],
+      "positive_fixture_ids": ["FIX-CPP-POS-002"],
+      "negative_fixture_ids": ["FIX-CPP-ILLEGAL-001", "FIX-CPP-STATE-004", "FIX-CPP-STATE-005", "FIX-CPP-STATE-006", "FIX-CPP-STATE-007", "FIX-CPP-STATE-008", "FIX-CPP-STATE-009", "FIX-CPP-STATE-010", "FIX-CPP-AUTH-003"],
+      "acceptance_gate": "Every intake decision follows nondelegated vault-owner approval and exact digest readback of all Source Profile bindings; absent, stale, mismatched, revoked, or compatibility-claim-substituted binding denies intake.",
+      "scope": "core-processing-policy",
+      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/core-processing-policy-recovery-report.json"]
+    },
+    {
+      "requirement_id": "REQ-CPP-006",
+      "decision_ids": ["DEC-008"],
+      "canonical_terms": ["Conformance Fixture", "Traceability Record", "Processing Policy", "Source Profile", "Specification Package"],
+      "normative_anchors": ["normative/core-processing-policy-contract.md#req-cpp-006-fixtures-and-machine-evidence-prove-public-closure"],
+      "schema_or_transition_refs": ["contracts/schemas/conformance-fixture.schema.json", "contracts/schemas/core-processing-policy-recovery-report.schema.json", "contracts/schemas/processing-policy-receipt.schema.json", "contracts/transitions/processing-policy-lifecycle.json", "contracts/transitions/source-profile-lifecycle.json"],
+      "positive_fixture_ids": ["FIX-CPP-POS-001", "FIX-CPP-POS-002", "FIX-CPP-POS-004", "FIX-CPP-POS-005", "FIX-CPP-REC-001", "FIX-CPP-REC-002", "FIX-CPP-REC-003"],
+      "negative_fixture_ids": ["FIX-CPP-NEG-001", "FIX-CPP-STATE-001", "FIX-CPP-AUTH-001", "FIX-CPP-ILLEGAL-001", "FIX-CPP-PAIR_PROVIDER-001", "FIX-CPP-PAIR_REDACTION-001"],
+      "acceptance_gate": "Exactly 50 fixture and result digest bindings prove public inputs, decisions, receipts, filesystem effects, boundaries, stale states, policy pairs, illegal transitions, and recovery without private assertions.",
+      "scope": "core-processing-policy",
+      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/core-processing-policy-recovery-report.json", "conformance/evidence/traceability-report.json"]
+    },
+    {
+      "requirement_id": "REQ-CPP-007",
+      "decision_ids": ["DEC-008"],
+      "canonical_terms": ["Specification Package", "Conformance Fixture", "mdplace Agent", "Semantic Kernel", "Control Channel", "Vault Mutation Gate", "Capture Adapter", "Intelligence Adapter", "Folder Projection"],
+      "normative_anchors": ["normative/core-processing-policy-contract.md#req-cpp-007-issue-number-8-is-not-reopened-and-no-production-code-is-added"],
+      "schema_or_transition_refs": ["contracts/schemas/conformance-fixture.schema.json", "contracts/schemas/processing-policy-scenario.schema.json"],
+      "positive_fixture_ids": ["FIX-CPP-POS-001"],
+      "negative_fixture_ids": ["FIX-CPP-AUTH-001", "FIX-CPP-AUTH-002", "FIX-CPP-AUTH-003", "FIX-CPP-AUTH-005", "FIX-CPP-ILLEGAL-001", "FIX-CPP-PAIR_RETENTION-001"],
+      "acceptance_gate": "Every REQ-CPP record cites only the exact accepted issue #8 resolution as input_without_reopening and all additions remain specification and conformance artifacts with zero production or vault effects.",
+      "scope": "core-processing-policy",
+      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/core-processing-policy-recovery-report.json"]
     }
   ]
 }

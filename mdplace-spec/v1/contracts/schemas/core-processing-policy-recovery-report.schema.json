@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:core-processing-policy-recovery-report:v1",
+  "title": "mdplace Core Processing Policy conformance and recovery evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_id", "package_series", "release_version", "validator_version", "scenario_count", "fixture_bindings", "claims"],
+  "properties": {
+    "schema_id": {"const": "mdplace.core-processing-policy-recovery-report/v1"},
+    "package_series": {"const": "mdplace-spec/v1"},
+    "release_version": {"const": "1.0.0"},
+    "validator_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "scenario_count": {"const": 50},
+    "fixture_bindings": {"type": "array", "minItems": 50, "maxItems": 50, "uniqueItems": true, "items": {"$ref": "#/$defs/binding"}},
+    "claims": {"$ref": "#/$defs/claims"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "fixtureIds": {"type": "array", "minItems": 1, "maxItems": 50, "uniqueItems": true, "items": {"type": "string", "pattern": "^FIX-CPP-[A-Z][A-Z0-9_]{1,31}-[0-9]{3}$"}},
+    "binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["fixture_id", "path", "fixture_sha256", "observable_result_sha256"],
+      "properties": {
+        "fixture_id": {"type": "string", "pattern": "^FIX-CPP-[A-Z][A-Z0-9_]{1,31}-[0-9]{3}$"},
+        "path": {"type": "string", "pattern": "^scenarios/core-processing-policy/[a-z0-9][a-z0-9-]*\\.json$"},
+        "fixture_sha256": {"$ref": "#/$defs/digest"},
+        "observable_result_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "narrowingClaims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["provider", "purpose", "disclosure", "artifact", "destination", "credential_boundary", "budget", "retry", "fallback", "capability", "semantic_authority", "automation_scope", "redaction", "retention"],
+      "properties": {
+        "provider": {"const": true}, "purpose": {"const": true}, "disclosure": {"const": true},
+        "artifact": {"const": true}, "destination": {"const": true}, "credential_boundary": {"const": true},
+        "budget": {"const": true}, "retry": {"const": true}, "fallback": {"const": true},
+        "capability": {"const": true}, "semantic_authority": {"const": true}, "automation_scope": {"const": true},
+        "redaction": {"const": true}, "retention": {"const": true}
+      }
+    },
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["default_deny_fixture_ids", "policy_pair_fixture_ids", "source_profile_fixture_ids", "recovery_fixture_ids", "narrowing_dimensions"],
+      "properties": {
+        "default_deny_fixture_ids": {"$ref": "#/$defs/fixtureIds"},
+        "policy_pair_fixture_ids": {"$ref": "#/$defs/fixtureIds"},
+        "source_profile_fixture_ids": {"$ref": "#/$defs/fixtureIds"},
+        "recovery_fixture_ids": {"$ref": "#/$defs/fixtureIds"},
+        "narrowing_dimensions": {"$ref": "#/$defs/narrowingClaims"}
+      }
+    }
+  }
+}
