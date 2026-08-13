@@ -65,11 +65,26 @@
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "ca928ac19ef867c00d0230c5201ffdf3d76c3bf928fd9711f0bc7a9246b43909",
+            "signature_digest": "42b95bf559e004bf93db0e9f34269f64929a6b411b8b2e44b76d0248bcc9861a",
             "authenticated": true,
             "requested_by": "person:owner-001",
             "resume_count": 0,
-            "resume_ceiling": 1
+            "resume_ceiling": 1,
+            "vault_owner_receipt": {
+              "receipt_id": "vault-owner-receipt:cancel-001-v1",
+              "principal_id": "person:owner-001",
+              "vault_id": "vault:001",
+              "action_kind": "cancel",
+              "work_id": "work:001",
+              "work_version": 1,
+              "lease_id": null,
+              "idempotency_key": "idempotency:work-001",
+              "signature_scheme": "hmac-sha256",
+              "signing_key_id": "signer-key:primary-001",
+              "signer_agent_id": "agent:primary-001",
+              "signature_digest": "1200dbddf3d51ef4f2e39f4bd99a18f9aa3c8cea449b1830a4dcf20184e22678",
+              "authenticated": true
+            }
           },
           "resume_receipt": null,
           "enqueue_receipt": {
@@ -86,7 +101,58 @@
             "signer_agent_id": "agent:primary-001",
             "signature_digest": "fc974383a529ee08fb70d221b020b18fe5ffeb5e9e9a175c0880a58704148dca",
             "authenticated": true
-          }
+          },
+          "cancellation_history": [
+            {
+              "receipt_id": "cancellation-receipt:001",
+              "cancellation_id": "cancel:001",
+              "work_id": "work:001",
+              "work_version": 2,
+              "idempotency_key": "idempotency:work-001",
+              "journal_sequence": 1,
+              "reason_code": "user_requested",
+              "signature_scheme": "hmac-sha256",
+              "signing_key_id": "signer-key:primary-001",
+              "signer_agent_id": "agent:primary-001",
+              "signature_digest": "42b95bf559e004bf93db0e9f34269f64929a6b411b8b2e44b76d0248bcc9861a",
+              "authenticated": true,
+              "requested_by": "person:owner-001",
+              "resume_count": 0,
+              "resume_ceiling": 1,
+              "vault_owner_receipt": {
+                "receipt_id": "vault-owner-receipt:cancel-001-v1",
+                "principal_id": "person:owner-001",
+                "vault_id": "vault:001",
+                "action_kind": "cancel",
+                "work_id": "work:001",
+                "work_version": 1,
+                "lease_id": null,
+                "idempotency_key": "idempotency:work-001",
+                "signature_scheme": "hmac-sha256",
+                "signing_key_id": "signer-key:primary-001",
+                "signer_agent_id": "agent:primary-001",
+                "signature_digest": "1200dbddf3d51ef4f2e39f4bd99a18f9aa3c8cea449b1830a4dcf20184e22678",
+                "authenticated": true
+              }
+            }
+          ],
+          "completion_history": [
+            {
+              "receipt_id": "receipt:cancelled-001",
+              "work_id": "work:001",
+              "work_version": 2,
+              "lease_id": null,
+              "journal_sequence": 2,
+              "outcome": "cancelled",
+              "output_digest": null,
+              "signer_agent_id": "agent:primary-001",
+              "signature_digest": "125103bbf7ca3d9cf13f0d1e3376271cf7884c3bdc70cb9e026a8ab5f4a84afe",
+              "authenticated": true,
+              "signature_scheme": "hmac-sha256",
+              "signing_key_id": "signer-key:primary-001",
+              "code": "control.cancelled"
+            }
+          ]
         },
         "control_channel": {
           "state": "closed",

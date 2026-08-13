@@ -72,7 +72,25 @@
             "signer_agent_id": "agent:primary-001",
             "signature_digest": "fc974383a529ee08fb70d221b020b18fe5ffeb5e9e9a175c0880a58704148dca",
             "authenticated": true
-          }
+          },
+          "cancellation_history": [],
+          "completion_history": [
+            {
+              "receipt_id": "receipt:failed-001",
+              "work_id": "work:001",
+              "work_version": 5,
+              "lease_id": "lease:001",
+              "journal_sequence": 2,
+              "outcome": "failed",
+              "output_digest": null,
+              "signer_agent_id": "agent:primary-001",
+              "signature_digest": "dd3d1aca3b76e12b23633c27db388281506e46dfa5ad2c314ac140f3a205b524",
+              "authenticated": true,
+              "signature_scheme": "hmac-sha256",
+              "signing_key_id": "signer-key:primary-001",
+              "code": "control.retry_ceiling_exceeded"
+            }
+          ]
         },
         "control_channel": {
           "state": "open",

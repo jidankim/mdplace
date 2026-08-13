@@ -59,18 +59,39 @@
     "cancellation": {
       "type": ["object", "null"],
       "additionalProperties": false,
-      "required": ["receipt_id", "cancellation_id", "work_id", "work_version", "idempotency_key", "requested_by", "journal_sequence", "reason_code", "resume_count", "resume_ceiling", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
+      "required": ["receipt_id", "cancellation_id", "work_id", "work_version", "idempotency_key", "requested_by", "vault_owner_receipt", "journal_sequence", "reason_code", "resume_count", "resume_ceiling", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
       "properties": {
         "receipt_id": {"type": "string", "pattern": "^cancellation-receipt:[a-z0-9-]{3,64}$"},
         "cancellation_id": {"type": "string", "pattern": "^cancel:[a-z0-9-]{3,64}$"},
         "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
         "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
         "idempotency_key": {"type": "string", "pattern": "^idempotency:[a-z0-9-]{3,64}$"},
-        "requested_by": {"type": "string", "pattern": "^(person|component):[a-z0-9-]{3,64}$"},
+        "requested_by": {"const": "person:owner-001"},
+        "vault_owner_receipt": {"$ref": "#/$defs/vaultOwnerReceipt"},
         "journal_sequence": {"type": "integer", "minimum": 1, "maximum": 1000000},
-        "reason_code": {"enum": ["user_requested", "dependency_revoked", "budget_revoked", "shutdown"]},
+        "reason_code": {"const": "user_requested"},
         "resume_count": {"type": "integer", "minimum": 0, "maximum": 1},
         "resume_ceiling": {"const": 1},
+        "signature_scheme": {"const": "hmac-sha256"},
+        "signing_key_id": {"const": "signer-key:primary-001"},
+        "signer_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
+        "signature_digest": {"$ref": "#/$defs/digest"},
+        "authenticated": {"const": true}
+      }
+    },
+    "vaultOwnerReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["receipt_id", "principal_id", "vault_id", "action_kind", "work_id", "work_version", "lease_id", "idempotency_key", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
+      "properties": {
+        "receipt_id": {"type": "string", "pattern": "^vault-owner-receipt:[a-z0-9-]{3,64}$"},
+        "principal_id": {"const": "person:owner-001"},
+        "vault_id": {"type": "string", "pattern": "^vault:[a-z0-9-]{3,64}$"},
+        "action_kind": {"const": "cancel"},
+        "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
+        "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "lease_id": {"type": ["string", "null"], "pattern": "^lease:[a-z0-9-]{3,64}$"},
+        "idempotency_key": {"type": "string", "pattern": "^idempotency:[a-z0-9-]{3,64}$"},
         "signature_scheme": {"const": "hmac-sha256"},
         "signing_key_id": {"const": "signer-key:primary-001"},
         "signer_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
@@ -119,12 +140,13 @@
       }
     },
     "result": {
-      "type": ["object", "null"],
+      "type": "object",
       "additionalProperties": false,
-      "required": ["outcome", "receipt_id", "work_version", "lease_id", "journal_sequence", "output_digest", "code", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
+      "required": ["outcome", "receipt_id", "work_id", "work_version", "lease_id", "journal_sequence", "output_digest", "code", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
       "properties": {
         "outcome": {"enum": ["succeeded", "failed", "cancelled"]},
         "receipt_id": {"type": "string", "pattern": "^receipt:[a-z0-9-]{3,64}$"},
+        "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
         "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
         "lease_id": {"type": ["string", "null"], "pattern": "^lease:[a-z0-9-]{3,64}$"},
         "journal_sequence": {"type": "integer", "minimum": 1, "maximum": 1000000},
@@ -151,7 +173,7 @@
     "workItem": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["work_id", "work_kind", "work_version", "state", "idempotency_key", "input_digest", "enqueue_receipt", "dependencies", "budget", "retry_count", "retry_eligible_tick", "recovery_interruption_count", "resume_count", "lease", "cancellation", "resume_receipt", "result"],
+      "required": ["work_id", "work_kind", "work_version", "state", "idempotency_key", "input_digest", "enqueue_receipt", "dependencies", "budget", "retry_count", "retry_eligible_tick", "recovery_interruption_count", "resume_count", "lease", "cancellation", "cancellation_history", "resume_receipt", "result", "completion_history"],
       "properties": {
         "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
         "work_kind": {"enum": ["capture_promotion", "placement_evaluation", "taxonomy_evolution", "view_rebuild", "intelligence_adapter", "folder_projection"]},
@@ -168,8 +190,10 @@
         "resume_count": {"type": "integer", "minimum": 0, "maximum": 1},
         "lease": {"$ref": "#/$defs/lease"},
         "cancellation": {"$ref": "#/$defs/cancellation"},
+        "cancellation_history": {"type": "array", "maxItems": 2, "items": {"allOf": [{"$ref": "#/$defs/cancellation"}, {"not": {"type": "null"}}]}},
         "resume_receipt": {"$ref": "#/$defs/resumeReceipt"},
-        "result": {"$ref": "#/$defs/result"}
+        "result": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/result"}]},
+        "completion_history": {"type": "array", "maxItems": 2, "items": {"$ref": "#/$defs/result"}}
       }
     },
     "receipt": {

@@ -32,7 +32,7 @@ const transitionPaths = [
 const transitionInventories = new Map([
   ['contracts/transitions/work-queue-lifecycle.json', {
     prefix: 'TR-CPWORK-',
-    rowsDigest: '2f480647aa222a82ae43d4af35d676caab5955fb00825fdd6ced4d02ede9a404',
+    rowsDigest: 'd420537c8a4b7d15ebd116e29d3ece0efbe01c4451bc1c771b14ba000f42ac0f',
     states: ['absent', 'queued', 'leased', 'executing', 'terminal'],
     commands: ['enqueue_work', 'dispatch_work', 'acknowledge_work', 'complete_work', 'recover_work'],
   }],
@@ -44,7 +44,7 @@ const transitionInventories = new Map([
   }],
   ['contracts/transitions/cancellation-lifecycle.json', {
     prefix: 'TR-CPCANCEL-',
-    rowsDigest: '34047fa8894cba4db4794f8b4d9624fa80f98ae423890f951462b85e6bec0d3e',
+    rowsDigest: 'e6541052c8703744b48044001c5e90ed41b587fed454ee1466de9ff10e4e0946',
     states: ['queued', 'leased', 'executing', 'retry_wait', 'cancelled', 'succeeded', 'failed'],
     commands: ['cancel_work', 'resume_work'],
   }],
@@ -103,8 +103,14 @@ function canonicalDigest(value) {
 function journalCancellationFields(cancellation) {
   return [cancellation.receipt_id, cancellation.cancellation_id, cancellation.work_id,
     cancellation.work_version, cancellation.idempotency_key, cancellation.requested_by,
+    cancellation.vault_owner_receipt.receipt_id, cancellation.vault_owner_receipt.signature_digest,
     cancellation.journal_sequence, cancellation.reason_code, cancellation.resume_count,
     cancellation.resume_ceiling];
+}
+
+function journalVaultOwnerFields(receipt) {
+  return [receipt.receipt_id, receipt.principal_id, receipt.vault_id, receipt.action_kind,
+    receipt.work_id, receipt.work_version, receipt.lease_id ?? '', receipt.idempotency_key];
 }
 
 function journalEnqueueFields(receipt) {
@@ -252,33 +258,44 @@ function workJournalStateValid(journal) {
       : work.retry_eligible_tick === null;
     const terminal = ['cancelled', 'succeeded', 'failed'].includes(work.state);
     const result = work.result;
-    const cancellation = work.cancellation;
-    const matchingCancellationReceipt = cancellation === null ? null
-      : journal.receipts.find((receipt) => receipt.receipt_id === cancellation.receipt_id);
-    const cancellationValid = cancellation === null
-      ? work.state !== 'cancelled'
-      : cancellation.work_id === work.work_id && cancellation.idempotency_key === work.idempotency_key &&
-        cancellation.work_version <= work.work_version && cancellation.journal_sequence <= journal.head_sequence &&
-        cancellation.resume_count <= work.resume_count && cancellation.resume_ceiling === journal.limits.max_resume_count &&
-        (work.state !== 'cancelled' || cancellation.work_version === work.work_version) &&
-        matchingCancellationReceipt?.receipt_kind === 'cancellation' &&
-        matchingCancellationReceipt.journal_sequence === cancellation.journal_sequence &&
-        matchingCancellationReceipt.work_id === work.work_id &&
-        matchingCancellationReceipt.work_version === cancellation.work_version &&
-        matchingCancellationReceipt.state === 'cancelled' &&
-        verifyControlPlaneReceipt('work_journal_cancellation', journalCancellationFields(cancellation), cancellation);
+    const cancellations = work.cancellation_history;
+    const completions = work.completion_history;
+    if (!Array.isArray(cancellations) || !Array.isArray(completions) ||
+        duplicate(cancellations.map(({receipt_id: id}) => id)) ||
+        duplicate(completions.map(({receipt_id: id}) => id))) return false;
+    const cancellationValid = cancellations.length === work.resume_count + (work.state === 'cancelled' ? 1 : 0) &&
+      (cancellations.length === 0 ? work.cancellation === null
+        : canonicalJson(work.cancellation) === canonicalJson(cancellations.at(-1))) &&
+      cancellations.every((cancellation, index) => {
+        const matching = journal.receipts.find((receipt) => receipt.receipt_id === cancellation.receipt_id);
+        const authorization = cancellation.vault_owner_receipt;
+        return record(authorization) && cancellation.work_id === work.work_id && cancellation.idempotency_key === work.idempotency_key &&
+          cancellation.work_version <= work.work_version && cancellation.journal_sequence <= journal.head_sequence &&
+          cancellation.resume_count === index && cancellation.resume_count < cancellation.resume_ceiling &&
+          cancellation.resume_ceiling === journal.limits.max_resume_count &&
+          cancellation.requested_by === authorization.principal_id && authorization.vault_id === journal.vault_id &&
+          authorization.action_kind === 'cancel' && authorization.work_id === work.work_id &&
+          authorization.work_version === cancellation.work_version - 1 &&
+          authorization.idempotency_key === work.idempotency_key &&
+          matching?.receipt_kind === 'cancellation' && matching.journal_sequence === cancellation.journal_sequence &&
+          matching.work_id === work.work_id && matching.work_version === cancellation.work_version &&
+          matching.lease_id === authorization.lease_id && matching.state === 'cancelled' &&
+          verifyControlPlaneReceipt('vault_owner_authorization', journalVaultOwnerFields(authorization), authorization) &&
+          verifyControlPlaneReceipt('work_journal_cancellation', journalCancellationFields(cancellation), cancellation);
+      });
     const resumeReceipt = work.resume_receipt;
     const matchingResumeReceipt = resumeReceipt === null ? null
       : journal.receipts.find((receipt) => receipt.receipt_id === resumeReceipt.receipt_id);
     const resumeValid = work.resume_count === 0
       ? resumeReceipt === null
-      : resumeReceipt !== null && work.resume_count === 1 && cancellation !== null &&
+      : resumeReceipt !== null && work.resume_count === 1 && cancellations.length > 0 &&
         resumeReceipt.work_id === work.work_id && resumeReceipt.idempotency_key === work.idempotency_key &&
-        resumeReceipt.cancelled_work_version === cancellation.work_version &&
-        resumeReceipt.resumed_work_version === cancellation.work_version + 1 &&
+        resumeReceipt.cancelled_work_version === cancellations[0].work_version &&
+        resumeReceipt.resumed_work_version === cancellations[0].work_version + 1 &&
         resumeReceipt.resumed_work_version <= work.work_version &&
-        resumeReceipt.cancellation_receipt_id === cancellation.receipt_id &&
-        resumeReceipt.journal_sequence > cancellation.journal_sequence &&
+        resumeReceipt.cancellation_receipt_id === cancellations[0].receipt_id &&
+        resumeReceipt.resume_count === cancellations[0].resume_count + 1 &&
+        resumeReceipt.journal_sequence > cancellations[0].journal_sequence &&
         resumeReceipt.journal_sequence <= journal.head_sequence &&
         matchingResumeReceipt?.receipt_kind === 'resume' &&
         matchingResumeReceipt.journal_sequence === resumeReceipt.journal_sequence &&
@@ -286,41 +303,49 @@ function workJournalStateValid(journal) {
         matchingResumeReceipt.work_version === resumeReceipt.resumed_work_version &&
         matchingResumeReceipt.state === 'queued' &&
         verifyControlPlaneReceipt('work_resume', journalResumeFields(resumeReceipt), resumeReceipt);
-    const matchingCompletionReceipt = terminal
-      ? journal.receipts.find((receipt) => receipt.receipt_id === result?.receipt_id)
-      : null;
-    const applicableLeaseReceipts = result?.lease_id === null || result?.lease_id === undefined
-      ? []
-      : journal.receipts.filter((receipt) => ['lease', 'start'].includes(receipt.receipt_kind) &&
-        receipt.work_id === work.work_id && receipt.work_version <= work.work_version &&
-        receipt.journal_sequence < result.journal_sequence);
-    const matchingLeaseReceipt = applicableLeaseReceipts.reduce((latest, receipt) =>
-      latest === null || receipt.journal_sequence > latest.journal_sequence ? receipt : latest, null);
-    const outcomeFieldsValid = controlPlaneOutcomeFieldsAreValid(result, {
-      retryCount: work.retry_count,
-      retryCeiling: journal.limits.max_total_attempts - 1,
-      recoveryInterruptionCount: work.recovery_interruption_count,
-      recoveryCeiling: journal.limits.max_recovery_interruptions,
-    });
-    const resultValid = terminal
-      ? work.result !== null && work.result.outcome === work.state && work.result.work_version === work.work_version &&
-        work.result.journal_sequence <= journal.head_sequence &&
-        outcomeFieldsValid && matchingCompletionReceipt?.receipt_kind === 'completion' &&
-        matchingCompletionReceipt.journal_sequence === result.journal_sequence &&
-        matchingCompletionReceipt.work_id === work.work_id &&
-        matchingCompletionReceipt.work_version === work.work_version &&
-        matchingCompletionReceipt.lease_id === result.lease_id &&
-        matchingCompletionReceipt.state === work.state &&
-        (result.outcome !== 'cancelled' ||
-          result.journal_sequence === cancellation?.journal_sequence + 1) &&
-        ((result.outcome === 'cancelled' && result.lease_id === null) ||
-          (typeof result.lease_id === 'string' && matchingLeaseReceipt?.lease_id === result.lease_id)) &&
+    const completionValid = completions.every((completion) => {
+      const matching = journal.receipts.find((receipt) => receipt.receipt_id === completion.receipt_id);
+      const applicableLeaseReceipts = completion.lease_id === null ? []
+        : journal.receipts.filter((receipt) => ['lease', 'start'].includes(receipt.receipt_kind) &&
+          receipt.work_id === work.work_id && receipt.work_version <= completion.work_version &&
+          receipt.journal_sequence < completion.journal_sequence);
+      const matchingLease = applicableLeaseReceipts.reduce((latest, receipt) =>
+        latest === null || receipt.journal_sequence > latest.journal_sequence ? receipt : latest, null);
+      const cancellation = cancellations.find(({work_version: version}) => version === completion.work_version);
+      return completion.work_id === work.work_id && completion.work_version <= work.work_version &&
+        completion.journal_sequence <= journal.head_sequence &&
+        controlPlaneOutcomeFieldsAreValid(completion, {
+          retryCount: work.retry_count, retryCeiling: journal.limits.max_total_attempts - 1,
+          recoveryInterruptionCount: work.recovery_interruption_count,
+          recoveryCeiling: journal.limits.max_recovery_interruptions,
+        }) && matching?.receipt_kind === 'completion' && matching.journal_sequence === completion.journal_sequence &&
+        matching.work_id === work.work_id && matching.work_version === completion.work_version &&
+        matching.lease_id === completion.lease_id && matching.state === completion.outcome &&
+        (completion.outcome !== 'cancelled' || completion.journal_sequence === cancellation?.journal_sequence + 1) &&
+        ((completion.outcome === 'cancelled' && completion.lease_id === null) ||
+          (typeof completion.lease_id === 'string' && matchingLease?.lease_id === completion.lease_id)) &&
         verifyControlPlaneReceipt('work_completion', [
-          result.receipt_id, work.work_id, result.work_version, result.lease_id ?? '',
-          result.journal_sequence, result.outcome, result.output_digest ?? '', result.code ?? '',
-        ], result)
-      : work.result === null;
-    return enqueueValid && leaseValid && retryValid && cancellationValid && resumeValid && resultValid &&
+          completion.receipt_id, work.work_id, completion.work_version, completion.lease_id ?? '',
+          completion.journal_sequence, completion.outcome, completion.output_digest ?? '', completion.code ?? '',
+        ], completion);
+    });
+    const cancellationCompletionsValid = cancellations.every((cancellation) =>
+      completions.some((completion) => completion.work_version === cancellation.work_version &&
+        completion.outcome === 'cancelled' && completion.journal_sequence === cancellation.journal_sequence + 1));
+    const resultValid = terminal
+      ? result !== null && result.outcome === work.state && result.work_version === work.work_version &&
+        canonicalJson(completions.at(-1)) === canonicalJson(result)
+      : result === null;
+    const lifecycleReceiptIds = journal.receipts
+      .filter((receipt) => receipt.work_id === work.work_id &&
+        ['enqueue', 'cancellation', 'resume', 'completion'].includes(receipt.receipt_kind))
+      .map(({receipt_id: id}) => id).sort();
+    const embeddedReceiptIds = [enqueueReceipt.receipt_id, ...cancellations.map(({receipt_id: id}) => id),
+      ...(resumeReceipt === null ? [] : [resumeReceipt.receipt_id]),
+      ...completions.map(({receipt_id: id}) => id)].sort();
+    const lifecycleRecordsExact = sameOrder(lifecycleReceiptIds, embeddedReceiptIds);
+    return enqueueValid && leaseValid && retryValid && cancellationValid && resumeValid && completionValid &&
+      cancellationCompletionsValid && resultValid && lifecycleRecordsExact &&
       work.recovery_interruption_count <= journal.limits.max_recovery_interruptions;
   });
 }
@@ -388,7 +413,12 @@ function controlCommandStateValid(command, journal) {
   const peer = command?.peer;
   if (peer?.peer_credentials_verified !== true || peer.local_transport !== true ||
       peer.peer_uid !== peer.effective_uid || peer.vault_scope !== command.vault_id ||
-      command.vault_id !== journal?.vault_id) return false;
+      command.vault_id !== journal?.vault_id || command.payload_digest !== canonicalDigest({
+        command_kind: command.command_kind,
+        command_version: command.command_version,
+        idempotency_key: command.idempotency_key,
+        base_references: command.base_references,
+      })) return false;
   const expectedBaseKind = ['cancel', 'resume'].includes(command.command_kind) ? 'work_item'
     : command.command_kind === 'enqueue' ? 'work_journal' : null;
   if (expectedBaseKind === null) return true;
@@ -397,8 +427,11 @@ function controlCommandStateValid(command, journal) {
   if (command.base_references.length !== 1 || matchingBases.length !== 1) return false;
   const base = matchingBases[0];
   if (expectedBaseKind === 'work_journal') {
-    return base.reference_id === journal?.journal_id && base.version === journal?.head_sequence &&
-      base.digest === journal?.head_digest;
+    const replayWork = journal?.work_items?.find(({idempotency_key: key}) => key === command.idempotency_key);
+    const expectedSequence = replayWork?.enqueue_receipt?.base_head_sequence ?? journal?.head_sequence;
+    const expectedDigest = replayWork?.enqueue_receipt?.base_head_digest ?? journal?.head_digest;
+    return base.reference_id === journal?.journal_id && base.version === expectedSequence &&
+      base.digest === expectedDigest;
   }
   const work = journal?.work_items?.find(({work_id: id}) => id === base.reference_id);
   return work !== undefined && base.version === work.work_version && base.digest === canonicalDigest(work);

@@ -34,25 +34,25 @@
       },
       "preconditions": [
         "Work Journal is available",
-        "idempotency key binds the exact same committed Work Item input digest and authenticated EnqueueReceipt"
+        "idempotency key is new"
       ],
       "base_references": [
-        "original pre-enqueue Work Journal head sequence and digest bound by the EnqueueReceipt",
+        "exact current Work Journal head sequence and digest",
         "idempotency key and input digest"
       ],
       "emitted_records": [
         "EnqueueReceipt"
       ],
       "filesystem_effects": [
-        "none; return the original authenticated EnqueueReceipt"
+        "append durable Work Journal record"
       ],
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "original pre-enqueue Work Journal head sequence and digest bound by the EnqueueReceipt",
+          "exact current Work Journal head sequence and digest",
           "idempotency key and input digest"
         ],
-        "retry_result": "return the original durable receipt for the exact binding"
+        "retry_result": "return the committed EnqueueReceipt for the exact binding"
       },
       "terminal_state": "queued",
       "failure_result": {
@@ -65,7 +65,7 @@
           "none"
         ]
       },
-      "recovery": "Read the committed EnqueueReceipt; retrying the exact binding returns it without creating a second Work Item."
+      "recovery": "Read the committed EnqueueReceipt after interruption; a later exact replay returns it without creating a second Work Item."
     },
     {
       "transition_id": "TR-CPWORK-002",
@@ -262,22 +262,22 @@
       },
       "preconditions": [
         "Work Journal is available",
-        "idempotency key is new or binds the exact same Work Item input digest"
+        "idempotency key binds the exact same committed Work Item input digest and authenticated EnqueueReceipt"
       ],
       "base_references": [
-        "exact Work Journal head sequence and digest",
+        "original pre-enqueue Work Journal head sequence and digest bound by the EnqueueReceipt",
         "idempotency key and input digest"
       ],
       "emitted_records": [
         "EnqueueReceipt"
       ],
       "filesystem_effects": [
-        "append durable Work Journal record"
+        "none; return the original authenticated EnqueueReceipt"
       ],
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "exact Work Journal head sequence and digest",
+          "original pre-enqueue Work Journal head sequence and digest bound by the EnqueueReceipt",
           "idempotency key and input digest"
         ],
         "retry_result": "return the original durable receipt for the exact binding"
@@ -500,22 +500,22 @@
       },
       "preconditions": [
         "Work Journal is available",
-        "idempotency key is new or binds the exact same Work Item input digest"
+        "idempotency key binds the exact same committed Work Item input digest and authenticated EnqueueReceipt"
       ],
       "base_references": [
-        "exact Work Journal head sequence and digest",
+        "original pre-enqueue Work Journal head sequence and digest bound by the EnqueueReceipt",
         "idempotency key and input digest"
       ],
       "emitted_records": [
         "EnqueueReceipt"
       ],
       "filesystem_effects": [
-        "append durable Work Journal record"
+        "none; return the original authenticated EnqueueReceipt"
       ],
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "exact Work Journal head sequence and digest",
+          "original pre-enqueue Work Journal head sequence and digest bound by the EnqueueReceipt",
           "idempotency key and input digest"
         ],
         "retry_result": "return the original durable receipt for the exact binding"
@@ -736,22 +736,22 @@
       },
       "preconditions": [
         "Work Journal is available",
-        "idempotency key is new or binds the exact same Work Item input digest"
+        "idempotency key binds the exact same committed Work Item input digest and authenticated EnqueueReceipt"
       ],
       "base_references": [
-        "exact Work Journal head sequence and digest",
+        "original pre-enqueue Work Journal head sequence and digest bound by the EnqueueReceipt",
         "idempotency key and input digest"
       ],
       "emitted_records": [
         "EnqueueReceipt"
       ],
       "filesystem_effects": [
-        "append durable Work Journal record"
+        "none; return the original authenticated EnqueueReceipt"
       ],
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "exact Work Journal head sequence and digest",
+          "original pre-enqueue Work Journal head sequence and digest bound by the EnqueueReceipt",
           "idempotency key and input digest"
         ],
         "retry_result": "return the original durable receipt for the exact binding"
@@ -974,22 +974,22 @@
       },
       "preconditions": [
         "Work Journal is available",
-        "idempotency key is new or binds the exact same Work Item input digest"
+        "idempotency key binds the exact same committed Work Item input digest and authenticated EnqueueReceipt"
       ],
       "base_references": [
-        "exact Work Journal head sequence and digest",
+        "original pre-enqueue Work Journal head sequence and digest bound by the EnqueueReceipt",
         "idempotency key and input digest"
       ],
       "emitted_records": [
         "EnqueueReceipt"
       ],
       "filesystem_effects": [
-        "append durable Work Journal record"
+        "none; return the original authenticated EnqueueReceipt"
       ],
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "exact Work Journal head sequence and digest",
+          "original pre-enqueue Work Journal head sequence and digest bound by the EnqueueReceipt",
           "idempotency key and input digest"
         ],
         "retry_result": "return the original durable receipt for the exact binding"

@@ -36,7 +36,7 @@
     "cancellationReceipt": {
       "type": ["object", "null"],
       "additionalProperties": false,
-      "required": ["receipt_id", "cancellation_id", "work_id", "work_version", "idempotency_key", "requested_by", "journal_sequence", "reason_code", "resume_count", "resume_ceiling", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
+      "required": ["receipt_id", "cancellation_id", "work_id", "work_version", "idempotency_key", "requested_by", "vault_owner_receipt", "journal_sequence", "reason_code", "resume_count", "resume_ceiling", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
       "properties": {
         "receipt_id": {"type": "string", "pattern": "^cancellation-receipt:[a-z0-9-]{3,64}$"},
         "cancellation_id": {"type": "string", "pattern": "^cancel:[a-z0-9-]{3,64}$"},
@@ -44,6 +44,7 @@
         "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
         "idempotency_key": {"type": "string", "pattern": "^idempotency:[a-z0-9-]{3,64}$"},
         "requested_by": {"const": "person:owner-001"},
+        "vault_owner_receipt": {"$ref": "#/$defs/vaultOwnerReceipt"},
         "journal_sequence": {"type": "integer", "minimum": 1, "maximum": 1000000},
         "reason_code": {"const": "user_requested"},
         "resume_count": {"type": "integer", "minimum": 0, "maximum": 1},
@@ -117,7 +118,7 @@
     "vaultOwnerReceipt": {
       "type": ["object", "null"],
       "additionalProperties": false,
-      "required": ["receipt_id", "principal_id", "vault_id", "action_kind", "work_id", "work_version", "idempotency_key", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
+      "required": ["receipt_id", "principal_id", "vault_id", "action_kind", "work_id", "work_version", "lease_id", "idempotency_key", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
       "properties": {
         "receipt_id": {"type": "string", "pattern": "^vault-owner-receipt:[a-z0-9-]{3,64}$"},
         "principal_id": {"const": "person:owner-001"},
@@ -125,6 +126,7 @@
         "action_kind": {"enum": ["cancel", "resume"]},
         "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
         "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "lease_id": {"type": ["string", "null"], "pattern": "^lease:[a-z0-9-]{3,64}$"},
         "idempotency_key": {"type": "string", "pattern": "^idempotency:[a-z0-9-]{3,64}$"},
         "signature_scheme": {"const": "hmac-sha256"},
         "signing_key_id": {"const": "signer-key:primary-001"},
@@ -182,7 +184,7 @@
     "work": {
       "type": ["object", "null"],
       "additionalProperties": false,
-      "required": ["work_id", "work_version", "state", "idempotency_key", "input_digest", "enqueue_receipt", "retry_count", "retry_ceiling", "retry_eligible_tick", "recovery_interruption_count", "lease_id", "lease_status", "lease_acquired_tick", "lease_expires_tick", "owner_agent_id", "cancellation_id", "cancellation_receipt", "resume_count", "resume_ceiling", "resume_receipt", "completion_receipt"],
+      "required": ["work_id", "work_version", "state", "idempotency_key", "input_digest", "enqueue_receipt", "retry_count", "retry_ceiling", "retry_eligible_tick", "recovery_interruption_count", "lease_id", "lease_status", "lease_acquired_tick", "lease_expires_tick", "owner_agent_id", "cancellation_id", "cancellation_receipt", "cancellation_history", "resume_count", "resume_ceiling", "resume_receipt", "completion_receipt", "completion_history"],
       "properties": {
         "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
         "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
@@ -201,10 +203,12 @@
         "owner_agent_id": {"type": ["string", "null"], "pattern": "^agent:[a-z0-9-]{3,64}$"},
         "cancellation_id": {"type": ["string", "null"], "pattern": "^cancel:[a-z0-9-]{3,64}$"},
         "cancellation_receipt": {"$ref": "#/$defs/cancellationReceipt"},
+        "cancellation_history": {"type": "array", "maxItems": 2, "items": {"allOf": [{"$ref": "#/$defs/cancellationReceipt"}, {"not": {"type": "null"}}]}},
         "resume_count": {"type": "integer", "minimum": 0, "maximum": 1},
         "resume_ceiling": {"const": 1},
         "resume_receipt": {"$ref": "#/$defs/resumeReceipt"},
-        "completion_receipt": {"$ref": "#/$defs/completionReceipt"}
+        "completion_receipt": {"$ref": "#/$defs/completionReceipt"},
+        "completion_history": {"type": "array", "maxItems": 2, "items": {"allOf": [{"$ref": "#/$defs/completionReceipt"}, {"not": {"type": "null"}}]}}
       }
     },
     "controlChannel": {

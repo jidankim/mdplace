@@ -40,10 +40,12 @@
         "current Work Lease when present"
       ],
       "emitted_records": [
-        "CancellationReceipt"
+        "CancellationReceipt",
+        "CompletionReceipt"
       ],
       "filesystem_effects": [
         "append durable cancellation",
+        "append durable terminal completion",
         "revoke active Child Work Invocation capability when present"
       ],
       "idempotency": {
@@ -135,10 +137,12 @@
         "current Work Lease when present"
       ],
       "emitted_records": [
-        "CancellationReceipt"
+        "CancellationReceipt",
+        "CompletionReceipt"
       ],
       "filesystem_effects": [
         "append durable cancellation",
+        "append durable terminal completion",
         "revoke active Child Work Invocation capability when present"
       ],
       "idempotency": {
@@ -229,10 +233,12 @@
         "current Work Lease when present"
       ],
       "emitted_records": [
-        "CancellationReceipt"
+        "CancellationReceipt",
+        "CompletionReceipt"
       ],
       "filesystem_effects": [
         "append durable cancellation",
+        "append durable terminal completion",
         "revoke active Child Work Invocation capability when present"
       ],
       "idempotency": {
@@ -323,10 +329,12 @@
         "current Work Lease when present"
       ],
       "emitted_records": [
-        "CancellationReceipt"
+        "CancellationReceipt",
+        "CompletionReceipt"
       ],
       "filesystem_effects": [
         "append durable cancellation",
+        "append durable terminal completion",
         "revoke active Child Work Invocation capability when present"
       ],
       "idempotency": {

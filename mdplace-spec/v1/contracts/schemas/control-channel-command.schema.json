@@ -18,7 +18,7 @@
     "command_kind": {"enum": ["status", "doctor", "enqueue", "cancel", "resume", "shutdown"]},
     "command_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
     "idempotency_key": {"type": "string", "pattern": "^idempotency:[a-z0-9-]{3,64}$"},
-    "payload_digest": {"$ref": "#/$defs/digest"},
+    "payload_digest": {"$ref": "#/$defs/digest", "description": "SHA-256 of canonical JSON over command_kind, command_version, idempotency_key, and ordered base_references."},
     "peer": {"$ref": "#/$defs/peer"},
     "base_references": {"type": "array", "maxItems": 16, "uniqueItems": true, "items": {"$ref": "#/$defs/baseReference"}},
     "limits": {"$ref": "#/$defs/limits"},

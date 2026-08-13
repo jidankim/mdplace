@@ -58,7 +58,9 @@
             "signer_agent_id": "agent:primary-001",
             "signature_digest": "fc974383a529ee08fb70d221b020b18fe5ffeb5e9e9a175c0880a58704148dca",
             "authenticated": true
-          }
+          },
+          "cancellation_history": [],
+          "completion_history": []
         },
         "control_channel": {
           "state": "open",
@@ -120,7 +122,7 @@
         "interruption_count": 0,
         "semantic_write_requested": true,
         "authority_source": "queue",
-      "expected_journal_head_sequence": 0,
+        "expected_journal_head_sequence": 0,
         "expected_writer_epoch": null,
         "recovery_tick": null,
         "writer_lock_receipt": null,
@@ -233,7 +235,7 @@
         ],
         "current_tick": 1,
         "expected_dependency_state_digest": null,
-      "expected_journal_head_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "expected_journal_head_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
         "expected_scheduler_state_digest": null,
         "vault_owner_receipt": null
       }
