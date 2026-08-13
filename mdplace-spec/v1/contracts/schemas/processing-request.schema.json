@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:processing-request:v1",
+  "title": "mdplace policy decision request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "request_id", "policy_binding", "provider_id", "purpose_id", "field_ids", "artifact_kinds", "destination_id", "credential_ref", "budget", "retry", "fallback_position", "capabilities", "semantic_authority", "automation_scope", "redaction_receipt_ids", "retention_fact_ids", "untrusted_content"],
+  "properties": {
+    "$schema": {"const": "contracts/schemas/processing-request.schema.json"},
+    "schema_id": {"const": "mdplace.processing-request/v1"},
+    "request_id": {"type": "string", "pattern": "^request:[a-z][a-z0-9-]{2,63}$"},
+    "policy_binding": {"$ref": "#/$defs/policyRef"},
+    "provider_id": {"type": "string", "pattern": "^provider:[a-z][a-z0-9-]{2,63}$"},
+    "purpose_id": {"type": "string", "pattern": "^purpose:[a-z][a-z0-9-]{2,63}$"},
+    "field_ids": {"$ref": "#/$defs/stringSet"},
+    "artifact_kinds": {"$ref": "#/$defs/stringSet"},
+    "destination_id": {"type": "string", "pattern": "^destination:[a-z][a-z0-9-]{2,63}$"},
+    "credential_ref": {"type": "string", "pattern": "^credential-ref:[a-z][a-z0-9-]{2,63}$"},
+    "budget": {"$ref": "#/$defs/budget"},
+    "retry": {"$ref": "#/$defs/retry"},
+    "fallback_position": {"type": "integer", "minimum": 0, "maximum": 8},
+    "capabilities": {"$ref": "#/$defs/stringSet"},
+    "semantic_authority": {"$ref": "#/$defs/stringSet"},
+    "automation_scope": {"$ref": "#/$defs/stringSet"},
+    "redaction_receipt_ids": {"$ref": "#/$defs/stringSet"},
+    "retention_fact_ids": {"$ref": "#/$defs/stringSet"},
+    "untrusted_content": {"$ref": "#/$defs/untrustedContent"}
+  },
+  "$defs": {
+    "semver": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "stringSet": {"type": "array", "maxItems": 64, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_.:-]{1,95}$"}},
+    "policyRef": {
+      "type": "object", "additionalProperties": false,
+      "required": ["policy_id", "policy_version", "policy_sha256"],
+      "properties": {
+        "policy_id": {"type": "string", "pattern": "^policy:[a-z][a-z0-9-]{2,63}$"},
+        "policy_version": {"$ref": "#/$defs/semver"},
+        "policy_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "budget": {
+      "type": "object", "additionalProperties": false,
+      "required": ["input_bytes", "output_bytes", "runtime_ms", "cost_microunits"],
+      "properties": {
+        "input_bytes": {"type": "integer", "minimum": 0, "maximum": 10000000},
+        "output_bytes": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "runtime_ms": {"type": "integer", "minimum": 0, "maximum": 3600000},
+        "cost_microunits": {"type": "integer", "minimum": 0, "maximum": 1000000000}
+      }
+    },
+    "retry": {
+      "type": "object", "additionalProperties": false,
+      "required": ["attempts", "elapsed_ms", "cumulative_cost_microunits"],
+      "properties": {
+        "attempts": {"type": "integer", "minimum": 0, "maximum": 16},
+        "elapsed_ms": {"type": "integer", "minimum": 0, "maximum": 3600000},
+        "cumulative_cost_microunits": {"type": "integer", "minimum": 0, "maximum": 1000000000}
+      }
+    },
+    "untrustedContent": {
+      "type": "object", "additionalProperties": false,
+      "required": ["present", "requested_actions"],
+      "properties": {
+        "present": {"type": "boolean"},
+        "requested_actions": {"$ref": "#/$defs/stringSet"}
+      }
+    }
+  }
+}

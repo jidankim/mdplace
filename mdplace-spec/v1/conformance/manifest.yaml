@@ -1787,6 +1787,1206 @@
         "terminal_state": true,
         "illegal_transition": true
       }
+    },
+    {
+      "fixture_id": "FIX-CPP-POS-001",
+      "path": "scenarios/core-processing-policy/remote-processing-allowed.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-POS-002",
+      "path": "scenarios/core-processing-policy/approved-source-profile-intake-allowed.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-NEG-014",
+      "path": "scenarios/core-processing-policy/unpermitted-capability-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-POS-004",
+      "path": "scenarios/core-processing-policy/policy-preservation-canary.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-POS-005",
+      "path": "scenarios/core-processing-policy/policy-comprehensive-narrowing-canary.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-BND-001",
+      "path": "scenarios/core-processing-policy/exact-budget-allowed.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-PAIR_REDACTION-001",
+      "path": "scenarios/core-processing-policy/redaction-obligation-widening-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-PAIR_RETENTION-001",
+      "path": "scenarios/core-processing-policy/retention-fact-widening-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-NEG-001",
+      "path": "scenarios/core-processing-policy/unknown-provider-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-NEG-002",
+      "path": "scenarios/core-processing-policy/unknown-purpose-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-NEG-003",
+      "path": "scenarios/core-processing-policy/unpermitted-field-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-NEG-004",
+      "path": "scenarios/core-processing-policy/unpermitted-artifact-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-NEG-005",
+      "path": "scenarios/core-processing-policy/unpermitted-destination-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-NEG-006",
+      "path": "scenarios/core-processing-policy/credential-boundary-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-NEG-007",
+      "path": "scenarios/core-processing-policy/budget-excess-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-NEG-008",
+      "path": "scenarios/core-processing-policy/retry-excess-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-NEG-009",
+      "path": "scenarios/core-processing-policy/fallback-excess-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-NEG-010",
+      "path": "scenarios/core-processing-policy/missing-redaction-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-NEG-011",
+      "path": "scenarios/core-processing-policy/missing-retention-fact-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-STATE-001",
+      "path": "scenarios/core-processing-policy/revoked-policy-denied.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-STATE-002",
+      "path": "scenarios/core-processing-policy/policy-version-mismatch-denied.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-STATE-010",
+      "path": "scenarios/core-processing-policy/url-retention-mode-mismatch-denied.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-NEG-012",
+      "path": "scenarios/core-processing-policy/malformed-request-unknown-field-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-NEG-013",
+      "path": "scenarios/core-processing-policy/hostile-content-action-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-AUTH-001",
+      "path": "scenarios/core-processing-policy/semantic-authority-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-AUTH-002",
+      "path": "scenarios/core-processing-policy/automation-scope-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-ILLEGAL-001",
+      "path": "scenarios/core-processing-policy/intake-before-binding-denied.json",
+      "category": "illegal_transition",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": true
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-AUTH-003",
+      "path": "scenarios/core-processing-policy/source-profile-unapproved-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-AUTH-005",
+      "path": "scenarios/core-processing-policy/policy-approval-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-STATE-004",
+      "path": "scenarios/core-processing-policy/source-profile-approval-readback-failed.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-STATE-005",
+      "path": "scenarios/core-processing-policy/source-profile-version-mismatch-denied.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-STATE-006",
+      "path": "scenarios/core-processing-policy/source-profile-digest-readback-failed.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-STATE-007",
+      "path": "scenarios/core-processing-policy/source-binding-mismatch-denied.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-STATE-008",
+      "path": "scenarios/core-processing-policy/template-binding-mismatch-denied.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-STATE-009",
+      "path": "scenarios/core-processing-policy/capture-contract-mismatch-denied.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-PAIR_PROVIDER-001",
+      "path": "scenarios/core-processing-policy/provider-widening-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-PAIR_PURPOSE-001",
+      "path": "scenarios/core-processing-policy/purpose-widening-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-PAIR_DISCLOSURE-001",
+      "path": "scenarios/core-processing-policy/disclosure-widening-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-PAIR_ARTIFACT-001",
+      "path": "scenarios/core-processing-policy/artifact-widening-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-PAIR_DESTINATION-001",
+      "path": "scenarios/core-processing-policy/destination-widening-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-PAIR_CREDENTIAL-001",
+      "path": "scenarios/core-processing-policy/credential-boundary-widening-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-PAIR_BUDGET-001",
+      "path": "scenarios/core-processing-policy/budget-widening-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-PAIR_RETRY-001",
+      "path": "scenarios/core-processing-policy/retry-widening-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-PAIR_FALLBACK-001",
+      "path": "scenarios/core-processing-policy/fallback-widening-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-PAIR_CAPABILITY-001",
+      "path": "scenarios/core-processing-policy/capability-widening-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-PAIR_SEMANTIC-001",
+      "path": "scenarios/core-processing-policy/semantic-authority-widening-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-PAIR_AUTOMATION-001",
+      "path": "scenarios/core-processing-policy/automation-scope-widening-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-REC-001",
+      "path": "scenarios/core-processing-policy/crash-before-approval-recovery.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-REC-002",
+      "path": "scenarios/core-processing-policy/crash-after-approval-recovery.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CPP-REC-003",
+      "path": "scenarios/core-processing-policy/crash-after-binding-publish-recovery.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-CPP-001",
+        "REQ-CPP-002",
+        "REQ-CPP-003",
+        "REQ-CPP-004",
+        "REQ-CPP-005",
+        "REQ-CPP-006",
+        "REQ-CPP-007"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
     }
   ]
 }

@@ -3,6 +3,7 @@ import {resolve} from 'node:path';
 
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {observeEvidenceExtension} from './evidence-extension.mjs';
+import {observeProcessingPolicyScenario} from './processing-policy-observer.mjs';
 import {observeSemanticKernelScenario} from './semantic-kernel-observer.mjs';
 import {observeTransition} from './transition-observer.mjs';
 import {authorityMatches, manifestFields, packageArtifactPathAllowed, transitionFields} from './validator-rules.mjs';
@@ -166,6 +167,8 @@ export async function observeFixture(fixture, packageRoot, options = {}) {
       return observeEvidenceExtension(fixture.subject, packageRoot);
     case 'semantic_kernel':
       return observeSemanticKernelScenario(fixture.subject, packageRoot);
+    case 'processing_policy':
+      return observeProcessingPolicyScenario(fixture.subject, packageRoot);
     default:
       return {
         verdict: 'fail',

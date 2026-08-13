@@ -3,8 +3,8 @@
   "package_series": "mdplace-spec/v1",
   "release_version": "1.0.0",
   "validator_version": "1.1.0",
-  "normative_digest": "def151c922d0511502d818a56b9c34310e871f691ff73f08cdf59dad844a4abc",
-  "conformance_digest": "a0316cfa7a1f644b0ddf8302797ca11af829e3bc6e13736edc7656bfa27d873f",
+  "normative_digest": "673f5cf11cfab1066c341f4f6b1fc0c60929e0ee15b1c6854e9fe239765d2024",
+  "conformance_digest": "25ab24010d8bbbd05b25f6d591d51020b9725eaad7c2fc05c946baa1173faaeb",
   "verdict": "pass",
   "checks": [
     {
@@ -38,6 +38,16 @@
       "codes": []
     },
     {
+      "id": "processing-policy-lifecycle",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "source-profile-lifecycle",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
       "id": "contract-schemas",
       "verdict": "pass",
       "codes": []
@@ -54,6 +64,11 @@
     },
     {
       "id": "semantic-kernel-contract",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "core-processing-policy-contract",
       "verdict": "pass",
       "codes": []
     },
@@ -506,6 +521,256 @@
     },
     {
       "id": "FIX-SK-ILLEGAL-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-POS-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-POS-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-014",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-POS-004",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-POS-005",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-BND-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_REDACTION-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_RETENTION-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-003",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-004",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-005",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-006",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-007",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-008",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-009",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-010",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-011",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-STATE-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-STATE-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-STATE-010",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-012",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-013",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-AUTH-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-AUTH-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-ILLEGAL-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-AUTH-003",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-AUTH-005",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-STATE-004",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-STATE-005",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-STATE-006",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-STATE-007",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-STATE-008",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-STATE-009",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_PROVIDER-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_PURPOSE-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_DISCLOSURE-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_ARTIFACT-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_DESTINATION-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_CREDENTIAL-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_BUDGET-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_RETRY-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_FALLBACK-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_CAPABILITY-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_SEMANTIC-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_AUTOMATION-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-REC-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-REC-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-REC-003",
       "verdict": "pass",
       "codes": []
     }

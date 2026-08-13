@@ -1,0 +1,257 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-CPP-REC-001",
+  "category": "crash_recovery",
+  "requirement_ids": [
+    "REQ-CPP-001",
+    "REQ-CPP-002",
+    "REQ-CPP-003",
+    "REQ-CPP-004",
+    "REQ-CPP-005",
+    "REQ-CPP-006",
+    "REQ-CPP-007"
+  ],
+  "subject": {
+    "kind": "processing_policy",
+    "schema": "contracts/schemas/processing-policy-scenario.schema.json",
+    "document": {
+      "scenario_id": "CPP-048",
+      "operation": "recover_binding",
+      "policy": {
+        "$schema": "contracts/schemas/processing-policy.schema.json",
+        "schema_id": "mdplace.processing-policy/v1",
+        "policy_id": "policy:core-processing",
+        "policy_version": "1.0.0",
+        "vault_id": "vault:fixture-vault",
+        "parent_policy": null,
+        "lifecycle_state": "active",
+        "grants": {
+          "provider_ids": [
+            "provider:remote-alpha",
+            "provider:local-alpha"
+          ],
+          "purpose_ids": [
+            "purpose:placement",
+            "purpose:taxonomy"
+          ],
+          "fields": [
+            {
+              "field_id": "field:source-url",
+              "data_class": "data:source-url",
+              "disclosure": "remote",
+              "redaction_rule_id": "redaction:sanitize-url"
+            },
+            {
+              "field_id": "field:title",
+              "data_class": "data:title",
+              "disclosure": "remote",
+              "redaction_rule_id": "redaction:remove-identifiers"
+            },
+            {
+              "field_id": "field:source-content",
+              "data_class": "data:source-content",
+              "disclosure": "remote",
+              "redaction_rule_id": "redaction:remove-secrets"
+            },
+            {
+              "field_id": "field:filesystem-path",
+              "data_class": "data:filesystem-path",
+              "disclosure": "local_only",
+              "redaction_rule_id": "redaction:mask-path"
+            }
+          ],
+          "artifact_kinds": [
+            "artifact:intelligence-proposal",
+            "artifact:raw-provider-response"
+          ],
+          "destinations": [
+            {
+              "destination_id": "destination:remote-alpha",
+              "provider_id": "provider:remote-alpha",
+              "endpoint": "https://api.remote-alpha.test/v1/process",
+              "retention_fact_id": "retention:remote-alpha"
+            },
+            {
+              "destination_id": "destination:local-alpha",
+              "provider_id": "provider:local-alpha",
+              "endpoint": "local://local-alpha",
+              "retention_fact_id": "retention:local-alpha"
+            }
+          ],
+          "credential_boundaries": [
+            {
+              "credential_ref": "credential-ref:remote-alpha",
+              "store": "os_credential_store",
+              "provider_id": "provider:remote-alpha",
+              "purpose_ids": [
+                "purpose:placement",
+                "purpose:taxonomy"
+              ]
+            },
+            {
+              "credential_ref": "credential-ref:local-alpha",
+              "store": "os_credential_store",
+              "provider_id": "provider:local-alpha",
+              "purpose_ids": [
+                "purpose:placement"
+              ]
+            }
+          ],
+          "budget": {
+            "input_bytes": 100000,
+            "output_bytes": 10000,
+            "runtime_ms": 30000,
+            "cost_microunits": 500000
+          },
+          "retry": {
+            "attempts": 2,
+            "elapsed_ms": 60000,
+            "cumulative_cost_microunits": 750000
+          },
+          "fallback_chain": [
+            {
+              "position": 1,
+              "provider_id": "provider:local-alpha",
+              "purpose_id": "purpose:placement",
+              "destination_id": "destination:local-alpha",
+              "credential_ref": "credential-ref:local-alpha"
+            }
+          ],
+          "capabilities": [
+            "capability:produce-proposal"
+          ],
+          "semantic_authority": [
+            "produce_advisory_evidence"
+          ],
+          "automation_scope": [
+            "initial_existing_category_placement",
+            "new_leaf_promotion",
+            "alias_promotion"
+          ]
+        },
+        "redaction_obligations": [
+          {
+            "redaction_rule_id": "redaction:sanitize-url",
+            "method": "remove",
+            "failure_mode": "deny"
+          },
+          {
+            "redaction_rule_id": "redaction:remove-identifiers",
+            "method": "mask",
+            "failure_mode": "deny"
+          },
+          {
+            "redaction_rule_id": "redaction:remove-secrets",
+            "method": "remove",
+            "failure_mode": "deny"
+          },
+          {
+            "redaction_rule_id": "redaction:mask-path",
+            "method": "mask",
+            "failure_mode": "deny"
+          }
+        ],
+        "retention_facts": [
+          {
+            "retention_fact_id": "retention:remote-alpha",
+            "destination_id": "destination:remote-alpha",
+            "status": "known",
+            "max_days": 30,
+            "risk_acknowledged": true
+          },
+          {
+            "retention_fact_id": "retention:local-alpha",
+            "destination_id": "destination:local-alpha",
+            "status": "known",
+            "max_days": 0,
+            "risk_acknowledged": true
+          }
+        ],
+        "approval": {
+          "approved": true,
+          "principal_id": "person:vault-owner",
+          "role": "vault_owner",
+          "delegated": false,
+          "receipt_id": "approval:policy-core"
+        }
+      },
+      "source_profile": {
+        "$schema": "contracts/schemas/source-profile.schema.json",
+        "schema_id": "mdplace.source-profile/v1",
+        "profile_id": "source-profile:web-clipper",
+        "profile_version": "1.0.0",
+        "vault_id": "vault:fixture-vault",
+        "capture_source": {
+          "source_id": "capture-source:obsidian-web-clipper",
+          "claimed_source_version": "1.7.0"
+        },
+        "candidate_schema": {
+          "artifact_id": "schema:capture-candidate",
+          "artifact_version": "1.0.0",
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "template": {
+          "template_id": "template:captured-tab-note",
+          "template_version": "1.0.0",
+          "import_artifact_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "url_retention_mode": "sanitized",
+        "processing_policy": {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "ce4c2c6813d83067b84433b38675ebae6304970ea71299b8d29513489fff7269"
+        },
+        "capture_contract": {
+          "artifact_id": "contract:capture-intake",
+          "artifact_version": "1.0.0",
+          "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        "approval": {
+          "approved": false,
+          "principal_id": "person:vault-owner",
+          "role": "vault_owner",
+          "delegated": false,
+          "receipt_id": "approval:source-profile",
+          "profile_payload_sha256": "5bc66f0d607c6d069d0847fe0a7fe45a380e2c4fd8ef40121dbbbe5d0a8c6a45"
+        }
+      },
+      "request": null,
+      "descendant_policy": null,
+      "observed_binding": null,
+      "compatibility_claim_ref": null,
+      "lifecycle": {
+        "policy_state": "active",
+        "source_profile_state": "recovery_required"
+      },
+      "recovery": {
+        "recovery_id": "recovery:before-approval",
+        "crash_point": "before_approval_receipt_publish",
+        "journal_sha256": "f58d6799800e1ec7868175d692e2d1c12bbf885403fd3421e4e108bf7b66a345",
+        "source_profile_sha256": "561b56c0ff72d867751acb44f33967cf2a1a8b96cb258b81e98cd30d473be050",
+        "approval_payload_sha256": null,
+        "approval_receipt_id": null,
+        "observed_binding_sha256": null
+      }
+    }
+  },
+  "expected": {
+    "verdict": "pass",
+    "codes": [],
+    "outputs": [
+      "binding recovery returned unbound"
+    ],
+    "operations": [
+      "read binding journal",
+      "discard unapproved Source Profile"
+    ],
+    "receipts": [
+      "{\"code\":null,\"decision\":\"allowed\",\"operation\":\"recover_binding\",\"policy_ref\":{\"policy_id\":\"policy:core-processing\",\"policy_sha256\":\"ce4c2c6813d83067b84433b38675ebae6304970ea71299b8d29513489fff7269\",\"policy_version\":\"1.0.0\"},\"receipt_id\":\"receipt:cpp-048\",\"scenario_id\":\"CPP-048\",\"schema_id\":\"mdplace.processing-policy-receipt/v1\",\"source_profile_ref\":{\"profile_id\":\"source-profile:web-clipper\",\"profile_sha256\":\"561b56c0ff72d867751acb44f33967cf2a1a8b96cb258b81e98cd30d473be050\",\"profile_version\":\"1.0.0\"}}"
+    ],
+    "filesystem_effects": [
+      "discard unapproved binding staging"
+    ],
+    "terminal_state": "unbound",
+    "illegal_transition": false
+  }
+}

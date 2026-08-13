@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:processing-policy-scenario:v1",
+  "title": "mdplace Core Processing Policy conformance scenario",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["scenario_id", "operation", "policy", "source_profile", "request", "descendant_policy", "observed_binding", "compatibility_claim_ref", "lifecycle", "recovery"],
+  "properties": {
+    "scenario_id": {"type": "string", "pattern": "^CPP-[0-9]{3}$"},
+    "operation": {"enum": ["processing_decision", "intake_decision", "policy_pair", "recover_binding"]},
+    "policy": {"description": "Validated separately against the closed Processing Policy schema."},
+    "source_profile": {"description": "Null or validated separately against the closed Source Profile schema."},
+    "request": {"description": "Null or validated separately against the closed processing request schema."},
+    "descendant_policy": {"description": "Null or validated separately against the closed Processing Policy schema."},
+    "observed_binding": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/observedBinding"}]},
+    "compatibility_claim_ref": {"type": ["string", "null"], "pattern": "^claim:[a-z][a-z0-9-]{2,63}$"},
+    "lifecycle": {"$ref": "#/$defs/lifecycle"},
+    "recovery": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/recovery"}]}
+  },
+  "$defs": {
+    "semver": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "policyRef": {
+      "type": "object", "additionalProperties": false,
+      "required": ["policy_id", "policy_version", "policy_sha256"],
+      "properties": {
+        "policy_id": {"type": "string", "pattern": "^policy:[a-z][a-z0-9-]{2,63}$"},
+        "policy_version": {"$ref": "#/$defs/semver"},
+        "policy_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "captureSource": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_id", "claimed_source_version"],
+      "properties": {
+        "source_id": {"type": "string", "pattern": "^capture-source:[a-z][a-z0-9-]{2,63}$"},
+        "claimed_source_version": {"$ref": "#/$defs/semver"}
+      }
+    },
+    "versionedArtifact": {
+      "type": "object", "additionalProperties": false,
+      "required": ["artifact_id", "artifact_version", "sha256"],
+      "properties": {
+        "artifact_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{2,31}:[a-z][a-z0-9-]{2,63}$"},
+        "artifact_version": {"$ref": "#/$defs/semver"},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "template": {
+      "type": "object", "additionalProperties": false,
+      "required": ["template_id", "template_version", "import_artifact_sha256"],
+      "properties": {
+        "template_id": {"type": "string", "pattern": "^template:[a-z][a-z0-9-]{2,63}$"},
+        "template_version": {"$ref": "#/$defs/semver"},
+        "import_artifact_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "observedBinding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["profile_id", "profile_version", "profile_sha256", "approval_receipt_id", "capture_source", "candidate_schema", "template", "url_retention_mode", "processing_policy", "capture_contract"],
+      "properties": {
+        "profile_id": {"type": "string", "pattern": "^source-profile:[a-z][a-z0-9-]{2,63}$"},
+        "profile_version": {"$ref": "#/$defs/semver"},
+        "profile_sha256": {"$ref": "#/$defs/digest"},
+        "approval_receipt_id": {"type": "string", "pattern": "^approval:[a-z][a-z0-9-]{2,63}$"},
+        "capture_source": {"$ref": "#/$defs/captureSource"},
+        "candidate_schema": {"$ref": "#/$defs/versionedArtifact"},
+        "template": {"$ref": "#/$defs/template"},
+        "url_retention_mode": {"enum": ["withheld", "sanitized"]},
+        "processing_policy": {"$ref": "#/$defs/policyRef"},
+        "capture_contract": {"$ref": "#/$defs/versionedArtifact"}
+      }
+    },
+    "lifecycle": {
+      "type": "object", "additionalProperties": false,
+      "required": ["policy_state", "source_profile_state"],
+      "properties": {
+        "policy_state": {"enum": ["draft", "active", "revoked"]},
+        "source_profile_state": {"enum": ["unbound", "active", "stale", "revoked", "recovery_required"]}
+      }
+    },
+    "recovery": {
+      "type": "object", "additionalProperties": false,
+      "required": ["recovery_id", "crash_point", "source_profile_sha256", "approval_payload_sha256", "approval_receipt_id", "observed_binding_sha256", "journal_sha256"],
+      "properties": {
+        "recovery_id": {"type": "string", "pattern": "^recovery:[a-z][a-z0-9-]{2,63}$"},
+        "crash_point": {"enum": ["before_approval_receipt_publish", "after_approval_receipt_publish", "after_binding_publish"]},
+        "source_profile_sha256": {"$ref": "#/$defs/digest"},
+        "approval_payload_sha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+        "approval_receipt_id": {"type": ["string", "null"], "pattern": "^approval:[a-z][a-z0-9-]{2,63}$"},
+        "observed_binding_sha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+        "journal_sha256": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}
