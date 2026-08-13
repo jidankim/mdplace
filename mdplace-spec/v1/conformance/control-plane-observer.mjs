@@ -963,17 +963,27 @@ function recover(initial, action) {
       retry_eligible_tick: null, recovery_interruption_count: action.interruption_count,
       lease_id: null, lease_status: null, lease_acquired_tick: null, lease_expires_tick: null,
       owner_agent_id: null};
-    const recoveryReceipt = recoveryReceiptFor(initial, work, action, 'fail',
-      retryTickOverflow ? recoveryRetryDelay : null);
+    const failureCode = recoveryExhausted ? 'control.recovery_ceiling_exceeded'
+      : retryExhausted ? 'control.retry_ceiling_exceeded' : 'control.retry_tick_overflow';
+    const selectedDelay = failureCode === 'control.retry_tick_overflow' ? recoveryRetryDelay : null;
+    const recoveryReceipt = recoveryReceiptFor(initial, work, action, 'fail', selectedDelay);
     work.completion_receipt = completionReceiptFor(initial, work, 'failed', null, initial.work.lease_id,
-      recoveryExhausted ? 'control.recovery_ceiling_exceeded'
-        : retryExhausted ? 'control.retry_ceiling_exceeded' : 'control.retry_tick_overflow', 2, {
-        retryable: recoveryExhausted ? null : true,
-        observedTick: recoveryExhausted ? null : action.recovery_tick,
+      failureCode, 2, {
+        retryable: failureCode === 'control.recovery_ceiling_exceeded' ? null : true,
+        observedTick: failureCode === 'control.recovery_ceiling_exceeded' ? null : action.recovery_tick,
         completionTick: action.recovery_tick,
-        selectedDelay: retryTickOverflow ? recoveryRetryDelay : null,
+        selectedDelay,
       }, intermediateHead(initial, work, [recoveryReceipt]));
     work.completion_history = [...initial.work.completion_history, work.completion_receipt];
+    const constructed = {...initial, work,
+      prior_recovery_receipts: [...(initial.prior_recovery_receipts ?? []), recoveryReceipt],
+      journal_head_sequence: initial.journal_head_sequence + 2};
+    constructed.journal_head_digest = scenarioLifecycleDigestAtSequence(
+      constructed, constructed.journal_head_sequence,
+    );
+    if (!scenarioLifecycleIsValid(constructed)) {
+      return rejected(initial, action, 'control.post_state_invalid', {terminal: 'blocked'});
+    }
     return observed(initial, action, {
       outputs: [recoveryExhausted ? 'recovery interruption ceiling produced terminal failure'
         : retryExhausted ? 'retry ceiling produced terminal failure'

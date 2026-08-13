@@ -155,6 +155,7 @@ export function scenarioLifecycleIsValid(initial) {
     retryCeiling: controlPlaneLimits.retryCeiling,
     recoveryCeiling: controlPlaneLimits.recoveryInterruptionCeiling,
     latestDispatchTick: controlPlaneLimits.latestDispatchTick,
+    reservedLeaseIds: prefixLeaseIds,
   });
   if (replay === null) return false;
   const {current} = replay;
@@ -193,7 +194,8 @@ function scenarioEvent(kind, receipt) {
     case 'cancellation': return {...common, declaredState: 'cancelled',
       leaseId: receipt.vault_owner_receipt.lease_id, observedTick: receipt.cancellation_tick};
     case 'completion': return {...common, declaredState: receipt.outcome,
-      outcome: receipt.outcome, observedTick: receipt.completion_tick};
+      outcome: receipt.outcome, observedTick: receipt.completion_tick,
+      failureObservedTick: receipt.failure_observed_tick};
     case 'resume': return {...common, version: receipt.resumed_work_version,
       leaseId: null, declaredState: 'queued'};
     default: return common;

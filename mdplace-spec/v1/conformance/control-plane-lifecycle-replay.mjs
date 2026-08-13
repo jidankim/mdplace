@@ -2,7 +2,7 @@ export function replayControlPlaneLifecycle(events, limits) {
   let current = {
     state: 'absent', version: 0, retryCount: 0, recoveryCount: 0, rejectionCount: 0,
     retryEligibleTick: null, lease: null, start: null, endedLeaseId: null,
-    failedRecovery: null,
+    failedRecovery: null, seenLeaseIds: new Set(limits.reservedLeaseIds ?? []),
   };
   const trace = [];
   for (const event of events) {
@@ -24,12 +24,14 @@ function advanceLifecycle(current, event, limits) {
     case 'lease':
       if (!['queued', 'retry_wait'].includes(current.state) || event.version !== current.version + 1 ||
           event.declaredState !== 'leased' || typeof event.leaseId !== 'string' ||
+          current.seenLeaseIds.has(event.leaseId) ||
           event.status !== 'active' || event.expiresTick <= event.acquiredTick ||
           event.expiresTick - event.acquiredTick > limits.leaseDurationTicks ||
           event.acquiredTick > limits.latestDispatchTick ||
           (current.state === 'retry_wait' && event.acquiredTick < current.retryEligibleTick)) return null;
       return {...current, state: 'leased', version: event.version, retryEligibleTick: null,
-        lease: event, start: null, endedLeaseId: null};
+        lease: event, start: null, endedLeaseId: null,
+        seenLeaseIds: new Set([...current.seenLeaseIds, event.leaseId])};
     case 'start':
       if (current.state !== 'leased' || current.lease === null ||
           event.version !== current.version + 1 || event.declaredState !== 'executing' ||
@@ -42,7 +44,7 @@ function advanceLifecycle(current, event, limits) {
       const delay = limits.retryDelays[current.retryCount];
       if (current.state !== 'executing' || current.lease === null || current.start === null ||
           event.version !== current.version + 1 || event.declaredState !== 'retry_wait' ||
-          (!event.omitsLease && event.leaseId !== current.lease.leaseId) ||
+          event.leaseId !== current.lease.leaseId ||
           event.priorRetryCount !== current.retryCount || event.resultingRetryCount !== current.retryCount + 1 ||
           event.observedTick < current.start.observedTick || event.observedTick >= current.lease.expiresTick ||
           event.selectedDelay !== delay || event.retryEligibleTick !== event.observedTick + delay ||
@@ -113,7 +115,11 @@ function advanceLifecycle(current, event, limits) {
       if (current.state !== 'executing' || current.lease === null || current.start === null ||
           event.version !== current.version + 1 || !['succeeded', 'failed'].includes(event.outcome) ||
           event.declaredState !== event.outcome || event.leaseId !== current.lease.leaseId ||
-          event.observedTick < current.start.observedTick || event.observedTick >= current.lease.expiresTick) return null;
+          event.observedTick < current.start.observedTick || event.observedTick >= current.lease.expiresTick ||
+          (event.outcome === 'failed' &&
+            (event.failureObservedTick !== event.observedTick ||
+             event.failureObservedTick < current.start.observedTick ||
+             event.failureObservedTick >= current.lease.expiresTick))) return null;
       return {...current, state: event.outcome, version: event.version, lease: null, start: null,
         endedLeaseId: current.lease.leaseId};
     case 'resume':
