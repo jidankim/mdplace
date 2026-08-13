@@ -22,7 +22,6 @@
       "schema_id": "mdplace.vault-mutation-scenario/v1",
       "scenario_id": "VMG-008",
       "operation": "move_projection",
-      "caller_role": "folder_projection",
       "plan_state": "authorized",
       "fault": "ownership_drift",
       "probe": {
@@ -43,27 +42,39 @@
           "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
         },
         "same_handle_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        "expected_identity": {
-          "device": 42,
-          "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-        },
-        "receipt_identity": {
-          "device": 42,
-          "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-        },
         "readback_identity": {
           "device": 42,
           "inode": 1001,
           "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         },
         "receipt_echo": "complete",
         "readback": "match",
-        "console_output": "none"
+        "console_output": "none",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "receipt_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "receipt_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
       },
       "recovery": {
         "mode": "none",
@@ -73,6 +84,11 @@
         "safe_reverse": false,
         "compensation_authorized": false,
         "interruption_count": 0
+      },
+      "operation_declared": true,
+      "caller": {
+        "caller_id": "folder-projection:fixture-001",
+        "role": "folder_projection"
       }
     }
   },

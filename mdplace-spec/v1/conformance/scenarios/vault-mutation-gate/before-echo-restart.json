@@ -1,0 +1,126 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-VMG-CRASH-043",
+  "category": "crash_recovery",
+  "requirement_ids": [
+    "REQ-VMG-007",
+    "REQ-VMG-008",
+    "REQ-VMG-009"
+  ],
+  "subject": {
+    "kind": "vault_mutation_gate",
+    "schema": "contracts/schemas/vault-mutation-scenario.schema.json",
+    "document": {
+      "schema_id": "mdplace.vault-mutation-scenario/v1",
+      "scenario_id": "VMG-067",
+      "operation": "move_projection",
+      "operation_declared": true,
+      "caller": {
+        "caller_id": "foreground-recovery:fixture-001",
+        "role": "foreground_recovery"
+      },
+      "plan_state": "authorized",
+      "fault": "none",
+      "probe": {
+        "trusted_root_opened": true,
+        "resolution": "openat_each_component",
+        "nofollow": true,
+        "pathname_reopened": false,
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "first_fstat": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "second_fstat": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "same_handle_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "receipt_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "receipt_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "readback_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "receipt_echo": "complete",
+        "readback": "match",
+        "console_output": "none"
+      },
+      "recovery": {
+        "mode": "restart",
+        "crash_boundary": "before_echo",
+        "durable_prefix": [
+          "journal",
+          "validation",
+          "data",
+          "metadata",
+          "receipt"
+        ],
+        "declared_intent": "resume",
+        "safe_reverse": false,
+        "compensation_authorized": false,
+        "interruption_count": 1
+      }
+    }
+  },
+  "expected": {
+    "verdict": "pass",
+    "codes": [],
+    "outputs": [
+      "operation resumed and committed"
+    ],
+    "operations": [
+      "reconcile exact durable prefix",
+      "resume at the next uncommitted event",
+      "open trusted root descriptor",
+      "resolve every component with openat and O_NOFOLLOW",
+      "capture first fstat",
+      "read and hash content through the same handle",
+      "capture second fstat",
+      "compare device inode size and content hash",
+      "publish and sync validated Mutation Journal entry",
+      "perform only the declared operation through retained descriptors",
+      "sync data metadata and parent directory",
+      "publish and sync Operation Receipt echo",
+      "read back through the retained descriptor",
+      "publish and sync commit evidence"
+    ],
+    "receipts": [
+      "OperationReceipt",
+      "MutationCommitEvidence"
+    ],
+    "filesystem_effects": [
+      "perform the declared effect at most once"
+    ],
+    "terminal_state": "committed",
+    "illegal_transition": false
+  }
+}

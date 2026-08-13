@@ -885,7 +885,7 @@
         "Descriptor Identity",
         "Operation Receipt"
       ],
-      "acceptance_gate": "Exactly 24 public fixtures cover success, denial, exact boundaries, stale state, authority, illegal transitions, swaps, recovery, cancellation, restart, and repeated interruption with no unsafe filesystem effect.",
+      "acceptance_gate": "Exactly 88 public fixtures include 64 boundary-mode cases plus named success, denial, exact, stale, authority, illegal-transition, and recovery cases with no unsafe filesystem effect.",
       "scope": "vault-mutation-gate"
     },
     {

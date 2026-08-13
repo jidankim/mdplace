@@ -29,11 +29,15 @@
   "allOf": [
     {
       "if": {"properties": {"operation": {"const": "promote_capture"}}},
-      "then": {"properties": {"caller": {"properties": {"role": {"const": "capture_adapter"}}}}}
+      "then": {"properties": {"caller": {"properties": {"role": {"enum": ["capture_adapter", "foreground_recovery"]}}}}}
     },
     {
       "if": {"properties": {"caller": {"properties": {"role": {"const": "capture_adapter"}}}}},
       "then": {"properties": {"operation": {"const": "promote_capture"}}}
+    },
+    {
+      "if": {"properties": {"caller": {"properties": {"role": {"const": "folder_projection"}}}}},
+      "then": {"properties": {"operation": {"enum": ["move_projection", "create_directory", "remove_empty_owned_directory", "write_managed_frontmatter"]}}}
     }
   ],
   "$defs": {
@@ -46,7 +50,12 @@
         "caller_id": {"type": "string", "pattern": "^(capture-adapter|folder-projection|foreground-recovery):[a-z0-9-]{3,64}$"},
         "role": {"enum": ["capture_adapter", "folder_projection", "foreground_recovery"]},
         "authority_receipt_sha256": {"$ref": "#/$defs/digest"}
-      }
+      },
+      "allOf": [
+        {"if": {"properties": {"role": {"const": "capture_adapter"}}}, "then": {"properties": {"caller_id": {"pattern": "^capture-adapter:"}}}},
+        {"if": {"properties": {"role": {"const": "folder_projection"}}}, "then": {"properties": {"caller_id": {"pattern": "^folder-projection:"}}}},
+        {"if": {"properties": {"role": {"const": "foreground_recovery"}}}, "then": {"properties": {"caller_id": {"pattern": "^foreground-recovery:"}}}}
+      ]
     },
     "ownership": {
       "type": "object", "additionalProperties": false,

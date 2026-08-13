@@ -1,6 +1,7 @@
 import {isDeepStrictEqual} from 'node:util';
 
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
+import {readPackageFile} from './safe-path.mjs';
 
 const denialByFault = new Map([
   ['symlink_swap', 'path.symlink_detected'],
@@ -8,8 +9,6 @@ const denialByFault = new Map([
   ['traversal', 'path.traversal_denied'],
   ['collision', 'target.collision'],
   ['ownership_drift', 'ownership.stale'],
-  ['unauthorized_caller', 'authority.denied'],
-  ['undeclared_operation', 'plan.operation_undeclared'],
   ['malformed_plan', 'schema.required_field'],
   ['stale_plan', 'plan.stale'],
   ['stale_hash', 'descriptor.hash_mismatch'],
@@ -48,8 +47,36 @@ const committedOperations = [
   'publish and sync commit evidence',
 ];
 
-function recoveryObservation(recovery) {
-  if (recovery.interruption_count >= 3 || recovery.declared_intent === 'terminal_manual_repair') {
+function callerMayInvoke(caller, operation, recoveryMode) {
+  if (recoveryMode !== 'none') return caller.role === 'foreground_recovery';
+  if (caller.role === 'foreground_recovery') return false;
+  if (caller.role === 'capture_adapter') return operation === 'promote_capture';
+  if (caller.role === 'folder_projection') return operation !== 'promote_capture';
+  return false;
+}
+
+function recoveryEvidenceMatches(recovery, matrix) {
+  const boundary = matrix?.boundaries?.find(({boundary_id: id}) => id === recovery.crash_boundary);
+  const modeResult = boundary?.mode_results?.find(({mode}) => mode === recovery.mode);
+  return boundary !== undefined && modeResult !== undefined &&
+    isDeepStrictEqual(recovery.durable_prefix, boundary.durable_prefix) &&
+    recovery.declared_intent === modeResult.recovery_action &&
+    (modeResult.recovery_action !== 'exact_rollback' || recovery.safe_reverse) &&
+    (modeResult.recovery_action !== 'compensate' || recovery.compensation_authorized);
+}
+
+function invalidRecoveryObservation() {
+  return {
+    verdict: 'fail', codes: ['recovery.evidence_mismatch'], outputs: ['recovery denied'],
+    operations: ['reconcile exact durable prefix', 'halt without guessing'],
+    receipts: ['TerminalManualRepairReport'], filesystem_effects: ['preserve observed physical state'],
+    terminal_state: 'terminal_manual_repair', illegal_transition: false,
+  };
+}
+
+function recoveryObservation(recovery, matrix) {
+  if (!recoveryEvidenceMatches(recovery, matrix)) return invalidRecoveryObservation();
+  if (recovery.declared_intent === 'terminal_manual_repair') {
     return {
       verdict: 'fail', codes: ['recovery.manual_repair_required'],
       outputs: ['Terminal Manual Repair report'],
@@ -101,15 +128,41 @@ export async function observeVaultMutationScenario(subject, packageRoot) {
     };
   }
   const scenario = subject.document;
-  if (scenario.recovery.mode !== 'none') return recoveryObservation(scenario.recovery);
+  if (!scenario.operation_declared) {
+    return {
+      verdict: 'fail', codes: ['plan.operation_undeclared'], outputs: ['mutation denied'],
+      operations: preconditionOperations, receipts: ['MutationDeniedReceipt'], filesystem_effects: ['none'],
+      terminal_state: 'denied', illegal_transition: true,
+    };
+  }
+  if (!callerMayInvoke(scenario.caller, scenario.operation, scenario.recovery.mode)) {
+    return {
+      verdict: 'fail', codes: ['authority.denied'], outputs: ['mutation denied'],
+      operations: preconditionOperations, receipts: ['MutationDeniedReceipt'], filesystem_effects: ['none'],
+      terminal_state: 'denied', illegal_transition: false,
+    };
+  }
+  if (scenario.recovery.mode !== 'none') {
+    const matrixRead = await readPackageFile(packageRoot, 'contracts/vault-mutation-gate/crash-boundary-matrix.json');
+    if (matrixRead.status !== 'present') return invalidRecoveryObservation();
+    let matrix;
+    try {
+      matrix = JSON.parse(matrixRead.content.toString('utf8'));
+    } catch {
+      return invalidRecoveryObservation();
+    }
+    return recoveryObservation(scenario.recovery, matrix);
+  }
   const probeValid = scenario.probe.trusted_root_opened &&
     scenario.probe.resolution === 'openat_each_component' && scenario.probe.nofollow &&
     !scenario.probe.pathname_reopened &&
-    isDeepStrictEqual(scenario.probe.expected_identity, scenario.probe.first_fstat) &&
+    isDeepStrictEqual(scenario.probe.expected_precondition_identity, scenario.probe.first_fstat) &&
     isDeepStrictEqual(scenario.probe.first_fstat, scenario.probe.second_fstat) &&
-    scenario.probe.same_handle_hash === scenario.probe.expected_identity.content_sha256 &&
-    isDeepStrictEqual(scenario.probe.receipt_identity, scenario.probe.expected_identity) &&
-    isDeepStrictEqual(scenario.probe.readback_identity, scenario.probe.expected_identity);
+    scenario.probe.same_handle_hash === scenario.probe.expected_precondition_identity.content_sha256 &&
+    isDeepStrictEqual(scenario.probe.receipt_precondition_identity,
+      scenario.probe.expected_precondition_identity) &&
+    isDeepStrictEqual(scenario.probe.receipt_result_identity, scenario.probe.expected_result_identity) &&
+    isDeepStrictEqual(scenario.probe.readback_identity, scenario.probe.expected_result_identity);
   const faultCode = denialByFault.get(scenario.fault);
   if (faultCode !== undefined || !probeValid || scenario.plan_state !== 'authorized') {
     const code = faultCode ?? (scenario.plan_state === 'stale' ? 'plan.stale' : 'descriptor.probe_invalid');
@@ -120,7 +173,7 @@ export async function observeVaultMutationScenario(subject, packageRoot) {
       receipts: [requiresRecovery ? 'MutationRecoveryRequiredReceipt' : 'MutationDeniedReceipt'],
       filesystem_effects: [requiresRecovery ? 'preserve only the declared observed effect' : 'none'],
       terminal_state: requiresRecovery ? 'recovery_required' : 'denied',
-      illegal_transition: scenario.fault === 'undeclared_operation',
+      illegal_transition: false,
     };
   }
   return {

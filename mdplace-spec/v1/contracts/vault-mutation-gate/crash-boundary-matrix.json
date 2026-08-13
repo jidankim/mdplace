@@ -38,7 +38,33 @@
         "compensate",
         "terminal_manual_repair"
       ],
-      "prohibited_inference": "never infer success or completion from pathname or console text"
+      "prohibited_inference": "never infer success or completion from pathname or console text",
+      "mode_results": [
+        {
+          "mode": "cancel",
+          "recovery_action": "exact_rollback",
+          "terminal_state": "rolled_back",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "cancel_and_resume",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "restart",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "repeated_interruption",
+          "recovery_action": "terminal_manual_repair",
+          "terminal_state": "terminal_manual_repair",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        }
+      ]
     },
     {
       "boundary_id": "after_journal",
@@ -60,7 +86,33 @@
         "compensate",
         "terminal_manual_repair"
       ],
-      "prohibited_inference": "never infer success or completion from pathname or console text"
+      "prohibited_inference": "never infer success or completion from pathname or console text",
+      "mode_results": [
+        {
+          "mode": "cancel",
+          "recovery_action": "exact_rollback",
+          "terminal_state": "rolled_back",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "cancel_and_resume",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "restart",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "repeated_interruption",
+          "recovery_action": "terminal_manual_repair",
+          "terminal_state": "terminal_manual_repair",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        }
+      ]
     },
     {
       "boundary_id": "before_validation",
@@ -82,7 +134,33 @@
         "compensate",
         "terminal_manual_repair"
       ],
-      "prohibited_inference": "never infer success or completion from pathname or console text"
+      "prohibited_inference": "never infer success or completion from pathname or console text",
+      "mode_results": [
+        {
+          "mode": "cancel",
+          "recovery_action": "exact_rollback",
+          "terminal_state": "rolled_back",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "cancel_and_resume",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "restart",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "repeated_interruption",
+          "recovery_action": "terminal_manual_repair",
+          "terminal_state": "terminal_manual_repair",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        }
+      ]
     },
     {
       "boundary_id": "after_validation",
@@ -105,7 +183,33 @@
         "compensate",
         "terminal_manual_repair"
       ],
-      "prohibited_inference": "never infer success or completion from pathname or console text"
+      "prohibited_inference": "never infer success or completion from pathname or console text",
+      "mode_results": [
+        {
+          "mode": "cancel",
+          "recovery_action": "exact_rollback",
+          "terminal_state": "rolled_back",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "cancel_and_resume",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "restart",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "repeated_interruption",
+          "recovery_action": "terminal_manual_repair",
+          "terminal_state": "terminal_manual_repair",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        }
+      ]
     },
     {
       "boundary_id": "before_data",
@@ -128,7 +232,33 @@
         "compensate",
         "terminal_manual_repair"
       ],
-      "prohibited_inference": "never infer success or completion from pathname or console text"
+      "prohibited_inference": "never infer success or completion from pathname or console text",
+      "mode_results": [
+        {
+          "mode": "cancel",
+          "recovery_action": "exact_rollback",
+          "terminal_state": "rolled_back",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "cancel_and_resume",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "restart",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "repeated_interruption",
+          "recovery_action": "terminal_manual_repair",
+          "terminal_state": "terminal_manual_repair",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        }
+      ]
     },
     {
       "boundary_id": "after_data",
@@ -153,7 +283,33 @@
         "compensate",
         "terminal_manual_repair"
       ],
-      "prohibited_inference": "never infer success or completion from pathname or console text"
+      "prohibited_inference": "never infer success or completion from pathname or console text",
+      "mode_results": [
+        {
+          "mode": "cancel",
+          "recovery_action": "exact_rollback",
+          "terminal_state": "rolled_back",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "cancel_and_resume",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "restart",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "repeated_interruption",
+          "recovery_action": "terminal_manual_repair",
+          "terminal_state": "terminal_manual_repair",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        }
+      ]
     },
     {
       "boundary_id": "before_metadata",
@@ -177,7 +333,33 @@
         "compensate",
         "terminal_manual_repair"
       ],
-      "prohibited_inference": "never infer success or completion from pathname or console text"
+      "prohibited_inference": "never infer success or completion from pathname or console text",
+      "mode_results": [
+        {
+          "mode": "cancel",
+          "recovery_action": "exact_rollback",
+          "terminal_state": "rolled_back",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "cancel_and_resume",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "restart",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "repeated_interruption",
+          "recovery_action": "terminal_manual_repair",
+          "terminal_state": "terminal_manual_repair",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        }
+      ]
     },
     {
       "boundary_id": "after_metadata",
@@ -204,7 +386,33 @@
         "compensate",
         "terminal_manual_repair"
       ],
-      "prohibited_inference": "never infer success or completion from pathname or console text"
+      "prohibited_inference": "never infer success or completion from pathname or console text",
+      "mode_results": [
+        {
+          "mode": "cancel",
+          "recovery_action": "exact_rollback",
+          "terminal_state": "rolled_back",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "cancel_and_resume",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "restart",
+          "recovery_action": "exact_rollback",
+          "terminal_state": "rolled_back",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "repeated_interruption",
+          "recovery_action": "terminal_manual_repair",
+          "terminal_state": "terminal_manual_repair",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        }
+      ]
     },
     {
       "boundary_id": "before_receipt",
@@ -229,7 +437,33 @@
         "compensate",
         "terminal_manual_repair"
       ],
-      "prohibited_inference": "never infer success or completion from pathname or console text"
+      "prohibited_inference": "never infer success or completion from pathname or console text",
+      "mode_results": [
+        {
+          "mode": "cancel",
+          "recovery_action": "exact_rollback",
+          "terminal_state": "rolled_back",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "cancel_and_resume",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "restart",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "repeated_interruption",
+          "recovery_action": "terminal_manual_repair",
+          "terminal_state": "terminal_manual_repair",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        }
+      ]
     },
     {
       "boundary_id": "after_receipt",
@@ -258,7 +492,33 @@
         "compensate",
         "terminal_manual_repair"
       ],
-      "prohibited_inference": "never infer success or completion from pathname or console text"
+      "prohibited_inference": "never infer success or completion from pathname or console text",
+      "mode_results": [
+        {
+          "mode": "cancel",
+          "recovery_action": "exact_rollback",
+          "terminal_state": "rolled_back",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "cancel_and_resume",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "restart",
+          "recovery_action": "compensate",
+          "terminal_state": "compensated",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "repeated_interruption",
+          "recovery_action": "terminal_manual_repair",
+          "terminal_state": "terminal_manual_repair",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        }
+      ]
     },
     {
       "boundary_id": "before_echo",
@@ -284,7 +544,33 @@
         "compensate",
         "terminal_manual_repair"
       ],
-      "prohibited_inference": "never infer success or completion from pathname or console text"
+      "prohibited_inference": "never infer success or completion from pathname or console text",
+      "mode_results": [
+        {
+          "mode": "cancel",
+          "recovery_action": "exact_rollback",
+          "terminal_state": "rolled_back",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "cancel_and_resume",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "restart",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "repeated_interruption",
+          "recovery_action": "terminal_manual_repair",
+          "terminal_state": "terminal_manual_repair",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        }
+      ]
     },
     {
       "boundary_id": "after_echo",
@@ -315,7 +601,33 @@
         "compensate",
         "terminal_manual_repair"
       ],
-      "prohibited_inference": "never infer success or completion from pathname or console text"
+      "prohibited_inference": "never infer success or completion from pathname or console text",
+      "mode_results": [
+        {
+          "mode": "cancel",
+          "recovery_action": "exact_rollback",
+          "terminal_state": "rolled_back",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "cancel_and_resume",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "restart",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "repeated_interruption",
+          "recovery_action": "terminal_manual_repair",
+          "terminal_state": "terminal_manual_repair",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        }
+      ]
     },
     {
       "boundary_id": "before_readback",
@@ -342,7 +654,33 @@
         "compensate",
         "terminal_manual_repair"
       ],
-      "prohibited_inference": "never infer success or completion from pathname or console text"
+      "prohibited_inference": "never infer success or completion from pathname or console text",
+      "mode_results": [
+        {
+          "mode": "cancel",
+          "recovery_action": "exact_rollback",
+          "terminal_state": "rolled_back",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "cancel_and_resume",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "restart",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "repeated_interruption",
+          "recovery_action": "terminal_manual_repair",
+          "terminal_state": "terminal_manual_repair",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        }
+      ]
     },
     {
       "boundary_id": "after_readback",
@@ -375,7 +713,33 @@
         "compensate",
         "terminal_manual_repair"
       ],
-      "prohibited_inference": "never infer success or completion from pathname or console text"
+      "prohibited_inference": "never infer success or completion from pathname or console text",
+      "mode_results": [
+        {
+          "mode": "cancel",
+          "recovery_action": "exact_rollback",
+          "terminal_state": "rolled_back",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "cancel_and_resume",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "restart",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "repeated_interruption",
+          "recovery_action": "terminal_manual_repair",
+          "terminal_state": "terminal_manual_repair",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        }
+      ]
     },
     {
       "boundary_id": "before_commit",
@@ -403,7 +767,33 @@
         "compensate",
         "terminal_manual_repair"
       ],
-      "prohibited_inference": "never infer success or completion from pathname or console text"
+      "prohibited_inference": "never infer success or completion from pathname or console text",
+      "mode_results": [
+        {
+          "mode": "cancel",
+          "recovery_action": "exact_rollback",
+          "terminal_state": "rolled_back",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "cancel_and_resume",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "restart",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "repeated_interruption",
+          "recovery_action": "terminal_manual_repair",
+          "terminal_state": "terminal_manual_repair",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        }
+      ]
     },
     {
       "boundary_id": "after_commit",
@@ -438,7 +828,33 @@
         "compensate",
         "terminal_manual_repair"
       ],
-      "prohibited_inference": "never infer success or completion from pathname or console text"
+      "prohibited_inference": "never infer success or completion from pathname or console text",
+      "mode_results": [
+        {
+          "mode": "cancel",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "cancel_and_resume",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "restart",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        },
+        {
+          "mode": "repeated_interruption",
+          "recovery_action": "resume",
+          "terminal_state": "committed",
+          "effect_obligation": "preserve at-most-once effect identity; pathname and console text are non-authoritative"
+        }
+      ]
     }
   ]
 }

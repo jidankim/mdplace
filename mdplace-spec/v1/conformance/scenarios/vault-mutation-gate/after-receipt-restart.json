@@ -1,0 +1,114 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-VMG-CRASH-039",
+  "category": "crash_recovery",
+  "requirement_ids": [
+    "REQ-VMG-007",
+    "REQ-VMG-008",
+    "REQ-VMG-009"
+  ],
+  "subject": {
+    "kind": "vault_mutation_gate",
+    "schema": "contracts/schemas/vault-mutation-scenario.schema.json",
+    "document": {
+      "schema_id": "mdplace.vault-mutation-scenario/v1",
+      "scenario_id": "VMG-063",
+      "operation": "move_projection",
+      "operation_declared": true,
+      "caller": {
+        "caller_id": "foreground-recovery:fixture-001",
+        "role": "foreground_recovery"
+      },
+      "plan_state": "authorized",
+      "fault": "none",
+      "probe": {
+        "trusted_root_opened": true,
+        "resolution": "openat_each_component",
+        "nofollow": true,
+        "pathname_reopened": false,
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "first_fstat": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "second_fstat": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "same_handle_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "receipt_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "receipt_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "readback_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "receipt_echo": "complete",
+        "readback": "match",
+        "console_output": "none"
+      },
+      "recovery": {
+        "mode": "restart",
+        "crash_boundary": "after_receipt",
+        "durable_prefix": [
+          "journal",
+          "validation",
+          "data",
+          "metadata",
+          "receipt"
+        ],
+        "declared_intent": "compensate",
+        "safe_reverse": false,
+        "compensation_authorized": true,
+        "interruption_count": 1
+      }
+    }
+  },
+  "expected": {
+    "verdict": "pass",
+    "codes": [],
+    "outputs": [
+      "authorized compensation completed"
+    ],
+    "operations": [
+      "reconcile exact durable prefix",
+      "validate separate compensation authorization",
+      "perform compensation"
+    ],
+    "receipts": [
+      "MutationCompensationReceipt"
+    ],
+    "filesystem_effects": [
+      "perform only the authorized compensating effect"
+    ],
+    "terminal_state": "compensated",
+    "illegal_transition": false
+  }
+}

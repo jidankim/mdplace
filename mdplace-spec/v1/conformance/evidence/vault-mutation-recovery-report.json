@@ -6,7 +6,7 @@
   "release_version": "1.0.0",
   "validator_version": "1.2.0",
   "crash_matrix_ref": "contracts/vault-mutation-gate/crash-boundary-matrix.json",
-  "crash_matrix_sha256": "cc56d3377b53ec024774a7c9be0c39dfcd7d190cc89fedc0408d41bd9754042f",
+  "crash_matrix_sha256": "be99c9dfc25e3379de459868f1d32fee3ebe8bc2845918ea648211d8510e4e2b",
   "fixture_manifest_ref": "conformance/manifest.yaml",
   "scenario_results": [
     {
@@ -176,6 +176,454 @@
       "observed_verdict": "fail",
       "terminal_state": "terminal_manual_repair",
       "recovery_outcome": "terminal_manual_repair"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-001",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "rolled_back",
+      "recovery_outcome": "rolled_back"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-002",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-003",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-004",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "terminal_manual_repair",
+      "recovery_outcome": "terminal_manual_repair"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-005",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "rolled_back",
+      "recovery_outcome": "rolled_back"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-006",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-007",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-008",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "terminal_manual_repair",
+      "recovery_outcome": "terminal_manual_repair"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-009",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "rolled_back",
+      "recovery_outcome": "rolled_back"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-010",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-011",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-012",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "terminal_manual_repair",
+      "recovery_outcome": "terminal_manual_repair"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-013",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "rolled_back",
+      "recovery_outcome": "rolled_back"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-014",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-015",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-016",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "terminal_manual_repair",
+      "recovery_outcome": "terminal_manual_repair"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-017",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "rolled_back",
+      "recovery_outcome": "rolled_back"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-018",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-019",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-020",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "terminal_manual_repair",
+      "recovery_outcome": "terminal_manual_repair"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-021",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "rolled_back",
+      "recovery_outcome": "rolled_back"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-022",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-023",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-024",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "terminal_manual_repair",
+      "recovery_outcome": "terminal_manual_repair"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-025",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "rolled_back",
+      "recovery_outcome": "rolled_back"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-026",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-027",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-028",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "terminal_manual_repair",
+      "recovery_outcome": "terminal_manual_repair"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-029",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "rolled_back",
+      "recovery_outcome": "rolled_back"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-030",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-031",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "rolled_back",
+      "recovery_outcome": "rolled_back"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-032",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "terminal_manual_repair",
+      "recovery_outcome": "terminal_manual_repair"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-033",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "rolled_back",
+      "recovery_outcome": "rolled_back"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-034",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-035",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-036",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "terminal_manual_repair",
+      "recovery_outcome": "terminal_manual_repair"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-037",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "rolled_back",
+      "recovery_outcome": "rolled_back"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-038",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-039",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "compensated",
+      "recovery_outcome": "compensated"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-040",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "terminal_manual_repair",
+      "recovery_outcome": "terminal_manual_repair"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-041",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "rolled_back",
+      "recovery_outcome": "rolled_back"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-042",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-043",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-044",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "terminal_manual_repair",
+      "recovery_outcome": "terminal_manual_repair"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-045",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "rolled_back",
+      "recovery_outcome": "rolled_back"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-046",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-047",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-048",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "terminal_manual_repair",
+      "recovery_outcome": "terminal_manual_repair"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-049",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "rolled_back",
+      "recovery_outcome": "rolled_back"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-050",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-051",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-052",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "terminal_manual_repair",
+      "recovery_outcome": "terminal_manual_repair"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-053",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "rolled_back",
+      "recovery_outcome": "rolled_back"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-054",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-055",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-056",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "terminal_manual_repair",
+      "recovery_outcome": "terminal_manual_repair"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-057",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "rolled_back",
+      "recovery_outcome": "rolled_back"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-058",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-059",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-060",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "terminal_manual_repair",
+      "recovery_outcome": "terminal_manual_repair"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-061",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-062",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-063",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-064",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
     }
   ],
   "boundary_coverage": [
@@ -211,5 +659,3479 @@
     "prohibited_inference": "completion and safe reversal remain unknown; success is forbidden",
     "required_authorization": "new explicit vault-owner repair plan bound to the unresolved Descriptor Identity and journal prefix"
   },
-  "verdict": "pass"
+  "verdict": "pass",
+  "boundary_mode_results": [
+    {
+      "fixture_id": "FIX-VMG-CRASH-001",
+      "fixture_sha256": "f1a00ed8cf29abe41c5ba0c2ae8abc13245c0adb4267d5ca893010f10925f453",
+      "boundary_id": "before_journal",
+      "mode": "cancel",
+      "durable_prefix": [],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "exact_rollback",
+      "observed_outcome": "exact_rollback",
+      "terminal_state": "rolled_back",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-002",
+      "fixture_sha256": "f31e3e1333337228f3090ad8567ceb69dd809fd51c3a9537757a2caf247b2452",
+      "boundary_id": "before_journal",
+      "mode": "cancel_and_resume",
+      "durable_prefix": [],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-003",
+      "fixture_sha256": "1253a77051142b53ea08eacc575b25238d83d845af3a4a3812daa91249598561",
+      "boundary_id": "before_journal",
+      "mode": "restart",
+      "durable_prefix": [],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-004",
+      "fixture_sha256": "f3083712ff32360fea5acef771dea5f82e3ffae57e8d1f6fdded956c641a8678",
+      "boundary_id": "before_journal",
+      "mode": "repeated_interruption",
+      "durable_prefix": [],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "terminal_manual_repair",
+      "observed_outcome": "terminal_manual_repair",
+      "terminal_state": "terminal_manual_repair",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-005",
+      "fixture_sha256": "d01178c7c8ce486c2a516a361f11d9bb829727b959363848176c9ef015524427",
+      "boundary_id": "after_journal",
+      "mode": "cancel",
+      "durable_prefix": [
+        "journal"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "exact_rollback",
+      "observed_outcome": "exact_rollback",
+      "terminal_state": "rolled_back",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-006",
+      "fixture_sha256": "c1956be40d27e83393d2799d35dbba11f1d44e73391843de50b937af3e4b2ffa",
+      "boundary_id": "after_journal",
+      "mode": "cancel_and_resume",
+      "durable_prefix": [
+        "journal"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-007",
+      "fixture_sha256": "1616ad3ca7fe2a4a6157bc3bf1e19b6e9e3542a900fb6e8a45c14099ef5e6bad",
+      "boundary_id": "after_journal",
+      "mode": "restart",
+      "durable_prefix": [
+        "journal"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-008",
+      "fixture_sha256": "996fcc98c86aba6da71acf651150979d015b1663198f81e7cb9c67f707ad5b09",
+      "boundary_id": "after_journal",
+      "mode": "repeated_interruption",
+      "durable_prefix": [
+        "journal"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "terminal_manual_repair",
+      "observed_outcome": "terminal_manual_repair",
+      "terminal_state": "terminal_manual_repair",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-009",
+      "fixture_sha256": "11075846858b7f1bcf0ffaffee43ea34d4df8d0f7ac8083143696415e7666083",
+      "boundary_id": "before_validation",
+      "mode": "cancel",
+      "durable_prefix": [
+        "journal"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "exact_rollback",
+      "observed_outcome": "exact_rollback",
+      "terminal_state": "rolled_back",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-010",
+      "fixture_sha256": "70cc448b1568044882fa283cf66011c8cb1faba0d2a73de8ad7e76167dce8b18",
+      "boundary_id": "before_validation",
+      "mode": "cancel_and_resume",
+      "durable_prefix": [
+        "journal"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-011",
+      "fixture_sha256": "4312a080445608af0cbb2bd698348b3c676f5535e3c4db5919e1c2885d10401c",
+      "boundary_id": "before_validation",
+      "mode": "restart",
+      "durable_prefix": [
+        "journal"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-012",
+      "fixture_sha256": "c92adf8002501e25066109033d6e395883db981d321651318afb5eef859ad00e",
+      "boundary_id": "before_validation",
+      "mode": "repeated_interruption",
+      "durable_prefix": [
+        "journal"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "terminal_manual_repair",
+      "observed_outcome": "terminal_manual_repair",
+      "terminal_state": "terminal_manual_repair",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-013",
+      "fixture_sha256": "12186585cb80c6fe6289ff3338b9659052d535b51154603139eac9cdc837c89b",
+      "boundary_id": "after_validation",
+      "mode": "cancel",
+      "durable_prefix": [
+        "journal",
+        "validation"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "exact_rollback",
+      "observed_outcome": "exact_rollback",
+      "terminal_state": "rolled_back",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-014",
+      "fixture_sha256": "1bd59874a31d5e6787e7d8a6fa76a9db824b2b0b21adcd53542d70d8ebea4c7d",
+      "boundary_id": "after_validation",
+      "mode": "cancel_and_resume",
+      "durable_prefix": [
+        "journal",
+        "validation"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-015",
+      "fixture_sha256": "000edcfe74fafeea1e71993fa6db3ef5b4cdc59eada0f1b3b1658e7c4f59ab36",
+      "boundary_id": "after_validation",
+      "mode": "restart",
+      "durable_prefix": [
+        "journal",
+        "validation"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-016",
+      "fixture_sha256": "1979d6352c06686d6f863748d4ef7d6f17dbd4b9de9962350cf7b2fb11a696fc",
+      "boundary_id": "after_validation",
+      "mode": "repeated_interruption",
+      "durable_prefix": [
+        "journal",
+        "validation"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "terminal_manual_repair",
+      "observed_outcome": "terminal_manual_repair",
+      "terminal_state": "terminal_manual_repair",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-017",
+      "fixture_sha256": "7f4ee52dade00a7a9f527041f970c6b680c08222b8864932502b46adf4ac700c",
+      "boundary_id": "before_data",
+      "mode": "cancel",
+      "durable_prefix": [
+        "journal",
+        "validation"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "exact_rollback",
+      "observed_outcome": "exact_rollback",
+      "terminal_state": "rolled_back",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-018",
+      "fixture_sha256": "659e54183754e1b61ff9e415dce63afe4975e4773058b7a06f3a1800af258411",
+      "boundary_id": "before_data",
+      "mode": "cancel_and_resume",
+      "durable_prefix": [
+        "journal",
+        "validation"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-019",
+      "fixture_sha256": "551ee5b5acffa95235323d35998a125b0a484d07d767e21d662821ecca24861f",
+      "boundary_id": "before_data",
+      "mode": "restart",
+      "durable_prefix": [
+        "journal",
+        "validation"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-020",
+      "fixture_sha256": "6fcf99e992f7edb2966898457ffc9837b261529bdb73d8a6b0e7d183ad5e04f6",
+      "boundary_id": "before_data",
+      "mode": "repeated_interruption",
+      "durable_prefix": [
+        "journal",
+        "validation"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "terminal_manual_repair",
+      "observed_outcome": "terminal_manual_repair",
+      "terminal_state": "terminal_manual_repair",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-021",
+      "fixture_sha256": "0d3d9aa137a7453cc857368b3feea2ac34822ce30ef3896104edcd9d29acfee3",
+      "boundary_id": "after_data",
+      "mode": "cancel",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "exact_rollback",
+      "observed_outcome": "exact_rollback",
+      "terminal_state": "rolled_back",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-022",
+      "fixture_sha256": "564cf03c825f1648cd919295d043d3eadef0c8f1e63ca396e8d9a0089e6acccd",
+      "boundary_id": "after_data",
+      "mode": "cancel_and_resume",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-023",
+      "fixture_sha256": "499504da7e9d60340b4a4c00bc06f0c0437bd612d144e12ca562a9b7b045a342",
+      "boundary_id": "after_data",
+      "mode": "restart",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-024",
+      "fixture_sha256": "d26c506a0b6842384d463cbcb776b80827b0e776e010da6fa7c8687d33582160",
+      "boundary_id": "after_data",
+      "mode": "repeated_interruption",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "terminal_manual_repair",
+      "observed_outcome": "terminal_manual_repair",
+      "terminal_state": "terminal_manual_repair",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-025",
+      "fixture_sha256": "c21ddefee57324f94d52d2f525fc63b82e6039dec90a9bc247fe167008fbdebc",
+      "boundary_id": "before_metadata",
+      "mode": "cancel",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "exact_rollback",
+      "observed_outcome": "exact_rollback",
+      "terminal_state": "rolled_back",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-026",
+      "fixture_sha256": "247f9b71a35872ac1a487cd49e8ac4f1cbbcef83c800454fdf9e936f7a51a254",
+      "boundary_id": "before_metadata",
+      "mode": "cancel_and_resume",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-027",
+      "fixture_sha256": "0d6e26d579ed001c2a6f8c613d87c3299fa3fe012c62a9d48a724e97b5b704d2",
+      "boundary_id": "before_metadata",
+      "mode": "restart",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-028",
+      "fixture_sha256": "007c034ed178a956a47ab4a19cd64cbf3b7413ce54d1e283b91ca072fa2146dc",
+      "boundary_id": "before_metadata",
+      "mode": "repeated_interruption",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "terminal_manual_repair",
+      "observed_outcome": "terminal_manual_repair",
+      "terminal_state": "terminal_manual_repair",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-029",
+      "fixture_sha256": "45e0809bd77642825565ee79c4874e0b41a153cdeb9421b22ba55e84fef0a95d",
+      "boundary_id": "after_metadata",
+      "mode": "cancel",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data",
+        "metadata"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "exact_rollback",
+      "observed_outcome": "exact_rollback",
+      "terminal_state": "rolled_back",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-030",
+      "fixture_sha256": "f9e9026cc68e5e248daa51308a14d99d33a748cfbd9914d09589671120f47789",
+      "boundary_id": "after_metadata",
+      "mode": "cancel_and_resume",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data",
+        "metadata"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-031",
+      "fixture_sha256": "24134a9325c73515310ebac59d403068ed5a7fda13988db227c6bb646862e165",
+      "boundary_id": "after_metadata",
+      "mode": "restart",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data",
+        "metadata"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "exact_rollback",
+      "observed_outcome": "exact_rollback",
+      "terminal_state": "rolled_back",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-032",
+      "fixture_sha256": "abc83107efd948140a16cd5237a54ce6a142700d6cf4a3ec53bc31a9c8dfe4d2",
+      "boundary_id": "after_metadata",
+      "mode": "repeated_interruption",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data",
+        "metadata"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "terminal_manual_repair",
+      "observed_outcome": "terminal_manual_repair",
+      "terminal_state": "terminal_manual_repair",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-033",
+      "fixture_sha256": "92aa45054a46a01a0742ab9d1882f4c433b7c713b215c0aaab6758da6b6f9043",
+      "boundary_id": "before_receipt",
+      "mode": "cancel",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "exact_rollback",
+      "observed_outcome": "exact_rollback",
+      "terminal_state": "rolled_back",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-034",
+      "fixture_sha256": "ec26becf22c006ef6d9561fad64a54b5f9d0849bebd93ce72d6a0c618df76b1b",
+      "boundary_id": "before_receipt",
+      "mode": "cancel_and_resume",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-035",
+      "fixture_sha256": "86898c117dc8e003d251bddd9e2960c91c7a443c248e3a2396f172814b5e7f40",
+      "boundary_id": "before_receipt",
+      "mode": "restart",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-036",
+      "fixture_sha256": "aee21a245935c713075d248d480578452f6b5434082c4d2baa257283cf3216ef",
+      "boundary_id": "before_receipt",
+      "mode": "repeated_interruption",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "absent",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "terminal_manual_repair",
+      "observed_outcome": "terminal_manual_repair",
+      "terminal_state": "terminal_manual_repair",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-037",
+      "fixture_sha256": "64b70ea6c6d4381bd8967e18d0f56ed57ecc942f4c5629244e143e48bf71b806",
+      "boundary_id": "after_receipt",
+      "mode": "cancel",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data",
+        "metadata",
+        "receipt"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "exact_rollback",
+      "observed_outcome": "exact_rollback",
+      "terminal_state": "rolled_back",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-038",
+      "fixture_sha256": "94906ee398c2df48bf2c005c34d0fcaaaa759282c3cd45e6d1e4172892c5245b",
+      "boundary_id": "after_receipt",
+      "mode": "cancel_and_resume",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data",
+        "metadata",
+        "receipt"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-039",
+      "fixture_sha256": "5652571de519ba75acd8d9254e221f0ccc61be97743cfe3f59db815887c0e08c",
+      "boundary_id": "after_receipt",
+      "mode": "restart",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data",
+        "metadata",
+        "receipt"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "compensate",
+      "observed_outcome": "compensate",
+      "terminal_state": "compensated",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-040",
+      "fixture_sha256": "4d727d5424600cd3700cd9da21048d28ee5180d5ea51f58f420adb629de0db4b",
+      "boundary_id": "after_receipt",
+      "mode": "repeated_interruption",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data",
+        "metadata",
+        "receipt"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "terminal_manual_repair",
+      "observed_outcome": "terminal_manual_repair",
+      "terminal_state": "terminal_manual_repair",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-041",
+      "fixture_sha256": "b52eb67141d825895e95399cd0938ed16bc14968b4239b73e31061dd4e852de6",
+      "boundary_id": "before_echo",
+      "mode": "cancel",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "exact_rollback",
+      "observed_outcome": "exact_rollback",
+      "terminal_state": "rolled_back",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-042",
+      "fixture_sha256": "5d3b3bdb8adbd5f0940e119ca8d5a5698a878667ee0122856d864bf37419b70a",
+      "boundary_id": "before_echo",
+      "mode": "cancel_and_resume",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-043",
+      "fixture_sha256": "d3c511af80aeb5baa64518beedcead7ffcdc97d779c3eabdcb6b76fcda09b9b5",
+      "boundary_id": "before_echo",
+      "mode": "restart",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-044",
+      "fixture_sha256": "89608c9e4164f76d8f02c71fd5205dab922a5aa10c0dd46382448b65757fac28",
+      "boundary_id": "before_echo",
+      "mode": "repeated_interruption",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "absent",
+        "readback": "absent"
+      },
+      "expected_outcome": "terminal_manual_repair",
+      "observed_outcome": "terminal_manual_repair",
+      "terminal_state": "terminal_manual_repair",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-045",
+      "fixture_sha256": "aa5a0d35d02c4fbd30aa87c6b3b82363a415a6edcee1d1f3ea8ad100186c3007",
+      "boundary_id": "after_echo",
+      "mode": "cancel",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt",
+        "echo"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data",
+        "metadata",
+        "receipt",
+        "echo"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "present",
+        "readback": "absent"
+      },
+      "expected_outcome": "exact_rollback",
+      "observed_outcome": "exact_rollback",
+      "terminal_state": "rolled_back",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-046",
+      "fixture_sha256": "797db66658681e88deec9b174439749a8ab6a0a1b476777ac90159865a704d17",
+      "boundary_id": "after_echo",
+      "mode": "cancel_and_resume",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt",
+        "echo"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data",
+        "metadata",
+        "receipt",
+        "echo"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "present",
+        "readback": "absent"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-047",
+      "fixture_sha256": "98e2100715d4b573d8e25bd1bbdaf5e79136a4ebbfaf97475d0780f776026db6",
+      "boundary_id": "after_echo",
+      "mode": "restart",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt",
+        "echo"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data",
+        "metadata",
+        "receipt",
+        "echo"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "present",
+        "readback": "absent"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-048",
+      "fixture_sha256": "f3f24770bdf2c0475fd9d49f08dd72882ffd74fd5a1f01cccd6d3b76789f1667",
+      "boundary_id": "after_echo",
+      "mode": "repeated_interruption",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt",
+        "echo"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data",
+        "metadata",
+        "receipt",
+        "echo"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "present",
+        "readback": "absent"
+      },
+      "expected_outcome": "terminal_manual_repair",
+      "observed_outcome": "terminal_manual_repair",
+      "terminal_state": "terminal_manual_repair",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-049",
+      "fixture_sha256": "85f284ec27843c36e326765e23b5820548ee8e8db3e9f4f7a5223867cee4d95e",
+      "boundary_id": "before_readback",
+      "mode": "cancel",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt",
+        "echo"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "present",
+        "readback": "absent"
+      },
+      "expected_outcome": "exact_rollback",
+      "observed_outcome": "exact_rollback",
+      "terminal_state": "rolled_back",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-050",
+      "fixture_sha256": "dc03cff1faf3dcea5779361cd544cfb1f38cd5630548d4c486caf59afcd72664",
+      "boundary_id": "before_readback",
+      "mode": "cancel_and_resume",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt",
+        "echo"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "present",
+        "readback": "absent"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-051",
+      "fixture_sha256": "16d75858bb382902156dad274c532057c76e97ced1186b21f575d542f1d1148e",
+      "boundary_id": "before_readback",
+      "mode": "restart",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt",
+        "echo"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "present",
+        "readback": "absent"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-052",
+      "fixture_sha256": "dd4647f1278106a9f9c2dd638567929672e0d78d05a60f7131b35b62b18dfa3c",
+      "boundary_id": "before_readback",
+      "mode": "repeated_interruption",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt",
+        "echo"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "present",
+        "readback": "absent"
+      },
+      "expected_outcome": "terminal_manual_repair",
+      "observed_outcome": "terminal_manual_repair",
+      "terminal_state": "terminal_manual_repair",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-053",
+      "fixture_sha256": "12185715dfdf90acaab70e1017ea82ac1abb02a4f4a0507277688a1ea4960e87",
+      "boundary_id": "after_readback",
+      "mode": "cancel",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt",
+        "echo",
+        "readback"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data",
+        "metadata",
+        "receipt",
+        "echo",
+        "readback"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "present",
+        "readback": "present"
+      },
+      "expected_outcome": "exact_rollback",
+      "observed_outcome": "exact_rollback",
+      "terminal_state": "rolled_back",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-054",
+      "fixture_sha256": "a1dee4d4fe6bd20183cacc7063d341ebbf699244eb95a2ee74c28954394dab97",
+      "boundary_id": "after_readback",
+      "mode": "cancel_and_resume",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt",
+        "echo",
+        "readback"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data",
+        "metadata",
+        "receipt",
+        "echo",
+        "readback"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "present",
+        "readback": "present"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-055",
+      "fixture_sha256": "2e8135544704e39f6b11ce909d8b490a4fb889586c6fefa71df59e392433eef5",
+      "boundary_id": "after_readback",
+      "mode": "restart",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt",
+        "echo",
+        "readback"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data",
+        "metadata",
+        "receipt",
+        "echo",
+        "readback"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "present",
+        "readback": "present"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-056",
+      "fixture_sha256": "9f53e5cd5498ec4f4669178889eee6bf8e065228a784500b2e85bf6719667e8d",
+      "boundary_id": "after_readback",
+      "mode": "repeated_interruption",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt",
+        "echo",
+        "readback"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data",
+        "metadata",
+        "receipt",
+        "echo",
+        "readback"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "present",
+        "readback": "present"
+      },
+      "expected_outcome": "terminal_manual_repair",
+      "observed_outcome": "terminal_manual_repair",
+      "terminal_state": "terminal_manual_repair",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-057",
+      "fixture_sha256": "13afd0c83bc965d196788aa8fb0a9b4b44688c0f5fd4fdd3ecfa5fb3d70c0369",
+      "boundary_id": "before_commit",
+      "mode": "cancel",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt",
+        "echo",
+        "readback"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "present",
+        "readback": "present"
+      },
+      "expected_outcome": "exact_rollback",
+      "observed_outcome": "exact_rollback",
+      "terminal_state": "rolled_back",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-058",
+      "fixture_sha256": "4b62b32c48136cad38fa76f83b361fb1464f43b0dff56b0ba47dd3c1a247c87d",
+      "boundary_id": "before_commit",
+      "mode": "cancel_and_resume",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt",
+        "echo",
+        "readback"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "present",
+        "readback": "present"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-059",
+      "fixture_sha256": "fc6eee1411c9a5389914a9615bae9fed1c642a9009107400250e19d92001f1ec",
+      "boundary_id": "before_commit",
+      "mode": "restart",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt",
+        "echo",
+        "readback"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "present",
+        "readback": "present"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-060",
+      "fixture_sha256": "cfc431bdf679e6b0e60e7bf1f8b816784030e235a0528481c9b571e3b87a47e3",
+      "boundary_id": "before_commit",
+      "mode": "repeated_interruption",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt",
+        "echo",
+        "readback"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "present",
+        "readback": "present"
+      },
+      "expected_outcome": "terminal_manual_repair",
+      "observed_outcome": "terminal_manual_repair",
+      "terminal_state": "terminal_manual_repair",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-061",
+      "fixture_sha256": "00979b387f65c3e98a4d2f354f50f84371b54f3a6f3468989137c79e9dc11318",
+      "boundary_id": "after_commit",
+      "mode": "cancel",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt",
+        "echo",
+        "readback",
+        "commit"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data",
+        "metadata",
+        "receipt",
+        "echo",
+        "readback",
+        "commit"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "present",
+        "readback": "present"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-062",
+      "fixture_sha256": "6a3f8b42f3eea4e3262aecd03c2b36076887b997c93d98f26172aaf7f54e8f29",
+      "boundary_id": "after_commit",
+      "mode": "cancel_and_resume",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt",
+        "echo",
+        "readback",
+        "commit"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data",
+        "metadata",
+        "receipt",
+        "echo",
+        "readback",
+        "commit"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "present",
+        "readback": "present"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-063",
+      "fixture_sha256": "15bc77d32c78c679fe5e46160a5567dd3926de957fca8e08782142d7565fc7be",
+      "boundary_id": "after_commit",
+      "mode": "restart",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt",
+        "echo",
+        "readback",
+        "commit"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data",
+        "metadata",
+        "receipt",
+        "echo",
+        "readback",
+        "commit"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "present",
+        "readback": "present"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-064",
+      "fixture_sha256": "75194f68dd09a6763eb65ab997453209e18a9bb89f3113a7c6d1c841d5aee393",
+      "boundary_id": "after_commit",
+      "mode": "repeated_interruption",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt",
+        "echo",
+        "readback",
+        "commit"
+      ],
+      "observed_evidence": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data",
+        "metadata",
+        "receipt",
+        "echo",
+        "readback",
+        "commit"
+      ],
+      "operation_binding": {
+        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "idempotency_key": "vmg-idem:reference-001",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "observed_effect_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        }
+      },
+      "receipt_echo_readback": {
+        "receipt": "present",
+        "echo": "present",
+        "readback": "present"
+      },
+      "expected_outcome": "resume",
+      "observed_outcome": "resume",
+      "terminal_state": "committed",
+      "duplicate_effect": false,
+      "pathname_reopened": false,
+      "console_success_authoritative": false,
+      "verdict": "pass"
+    }
+  ]
 }

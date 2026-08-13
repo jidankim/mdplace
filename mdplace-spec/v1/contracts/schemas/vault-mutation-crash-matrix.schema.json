@@ -17,7 +17,7 @@
   "$defs": {
     "boundary": {
       "type": "object", "additionalProperties": false,
-      "required": ["boundary_id", "event", "side", "durable_prefix", "possible_effect", "required_observations", "allowed_outcomes", "prohibited_inference"],
+      "required": ["boundary_id", "event", "side", "durable_prefix", "possible_effect", "required_observations", "allowed_outcomes", "mode_results", "prohibited_inference"],
       "properties": {
         "boundary_id": {"enum": ["before_journal", "after_journal", "before_validation", "after_validation", "before_data", "after_data", "before_metadata", "after_metadata", "before_receipt", "after_receipt", "before_echo", "after_echo", "before_readback", "after_readback", "before_commit", "after_commit"]},
         "event": {"enum": ["journal", "validation", "data", "metadata", "receipt", "echo", "readback", "commit"]},
@@ -26,7 +26,18 @@
         "possible_effect": {"enum": ["none", "unknown", "declared_data_effect", "declared_metadata_effect"]},
         "required_observations": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["authorized_plan", "ownership", "journal", "descriptor_identity", "data", "metadata", "receipt", "echo", "readback", "commit"]}},
         "allowed_outcomes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["resume", "exact_rollback", "compensate", "terminal_manual_repair"]}},
+        "mode_results": {"type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "items": {"$ref": "#/$defs/modeResult"}},
         "prohibited_inference": {"const": "never infer success or completion from pathname or console text"}
+      }
+    },
+    "modeResult": {
+      "type": "object", "additionalProperties": false,
+      "required": ["mode", "recovery_action", "terminal_state", "effect_obligation"],
+      "properties": {
+        "mode": {"enum": ["cancel", "cancel_and_resume", "restart", "repeated_interruption"]},
+        "recovery_action": {"enum": ["resume", "exact_rollback", "compensate", "terminal_manual_repair"]},
+        "terminal_state": {"enum": ["committed", "rolled_back", "compensated", "terminal_manual_repair"]},
+        "effect_obligation": {"const": "preserve at-most-once effect identity; pathname and console text are non-authoritative"}
       }
     }
   }
