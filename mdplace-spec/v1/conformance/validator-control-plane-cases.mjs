@@ -847,7 +847,7 @@ test('dispatch revalidates current journal writer readiness dependency and capac
   authenticateScenarioScheduler(reversedInitial, reversedAction.current_tick);
   reversedAction.expected_scheduler_state_digest = reversedInitial.scheduler_state_digest;
   assert.deepEqual((await observeControlPlaneScenario(reversedLiveDispatch, packageRoot)).codes,
-    ['control.lease_tick_stale']);
+    ['control.precondition_failed']);
 
   const reversedQueuedCancellation = structuredClone(reversedLiveDispatch);
   const cancellationInitial = reversedQueuedCancellation.document.initial;
@@ -867,7 +867,7 @@ test('dispatch revalidates current journal writer readiness dependency and capac
     'vault_owner_authorization', vaultOwnerFields(cancellationAction.vault_owner_receipt),
   ));
   assert.deepEqual((await observeControlPlaneScenario(reversedQueuedCancellation, packageRoot)).codes,
-    ['control.lease_tick_stale']);
+    ['control.precondition_failed']);
 
   const futurePrefixCapacity = structuredClone(fixture.subject);
   const capacityInitial = futurePrefixCapacity.document.initial;
@@ -905,7 +905,53 @@ test('dispatch revalidates current journal writer readiness dependency and capac
   authenticateScenarioScheduler(capacityInitial, capacityAction.current_tick);
   capacityAction.expected_scheduler_state_digest = capacityInitial.scheduler_state_digest;
   assert.deepEqual((await observeControlPlaneScenario(futurePrefixCapacity, packageRoot)).codes,
-    ['control.lease_tick_stale']);
+    ['control.precondition_failed']);
+
+  const duplicateSchedulerReceipts = structuredClone(fixture.subject);
+  const duplicateInitial = duplicateSchedulerReceipts.document.initial;
+  const duplicateAction = duplicateSchedulerReceipts.document.action;
+  const duplicatePrefix = duplicateInitial.journal_prefix_receipt;
+  duplicatePrefix.active_leases = Array.from({length: 2}, (_, index) => ({
+    lease_id: `lease:scheduler-identity-${index + 1}`,
+    work_id: `work:scheduler-identity-${index + 1}`, work_version: 1,
+    owner_agent_id: duplicateInitial.persistent_agent_id,
+    acquired_tick: 1, expires_tick: 301, status: 'active',
+  }));
+  Object.assign(duplicatePrefix, {head_sequence: 2, head_digest: 'd'.repeat(64)});
+  Object.assign(duplicatePrefix, signControlPlaneReceipt(
+    'work_journal_prefix', journalPrefixFields(duplicatePrefix),
+  ));
+  const duplicateEnqueue = duplicateInitial.work.enqueue_receipt;
+  Object.assign(duplicateEnqueue, {
+    base_head_sequence: 2, base_head_digest: duplicatePrefix.head_digest, journal_sequence: 3,
+  });
+  Object.assign(duplicateEnqueue, signControlPlaneReceipt('work_enqueue', [
+    duplicateEnqueue.receipt_id, duplicateEnqueue.work_id, duplicateEnqueue.work_version,
+    duplicateEnqueue.idempotency_key, duplicateEnqueue.input_digest,
+    duplicateEnqueue.base_head_sequence, duplicateEnqueue.base_head_digest,
+    duplicateEnqueue.journal_sequence,
+  ]));
+  duplicateInitial.journal_head_sequence = 3;
+  authenticateScenarioHead(duplicateInitial);
+  duplicateInitial.scheduler_active_lease_receipts = duplicatePrefix.active_leases.map((lease) => {
+    const receipt = {
+      receipt_id: 'scheduler-lease-receipt:duplicate-001',
+      vault_id: duplicateInitial.vault_id, ...lease,
+    };
+    return {...receipt, ...signControlPlaneReceipt(
+      'scheduler_active_lease', schedulerLeaseFields(receipt),
+    )};
+  });
+  duplicateInitial.active_lease_ids = duplicatePrefix.active_leases.map(({lease_id: leaseId}) => leaseId);
+  duplicateInitial.active_work_count = 2;
+  duplicateInitial.scheduler_state_digest = schedulerStateDigest(duplicateInitial.active_lease_ids);
+  Object.assign(duplicateAction, {
+    expected_journal_head_sequence: 3,
+    expected_journal_head_digest: duplicateInitial.journal_head_digest,
+    expected_scheduler_state_digest: duplicateInitial.scheduler_state_digest,
+  });
+  assert.deepEqual((await observeControlPlaneScenario(duplicateSchedulerReceipts, packageRoot)).codes,
+    ['control.scheduler_base_stale']);
 });
 
 test('stateful dependency and Scheduler snapshots are derived from durable Work evidence', async () => {
@@ -976,6 +1022,37 @@ test('stateful dependency and Scheduler snapshots are derived from durable Work 
   prefixCollision.document.action.expected_journal_head_sequence = prefixCollision.document.initial.journal_head_sequence;
   prefixCollision.document.action.expected_journal_head_digest = prefixCollision.document.initial.journal_head_digest;
   assert.deepEqual((await observeControlPlaneScenario(prefixCollision, packageRoot)).codes,
+    ['control.lease_history_invalid']);
+
+  const reversedPrefixSuffix = JSON.parse(await readFile(new URL(
+    './scenarios/control-plane/cancellation-during-execution-durable.json', import.meta.url,
+  )));
+  const reversedPrefixInitial = reversedPrefixSuffix.subject.document.initial;
+  const reversedPrefix = reversedPrefixInitial.journal_prefix_receipt;
+  Object.assign(reversedPrefix, {head_sequence: 1, head_digest: 'c'.repeat(64), active_leases: [{
+    lease_id: 'lease:prefix-clock-001', work_id: 'work:other-001', work_version: 1,
+    owner_agent_id: reversedPrefixInitial.persistent_agent_id,
+    acquired_tick: 100, expires_tick: 400, status: 'active',
+  }]});
+  Object.assign(reversedPrefix, signControlPlaneReceipt(
+    'work_journal_prefix', journalPrefixFields(reversedPrefix),
+  ));
+  const reversedEnqueue = reversedPrefixInitial.work.enqueue_receipt;
+  Object.assign(reversedEnqueue, {
+    base_head_sequence: 1, base_head_digest: reversedPrefix.head_digest, journal_sequence: 2,
+  });
+  Object.assign(reversedEnqueue, signControlPlaneReceipt('work_enqueue', [
+    reversedEnqueue.receipt_id, reversedEnqueue.work_id, reversedEnqueue.work_version,
+    reversedEnqueue.idempotency_key, reversedEnqueue.input_digest,
+    reversedEnqueue.base_head_sequence, reversedEnqueue.base_head_digest,
+    reversedEnqueue.journal_sequence,
+  ]));
+  for (const receipt of reversedPrefixInitial.prior_lease_receipts) {
+    receipt.journal_sequence += 1;
+    Object.assign(receipt, signControlPlaneReceipt('work_lease', leaseFields(receipt)));
+  }
+  authenticateScenarioHead(reversedPrefixInitial);
+  assert.deepEqual((await observeControlPlaneScenario(reversedPrefixSuffix.subject, packageRoot)).codes,
     ['control.lease_history_invalid']);
 
   const futurePrefixLease = structuredClone(fixture.subject);
@@ -1592,6 +1669,16 @@ test('idempotent cancellation and readiness lifecycle observations match their m
   assert.deepEqual((await observeControlPlaneScenario(resumeFixture.subject, packageRoot)).codes,
     ['control.idempotency_incompatible']);
 
+  const staleSchedulerResume = JSON.parse(await readFile(new URL(
+    './scenarios/control-plane/authorized-bounded-resume-recorded.json', import.meta.url,
+  )));
+  Object.assign(staleSchedulerResume.subject.document.initial, {
+    scheduler_observed_tick: 0, active_lease_ids: [], active_work_count: 0,
+    scheduler_active_lease_receipts: [], scheduler_state_digest: schedulerStateDigest([]),
+  });
+  assert.deepEqual((await observeControlPlaneScenario(staleSchedulerResume.subject, packageRoot)).codes,
+    ['control.scheduler_base_stale']);
+
   const closedResume = JSON.parse(await readFile(new URL('./scenarios/control-plane/authorized-bounded-resume-recorded.json', import.meta.url)));
   Object.assign(closedResume.subject.document.initial.control_channel,
     {state: 'closed', same_user_authenticated: false});
@@ -1886,7 +1973,7 @@ test('acknowledgement and Scheduler observations reject pre-acquisition and expi
   acknowledgement.subject.document.action.expected_scheduler_state_digest =
     acknowledgement.subject.document.initial.scheduler_state_digest;
   assert.deepEqual((await observeControlPlaneScenario(acknowledgement.subject, packageRoot)).codes,
-    ['control.lease_tick_stale']);
+    ['control.lease_stale']);
 
   const dispatchFixture = JSON.parse(await readFile(new URL(
     './scenarios/control-plane/dequeue-acknowledges-after-receipt.json', import.meta.url,
@@ -1973,7 +2060,7 @@ test('acknowledgement and Scheduler observations reject pre-acquisition and expi
   futureTerminal.subject.document.action.expected_scheduler_state_digest =
     futureInitial.scheduler_state_digest;
   assert.deepEqual((await observeControlPlaneScenario(futureTerminal.subject, packageRoot)).codes,
-    ['control.lease_tick_stale']);
+    ['control.scheduler_base_stale']);
 });
 
 test('terminal recover_work remains illegal while restart preserves completion', async () => {
@@ -1992,6 +2079,23 @@ test('terminal recover_work remains illegal while restart preserves completion',
   assert.deepEqual(observed.codes, ['control.illegal_transition']);
   assert.equal(observed.illegal_transition, true);
   assert.equal(observed.terminal_state, 'succeeded');
+
+  const staleTerminalRecovery = structuredClone(fixture.subject);
+  staleTerminalRecovery.document.action.recovery_tick = 0;
+  const staleTerminalObserved = await observeControlPlaneScenario(staleTerminalRecovery, packageRoot);
+  assert.deepEqual(staleTerminalObserved.codes, ['control.illegal_transition']);
+  assert.equal(staleTerminalObserved.illegal_transition, true);
+  assert.equal(staleTerminalObserved.terminal_state, 'succeeded');
+
+  const staleRestart = JSON.parse(await readFile(new URL(
+    './scenarios/control-plane/completed-work-not-repeated-restart.json', import.meta.url,
+  )));
+  Object.assign(staleRestart.subject.document.initial, {
+    scheduler_observed_tick: 0, active_lease_ids: [], active_work_count: 0,
+    scheduler_active_lease_receipts: [], scheduler_state_digest: schedulerStateDigest([]),
+  });
+  assert.deepEqual((await observeControlPlaneScenario(staleRestart.subject, packageRoot)).codes,
+    ['control.scheduler_base_stale']);
 });
 
 test('Scheduler schema cannot represent more queue entries than the Work Journal', async () => {

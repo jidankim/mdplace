@@ -2,7 +2,7 @@ export function replayControlPlaneLifecycle(events, limits) {
   let current = {
     state: 'absent', version: 0, retryCount: 0, recoveryCount: 0, rejectionCount: 0,
     retryEligibleTick: null, lease: null, start: null, endedLeaseId: null,
-    failedRecovery: null, lastObservedTick: 0,
+    failedRecovery: null, lastObservedTick: limits.initialObservedTick ?? 0,
     seenLeaseIds: new Set(limits.reservedLeaseIds ?? []),
   };
   const trace = [];

@@ -331,6 +331,7 @@ function representedActiveLeasesAt(initial, observationTick) {
 function schedulerSnapshotIsConsistent(initial, requiredObservationTick = initial.scheduler_observed_tick) {
   const receipts = initial.scheduler_active_lease_receipts;
   const receiptLeaseIds = receipts.map(({lease_id: id}) => id);
+  const receiptIds = receipts.map(({receipt_id: id}) => id);
   const prefixLeases = initial.journal_prefix_receipt.active_leases.filter((lease) =>
     lease.acquired_tick <= initial.scheduler_observed_tick &&
     initial.scheduler_observed_tick < lease.expires_tick);
@@ -347,6 +348,7 @@ function schedulerSnapshotIsConsistent(initial, requiredObservationTick = initia
       lease.status === receipt.status));
   return initial.scheduler_observed_tick === requiredObservationTick &&
     new Set(receiptLeaseIds).size === receipts.length &&
+    new Set(receiptIds).size === receipts.length &&
     receipts.every((receipt) => receipt.vault_id === initial.vault_id &&
       receipt.owner_agent_id === initial.persistent_agent_id &&
       receipt.status === 'active' && receipt.expires_tick > receipt.acquired_tick &&
@@ -721,7 +723,7 @@ function dispatch(initial, action) {
   if (!journalCanAppend(initial)) return rejected(initial, action, 'control.journal_capacity_exhausted', {terminal: 'blocked'});
   if (!Number.isInteger(action.current_tick)) return rejected(initial, action, 'control.current_tick_missing', {terminal: 'blocked'});
   if (action.current_tick < scenarioLifecycleLastObservedTick(initial)) {
-    return rejected(initial, action, 'control.lease_tick_stale', {terminal: 'blocked'});
+    return rejected(initial, action, 'control.precondition_failed', {terminal: initial.work.state});
   }
   if (action.current_tick > controlPlaneLimits.latestDispatchTick) {
     return rejected(initial, action, 'control.lease_tick_overflow', {terminal: 'blocked'});
@@ -748,6 +750,7 @@ function acknowledge(initial, action) {
     return rejected(initial, action, 'control.lease_stale', {terminal: initial.work.state});
   }
   if (!Number.isInteger(action.current_tick) || action.current_tick < initial.work.lease_acquired_tick ||
+      action.current_tick < scenarioLifecycleLastObservedTick(initial) ||
       action.current_tick >= initial.work.lease_expires_tick) {
     return rejected(initial, action, 'control.lease_stale', {terminal: initial.work.state});
   }
@@ -765,7 +768,8 @@ function fail(initial, action) {
       initial.work.lease_status !== 'active' || !Number.isInteger(action.current_tick) ||
       action.current_tick < latestPriorStartReceipt(
         initial, initial.work, initial.work.lease_id, initial.journal_head_sequence + 1,
-      )?.started_tick || action.current_tick >= initial.work.lease_expires_tick) {
+      )?.started_tick || action.current_tick < scenarioLifecycleLastObservedTick(initial) ||
+      action.current_tick >= initial.work.lease_expires_tick) {
     return rejected(initial, action, 'control.lease_stale', {terminal: initial.work.state});
   }
   if (!journalCanAppend(initial)) return rejected(initial, action, 'control.journal_capacity_exhausted', {terminal: 'blocked'});
@@ -852,6 +856,9 @@ function cancel(initial, action) {
   }
   if (!Number.isInteger(action.current_tick)) {
     return rejected(initial, action, 'control.current_tick_missing', {terminal: initial.work.state});
+  }
+  if (action.current_tick < scenarioLifecycleLastObservedTick(initial)) {
+    return rejected(initial, action, 'control.precondition_failed', {terminal: initial.work.state});
   }
   if (!journalCanAppend(initial, 2)) return rejected(initial, action, 'control.journal_capacity_exhausted', {terminal: 'blocked'});
   if (action.idempotency_key !== initial.work.idempotency_key) {
@@ -957,6 +964,7 @@ function recover(initial, action) {
     : initial.work.lease_acquired_tick;
   if (action.lease_id !== initial.work.lease_id || initial.work.lease_status !== 'active' ||
       action.recovery_tick === null || action.recovery_tick < recoveryStartTick ||
+      action.recovery_tick < scenarioLifecycleLastObservedTick(initial) ||
       action.recovery_tick < initial.work.lease_expires_tick) {
     return rejected(initial, action, 'control.lease_not_recoverable', {terminal: 'blocked'});
   }
@@ -1054,6 +1062,7 @@ function completeWork(initial, action) {
       action.lease_id !== initial.work.lease_id || action.idempotency_key !== initial.work.idempotency_key ||
       action.completion_output_digest === null || !Number.isInteger(action.current_tick) ||
       start === null || action.current_tick < start.started_tick ||
+      action.current_tick < scenarioLifecycleLastObservedTick(initial) ||
       action.current_tick >= initial.work.lease_expires_tick) {
     return rejected(initial, action, 'control.precondition_failed', {terminal: initial.work?.state ?? 'rejected'});
   }
@@ -1141,17 +1150,16 @@ export async function observeControlPlaneScenario(subject, packageRoot) {
   if (!journalHeadIsAuthenticated(initial)) return rejected(initial, action, 'control.journal_evidence_invalid', {terminal: 'blocked'});
   if (!dependencyStateIsAuthenticated(initial)) return rejected(initial, action, 'control.dependency_evidence_invalid', {terminal: 'blocked'});
   if (!leaseHistoryIsValid(initial)) return rejected(initial, action, 'control.lease_history_invalid', {terminal: 'blocked'});
-  const lifecycleActionTick = action.kind === 'recover' ? action.recovery_tick
-    : ['dispatch', 'acknowledge', 'complete_work', 'fail', 'retry', 'cancel'].includes(action.kind)
-      ? action.current_tick : null;
-  if (Number.isInteger(lifecycleActionTick) &&
-      lifecycleActionTick < scenarioLifecycleLastObservedTick(initial)) {
-    return rejected(initial, action, 'control.lease_tick_stale', {terminal: 'blocked'});
-  }
   const schedulerTick = action.kind === 'recover' ? action.recovery_tick
     : ['dispatch', 'acknowledge', 'complete_work', 'fail', 'retry', 'cancel'].includes(action.kind)
       ? action.current_tick : initial.scheduler_observed_tick;
-  if (!schedulerSnapshotIsConsistent(initial, schedulerTick)) {
+  const terminalRecovery = action.kind === 'recover' &&
+    ['cancelled', 'succeeded', 'failed'].includes(initial.work?.state);
+  const reconciliationSnapshotIsCurrent = terminalRecovery ||
+    !['restart', 'readiness_check', 'resume'].includes(action.kind) ||
+    initial.scheduler_observed_tick >= scenarioLifecycleLastObservedTick(initial);
+  if (!terminalRecovery && (!reconciliationSnapshotIsCurrent ||
+      !schedulerSnapshotIsConsistent(initial, schedulerTick))) {
     return rejected(initial, action, 'control.scheduler_base_stale', {terminal: 'blocked'});
   }
   if (!workStateIsConsistent(initial.work)) return rejected(initial, action, 'control.work_state_invalid');
