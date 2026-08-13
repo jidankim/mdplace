@@ -22,6 +22,7 @@
         {"$ref": "#/$defs/semanticKernelSubject"},
         {"$ref": "#/$defs/controlPlaneSubject"},
         {"$ref": "#/$defs/processingPolicySubject"}
+        ,{"$ref": "#/$defs/vaultMutationGateSubject"}
       ]
     },
     "expected": {"$ref": "#/$defs/expected"}
@@ -261,6 +262,16 @@
         "kind": {"const": "processing_policy"},
         "schema": {"const": "contracts/schemas/processing-policy-scenario.schema.json"},
         "document": {"description": "Closed Core Processing Policy scenario validated against subject.schema before observation."}
+      }
+    },
+    "vaultMutationGateSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "schema", "document"],
+      "properties": {
+        "kind": {"const": "vault_mutation_gate"},
+        "schema": {"const": "contracts/schemas/vault-mutation-scenario.schema.json"},
+        "document": {"description": "Closed descriptor-bound scenario validated against subject.schema before observation."}
       }
     },
     "expected": {

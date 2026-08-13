@@ -1,0 +1,104 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-VMG-NEG-005",
+  "category": "negative",
+  "requirement_ids": [
+    "REQ-VMG-001",
+    "REQ-VMG-002",
+    "REQ-VMG-003",
+    "REQ-VMG-004",
+    "REQ-VMG-005",
+    "REQ-VMG-006",
+    "REQ-VMG-007",
+    "REQ-VMG-008",
+    "REQ-VMG-009",
+    "REQ-VMG-010"
+  ],
+  "subject": {
+    "kind": "vault_mutation_gate",
+    "schema": "contracts/schemas/vault-mutation-scenario.schema.json",
+    "document": {
+      "schema_id": "mdplace.vault-mutation-scenario/v1",
+      "scenario_id": "VMG-011",
+      "operation": "move_projection",
+      "caller_role": "folder_projection",
+      "plan_state": "authorized",
+      "fault": "malformed_plan",
+      "probe": {
+        "trusted_root_opened": true,
+        "resolution": "openat_each_component",
+        "nofollow": true,
+        "pathname_reopened": false,
+        "first_fstat": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "second_fstat": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "same_handle_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "expected_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "receipt_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "readback_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 12,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "receipt_echo": "complete",
+        "readback": "match",
+        "console_output": "none"
+      },
+      "recovery": {
+        "mode": "none",
+        "crash_boundary": null,
+        "durable_prefix": [],
+        "declared_intent": "resume",
+        "safe_reverse": false,
+        "compensation_authorized": false,
+        "interruption_count": 0
+      }
+    }
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": [
+      "schema.required_field"
+    ],
+    "outputs": [
+      "mutation denied"
+    ],
+    "operations": [
+      "open trusted root descriptor",
+      "resolve every component with openat and O_NOFOLLOW",
+      "capture first fstat",
+      "read and hash content through the same handle",
+      "capture second fstat",
+      "compare device inode size and content hash"
+    ],
+    "receipts": [
+      "MutationDeniedReceipt"
+    ],
+    "filesystem_effects": [
+      "none"
+    ],
+    "terminal_state": "denied",
+    "illegal_transition": false
+  }
+}

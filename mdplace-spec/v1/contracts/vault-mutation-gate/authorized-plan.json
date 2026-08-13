@@ -1,0 +1,51 @@
+{
+  "$schema": "../schemas/authorized-mutation-plan.schema.json",
+  "schema_id": "mdplace.authorized-mutation-plan/v1",
+  "plan_id": "mutation-plan:reference-001",
+  "plan_version": 1,
+  "vault_id": "vault:reference",
+  "trusted_root_id": "trusted-root:reference",
+  "operation": "move_projection",
+  "caller": {
+    "caller_id": "folder-projection:reference",
+    "role": "folder_projection",
+    "authority_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "ownership": {
+    "agent_id": "agent:primary-001",
+    "exclusive_writer_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "writer_epoch": 7
+  },
+  "source_components": [
+    "Inbox",
+    "note.md"
+  ],
+  "target_components": [
+    "Research",
+    "note.md"
+  ],
+  "immutable_inputs": {
+    "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "target_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "policy_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "semantic_base_sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+  },
+  "expected_precondition": {
+    "device": 42,
+    "inode": 1001,
+    "size": 12,
+    "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "expected_result": {
+    "device": 42,
+    "inode": 1001,
+    "size": 12,
+    "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+  },
+  "placement_outcome_ref": "placement:reference-001",
+  "durability_policy": "sync_journal_data_metadata_receipt_readback_commit",
+  "idempotency_key": "vmg-idem:reference-001",
+  "recovery_intent": "resume",
+  "plan_state": "authorized"
+}

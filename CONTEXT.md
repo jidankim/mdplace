@@ -56,6 +56,30 @@ _Avoid_: network API, loopback service, remote control endpoint
 The sole mdplace boundary that performs journaled, precondition-checked filesystem changes inside a vault without deciding semantic truth.
 _Avoid_: semantic writer, arbitrary filesystem access
 
+**Authorized Mutation Plan**:
+A closed, immutable instruction accepted by the Vault Mutation Gate for exactly one declared Capture Promotion or Folder Projection operation. It binds the caller, ownership, trusted-root-relative source and target, immutable inputs, expected Descriptor Identity, durability, idempotency, and recovery intent; it never establishes placement or taxonomy truth.
+_Avoid_: Filesystem request, inferred plan, mutation permission
+
+**Descriptor Identity**:
+The device, inode, size, and content SHA-256 tuple captured with `fstat`, same-handle reading, and a second `fstat` through one descriptor resolved from the trusted vault root with descriptor-relative `openat` and `O_NOFOLLOW`. A pathname observation is never Descriptor Identity.
+_Avoid_: Path identity, stat result, filename hash
+
+**Operation Receipt**:
+The durable Vault Mutation Gate record that echoes one Authorized Mutation Plan, its precondition Descriptor Identity, exact operation, caller, ownership, Mutation Journal, and post-operation same-descriptor readback. Console text and pathname observations are not receipts.
+_Avoid_: Success message, log line, semantic operation
+
+**Mutation Journal**:
+The durable, append-only, sync-ordered record of one Authorized Mutation Plan from prepare through validation, mutation, Operation Receipt, readback, commit, and any recovery action. Its state is physical operational evidence and never semantic truth.
+_Avoid_: Work Journal, semantic ledger, mutable status file
+
+**Vault Mutation Recovery**:
+Default-deny reconciliation of an interrupted Vault Mutation Gate operation from the exact Authorized Mutation Plan, Mutation Journal, Operation Receipt, Descriptor Identity, ownership, and idempotency bindings. It deterministically resumes, performs an exact safe rollback, applies explicit compensation, or halts in Terminal Manual Repair without guessing.
+_Avoid_: Blind retry, best-effort cleanup, semantic rollback
+
+**Terminal Manual Repair**:
+The terminal physical-operation state used when Vault Mutation Recovery cannot prove that resume, exact rollback, or compensation is safe. It reports the unresolved evidence and forbids success until a new explicitly authorized repair plan is supplied.
+_Avoid_: Warning, ignored failure, automatic success
+
 **Capture Source**:
 An external producer that writes an untrusted Capture Candidate from exactly one browser tab without making semantic decisions. Stock Obsidian Web Clipper 1.7.0 is the first Capture Source.
 _Avoid_: Capture Adapter, semantic classifier

@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:vault-mutation-recovery-report:v1",
+  "title": "mdplace Vault Mutation Recovery report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "report_id", "package_series", "release_version", "validator_version", "crash_matrix_ref", "crash_matrix_sha256", "fixture_manifest_ref", "scenario_results", "boundary_coverage", "interruption_modes", "terminal_manual_repair", "verdict"],
+  "properties": {
+    "$schema": {"const": "../../contracts/schemas/vault-mutation-recovery-report.schema.json"},
+    "schema_id": {"const": "mdplace.vault-mutation-recovery-report/v1"},
+    "report_id": {"type": "string", "pattern": "^vmg-recovery-report:[a-z0-9-]{3,64}$"},
+    "package_series": {"const": "mdplace-spec/v1"},
+    "release_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "validator_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "crash_matrix_ref": {"const": "contracts/vault-mutation-gate/crash-boundary-matrix.json"},
+    "crash_matrix_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "fixture_manifest_ref": {"const": "conformance/manifest.yaml"},
+    "scenario_results": {"type": "array", "minItems": 24, "maxItems": 24, "items": {"$ref": "#/$defs/result"}},
+    "boundary_coverage": {"type": "array", "minItems": 16, "maxItems": 16, "uniqueItems": true, "items": {"enum": ["before_journal", "after_journal", "before_validation", "after_validation", "before_data", "after_data", "before_metadata", "after_metadata", "before_receipt", "after_receipt", "before_echo", "after_echo", "before_readback", "after_readback", "before_commit", "after_commit"]}},
+    "interruption_modes": {"type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "items": {"enum": ["cancel", "cancel_and_resume", "restart", "repeated_interruption"]}},
+    "terminal_manual_repair": {
+      "type": "object", "additionalProperties": false,
+      "required": ["fixture_id", "unresolved_evidence", "prohibited_inference", "required_authorization"],
+      "properties": {
+        "fixture_id": {"const": "FIX-VMG-REC-007"},
+        "unresolved_evidence": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "prohibited_inference": {"const": "completion and safe reversal remain unknown; success is forbidden"},
+        "required_authorization": {"const": "new explicit vault-owner repair plan bound to the unresolved Descriptor Identity and journal prefix"}
+      }
+    },
+    "verdict": {"const": "pass"}
+  },
+  "$defs": {
+    "result": {
+      "type": "object", "additionalProperties": false,
+      "required": ["fixture_id", "expected_verdict", "observed_verdict", "terminal_state", "recovery_outcome"],
+      "properties": {
+        "fixture_id": {"type": "string", "pattern": "^FIX-VMG-[A-Z][A-Z0-9_]{1,31}-[0-9]{3}$"},
+        "expected_verdict": {"enum": ["pass", "fail"]},
+        "observed_verdict": {"enum": ["pass", "fail"]},
+        "terminal_state": {"enum": ["committed", "denied", "recovery_required", "rolled_back", "compensated", "terminal_manual_repair"]},
+        "recovery_outcome": {"enum": ["not_applicable", "recovered", "denied", "recovery_required", "rolled_back", "compensated", "terminal_manual_repair"]}
+      }
+    }
+  }
+}

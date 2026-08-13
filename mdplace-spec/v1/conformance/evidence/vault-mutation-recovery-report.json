@@ -1,0 +1,215 @@
+{
+  "$schema": "../../contracts/schemas/vault-mutation-recovery-report.schema.json",
+  "schema_id": "mdplace.vault-mutation-recovery-report/v1",
+  "report_id": "vmg-recovery-report:reference-001",
+  "package_series": "mdplace-spec/v1",
+  "release_version": "1.0.0",
+  "validator_version": "1.2.0",
+  "crash_matrix_ref": "contracts/vault-mutation-gate/crash-boundary-matrix.json",
+  "crash_matrix_sha256": "cc56d3377b53ec024774a7c9be0c39dfcd7d190cc89fedc0408d41bd9754042f",
+  "fixture_manifest_ref": "conformance/manifest.yaml",
+  "scenario_results": [
+    {
+      "fixture_id": "FIX-VMG-POS-001",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "not_applicable"
+    },
+    {
+      "fixture_id": "FIX-VMG-POS-002",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "not_applicable"
+    },
+    {
+      "fixture_id": "FIX-VMG-BND-001",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "not_applicable"
+    },
+    {
+      "fixture_id": "FIX-VMG-NEG-001",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "denied",
+      "recovery_outcome": "denied"
+    },
+    {
+      "fixture_id": "FIX-VMG-NEG-002",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "denied",
+      "recovery_outcome": "denied"
+    },
+    {
+      "fixture_id": "FIX-VMG-NEG-003",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "denied",
+      "recovery_outcome": "denied"
+    },
+    {
+      "fixture_id": "FIX-VMG-NEG-004",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "denied",
+      "recovery_outcome": "denied"
+    },
+    {
+      "fixture_id": "FIX-VMG-AUTH-001",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "denied",
+      "recovery_outcome": "denied"
+    },
+    {
+      "fixture_id": "FIX-VMG-AUTH-002",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "denied",
+      "recovery_outcome": "denied"
+    },
+    {
+      "fixture_id": "FIX-VMG-ILLEGAL-001",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "denied",
+      "recovery_outcome": "denied"
+    },
+    {
+      "fixture_id": "FIX-VMG-NEG-005",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "denied",
+      "recovery_outcome": "denied"
+    },
+    {
+      "fixture_id": "FIX-VMG-STATE-001",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "denied",
+      "recovery_outcome": "denied"
+    },
+    {
+      "fixture_id": "FIX-VMG-STATE-002",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "denied",
+      "recovery_outcome": "denied"
+    },
+    {
+      "fixture_id": "FIX-VMG-STATE-003",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "denied",
+      "recovery_outcome": "denied"
+    },
+    {
+      "fixture_id": "FIX-VMG-STATE-004",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "denied",
+      "recovery_outcome": "denied"
+    },
+    {
+      "fixture_id": "FIX-VMG-REC-001",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "recovery_required",
+      "recovery_outcome": "recovery_required"
+    },
+    {
+      "fixture_id": "FIX-VMG-REC-002",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "recovery_required",
+      "recovery_outcome": "recovery_required"
+    },
+    {
+      "fixture_id": "FIX-VMG-REC-003",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "recovery_required",
+      "recovery_outcome": "recovery_required"
+    },
+    {
+      "fixture_id": "FIX-VMG-NEG-006",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "recovery_required",
+      "recovery_outcome": "recovery_required"
+    },
+    {
+      "fixture_id": "FIX-VMG-STATE-005",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "denied",
+      "recovery_outcome": "denied"
+    },
+    {
+      "fixture_id": "FIX-VMG-REC-004",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "committed",
+      "recovery_outcome": "recovered"
+    },
+    {
+      "fixture_id": "FIX-VMG-REC-005",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "rolled_back",
+      "recovery_outcome": "rolled_back"
+    },
+    {
+      "fixture_id": "FIX-VMG-REC-006",
+      "expected_verdict": "pass",
+      "observed_verdict": "pass",
+      "terminal_state": "compensated",
+      "recovery_outcome": "compensated"
+    },
+    {
+      "fixture_id": "FIX-VMG-REC-007",
+      "expected_verdict": "fail",
+      "observed_verdict": "fail",
+      "terminal_state": "terminal_manual_repair",
+      "recovery_outcome": "terminal_manual_repair"
+    }
+  ],
+  "boundary_coverage": [
+    "before_journal",
+    "after_journal",
+    "before_validation",
+    "after_validation",
+    "before_data",
+    "after_data",
+    "before_metadata",
+    "after_metadata",
+    "before_receipt",
+    "after_receipt",
+    "before_echo",
+    "after_echo",
+    "before_readback",
+    "after_readback",
+    "before_commit",
+    "after_commit"
+  ],
+  "interruption_modes": [
+    "cancel",
+    "cancel_and_resume",
+    "restart",
+    "repeated_interruption"
+  ],
+  "terminal_manual_repair": {
+    "fixture_id": "FIX-VMG-REC-007",
+    "unresolved_evidence": [
+      "whether the declared physical effect committed before the final interruption",
+      "whether an exact reverse remains safe under the current Descriptor Identity"
+    ],
+    "prohibited_inference": "completion and safe reversal remain unknown; success is forbidden",
+    "required_authorization": "new explicit vault-owner repair plan bound to the unresolved Descriptor Identity and journal prefix"
+  },
+  "verdict": "pass"
+}

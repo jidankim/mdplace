@@ -20,3 +20,4 @@ import './validator-control-plane-observation-cases.mjs';
 import './validator-coderabbit-review-cases.mjs';
 import './validator-processing-policy-cases.mjs';
 import './validator-processing-policy-boundary-cases.mjs';
+import './validator-vault-mutation-gate-cases.mjs';

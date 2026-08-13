@@ -40,6 +40,11 @@ export async function checkSchemaInstances(packageRoot, conformance) {
     ['contracts/processing-policy-trust-store.json', 'contracts/schemas/processing-policy-trust-store.schema.json'],
     ['contracts/transitions/processing-policy-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
     ['contracts/transitions/source-profile-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
+    ['contracts/vault-mutation-gate/authorized-plan.json', 'contracts/schemas/authorized-mutation-plan.schema.json'],
+    ['contracts/vault-mutation-gate/operation-receipt.json', 'contracts/schemas/operation-receipt.schema.json'],
+    ['contracts/vault-mutation-gate/mutation-journal.json', 'contracts/schemas/mutation-journal.schema.json'],
+    ['contracts/vault-mutation-gate/crash-boundary-matrix.json', 'contracts/schemas/vault-mutation-crash-matrix.schema.json'],
+    ['contracts/transitions/vault-mutation-gate-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
     ['conformance/manifest.yaml', 'contracts/schemas/conformance-manifest.schema.json'],
     ['traceability.yaml', 'contracts/schemas/traceability.schema.json'],
     ['claims-and-evidence.yaml', 'contracts/schemas/claims-and-evidence.schema.json'],
@@ -51,6 +56,7 @@ export async function checkSchemaInstances(packageRoot, conformance) {
     ['conformance/evidence/control-plane-doctor-report.json', 'contracts/schemas/control-plane-doctor-report.schema.json'],
     ['conformance/evidence/control-plane-lifecycle-report.json', 'contracts/schemas/control-plane-lifecycle-report.schema.json'],
     ['conformance/evidence/core-processing-policy-recovery-report.json', 'contracts/schemas/core-processing-policy-recovery-report.schema.json'],
+    ['conformance/evidence/vault-mutation-recovery-report.json', 'contracts/schemas/vault-mutation-recovery-report.schema.json'],
   ];
   const fixtureEntries = Array.isArray(conformance?.fixtures) ? conformance.fixtures : [];
   for (const entry of fixtureEntries) {

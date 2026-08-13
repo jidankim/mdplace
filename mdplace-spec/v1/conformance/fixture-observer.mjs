@@ -8,6 +8,7 @@ import {observeProcessingPolicyScenario} from './processing-policy-observer.mjs'
 import {observeSemanticKernelScenario} from './semantic-kernel-observer.mjs';
 import {observeControlPlaneScenario} from './control-plane-observer.mjs';
 import {observeTransition} from './transition-observer.mjs';
+import {observeVaultMutationScenario} from './vault-mutation-gate-observer.mjs';
 import {authorityMatches, manifestFields, packageArtifactPathAllowed, transitionFields} from './validator-rules.mjs';
 
 const operationBySchema = new Map([
@@ -177,6 +178,8 @@ export async function observeFixture(fixture, packageRoot, options = {}) {
       return observeControlPlaneScenario(fixture.subject, packageRoot);
     case 'processing_policy':
       return observeProcessingPolicyScenario(fixture.subject, packageRoot);
+    case 'vault_mutation_gate':
+      return observeVaultMutationScenario(fixture.subject, packageRoot);
     default:
       return {
         verdict: 'fail',

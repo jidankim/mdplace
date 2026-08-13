@@ -1,0 +1,35 @@
+{
+  "$schema": "../schemas/operation-receipt.schema.json",
+  "schema_id": "mdplace.operation-receipt/v1",
+  "receipt_id": "mutation-receipt:reference-001",
+  "plan_id": "mutation-plan:reference-001",
+  "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "operation": "move_projection",
+  "caller_id": "folder-projection:reference",
+  "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "source_components": [
+    "Inbox",
+    "note.md"
+  ],
+  "target_components": [
+    "Research",
+    "note.md"
+  ],
+  "precondition_identity": {
+    "device": 42,
+    "inode": 1001,
+    "size": 12,
+    "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "result_identity": {
+    "device": 42,
+    "inode": 1001,
+    "size": 12,
+    "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+  },
+  "journal_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+  "idempotency_key": "vmg-idem:reference-001",
+  "echo_complete": true,
+  "readback_verified": true,
+  "receipt_sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+}

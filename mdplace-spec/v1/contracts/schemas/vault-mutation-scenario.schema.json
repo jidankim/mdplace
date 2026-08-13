@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:vault-mutation-scenario:v1",
+  "title": "mdplace Vault Mutation Gate conformance scenario",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_id", "scenario_id", "operation", "caller_role", "plan_state", "fault", "probe", "recovery"],
+  "properties": {
+    "schema_id": {"const": "mdplace.vault-mutation-scenario/v1"},
+    "scenario_id": {"type": "string", "pattern": "^VMG-[0-9]{3}$"},
+    "operation": {"enum": ["promote_capture", "move_projection", "create_directory", "remove_empty_owned_directory", "write_managed_frontmatter"]},
+    "caller_role": {"enum": ["capture_adapter", "folder_projection", "foreground_recovery", "intelligence_adapter"]},
+    "plan_state": {"enum": ["authorized", "stale"]},
+    "fault": {"enum": ["none", "symlink_swap", "pathname_swap", "traversal", "collision", "ownership_drift", "unauthorized_caller", "undeclared_operation", "malformed_plan", "stale_plan", "stale_hash", "identity_drift", "size_drift", "incomplete_journal", "receipt_echo_mismatch", "readback_mismatch", "misleading_success", "idempotency_conflict"]},
+    "probe": {"$ref": "#/$defs/probe"},
+    "recovery": {"$ref": "#/$defs/recovery"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "identity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["device", "inode", "size", "content_sha256"],
+      "properties": {"device": {"type": "integer", "minimum": 0}, "inode": {"type": "integer", "minimum": 1}, "size": {"type": "integer", "minimum": 0}, "content_sha256": {"$ref": "#/$defs/digest"}}
+    },
+    "probe": {
+      "type": "object", "additionalProperties": false,
+      "required": ["trusted_root_opened", "resolution", "nofollow", "pathname_reopened", "expected_identity", "first_fstat", "second_fstat", "same_handle_hash", "receipt_identity", "readback_identity", "receipt_echo", "readback", "console_output"],
+      "properties": {
+        "trusted_root_opened": {"type": "boolean"},
+        "resolution": {"enum": ["openat_each_component", "pathname"]},
+        "nofollow": {"type": "boolean"},
+        "pathname_reopened": {"type": "boolean"},
+        "expected_identity": {"$ref": "#/$defs/identity"},
+        "first_fstat": {"$ref": "#/$defs/identity"},
+        "second_fstat": {"$ref": "#/$defs/identity"},
+        "same_handle_hash": {"$ref": "#/$defs/digest"},
+        "receipt_identity": {"$ref": "#/$defs/identity"},
+        "readback_identity": {"$ref": "#/$defs/identity"},
+        "receipt_echo": {"enum": ["complete", "missing", "mismatch"]},
+        "readback": {"enum": ["match", "missing", "mismatch"]},
+        "console_output": {"enum": ["none", "success"]}
+      }
+    },
+    "recovery": {
+      "type": "object", "additionalProperties": false,
+      "required": ["mode", "crash_boundary", "durable_prefix", "declared_intent", "safe_reverse", "compensation_authorized", "interruption_count"],
+      "properties": {
+        "mode": {"enum": ["none", "cancel", "cancel_and_resume", "restart", "repeated_interruption"]},
+        "crash_boundary": {"enum": [null, "before_journal", "after_journal", "before_validation", "after_validation", "before_data", "after_data", "before_metadata", "after_metadata", "before_receipt", "after_receipt", "before_echo", "after_echo", "before_readback", "after_readback", "before_commit", "after_commit"]},
+        "durable_prefix": {"type": "array", "uniqueItems": true, "items": {"enum": ["journal", "validation", "data", "metadata", "receipt", "echo", "readback", "commit"]}},
+        "declared_intent": {"enum": ["resume", "exact_rollback", "compensate", "terminal_manual_repair"]},
+        "safe_reverse": {"type": "boolean"},
+        "compensation_authorized": {"type": "boolean"},
+        "interruption_count": {"type": "integer", "minimum": 0, "maximum": 3}
+      }
+    }
+  }
+}

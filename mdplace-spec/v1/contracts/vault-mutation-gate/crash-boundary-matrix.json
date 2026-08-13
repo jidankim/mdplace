@@ -1,0 +1,444 @@
+{
+  "$schema": "../schemas/vault-mutation-crash-matrix.schema.json",
+  "schema_id": "mdplace.vault-mutation-crash-matrix/v1",
+  "matrix_id": "CRASH-VMG-001",
+  "version": "1.0.0",
+  "events": [
+    "journal",
+    "validation",
+    "data",
+    "metadata",
+    "receipt",
+    "echo",
+    "readback",
+    "commit"
+  ],
+  "interruption_modes": [
+    "cancel",
+    "cancel_and_resume",
+    "restart",
+    "repeated_interruption"
+  ],
+  "boundaries": [
+    {
+      "boundary_id": "before_journal",
+      "event": "journal",
+      "side": "before",
+      "durable_prefix": [],
+      "possible_effect": "none",
+      "required_observations": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "allowed_outcomes": [
+        "resume",
+        "exact_rollback",
+        "compensate",
+        "terminal_manual_repair"
+      ],
+      "prohibited_inference": "never infer success or completion from pathname or console text"
+    },
+    {
+      "boundary_id": "after_journal",
+      "event": "journal",
+      "side": "after",
+      "durable_prefix": [
+        "journal"
+      ],
+      "possible_effect": "none",
+      "required_observations": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "allowed_outcomes": [
+        "resume",
+        "exact_rollback",
+        "compensate",
+        "terminal_manual_repair"
+      ],
+      "prohibited_inference": "never infer success or completion from pathname or console text"
+    },
+    {
+      "boundary_id": "before_validation",
+      "event": "validation",
+      "side": "before",
+      "durable_prefix": [
+        "journal"
+      ],
+      "possible_effect": "none",
+      "required_observations": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "allowed_outcomes": [
+        "resume",
+        "exact_rollback",
+        "compensate",
+        "terminal_manual_repair"
+      ],
+      "prohibited_inference": "never infer success or completion from pathname or console text"
+    },
+    {
+      "boundary_id": "after_validation",
+      "event": "validation",
+      "side": "after",
+      "durable_prefix": [
+        "journal",
+        "validation"
+      ],
+      "possible_effect": "none",
+      "required_observations": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "allowed_outcomes": [
+        "resume",
+        "exact_rollback",
+        "compensate",
+        "terminal_manual_repair"
+      ],
+      "prohibited_inference": "never infer success or completion from pathname or console text"
+    },
+    {
+      "boundary_id": "before_data",
+      "event": "data",
+      "side": "before",
+      "durable_prefix": [
+        "journal",
+        "validation"
+      ],
+      "possible_effect": "unknown",
+      "required_observations": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "allowed_outcomes": [
+        "resume",
+        "exact_rollback",
+        "compensate",
+        "terminal_manual_repair"
+      ],
+      "prohibited_inference": "never infer success or completion from pathname or console text"
+    },
+    {
+      "boundary_id": "after_data",
+      "event": "data",
+      "side": "after",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data"
+      ],
+      "possible_effect": "declared_data_effect",
+      "required_observations": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data"
+      ],
+      "allowed_outcomes": [
+        "resume",
+        "exact_rollback",
+        "compensate",
+        "terminal_manual_repair"
+      ],
+      "prohibited_inference": "never infer success or completion from pathname or console text"
+    },
+    {
+      "boundary_id": "before_metadata",
+      "event": "metadata",
+      "side": "before",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data"
+      ],
+      "possible_effect": "unknown",
+      "required_observations": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "allowed_outcomes": [
+        "resume",
+        "exact_rollback",
+        "compensate",
+        "terminal_manual_repair"
+      ],
+      "prohibited_inference": "never infer success or completion from pathname or console text"
+    },
+    {
+      "boundary_id": "after_metadata",
+      "event": "metadata",
+      "side": "after",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata"
+      ],
+      "possible_effect": "declared_metadata_effect",
+      "required_observations": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data",
+        "metadata"
+      ],
+      "allowed_outcomes": [
+        "resume",
+        "exact_rollback",
+        "compensate",
+        "terminal_manual_repair"
+      ],
+      "prohibited_inference": "never infer success or completion from pathname or console text"
+    },
+    {
+      "boundary_id": "before_receipt",
+      "event": "receipt",
+      "side": "before",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata"
+      ],
+      "possible_effect": "none",
+      "required_observations": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "allowed_outcomes": [
+        "resume",
+        "exact_rollback",
+        "compensate",
+        "terminal_manual_repair"
+      ],
+      "prohibited_inference": "never infer success or completion from pathname or console text"
+    },
+    {
+      "boundary_id": "after_receipt",
+      "event": "receipt",
+      "side": "after",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt"
+      ],
+      "possible_effect": "none",
+      "required_observations": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data",
+        "metadata",
+        "receipt"
+      ],
+      "allowed_outcomes": [
+        "resume",
+        "exact_rollback",
+        "compensate",
+        "terminal_manual_repair"
+      ],
+      "prohibited_inference": "never infer success or completion from pathname or console text"
+    },
+    {
+      "boundary_id": "before_echo",
+      "event": "echo",
+      "side": "before",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt"
+      ],
+      "possible_effect": "none",
+      "required_observations": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "allowed_outcomes": [
+        "resume",
+        "exact_rollback",
+        "compensate",
+        "terminal_manual_repair"
+      ],
+      "prohibited_inference": "never infer success or completion from pathname or console text"
+    },
+    {
+      "boundary_id": "after_echo",
+      "event": "echo",
+      "side": "after",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt",
+        "echo"
+      ],
+      "possible_effect": "none",
+      "required_observations": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data",
+        "metadata",
+        "receipt",
+        "echo"
+      ],
+      "allowed_outcomes": [
+        "resume",
+        "exact_rollback",
+        "compensate",
+        "terminal_manual_repair"
+      ],
+      "prohibited_inference": "never infer success or completion from pathname or console text"
+    },
+    {
+      "boundary_id": "before_readback",
+      "event": "readback",
+      "side": "before",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt",
+        "echo"
+      ],
+      "possible_effect": "none",
+      "required_observations": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "allowed_outcomes": [
+        "resume",
+        "exact_rollback",
+        "compensate",
+        "terminal_manual_repair"
+      ],
+      "prohibited_inference": "never infer success or completion from pathname or console text"
+    },
+    {
+      "boundary_id": "after_readback",
+      "event": "readback",
+      "side": "after",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt",
+        "echo",
+        "readback"
+      ],
+      "possible_effect": "none",
+      "required_observations": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data",
+        "metadata",
+        "receipt",
+        "echo",
+        "readback"
+      ],
+      "allowed_outcomes": [
+        "resume",
+        "exact_rollback",
+        "compensate",
+        "terminal_manual_repair"
+      ],
+      "prohibited_inference": "never infer success or completion from pathname or console text"
+    },
+    {
+      "boundary_id": "before_commit",
+      "event": "commit",
+      "side": "before",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt",
+        "echo",
+        "readback"
+      ],
+      "possible_effect": "none",
+      "required_observations": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity"
+      ],
+      "allowed_outcomes": [
+        "resume",
+        "exact_rollback",
+        "compensate",
+        "terminal_manual_repair"
+      ],
+      "prohibited_inference": "never infer success or completion from pathname or console text"
+    },
+    {
+      "boundary_id": "after_commit",
+      "event": "commit",
+      "side": "after",
+      "durable_prefix": [
+        "journal",
+        "validation",
+        "data",
+        "metadata",
+        "receipt",
+        "echo",
+        "readback",
+        "commit"
+      ],
+      "possible_effect": "none",
+      "required_observations": [
+        "authorized_plan",
+        "ownership",
+        "journal",
+        "descriptor_identity",
+        "data",
+        "metadata",
+        "receipt",
+        "echo",
+        "readback",
+        "commit"
+      ],
+      "allowed_outcomes": [
+        "resume",
+        "exact_rollback",
+        "compensate",
+        "terminal_manual_repair"
+      ],
+      "prohibited_inference": "never infer success or completion from pathname or console text"
+    }
+  ]
+}

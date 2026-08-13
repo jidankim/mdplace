@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:mutation-journal:v1",
+  "title": "mdplace Mutation Journal",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "journal_id", "vault_id", "plan_id", "plan_sha256", "ownership_receipt_sha256", "idempotency_key", "state", "entries", "journal_sha256"],
+  "properties": {
+    "$schema": {"const": "../schemas/mutation-journal.schema.json"},
+    "schema_id": {"const": "mdplace.mutation-journal/v1"},
+    "journal_id": {"type": "string", "pattern": "^mutation-journal:[a-z0-9-]{3,64}$"},
+    "vault_id": {"type": "string", "pattern": "^vault:[a-z0-9-]{3,64}$"},
+    "plan_id": {"type": "string", "pattern": "^mutation-plan:[a-z0-9-]{3,64}$"},
+    "plan_sha256": {"$ref": "#/$defs/digest"},
+    "ownership_receipt_sha256": {"$ref": "#/$defs/digest"},
+    "idempotency_key": {"type": "string", "pattern": "^vmg-idem:[a-z0-9-]{3,64}$"},
+    "state": {"enum": ["authorized", "prepared", "validated", "mutated", "receipt_recorded", "readback_verified", "committed", "recovery_required", "rolled_back", "compensated", "terminal_manual_repair"]},
+    "entries": {"type": "array", "minItems": 1, "maxItems": 64, "uniqueItems": true, "items": {"$ref": "#/$defs/entry"}},
+    "journal_sha256": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "entry": {
+      "type": "object", "additionalProperties": false,
+      "required": ["sequence", "event", "durability", "previous_sha256", "entry_sha256"],
+      "properties": {
+        "sequence": {"type": "integer", "minimum": 1, "maximum": 64},
+        "event": {"enum": ["prepared", "validated", "data_mutated", "metadata_synced", "receipt_published", "echo_published", "readback_verified", "committed", "recovery_required", "rolled_back", "compensated", "terminal_manual_repair"]},
+        "durability": {"const": "synced"},
+        "previous_sha256": {"$ref": "#/$defs/digest"},
+        "entry_sha256": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "$schema": "../schemas/mutation-journal.schema.json",
+  "schema_id": "mdplace.mutation-journal/v1",
+  "journal_id": "mutation-journal:reference-001",
+  "vault_id": "vault:reference",
+  "plan_id": "mutation-plan:reference-001",
+  "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "idempotency_key": "vmg-idem:reference-001",
+  "state": "committed",
+  "entries": [
+    {
+      "sequence": 1,
+      "event": "prepared",
+      "durability": "synced",
+      "previous_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "entry_sha256": "4444444444444444444444444444444444444444444444444444444444444444"
+    },
+    {
+      "sequence": 2,
+      "event": "validated",
+      "durability": "synced",
+      "previous_sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+      "entry_sha256": "5555555555555555555555555555555555555555555555555555555555555555"
+    },
+    {
+      "sequence": 3,
+      "event": "data_mutated",
+      "durability": "synced",
+      "previous_sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+      "entry_sha256": "6666666666666666666666666666666666666666666666666666666666666666"
+    },
+    {
+      "sequence": 4,
+      "event": "metadata_synced",
+      "durability": "synced",
+      "previous_sha256": "6666666666666666666666666666666666666666666666666666666666666666",
+      "entry_sha256": "7777777777777777777777777777777777777777777777777777777777777777"
+    },
+    {
+      "sequence": 5,
+      "event": "receipt_published",
+      "durability": "synced",
+      "previous_sha256": "7777777777777777777777777777777777777777777777777777777777777777",
+      "entry_sha256": "8888888888888888888888888888888888888888888888888888888888888888"
+    },
+    {
+      "sequence": 6,
+      "event": "echo_published",
+      "durability": "synced",
+      "previous_sha256": "8888888888888888888888888888888888888888888888888888888888888888",
+      "entry_sha256": "9999999999999999999999999999999999999999999999999999999999999999"
+    },
+    {
+      "sequence": 7,
+      "event": "readback_verified",
+      "durability": "synced",
+      "previous_sha256": "9999999999999999999999999999999999999999999999999999999999999999",
+      "entry_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "sequence": 8,
+      "event": "committed",
+      "durability": "synced",
+      "previous_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "entry_sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+    }
+  ],
+  "journal_sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+}
