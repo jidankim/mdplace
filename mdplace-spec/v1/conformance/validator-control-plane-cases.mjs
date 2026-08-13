@@ -806,6 +806,48 @@ test('dispatch revalidates current journal writer readiness dependency and capac
   });
   assert.deepEqual((await observeControlPlaneScenario(reusedPrefixLease, packageRoot)).codes,
     ['control.lease_identity_conflict']);
+
+  const reversedLiveDispatch = structuredClone(fixture.subject);
+  const reversedInitial = reversedLiveDispatch.document.initial;
+  const reversedAction = reversedLiveDispatch.document.action;
+  const priorLease = {
+    receipt_id: 'lease-receipt:live-clock-001', receipt_kind: 'lease',
+    lease_id: 'lease:live-clock-001', work_id: reversedInitial.work.work_id,
+    work_version: 2, journal_sequence: 2,
+    owner_agent_id: reversedInitial.persistent_agent_id,
+    acquired_tick: 100, expires_tick: 400, started_tick: null, status: 'active',
+  };
+  Object.assign(priorLease, signControlPlaneReceipt('work_lease', leaseFields(priorLease)));
+  const priorRecovery = {
+    receipt_id: 'recovery-receipt:live-clock-001', receipt_kind: 'recovery',
+    lease_id: priorLease.lease_id, work_id: reversedInitial.work.work_id,
+    work_version: 3, journal_sequence: 3, prior_state: 'leased', prior_retry_count: 0,
+    recovery_interruption_count: 1, resulting_retry_count: 0, recovery_tick: 400,
+    recovery_lease_status: 'expired', recovery_decision: 'requeue',
+    selected_retry_delay_ticks: null, resulting_state: 'queued',
+  };
+  Object.assign(priorRecovery, signControlPlaneReceipt(
+    'work_recovery', recoveryFields(priorRecovery),
+  ));
+  reversedInitial.prior_lease_receipts = [priorLease];
+  reversedInitial.prior_recovery_receipts = [priorRecovery];
+  Object.assign(reversedInitial.work, {
+    work_version: 3, state: 'queued', recovery_interruption_count: 1,
+    lease_id: null, lease_status: null, lease_acquired_tick: null,
+    lease_expires_tick: null, owner_agent_id: null,
+  });
+  reversedInitial.journal_head_sequence = 3;
+  authenticateScenarioHead(reversedInitial);
+  Object.assign(reversedAction, {
+    expected_work_version: 3,
+    expected_journal_head_sequence: 3,
+    expected_journal_head_digest: reversedInitial.journal_head_digest,
+    lease_id: 'lease:live-clock-new-001', current_tick: 1,
+  });
+  authenticateScenarioScheduler(reversedInitial, reversedAction.current_tick);
+  reversedAction.expected_scheduler_state_digest = reversedInitial.scheduler_state_digest;
+  assert.deepEqual((await observeControlPlaneScenario(reversedLiveDispatch, packageRoot)).codes,
+    ['control.lease_tick_stale']);
 });
 
 test('stateful dependency and Scheduler snapshots are derived from durable Work evidence', async () => {
@@ -876,6 +918,39 @@ test('stateful dependency and Scheduler snapshots are derived from durable Work 
   prefixCollision.document.action.expected_journal_head_sequence = prefixCollision.document.initial.journal_head_sequence;
   prefixCollision.document.action.expected_journal_head_digest = prefixCollision.document.initial.journal_head_digest;
   assert.deepEqual((await observeControlPlaneScenario(prefixCollision, packageRoot)).codes,
+    ['control.lease_history_invalid']);
+
+  const futurePrefixLease = structuredClone(fixture.subject);
+  const futureInitial = futurePrefixLease.document.initial;
+  const futureAction = futurePrefixLease.document.action;
+  const futurePrefix = futureInitial.journal_prefix_receipt;
+  Object.assign(futurePrefix, {head_sequence: 1, head_digest: 'e'.repeat(64), active_leases: [{
+    lease_id: 'lease:future-prefix-001', work_id: 'work:other-001', work_version: 1,
+    owner_agent_id: futureInitial.persistent_agent_id,
+    acquired_tick: 999701, expires_tick: 1000001, status: 'active',
+  }]});
+  Object.assign(futurePrefix, signControlPlaneReceipt(
+    'work_journal_prefix', journalPrefixFields(futurePrefix),
+  ));
+  const futureEnqueue = futureInitial.work.enqueue_receipt;
+  Object.assign(futureEnqueue, {
+    base_head_sequence: 1, base_head_digest: futurePrefix.head_digest, journal_sequence: 2,
+  });
+  Object.assign(futureEnqueue, signControlPlaneReceipt('work_enqueue', [
+    futureEnqueue.receipt_id, futureEnqueue.work_id, futureEnqueue.work_version,
+    futureEnqueue.idempotency_key, futureEnqueue.input_digest,
+    futureEnqueue.base_head_sequence, futureEnqueue.base_head_digest,
+    futureEnqueue.journal_sequence,
+  ]));
+  futureInitial.journal_head_sequence = 2;
+  authenticateScenarioHead(futureInitial);
+  Object.assign(futureAction, {
+    expected_journal_head_sequence: 2,
+    expected_journal_head_digest: futureInitial.journal_head_digest,
+  });
+  authenticateScenarioScheduler(futureInitial, futureAction.current_tick);
+  futureAction.expected_scheduler_state_digest = futureInitial.scheduler_state_digest;
+  assert.deepEqual((await observeControlPlaneScenario(futurePrefixLease, packageRoot)).codes,
     ['control.lease_history_invalid']);
 
   const phantomLease = structuredClone(fixture.subject);

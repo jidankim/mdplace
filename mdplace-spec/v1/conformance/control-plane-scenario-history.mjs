@@ -96,13 +96,41 @@ function receiptIsAuthenticated(initial, kind, receipt) {
 }
 
 export function scenarioLifecycleIsValid(initial) {
+  const replay = replayScenarioLifecycle(initial);
+  if (replay === null) return false;
+  const work = initial.work;
+  if (work === null) return replay.trace.length === 0;
+  const {current} = replay;
+  const leaseIsExact = ['leased', 'executing'].includes(current.state)
+    ? current.lease !== null && work.lease_id === current.lease.leaseId &&
+      work.owner_agent_id === current.lease.ownerId &&
+      work.lease_acquired_tick === current.lease.acquiredTick &&
+      work.lease_expires_tick === current.lease.expiresTick && work.lease_status === current.lease.status
+    : work.lease_id === null && work.owner_agent_id === null && work.lease_acquired_tick === null &&
+      work.lease_expires_tick === null && work.lease_status === null;
+  return current.state === work.state && current.version === work.work_version &&
+    current.retryCount === work.retry_count && current.recoveryCount === work.recovery_interruption_count &&
+    current.retryEligibleTick === work.retry_eligible_tick && leaseIsExact;
+}
+
+export function scenarioLifecycleLastObservedTick(initial) {
+  return replayScenarioLifecycle(initial)?.current.lastObservedTick ?? null;
+}
+
+function replayScenarioLifecycle(initial) {
   const work = initial.work;
   const records = lifecycleRecords(initial);
   const prefix = initial.journal_prefix_receipt;
   const prefixLeaseIds = prefix.active_leases.map(({lease_id: id}) => id);
   const prefixWorkIds = prefix.active_leases.map(({work_id: id}) => id);
+  const prefixLeasesAreValid = prefix.active_leases.every((lease) =>
+    lease.owner_agent_id === initial.persistent_agent_id && lease.status === 'active' &&
+    lease.expires_tick > lease.acquired_tick &&
+    lease.expires_tick - lease.acquired_tick <= controlPlaneLimits.leaseDurationTicks &&
+    lease.acquired_tick <= controlPlaneLimits.latestDispatchTick);
   const prefixIsAuthenticated = prefix.journal_id === `journal:${initial.vault_id.replace(':', '-')}` &&
     prefix.active_leases.length <= prefix.head_sequence &&
+    prefixLeasesAreValid &&
     new Set(prefixLeaseIds).size === prefixLeaseIds.length &&
     new Set(prefixWorkIds).size === prefixWorkIds.length &&
     (work === null || !prefixWorkIds.includes(work.work_id)) &&
@@ -115,23 +143,31 @@ export function scenarioLifecycleIsValid(initial) {
       records.some(({receipt}, index) => receipt.journal_sequence !== prefix.head_sequence + index + 1) ||
       initial.journal_head_sequence !== prefix.head_sequence + records.length ||
       initial.journal_head_digest !== scenarioLifecycleDigest(initial) ||
-      records.some(({kind, receipt}) => !receiptIsAuthenticated(initial, kind, receipt))) return false;
-  if (work === null) return records.length === 0;
+      records.some(({kind, receipt}) => !receiptIsAuthenticated(initial, kind, receipt))) return null;
+  if (work === null) return records.length === 0
+    ? replayControlPlaneLifecycle([], {
+      leaseDurationTicks: controlPlaneLimits.leaseDurationTicks,
+      retryDelays: controlPlaneLimits.retryDelays,
+      retryCeiling: controlPlaneLimits.retryCeiling,
+      recoveryCeiling: controlPlaneLimits.recoveryInterruptionCeiling,
+      latestDispatchTick: controlPlaneLimits.latestDispatchTick,
+      reservedLeaseIds: prefixLeaseIds,
+    }) : null;
 
   const events = [];
   for (const {kind, receipt} of records) {
-    if (receipt.work_id !== work.work_id) return false;
+    if (receipt.work_id !== work.work_id) return null;
     const precedingRecord = records.find(({receipt: candidate}) =>
       candidate.journal_sequence === receipt.journal_sequence - 1);
     const preceding = precedingRecord?.receipt;
     if (kind === 'enqueue' && (receipt.base_head_sequence !== prefix.head_sequence ||
         receipt.base_head_digest !== prefix.head_digest ||
-        receipt.journal_sequence !== prefix.head_sequence + 1)) return false;
+        receipt.journal_sequence !== prefix.head_sequence + 1)) return null;
     if (kind === 'lease' && (receipt.owner_agent_id !== initial.persistent_agent_id ||
-        receipt.started_tick !== null)) return false;
+        receipt.started_tick !== null)) return null;
     if (kind === 'cancellation' &&
         (receipt.vault_owner_receipt.vault_id !== initial.vault_id ||
-         receipt.vault_owner_receipt.action_kind !== 'cancel')) return false;
+         receipt.vault_owner_receipt.action_kind !== 'cancel')) return null;
     if (kind === 'completion') {
       const adjacentTerminal = ['cancellation', 'recovery'].includes(precedingRecord?.kind);
       const expectedBase = adjacentTerminal ? preceding.journal_sequence : receipt.journal_sequence - 1;
@@ -142,14 +178,14 @@ export function scenarioLifecycleIsValid(initial) {
           (precedingRecord?.kind === 'cancellation' && receipt.completion_tick !== preceding.cancellation_tick) ||
           (precedingRecord?.kind === 'recovery' && receipt.completion_tick !== preceding.recovery_tick) ||
           (receipt.outcome === 'failed' && receipt.failure_observed_tick !== null &&
-            receipt.completion_tick !== receipt.failure_observed_tick)) return false;
+            receipt.completion_tick !== receipt.failure_observed_tick)) return null;
     }
     if (kind === 'resume' && (preceding?.outcome !== 'cancelled' ||
         receipt.cancelled_work_version !== preceding.work_version ||
-        receipt.resumed_work_version !== preceding.work_version + 1)) return false;
+        receipt.resumed_work_version !== preceding.work_version + 1)) return null;
     events.push(scenarioEvent(kind, receipt));
   }
-  const replay = replayControlPlaneLifecycle(events, {
+  return replayControlPlaneLifecycle(events, {
     leaseDurationTicks: controlPlaneLimits.leaseDurationTicks,
     retryDelays: controlPlaneLimits.retryDelays,
     retryCeiling: controlPlaneLimits.retryCeiling,
@@ -157,18 +193,6 @@ export function scenarioLifecycleIsValid(initial) {
     latestDispatchTick: controlPlaneLimits.latestDispatchTick,
     reservedLeaseIds: prefixLeaseIds,
   });
-  if (replay === null) return false;
-  const {current} = replay;
-  const leaseIsExact = ['leased', 'executing'].includes(current.state)
-    ? current.lease !== null && work.lease_id === current.lease.leaseId &&
-      work.owner_agent_id === current.lease.ownerId &&
-      work.lease_acquired_tick === current.lease.acquiredTick &&
-      work.lease_expires_tick === current.lease.expiresTick && work.lease_status === current.lease.status
-    : work.lease_id === null && work.owner_agent_id === null && work.lease_acquired_tick === null &&
-      work.lease_expires_tick === null && work.lease_status === null;
-  return current.state === work.state && current.version === work.work_version &&
-    current.retryCount === work.retry_count && current.recoveryCount === work.recovery_interruption_count &&
-    current.retryEligibleTick === work.retry_eligible_tick && leaseIsExact;
 }
 
 function scenarioEvent(kind, receipt) {

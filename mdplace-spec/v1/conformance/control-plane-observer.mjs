@@ -19,6 +19,7 @@ import {
   recoveryReceiptFields as recoveryFields,
   scenarioLifecycleDigestAtSequence,
   scenarioLifecycleIsValid,
+  scenarioLifecycleLastObservedTick,
 } from './control-plane-scenario-history.mjs';
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {canonicalJson} from './semantic-kernel-core.mjs';
@@ -719,6 +720,9 @@ function dispatch(initial, action) {
   }
   if (!journalCanAppend(initial)) return rejected(initial, action, 'control.journal_capacity_exhausted', {terminal: 'blocked'});
   if (!Number.isInteger(action.current_tick)) return rejected(initial, action, 'control.current_tick_missing', {terminal: 'blocked'});
+  if (action.current_tick < scenarioLifecycleLastObservedTick(initial)) {
+    return rejected(initial, action, 'control.lease_tick_stale', {terminal: 'blocked'});
+  }
   if (action.current_tick > controlPlaneLimits.latestDispatchTick) {
     return rejected(initial, action, 'control.lease_tick_overflow', {terminal: 'blocked'});
   }
