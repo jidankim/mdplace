@@ -8,15 +8,18 @@ import {
 import {
   qualifyingFailureReceiptFields,
   vaultOwnerRecoveryApprovalFields,
+  workAdmissionSuspensionReceiptFields,
 } from './control-plane-contract-values.mjs';
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {readPackageFile} from './safe-path.mjs';
+import {canonicalJson} from './semantic-kernel-core.mjs';
 
 const agentStatePath = 'contracts/control-plane/agent-state.json';
 const agentStateSchemaPath = 'contracts/schemas/agent-state.schema.json';
 const profilePath = 'contracts/control-plane/launchagent-supervision-profile.json';
 const profileSchemaPath = 'contracts/schemas/launchagent-supervision-profile.schema.json';
 const tablePath = 'contracts/transitions/launchagent-supervision-lifecycle.json';
+const controlChannelTablePath = 'contracts/transitions/control-channel-lifecycle.json';
 const tableSchemaPath = 'contracts/schemas/transition-table.schema.json';
 const doctorPath = 'conformance/evidence/control-plane-doctor-report.json';
 const doctorSchemaPath = 'contracts/schemas/control-plane-doctor-report.schema.json';
@@ -173,6 +176,23 @@ function lifecycleTableCodes(table) {
   return codes;
 }
 
+function controlChannelTableCodes(table) {
+  const codes = [];
+  const demotion = transition(table, 'work_admitting', 'close_control_channel');
+  if (demotion?.allowed !== true || demotion.terminal_state !== 'diagnostic_only' ||
+      !demotion.preconditions?.includes(
+        'the current work-admitting channel version is bound to the suspension receipt') ||
+      !sameList(demotion.base_references, ['current Control Channel version', 'vault identity']) ||
+      !sameList(demotion.emitted_records, ['ControlChannelWorkAdmissionSuspendedReceipt']) ||
+      !sameList(demotion.filesystem_effects, [
+        'atomically demote Control Channel from work-admitting to diagnostic-only',
+      ]) || demotion.idempotency?.retry_result !==
+        'return the original work-admission suspension receipt for the exact binding') {
+    codes.push('control.lifecycle_work_admission_suspension_invalid');
+  }
+  return codes;
+}
+
 function doctorCodes(profile, doctor) {
   const codes = [];
   const failureReceipts = doctor?.startup_failure_receipts;
@@ -218,6 +238,8 @@ function doctorCodes(profile, doctor) {
 function agentStateCodes(profile, agentState, doctor, report, contents) {
   const codes = [];
   const supervision = agentState?.supervision_state;
+  const wakeObservationDigest = agentState?.wake_revalidation === undefined
+    ? null : sha256(canonicalJson(agentState.wake_revalidation));
   if (agentState?.persistent_agent_id !== profile?.persistent_agent_id ||
       agentState?.vault_id !== profile?.vault_id || agentState?.supervision_profile !== profilePath ||
       supervision?.circuit?.storage !== 'durable_agent_state' ||
@@ -237,7 +259,15 @@ function agentStateCodes(profile, agentState, doctor, report, contents) {
   if (supervision?.state === 'wake_revalidating' &&
       (supervision.next_restart_tick !== null || supervision.circuit?.state !== 'closed' ||
        agentState?.control_channel_state !== 'diagnostic_only' ||
-       agentState?.owner_recovery_authorization !== null)) {
+       agentState?.owner_recovery_authorization !== null ||
+       agentState?.work_admission_suspension?.receipt_id !==
+         report?.work_admission_suspension_receipt?.receipt_id ||
+       agentState?.work_admission_suspension?.signature_digest !==
+         report?.work_admission_suspension_receipt?.signature_digest ||
+       agentState?.work_admission_suspension?.control_channel_version !==
+         report?.work_admission_suspension_receipt?.control_channel_version ||
+       agentState?.work_admission_suspension?.wake_observation_digest !== wakeObservationDigest ||
+       report?.work_admission_suspension_receipt?.wake_observation_digest !== wakeObservationDigest)) {
     codes.push('control.lifecycle_wake_invalid');
   }
   if (supervision?.circuit?.state === 'open' &&
@@ -286,14 +316,29 @@ function reportCodes(profile, doctor, report, contents) {
   const codes = [];
   const profileDigest = contents.profile === null ? null : sha256(contents.profile);
   const tableDigest = contents.table === null ? null : sha256(contents.table);
+  const controlChannelTableDigest = contents.controlChannelTable === null
+    ? null : sha256(contents.controlChannelTable);
   const doctorDigest = contents.doctor === null ? null : sha256(contents.doctor);
   if (report?.persistent_agent_id !== profile?.persistent_agent_id || report?.vault_id !== profile?.vault_id ||
       report?.profile_binding?.path !== profilePath || report?.profile_binding?.sha256 !== profileDigest ||
       report?.lifecycle_table_binding?.path !== tablePath || report?.lifecycle_table_binding?.sha256 !== tableDigest ||
+      report?.control_channel_table_binding?.path !== controlChannelTablePath ||
+      report?.control_channel_table_binding?.sha256 !== controlChannelTableDigest ||
       report?.doctor_report_binding?.path !== doctorPath || report?.doctor_report_binding?.sha256 !== doctorDigest ||
       report?.doctor_report_binding?.report_id !== doctor?.report_id ||
       report?.doctor_report_binding?.circuit_version !== doctor?.circuit?.version) {
     codes.push('control.lifecycle_binding_invalid');
+  }
+  const suspension = report?.work_admission_suspension_receipt;
+  if (suspension?.persistent_agent_id !== profile?.persistent_agent_id ||
+      suspension?.vault_id !== profile?.vault_id || suspension?.control_channel_version !== 1 ||
+      suspension?.prior_mode !== 'work_admitting' || suspension?.resulting_mode !== 'diagnostic_only' ||
+      suspension?.suspension_reason !== 'wake_revalidation' ||
+      !verifyControlPlaneReceipt(
+        'control_channel_work_admission_suspended',
+        workAdmissionSuspensionReceiptFields(suspension), suspension, profile?.persistent_agent_id,
+      )) {
+    codes.push('control.lifecycle_work_admission_suspension_invalid');
   }
   const approval = report?.vault_owner_recovery_approval;
   if (approval?.principal_id !== 'person:owner-001' || approval?.vault_id !== profile?.vault_id ||
@@ -312,13 +357,16 @@ function reportCodes(profile, doctor, report, contents) {
 
 export async function checkControlPlaneLifecycle(packageRoot) {
   const codes = [];
-  const [agentState, profile, table, doctor, report] = await Promise.all([
+  const [agentState, profile, table, controlChannelTable, doctor, report] = await Promise.all([
     readDocument(packageRoot, agentStatePath, agentStateSchemaPath,
       'control.lifecycle_agent_state_missing', 'control.lifecycle_agent_state_schema_invalid', codes),
     readDocument(packageRoot, profilePath, profileSchemaPath,
       'control.lifecycle_profile_missing', 'control.lifecycle_profile_schema_invalid', codes),
     readDocument(packageRoot, tablePath, tableSchemaPath,
       'control.lifecycle_table_missing', 'control.lifecycle_table_schema_invalid', codes),
+    readDocument(packageRoot, controlChannelTablePath, tableSchemaPath,
+      'control.lifecycle_control_channel_table_missing',
+      'control.lifecycle_control_channel_table_schema_invalid', codes),
     readDocument(packageRoot, doctorPath, doctorSchemaPath,
       'control.lifecycle_doctor_missing', 'control.lifecycle_doctor_schema_invalid', codes),
     readDocument(packageRoot, reportPath, reportSchemaPath,
@@ -330,9 +378,11 @@ export async function checkControlPlaneLifecycle(packageRoot) {
     doctor: doctor.content,
   }));
   codes.push(...lifecycleTableCodes(table.document));
+  codes.push(...controlChannelTableCodes(controlChannelTable.document));
   codes.push(...doctorCodes(profile.document, doctor.document));
   codes.push(...reportCodes(profile.document, doctor.document, report.document, {
-    profile: profile.content, table: table.content, doctor: doctor.content,
+    profile: profile.content, table: table.content,
+    controlChannelTable: controlChannelTable.content, doctor: doctor.content,
   }));
   return result(codes);
 }

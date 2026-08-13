@@ -13,6 +13,7 @@ import {
 import {
   qualifyingFailureReceiptFields,
   vaultOwnerRecoveryApprovalFields,
+  workAdmissionSuspensionReceiptFields,
 } from './control-plane-contract-values.mjs';
 import {checkControlPlaneLifecycle} from './control-plane-lifecycle-checks.mjs';
 import {checkTransitionTable} from './package-checks.mjs';
@@ -342,6 +343,52 @@ test('Agent signer cannot mint vault-owner recovery approval', async () => {
   );
 });
 
+test('work-admission suspension receipt is authenticated and cross-bound', async () => {
+  const [agent, report] = await Promise.all([
+    readJson('contracts/control-plane/agent-state.json'),
+    readJson('conformance/evidence/control-plane-lifecycle-report.json'),
+  ]);
+  const receipt = report.work_admission_suspension_receipt;
+  assert.equal(verifyControlPlaneReceipt(
+    'control_channel_work_admission_suspended',
+    workAdmissionSuspensionReceiptFields(receipt),
+    receipt,
+    agent.persistent_agent_id,
+  ), true);
+  assert.deepEqual(agent.work_admission_suspension, {
+    receipt_id: receipt.receipt_id,
+    signature_digest: receipt.signature_digest,
+    control_channel_version: receipt.control_channel_version,
+    wake_observation_digest: receipt.wake_observation_digest,
+  });
+
+  const mutations = [
+    (changed) => {
+      changed.vault_id = 'vault:other-001';
+    },
+    (changed) => {
+      changed.control_channel_version += 1;
+    },
+  ];
+  for (const mutate of mutations) {
+    const copiedPackage = await copyCommittedPackage();
+    const changedReport = await readPackageJson(
+      copiedPackage, 'conformance/evidence/control-plane-lifecycle-report.json',
+    );
+    const changed = changedReport.work_admission_suspension_receipt;
+    mutate(changed);
+    Object.assign(changed, signControlPlaneReceipt(
+      'control_channel_work_admission_suspended',
+      workAdmissionSuspensionReceiptFields(changed),
+    ));
+    await writePackageJson(
+      copiedPackage, 'conformance/evidence/control-plane-lifecycle-report.json', changedReport,
+    );
+    assert.ok((await checkControlPlaneLifecycle(copiedPackage)).codes
+      .includes('control.lifecycle_work_admission_suspension_invalid'));
+  }
+});
+
 test('public validator rejects lifecycle boundary mutations with granular codes', async () => {
   const mutations = [
     {
@@ -398,6 +445,13 @@ test('public validator rejects lifecycle boundary mutations with granular codes'
       path: 'conformance/evidence/control-plane-lifecycle-report.json',
       mutate(report) {
         report.vault_owner_recovery_approval.authenticated = false;
+      },
+    },
+    {
+      code: 'control.lifecycle_work_admission_suspension_invalid',
+      path: 'conformance/evidence/control-plane-lifecycle-report.json',
+      mutate(report) {
+        report.work_admission_suspension_receipt.signature_digest = '0'.repeat(64);
       },
     },
   ];

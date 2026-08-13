@@ -4,7 +4,7 @@
   "title": "mdplace Agent lifecycle and Readiness Gate state",
   "type": "object",
   "additionalProperties": false,
-  "required": ["$schema", "schema_id", "persistent_agent_id", "instance_id", "vault_id", "state", "supervisor", "supervision_profile", "supervision_state", "wake_revalidation", "doctor_report", "owner_recovery_authorization", "semantic_authority", "writer_lock", "readiness_gates", "control_channel_state"],
+  "required": ["$schema", "schema_id", "persistent_agent_id", "instance_id", "vault_id", "state", "supervisor", "supervision_profile", "supervision_state", "wake_revalidation", "work_admission_suspension", "doctor_report", "owner_recovery_authorization", "semantic_authority", "writer_lock", "readiness_gates", "control_channel_state"],
   "properties": {
     "$schema": {"const": "../schemas/agent-state.schema.json"},
     "schema_id": {"const": "mdplace.agent-state/v1"},
@@ -16,6 +16,7 @@
     "supervision_profile": {"const": "contracts/control-plane/launchagent-supervision-profile.json"},
     "supervision_state": {"$ref": "#/$defs/supervisionState"},
     "wake_revalidation": {"$ref": "#/$defs/wakeRevalidation"},
+    "work_admission_suspension": {"$ref": "#/$defs/workAdmissionSuspensionBinding"},
     "doctor_report": {"$ref": "#/$defs/reportBinding"},
     "owner_recovery_authorization": {"$ref": "#/$defs/recoveryAuthorizationBinding"},
     "semantic_authority": {"const": "none"},
@@ -99,6 +100,22 @@
         "observed_tick": {"type": "integer", "minimum": 0, "maximum": 1000000},
         "verdict": {"enum": ["pending", "pass", "fail"]}
       }
+    },
+    "workAdmissionSuspensionBinding": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["receipt_id", "signature_digest", "control_channel_version", "wake_observation_digest"],
+          "properties": {
+            "receipt_id": {"type": "string", "pattern": "^control-channel-work-admission-suspended:[a-z0-9-]{3,64}$"},
+            "signature_digest": {"$ref": "#/$defs/digest"},
+            "control_channel_version": {"const": 1},
+            "wake_observation_digest": {"$ref": "#/$defs/digest"}
+          }
+        }
+      ]
     },
     "reportBinding": {
       "oneOf": [

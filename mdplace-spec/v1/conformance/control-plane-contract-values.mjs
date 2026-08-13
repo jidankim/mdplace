@@ -113,3 +113,12 @@ export function qualifyingFailureReceiptFields(receipt) {
     receipt.prior_receipt_digest ?? '', receipt.circuit_version,
   ];
 }
+
+export function workAdmissionSuspensionReceiptFields(receipt) {
+  return [
+    receipt.receipt_id, receipt.persistent_agent_id, receipt.vault_id,
+    receipt.control_channel_version, receipt.prior_mode, receipt.resulting_mode,
+    receipt.wake_observation_digest, receipt.suspension_reason,
+    receipt.suspended_tick, receipt.idempotency_key,
+  ];
+}
