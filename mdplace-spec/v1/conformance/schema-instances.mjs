@@ -25,6 +25,7 @@ export async function checkSchemaInstances(packageRoot, conformance) {
     ['contracts/control-plane/scheduler-state.json', 'contracts/schemas/scheduler-state.schema.json'],
     ['contracts/control-plane/agent-state.json', 'contracts/schemas/agent-state.schema.json'],
     ['contracts/control-plane/control-command.json', 'contracts/schemas/control-channel-command.schema.json'],
+    ['contracts/control-plane/child-work-invocation.json', 'contracts/schemas/child-work-invocation.schema.json'],
     ['contracts/control-plane/recovery-matrix.json', 'contracts/schemas/control-plane-recovery-matrix.schema.json'],
     ['contracts/transitions/work-queue-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
     ['contracts/transitions/retry-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],

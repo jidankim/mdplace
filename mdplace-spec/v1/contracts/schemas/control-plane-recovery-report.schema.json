@@ -4,7 +4,7 @@
   "title": "mdplace control-plane recovery and authority evidence",
   "type": "object",
   "additionalProperties": false,
-  "required": ["$schema", "schema_id", "package_series", "release_version", "validator_version", "scenario_count", "fixture_ids", "fixture_bindings", "recovery_matrix", "claims"],
+  "required": ["$schema", "schema_id", "package_series", "release_version", "validator_version", "scenario_count", "fixture_ids", "fixture_bindings", "recovery_matrix", "transition_bindings", "claims"],
   "properties": {
     "$schema": {"const": "../../contracts/schemas/control-plane-recovery-report.schema.json"},
     "schema_id": {"const": "mdplace.control-plane-recovery-report/v1"},
@@ -15,6 +15,7 @@
     "fixture_ids": {"type": "array", "minItems": 25, "maxItems": 25, "uniqueItems": true, "items": {"$ref": "#/$defs/fixtureId"}},
     "fixture_bindings": {"type": "array", "minItems": 25, "maxItems": 25, "items": {"$ref": "#/$defs/fixtureBinding"}},
     "recovery_matrix": {"$ref": "#/$defs/recoveryMatrix"},
+    "transition_bindings": {"type": "array", "minItems": 7, "maxItems": 7, "items": {"$ref": "#/$defs/transitionBinding"}},
     "claims": {"$ref": "#/$defs/claims"}
   },
   "$defs": {
@@ -39,7 +40,17 @@
       "properties": {
         "path": {"const": "contracts/control-plane/recovery-matrix.json"},
         "sha256": {"$ref": "#/$defs/digest"},
-        "case_ids": {"type": "array", "minItems": 12, "maxItems": 32, "uniqueItems": true, "items": {"type": "string", "pattern": "^RC-CP-[0-9]{3}$"}}
+        "case_ids": {"type": "array", "minItems": 15, "maxItems": 15, "uniqueItems": true, "items": {"type": "string", "pattern": "^RC-CP-[0-9]{3}$"}}
+      }
+    },
+    "transitionBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "denied_transition_ids"],
+      "properties": {
+        "path": {"type": "string", "pattern": "^contracts/transitions/[a-z0-9][a-z0-9-]*-lifecycle\\.json$"},
+        "sha256": {"$ref": "#/$defs/digest"},
+        "denied_transition_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^TR-[A-Z][A-Z0-9]{1,15}-[0-9]{3}$"}}
       }
     },
     "claims": {

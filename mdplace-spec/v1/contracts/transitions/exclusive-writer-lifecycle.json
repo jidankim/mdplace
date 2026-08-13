@@ -28,24 +28,26 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "acquire_writer exact bases and budgets validate"
+        "no writer owns the per-vault operating-system lock",
+        "candidate identity equals the persistent Agent identity"
       ],
       "base_references": [
-        "current Work Journal head",
-        "current lifecycle version"
+        "exact prior writer epoch",
+        "vault identity"
       ],
       "emitted_records": [
-        "acquire_writer_receipt"
+        "WriterLockReceipt"
       ],
       "filesystem_effects": [
-        "none"
+        "create protected per-vault writer lock"
       ],
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "current lifecycle version"
+          "exact prior writer epoch",
+          "vault identity"
         ],
-        "retry_result": "return original receipt"
+        "retry_result": "return the original durable receipt for the exact binding"
       },
       "terminal_state": "held",
       "failure_result": {
@@ -58,7 +60,7 @@
           "none"
         ]
       },
-      "recovery": "Re-read the durable receipt and exact current bases."
+      "recovery": "Validate the retained token and incremented epoch; deny every competing owner."
     },
     {
       "transition_id": "TR-CPWRITER-002",
@@ -77,8 +79,7 @@
         "retain_writer is not legal from unheld"
       ],
       "base_references": [
-        "current Work Journal head",
-        "current lifecycle version"
+        "exact current lifecycle state and version"
       ],
       "emitted_records": [
         "ControlPlaneTransitionDenied"
@@ -89,9 +90,9 @@
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "current lifecycle version"
+          "exact current lifecycle state and version"
         ],
-        "retry_result": "return original denial"
+        "retry_result": "return the original denial"
       },
       "terminal_state": "unheld",
       "failure_result": {
@@ -104,7 +105,7 @@
           "none"
         ]
       },
-      "recovery": "Use a command legal from the current durable state."
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
     },
     {
       "transition_id": "TR-CPWRITER-003",
@@ -123,8 +124,7 @@
         "release_writer is not legal from unheld"
       ],
       "base_references": [
-        "current Work Journal head",
-        "current lifecycle version"
+        "exact current lifecycle state and version"
       ],
       "emitted_records": [
         "ControlPlaneTransitionDenied"
@@ -135,9 +135,9 @@
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "current lifecycle version"
+          "exact current lifecycle state and version"
         ],
-        "retry_result": "return original denial"
+        "retry_result": "return the original denial"
       },
       "terminal_state": "unheld",
       "failure_result": {
@@ -150,7 +150,7 @@
           "none"
         ]
       },
-      "recovery": "Use a command legal from the current durable state."
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
     },
     {
       "transition_id": "TR-CPWRITER-004",
@@ -169,8 +169,7 @@
         "acquire_writer is not legal from held"
       ],
       "base_references": [
-        "current Work Journal head",
-        "current lifecycle version"
+        "exact current lifecycle state and version"
       ],
       "emitted_records": [
         "ControlPlaneTransitionDenied"
@@ -181,9 +180,9 @@
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "current lifecycle version"
+          "exact current lifecycle state and version"
         ],
-        "retry_result": "return original denial"
+        "retry_result": "return the original denial"
       },
       "terminal_state": "held",
       "failure_result": {
@@ -196,7 +195,7 @@
           "none"
         ]
       },
-      "recovery": "Use a command legal from the current durable state."
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
     },
     {
       "transition_id": "TR-CPWRITER-005",
@@ -212,24 +211,25 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "retain_writer exact bases and budgets validate"
+        "lock token, owner identity, and epoch exactly match the retained lock"
       ],
       "base_references": [
-        "current Work Journal head",
-        "current lifecycle version"
+        "exact writer epoch",
+        "writer token digest"
       ],
       "emitted_records": [
-        "retain_writer_receipt"
+        "WriterLockRetainedReceipt"
       ],
       "filesystem_effects": [
-        "none"
+        "retain protected per-vault writer lock"
       ],
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "current lifecycle version"
+          "exact writer epoch",
+          "writer token digest"
         ],
-        "retry_result": "return original receipt"
+        "retry_result": "return the original durable receipt for the exact binding"
       },
       "terminal_state": "held",
       "failure_result": {
@@ -242,7 +242,7 @@
           "none"
         ]
       },
-      "recovery": "Re-read the durable receipt and exact current bases."
+      "recovery": "A mismatched token or epoch blocks readiness and recovery."
     },
     {
       "transition_id": "TR-CPWRITER-006",
@@ -258,24 +258,25 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "release_writer exact bases and budgets validate"
+        "requester owns the exact lock token and Agent is not ready"
       ],
       "base_references": [
-        "current Work Journal head",
-        "current lifecycle version"
+        "exact writer epoch",
+        "writer token digest"
       ],
       "emitted_records": [
-        "release_writer_receipt"
+        "WriterLockReleasedReceipt"
       ],
       "filesystem_effects": [
-        "none"
+        "release protected per-vault writer lock"
       ],
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "current lifecycle version"
+          "exact writer epoch",
+          "writer token digest"
         ],
-        "retry_result": "return original receipt"
+        "retry_result": "return the original durable receipt for the exact binding"
       },
       "terminal_state": "unheld",
       "failure_result": {
@@ -288,7 +289,7 @@
           "none"
         ]
       },
-      "recovery": "Re-read the durable receipt and exact current bases."
+      "recovery": "A repeated release observes unheld and performs no additional effect."
     }
   ]
 }

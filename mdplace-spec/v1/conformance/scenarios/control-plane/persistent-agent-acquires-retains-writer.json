@@ -4,13 +4,7 @@
   "fixture_id": "FIX-CP-POS-008",
   "category": "positive",
   "requirement_ids": [
-    "REQ-CP-001",
-    "REQ-CP-002",
-    "REQ-CP-003",
     "REQ-CP-004",
-    "REQ-CP-005",
-    "REQ-CP-006",
-    "REQ-CP-007",
     "REQ-CP-008",
     "REQ-CP-009",
     "REQ-CP-010"
@@ -53,10 +47,64 @@
         "command_version": null,
         "command_vault_id": null,
         "candidate_agent_id": "agent:primary-001",
-        "completion_receipt_present": false,
         "interruption_count": 0,
         "semantic_write_requested": false,
-        "authority_source": "none"
+        "authority_source": "none",
+        "expected_journal_head_sequence": null,
+        "expected_writer_epoch": 0,
+        "recovery_tick": null,
+        "writer_lock_receipt": {
+          "lock_id": "writer-lock:vault-001",
+          "prior_epoch": 0,
+          "epoch": 1,
+          "owner_agent_id": "agent:primary-001",
+          "token_digest": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "retained": true
+        },
+        "readiness_observations": [
+          {
+            "ordinal": 1,
+            "gate": "exclusive_writer",
+            "verdict": "not_run",
+            "receipt_id": null
+          },
+          {
+            "ordinal": 2,
+            "gate": "vault_filesystem",
+            "verdict": "not_run",
+            "receipt_id": null
+          },
+          {
+            "ordinal": 3,
+            "gate": "semantic_kernel",
+            "verdict": "not_run",
+            "receipt_id": null
+          },
+          {
+            "ordinal": 4,
+            "gate": "compatibility",
+            "verdict": "not_run",
+            "receipt_id": null
+          },
+          {
+            "ordinal": 5,
+            "gate": "derived_views",
+            "verdict": "not_run",
+            "receipt_id": null
+          },
+          {
+            "ordinal": 6,
+            "gate": "work_journal",
+            "verdict": "not_run",
+            "receipt_id": null
+          },
+          {
+            "ordinal": 7,
+            "gate": "control_channel",
+            "verdict": "not_run",
+            "receipt_id": null
+          }
+        ]
       }
     }
   },

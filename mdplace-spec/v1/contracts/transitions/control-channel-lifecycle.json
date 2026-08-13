@@ -28,24 +28,28 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "open_control_channel exact bases and budgets validate"
+        "Agent is ready and retains the Exclusive Writer Lock",
+        "socket directory mode is 0700 and socket mode is 0600"
       ],
       "base_references": [
-        "current Work Journal head",
-        "current lifecycle version"
+        "vault identity",
+        "Agent readiness receipt",
+        "protocol version 1.0"
       ],
       "emitted_records": [
-        "open_control_channel_receipt"
+        "ControlChannelOpenReceipt"
       ],
       "filesystem_effects": [
-        "none"
+        "create per-vault Unix-domain socket"
       ],
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "current lifecycle version"
+          "vault identity",
+          "Agent readiness receipt",
+          "protocol version 1.0"
         ],
-        "retry_result": "return original receipt"
+        "retry_result": "return the original durable receipt for the exact binding"
       },
       "terminal_state": "open",
       "failure_result": {
@@ -58,7 +62,7 @@
           "none"
         ]
       },
-      "recovery": "Re-read the durable receipt and exact current bases."
+      "recovery": "Remove an unowned stale socket and reopen only after readiness passes."
     },
     {
       "transition_id": "TR-CPCHANNEL-002",
@@ -77,8 +81,7 @@
         "submit_control_command is not legal from closed"
       ],
       "base_references": [
-        "current Work Journal head",
-        "current lifecycle version"
+        "exact current lifecycle state and version"
       ],
       "emitted_records": [
         "ControlPlaneTransitionDenied"
@@ -89,9 +92,9 @@
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "current lifecycle version"
+          "exact current lifecycle state and version"
         ],
-        "retry_result": "return original denial"
+        "retry_result": "return the original denial"
       },
       "terminal_state": "closed",
       "failure_result": {
@@ -104,7 +107,7 @@
           "none"
         ]
       },
-      "recovery": "Use a command legal from the current durable state."
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
     },
     {
       "transition_id": "TR-CPCHANNEL-003",
@@ -120,24 +123,25 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "close_control_channel exact bases and budgets validate"
+        "Agent is draining, blocked, or stopping"
       ],
       "base_references": [
-        "current Work Journal head",
-        "current lifecycle version"
+        "current Control Channel version",
+        "vault identity"
       ],
       "emitted_records": [
-        "close_control_channel_receipt"
+        "ControlChannelCloseReceipt"
       ],
       "filesystem_effects": [
-        "none"
+        "remove per-vault Unix-domain socket"
       ],
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "current lifecycle version"
+          "current Control Channel version",
+          "vault identity"
         ],
-        "retry_result": "return original receipt"
+        "retry_result": "return the original durable receipt for the exact binding"
       },
       "terminal_state": "closed",
       "failure_result": {
@@ -150,7 +154,7 @@
           "none"
         ]
       },
-      "recovery": "Re-read the durable receipt and exact current bases."
+      "recovery": "A repeated close returns the original receipt."
     },
     {
       "transition_id": "TR-CPCHANNEL-004",
@@ -166,24 +170,28 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "open_control_channel exact bases and budgets validate"
+        "Agent is ready and retains the Exclusive Writer Lock",
+        "socket directory mode is 0700 and socket mode is 0600"
       ],
       "base_references": [
-        "current Work Journal head",
-        "current lifecycle version"
+        "vault identity",
+        "Agent readiness receipt",
+        "protocol version 1.0"
       ],
       "emitted_records": [
-        "open_control_channel_receipt"
+        "ControlChannelOpenReceipt"
       ],
       "filesystem_effects": [
-        "none"
+        "create per-vault Unix-domain socket"
       ],
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "current lifecycle version"
+          "vault identity",
+          "Agent readiness receipt",
+          "protocol version 1.0"
         ],
-        "retry_result": "return original receipt"
+        "retry_result": "return the original durable receipt for the exact binding"
       },
       "terminal_state": "open",
       "failure_result": {
@@ -196,7 +204,7 @@
           "none"
         ]
       },
-      "recovery": "Re-read the durable receipt and exact current bases."
+      "recovery": "Remove an unowned stale socket and reopen only after readiness passes."
     },
     {
       "transition_id": "TR-CPCHANNEL-005",
@@ -212,24 +220,30 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "submit_control_command exact bases and budgets validate"
+        "Unix-domain transport is local",
+        "peer credentials match the effective user",
+        "vault scope and protocol match",
+        "request, response, timeout, and concurrency budgets hold"
       ],
       "base_references": [
-        "current Work Journal head",
-        "current lifecycle version"
+        "command version and idempotency key",
+        "exact actionable Work Item or Work Journal base",
+        "payload digest"
       ],
       "emitted_records": [
-        "submit_control_command_receipt"
+        "ControlCommandReceipt"
       ],
       "filesystem_effects": [
-        "none"
+        "none; owning authorities revalidate every requested effect"
       ],
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "current lifecycle version"
+          "command version and idempotency key",
+          "exact actionable Work Item or Work Journal base",
+          "payload digest"
         ],
-        "retry_result": "return original receipt"
+        "retry_result": "return the original durable receipt for the exact binding"
       },
       "terminal_state": "open",
       "failure_result": {
@@ -242,7 +256,7 @@
           "none"
         ]
       },
-      "recovery": "Re-read the durable receipt and exact current bases."
+      "recovery": "Return the original receipt for the exact request binding; reject stale, unauthenticated, nonlocal, or cross-vault commands."
     },
     {
       "transition_id": "TR-CPCHANNEL-006",
@@ -258,24 +272,25 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "close_control_channel exact bases and budgets validate"
+        "Agent is draining, blocked, or stopping"
       ],
       "base_references": [
-        "current Work Journal head",
-        "current lifecycle version"
+        "current Control Channel version",
+        "vault identity"
       ],
       "emitted_records": [
-        "close_control_channel_receipt"
+        "ControlChannelCloseReceipt"
       ],
       "filesystem_effects": [
-        "none"
+        "remove per-vault Unix-domain socket"
       ],
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "current lifecycle version"
+          "current Control Channel version",
+          "vault identity"
         ],
-        "retry_result": "return original receipt"
+        "retry_result": "return the original durable receipt for the exact binding"
       },
       "terminal_state": "closed",
       "failure_result": {
@@ -288,7 +303,7 @@
           "none"
         ]
       },
-      "recovery": "Re-read the durable receipt and exact current bases."
+      "recovery": "A repeated close returns the original receipt."
     }
   ]
 }

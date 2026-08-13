@@ -1,0 +1,96 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-CHILD-AUTH-001",
+  "category": "authority_denial",
+  "requirement_ids": [
+    "REQ-CP-006"
+  ],
+  "subject": {
+    "kind": "artifact",
+    "schema": "contracts/schemas/child-work-invocation.schema.json",
+    "document": {
+      "$schema": "../schemas/child-work-invocation.schema.json",
+      "schema_id": "mdplace.child-work-invocation/v1",
+      "invocation_id": "child-invocation:001",
+      "work_binding": {
+        "work_id": "work:001",
+        "work_version": 3,
+        "lease_id": "lease:001",
+        "journal_head_sequence": 3
+      },
+      "processing_envelope": {
+        "schema_id": "mdplace.placement-evaluation/v1",
+        "input_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "processing_policy_version": 1,
+        "processing_policy_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      },
+      "scratch_boundary": {
+        "path": "scratch/invocation-001",
+        "max_bytes": 10485760,
+        "cleanup": "destroy_after_invocation"
+      },
+      "credential_reference": {
+        "reference_id": "credential-ref:adapter-001",
+        "material_exposed": false
+      },
+      "endpoint_allowlist": [
+        "https://api.example.test/v1/evaluate"
+      ],
+      "budgets": {
+        "wall_time_ms": 30000,
+        "max_input_bytes": 1048576,
+        "max_output_bytes": 1048576,
+        "max_network_requests": 1
+      },
+      "capabilities": {
+        "vault_read": false,
+        "vault_write": false,
+        "shell": true,
+        "arbitrary_network": false,
+        "semantic_append": false,
+        "vault_mutation": false
+      },
+      "output": {
+        "schema_id": "mdplace.placement-evaluation-output/v1",
+        "schema_valid": true,
+        "output_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "semantic_authority": "none"
+      },
+      "completion_receipt": {
+        "receipt_id": "child-receipt:001",
+        "invocation_id": "child-invocation:001",
+        "work_id": "work:001",
+        "work_version": 3,
+        "lease_id": "lease:001",
+        "journal_head_sequence": 3,
+        "output_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "signer_agent_id": "agent:primary-001",
+        "signature_digest": "59aa3cbd04af112198515756905e3d68459e89b3c25cf0055a97e749ec1e1b5a",
+        "authenticated": true
+      },
+      "process_lifecycle": "fresh_process_destroyed_after_receipt"
+    }
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": [
+      "schema.constraint"
+    ],
+    "outputs": [
+      "artifact rejected"
+    ],
+    "operations": [
+      "parse boundary document",
+      "validate isolated Child Work Invocation"
+    ],
+    "receipts": [
+      "ValidationReceipt"
+    ],
+    "filesystem_effects": [
+      "none"
+    ],
+    "terminal_state": "rejected",
+    "illegal_transition": false
+  }
+}

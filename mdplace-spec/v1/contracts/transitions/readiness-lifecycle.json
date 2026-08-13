@@ -2,7 +2,7 @@
   "$schema": "../schemas/transition-table.schema.json",
   "schema_id": "mdplace.transition-table/v1",
   "table_id": "TRANS-CP-READINESS",
-  "lifecycle": "fail-closed mdplace Agent Readiness Gate",
+  "lifecycle": "ordered fail-closed Agent readiness",
   "version": "1.0.0",
   "states": [
     "starting",
@@ -28,24 +28,35 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "evaluate_readiness exact bases and budgets validate"
+        "all seven Readiness Gates pass in canonical order with receipts"
       ],
       "base_references": [
-        "current Work Journal head",
-        "current lifecycle version"
+        "current writer lock receipt",
+        "vault and filesystem profile",
+        "Semantic Kernel head",
+        "compatibility versions",
+        "derived-view recovery receipt",
+        "Work Journal head",
+        "Control Channel receipt"
       ],
       "emitted_records": [
-        "evaluate_readiness_receipt"
+        "ReadinessReceipt"
       ],
       "filesystem_effects": [
-        "none"
+        "open Control Channel only after Work Journal reconciliation"
       ],
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "current lifecycle version"
+          "current writer lock receipt",
+          "vault and filesystem profile",
+          "Semantic Kernel head",
+          "compatibility versions",
+          "derived-view recovery receipt",
+          "Work Journal head",
+          "Control Channel receipt"
         ],
-        "retry_result": "return original receipt"
+        "retry_result": "return the original durable receipt for the exact binding"
       },
       "terminal_state": "ready",
       "failure_result": {
@@ -58,7 +69,7 @@
           "none"
         ]
       },
-      "recovery": "Re-read the durable receipt and exact current bases."
+      "recovery": "Remain blocked at the first failed gate; repeat the full ordered evaluation after repair."
     },
     {
       "transition_id": "TR-CPREADY-002",
@@ -74,24 +85,25 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "dependency_lost exact bases and budgets validate"
+        "a readiness dependency is unavailable or its bound version changed"
       ],
       "base_references": [
-        "current Work Journal head",
-        "current lifecycle version"
+        "current readiness receipt",
+        "changed dependency identity and version"
       ],
       "emitted_records": [
-        "dependency_lost_receipt"
+        "ReadinessBlockedReceipt"
       ],
       "filesystem_effects": [
-        "none"
+        "close Control Channel and stop dispatch"
       ],
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "current lifecycle version"
+          "current readiness receipt",
+          "changed dependency identity and version"
         ],
-        "retry_result": "return original receipt"
+        "retry_result": "return the original durable receipt for the exact binding"
       },
       "terminal_state": "blocked",
       "failure_result": {
@@ -104,13 +116,13 @@
           "none"
         ]
       },
-      "recovery": "Re-read the durable receipt and exact current bases."
+      "recovery": "Return to starting only after dependency repair and run all gates again."
     },
     {
       "transition_id": "TR-CPREADY-003",
       "command_or_event": "evaluate_readiness",
       "from_state": "ready",
-      "allowed": true,
+      "allowed": false,
       "actor_authority": {
         "roles": [
           "mdplace_agent"
@@ -120,14 +132,13 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "evaluate_readiness exact bases and budgets validate"
+        "evaluate_readiness is not legal from ready"
       ],
       "base_references": [
-        "current Work Journal head",
-        "current lifecycle version"
+        "exact current lifecycle state and version"
       ],
       "emitted_records": [
-        "evaluate_readiness_receipt"
+        "ControlPlaneTransitionDenied"
       ],
       "filesystem_effects": [
         "none"
@@ -135,13 +146,13 @@
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "current lifecycle version"
+          "exact current lifecycle state and version"
         ],
-        "retry_result": "return original receipt"
+        "retry_result": "return the original denial"
       },
       "terminal_state": "ready",
       "failure_result": {
-        "code": "control.precondition_failed",
+        "code": "control.illegal_transition",
         "state_effect": "unchanged",
         "emitted_records": [
           "ControlPlaneTransitionDenied"
@@ -150,7 +161,7 @@
           "none"
         ]
       },
-      "recovery": "Re-read the durable receipt and exact current bases."
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
     },
     {
       "transition_id": "TR-CPREADY-004",
@@ -166,24 +177,25 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "dependency_lost exact bases and budgets validate"
+        "a readiness dependency is unavailable or its bound version changed"
       ],
       "base_references": [
-        "current Work Journal head",
-        "current lifecycle version"
+        "current readiness receipt",
+        "changed dependency identity and version"
       ],
       "emitted_records": [
-        "dependency_lost_receipt"
+        "ReadinessBlockedReceipt"
       ],
       "filesystem_effects": [
-        "none"
+        "close Control Channel and stop dispatch"
       ],
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "current lifecycle version"
+          "current readiness receipt",
+          "changed dependency identity and version"
         ],
-        "retry_result": "return original receipt"
+        "retry_result": "return the original durable receipt for the exact binding"
       },
       "terminal_state": "blocked",
       "failure_result": {
@@ -196,7 +208,7 @@
           "none"
         ]
       },
-      "recovery": "Re-read the durable receipt and exact current bases."
+      "recovery": "Return to starting only after dependency repair and run all gates again."
     },
     {
       "transition_id": "TR-CPREADY-005",
@@ -212,24 +224,35 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "evaluate_readiness exact bases and budgets validate"
+        "all seven Readiness Gates pass in canonical order with receipts"
       ],
       "base_references": [
-        "current Work Journal head",
-        "current lifecycle version"
+        "current writer lock receipt",
+        "vault and filesystem profile",
+        "Semantic Kernel head",
+        "compatibility versions",
+        "derived-view recovery receipt",
+        "Work Journal head",
+        "Control Channel receipt"
       ],
       "emitted_records": [
-        "evaluate_readiness_receipt"
+        "ReadinessReceipt"
       ],
       "filesystem_effects": [
-        "none"
+        "open Control Channel only after Work Journal reconciliation"
       ],
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "current lifecycle version"
+          "current writer lock receipt",
+          "vault and filesystem profile",
+          "Semantic Kernel head",
+          "compatibility versions",
+          "derived-view recovery receipt",
+          "Work Journal head",
+          "Control Channel receipt"
         ],
-        "retry_result": "return original receipt"
+        "retry_result": "return the original durable receipt for the exact binding"
       },
       "terminal_state": "ready",
       "failure_result": {
@@ -242,7 +265,7 @@
           "none"
         ]
       },
-      "recovery": "Re-read the durable receipt and exact current bases."
+      "recovery": "Remain blocked at the first failed gate; repeat the full ordered evaluation after repair."
     },
     {
       "transition_id": "TR-CPREADY-006",
@@ -258,24 +281,25 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "dependency_lost exact bases and budgets validate"
+        "a readiness dependency is unavailable or its bound version changed"
       ],
       "base_references": [
-        "current Work Journal head",
-        "current lifecycle version"
+        "current readiness receipt",
+        "changed dependency identity and version"
       ],
       "emitted_records": [
-        "dependency_lost_receipt"
+        "ReadinessBlockedReceipt"
       ],
       "filesystem_effects": [
-        "none"
+        "close Control Channel and stop dispatch"
       ],
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "current lifecycle version"
+          "current readiness receipt",
+          "changed dependency identity and version"
         ],
-        "retry_result": "return original receipt"
+        "retry_result": "return the original durable receipt for the exact binding"
       },
       "terminal_state": "blocked",
       "failure_result": {
@@ -288,7 +312,7 @@
           "none"
         ]
       },
-      "recovery": "Re-read the durable receipt and exact current bases."
+      "recovery": "Return to starting only after dependency repair and run all gates again."
     }
   ]
 }

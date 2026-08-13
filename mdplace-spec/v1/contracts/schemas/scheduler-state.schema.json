@@ -47,13 +47,15 @@
     "leaseRef": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["lease_id", "work_id", "work_version", "owner_agent_id", "expires_tick"],
+      "required": ["lease_id", "work_id", "work_version", "owner_agent_id", "acquired_tick", "expires_tick", "status"],
       "properties": {
         "lease_id": {"type": "string", "pattern": "^lease:[a-z0-9-]{3,64}$"},
         "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
         "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
         "owner_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
-        "expires_tick": {"type": "integer", "minimum": 1, "maximum": 1000300}
+        "acquired_tick": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "expires_tick": {"type": "integer", "minimum": 1, "maximum": 1000300},
+        "status": {"const": "active"}
       }
     }
   }

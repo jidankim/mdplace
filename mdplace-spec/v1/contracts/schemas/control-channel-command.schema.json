@@ -24,6 +24,16 @@
     "limits": {"$ref": "#/$defs/limits"},
     "semantic_authority": {"const": "none"}
   },
+  "allOf": [
+    {
+      "if": {"properties": {"command_kind": {"enum": ["cancel", "resume"]}}},
+      "then": {"properties": {"base_references": {"minItems": 1, "contains": {"properties": {"kind": {"const": "work_item"}}}, "minContains": 1, "maxContains": 1}}}
+    },
+    {
+      "if": {"properties": {"command_kind": {"const": "enqueue"}}},
+      "then": {"properties": {"base_references": {"minItems": 1, "contains": {"properties": {"kind": {"const": "work_journal"}}}, "minContains": 1, "maxContains": 1}}}
+    }
+  ],
   "$defs": {
     "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
     "peer": {
@@ -43,8 +53,8 @@
       "additionalProperties": false,
       "required": ["kind", "reference_id", "version", "digest"],
       "properties": {
-        "kind": {"enum": ["work_item", "semantic_head", "policy", "mutation_plan"]},
-        "reference_id": {"type": "string", "pattern": "^(work|semantic|policy|plan):[a-z0-9-]{3,64}$"},
+        "kind": {"enum": ["work_item", "work_journal", "semantic_head", "policy", "mutation_plan"]},
+        "reference_id": {"type": "string", "pattern": "^(work|journal|semantic|policy|plan):[a-z0-9-]{3,64}$"},
         "version": {"type": "integer", "minimum": 0, "maximum": 1000000},
         "digest": {"$ref": "#/$defs/digest"}
       }

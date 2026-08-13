@@ -5,8 +5,13 @@
   "lifecycle": "durable Work Item cancellation and authorized resume",
   "version": "1.0.0",
   "states": [
-    "active",
-    "cancelled"
+    "queued",
+    "leased",
+    "executing",
+    "retry_wait",
+    "cancelled",
+    "succeeded",
+    "failed"
   ],
   "commands": [
     "cancel_work",
@@ -16,7 +21,7 @@
     {
       "transition_id": "TR-CPCANCEL-001",
       "command_or_event": "cancel_work",
-      "from_state": "active",
+      "from_state": "queued",
       "allowed": true,
       "actor_authority": {
         "roles": [
@@ -27,24 +32,27 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "cancel_work exact bases and budgets validate"
+        "vault owner is authenticated",
+        "exact Work Item version is current"
       ],
       "base_references": [
-        "current Work Journal head",
-        "current lifecycle version"
+        "exact Work Item version",
+        "current Work Lease when present"
       ],
       "emitted_records": [
-        "cancel_work_receipt"
+        "CancellationReceipt"
       ],
       "filesystem_effects": [
-        "none"
+        "append durable cancellation",
+        "revoke active Child Work Invocation capability when present"
       ],
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "current lifecycle version"
+          "exact Work Item version",
+          "current Work Lease when present"
         ],
-        "retry_result": "return original receipt"
+        "retry_result": "return the original durable receipt for the exact binding"
       },
       "terminal_state": "cancelled",
       "failure_result": {
@@ -57,12 +65,12 @@
           "none"
         ]
       },
-      "recovery": "Re-read the durable receipt and exact current bases."
+      "recovery": "Keep the Work Item cancelled after restart and never revive it without a separate authorized resume."
     },
     {
       "transition_id": "TR-CPCANCEL-002",
       "command_or_event": "resume_work",
-      "from_state": "active",
+      "from_state": "queued",
       "allowed": false,
       "actor_authority": {
         "roles": [
@@ -73,11 +81,10 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "resume_work is not legal from active"
+        "resume_work is not legal from queued"
       ],
       "base_references": [
-        "current Work Journal head",
-        "current lifecycle version"
+        "exact current lifecycle state and version"
       ],
       "emitted_records": [
         "ControlPlaneTransitionDenied"
@@ -88,11 +95,11 @@
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "current lifecycle version"
+          "exact current lifecycle state and version"
         ],
-        "retry_result": "return original denial"
+        "retry_result": "return the original denial"
       },
-      "terminal_state": "active",
+      "terminal_state": "queued",
       "failure_result": {
         "code": "control.illegal_transition",
         "state_effect": "unchanged",
@@ -103,12 +110,12 @@
           "none"
         ]
       },
-      "recovery": "Use a command legal from the current durable state."
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
     },
     {
       "transition_id": "TR-CPCANCEL-003",
       "command_or_event": "cancel_work",
-      "from_state": "cancelled",
+      "from_state": "leased",
       "allowed": true,
       "actor_authority": {
         "roles": [
@@ -119,24 +126,27 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "cancel_work exact bases and budgets validate"
+        "vault owner is authenticated",
+        "exact Work Item version is current"
       ],
       "base_references": [
-        "current Work Journal head",
-        "current lifecycle version"
+        "exact Work Item version",
+        "current Work Lease when present"
       ],
       "emitted_records": [
-        "cancel_work_receipt"
+        "CancellationReceipt"
       ],
       "filesystem_effects": [
-        "none"
+        "append durable cancellation",
+        "revoke active Child Work Invocation capability when present"
       ],
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "current lifecycle version"
+          "exact Work Item version",
+          "current Work Lease when present"
         ],
-        "retry_result": "return original receipt"
+        "retry_result": "return the original durable receipt for the exact binding"
       },
       "terminal_state": "cancelled",
       "failure_result": {
@@ -149,10 +159,292 @@
           "none"
         ]
       },
-      "recovery": "Re-read the durable receipt and exact current bases."
+      "recovery": "Keep the Work Item cancelled after restart and never revive it without a separate authorized resume."
     },
     {
       "transition_id": "TR-CPCANCEL-004",
+      "command_or_event": "resume_work",
+      "from_state": "leased",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_owner"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "resume_work is not legal from leased"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "leased",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPCANCEL-005",
+      "command_or_event": "cancel_work",
+      "from_state": "executing",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "vault_owner"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "vault owner is authenticated",
+        "exact Work Item version is current"
+      ],
+      "base_references": [
+        "exact Work Item version",
+        "current Work Lease when present"
+      ],
+      "emitted_records": [
+        "CancellationReceipt"
+      ],
+      "filesystem_effects": [
+        "append durable cancellation",
+        "revoke active Child Work Invocation capability when present"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact Work Item version",
+          "current Work Lease when present"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "cancelled",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Keep the Work Item cancelled after restart and never revive it without a separate authorized resume."
+    },
+    {
+      "transition_id": "TR-CPCANCEL-006",
+      "command_or_event": "resume_work",
+      "from_state": "executing",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_owner"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "resume_work is not legal from executing"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "executing",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPCANCEL-007",
+      "command_or_event": "cancel_work",
+      "from_state": "retry_wait",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "vault_owner"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "vault owner is authenticated",
+        "exact Work Item version is current"
+      ],
+      "base_references": [
+        "exact Work Item version",
+        "current Work Lease when present"
+      ],
+      "emitted_records": [
+        "CancellationReceipt"
+      ],
+      "filesystem_effects": [
+        "append durable cancellation",
+        "revoke active Child Work Invocation capability when present"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact Work Item version",
+          "current Work Lease when present"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "cancelled",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Keep the Work Item cancelled after restart and never revive it without a separate authorized resume."
+    },
+    {
+      "transition_id": "TR-CPCANCEL-008",
+      "command_or_event": "resume_work",
+      "from_state": "retry_wait",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_owner"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "resume_work is not legal from retry_wait"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "retry_wait",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPCANCEL-009",
+      "command_or_event": "cancel_work",
+      "from_state": "cancelled",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "vault_owner"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "vault owner is authenticated",
+        "exact Work Item version is current"
+      ],
+      "base_references": [
+        "exact Work Item version",
+        "current Work Lease when present"
+      ],
+      "emitted_records": [
+        "CancellationReceipt"
+      ],
+      "filesystem_effects": [
+        "append durable cancellation",
+        "revoke active Child Work Invocation capability when present"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact Work Item version",
+          "current Work Lease when present"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "cancelled",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Keep the Work Item cancelled after restart and never revive it without a separate authorized resume."
+    },
+    {
+      "transition_id": "TR-CPCANCEL-010",
       "command_or_event": "resume_work",
       "from_state": "cancelled",
       "allowed": true,
@@ -165,26 +457,29 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "resume_work exact bases and budgets validate"
+        "vault owner is authenticated",
+        "Work Item is cancelled",
+        "resume count is below one"
       ],
       "base_references": [
-        "current Work Journal head",
-        "current lifecycle version"
+        "exact cancelled Work Item version",
+        "CancellationReceipt and resume count"
       ],
       "emitted_records": [
-        "resume_work_receipt"
+        "ResumeReceipt"
       ],
       "filesystem_effects": [
-        "none"
+        "append one bounded resume and return work to queued"
       ],
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "current lifecycle version"
+          "exact cancelled Work Item version",
+          "CancellationReceipt and resume count"
         ],
-        "retry_result": "return original receipt"
+        "retry_result": "return the original durable receipt for the exact binding"
       },
-      "terminal_state": "active",
+      "terminal_state": "queued",
       "failure_result": {
         "code": "control.precondition_failed",
         "state_effect": "unchanged",
@@ -195,7 +490,187 @@
           "none"
         ]
       },
-      "recovery": "Re-read the durable receipt and exact current bases."
+      "recovery": "Return the durable ResumeReceipt; a second resume is denied."
+    },
+    {
+      "transition_id": "TR-CPCANCEL-011",
+      "command_or_event": "cancel_work",
+      "from_state": "succeeded",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_owner"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "cancel_work is not legal from succeeded"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "succeeded",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPCANCEL-012",
+      "command_or_event": "resume_work",
+      "from_state": "succeeded",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_owner"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "resume_work is not legal from succeeded"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "succeeded",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPCANCEL-013",
+      "command_or_event": "cancel_work",
+      "from_state": "failed",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_owner"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "cancel_work is not legal from failed"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "failed",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPCANCEL-014",
+      "command_or_event": "resume_work",
+      "from_state": "failed",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_owner"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "resume_work is not legal from failed"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "failed",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
     }
   ]
 }

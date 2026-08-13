@@ -15,8 +15,46 @@
     "supervisor": {"const": "launchd_launchagent"},
     "semantic_authority": {"const": "none"},
     "writer_lock": {"$ref": "#/$defs/writerLock"},
-    "readiness_gates": {"type": "array", "minItems": 7, "maxItems": 7, "items": {"$ref": "#/$defs/readinessGate"}},
+    "readiness_gates": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "prefixItems": [
+        {"$ref": "#/$defs/readinessGate", "properties": {"ordinal": {"const": 1}, "gate": {"const": "exclusive_writer"}}},
+        {"$ref": "#/$defs/readinessGate", "properties": {"ordinal": {"const": 2}, "gate": {"const": "vault_filesystem"}}},
+        {"$ref": "#/$defs/readinessGate", "properties": {"ordinal": {"const": 3}, "gate": {"const": "semantic_kernel"}}},
+        {"$ref": "#/$defs/readinessGate", "properties": {"ordinal": {"const": 4}, "gate": {"const": "compatibility"}}},
+        {"$ref": "#/$defs/readinessGate", "properties": {"ordinal": {"const": 5}, "gate": {"const": "derived_views"}}},
+        {"$ref": "#/$defs/readinessGate", "properties": {"ordinal": {"const": 6}, "gate": {"const": "work_journal"}}},
+        {"$ref": "#/$defs/readinessGate", "properties": {"ordinal": {"const": 7}, "gate": {"const": "control_channel"}}}
+      ],
+      "items": false
+    },
     "control_channel_state": {"enum": ["closed", "open", "draining"]}
+  },
+  "if": {"properties": {"state": {"const": "ready"}}},
+  "then": {
+    "properties": {
+      "writer_lock": {
+        "properties": {
+          "owner_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
+          "token_digest": {"$ref": "#/$defs/digest"},
+          "retained": {"const": true}
+        }
+      },
+      "readiness_gates": {
+        "prefixItems": [
+          {"properties": {"verdict": {"const": "pass"}, "receipt_id": {"type": "string", "pattern": "^readiness-receipt:[a-z0-9-]{3,64}$"}}},
+          {"properties": {"verdict": {"const": "pass"}, "receipt_id": {"type": "string", "pattern": "^readiness-receipt:[a-z0-9-]{3,64}$"}}},
+          {"properties": {"verdict": {"const": "pass"}, "receipt_id": {"type": "string", "pattern": "^readiness-receipt:[a-z0-9-]{3,64}$"}}},
+          {"properties": {"verdict": {"const": "pass"}, "receipt_id": {"type": "string", "pattern": "^readiness-receipt:[a-z0-9-]{3,64}$"}}},
+          {"properties": {"verdict": {"const": "pass"}, "receipt_id": {"type": "string", "pattern": "^readiness-receipt:[a-z0-9-]{3,64}$"}}},
+          {"properties": {"verdict": {"const": "pass"}, "receipt_id": {"type": "string", "pattern": "^readiness-receipt:[a-z0-9-]{3,64}$"}}},
+          {"properties": {"verdict": {"const": "pass"}, "receipt_id": {"type": "string", "pattern": "^readiness-receipt:[a-z0-9-]{3,64}$"}}}
+        ]
+      },
+      "control_channel_state": {"const": "open"}
+    }
   },
   "$defs": {
     "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},

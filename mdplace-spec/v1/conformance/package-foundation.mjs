@@ -49,6 +49,7 @@ export const requiredSchemaPaths = [
   'contracts/schemas/control-plane-recovery-matrix.schema.json',
   'contracts/schemas/control-plane-scenario.schema.json',
   'contracts/schemas/control-plane-recovery-report.schema.json',
+  'contracts/schemas/child-work-invocation.schema.json',
 ];
 
 export const requiredCandidateFoundationSlots = [

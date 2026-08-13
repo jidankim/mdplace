@@ -5,14 +5,8 @@
   "category": "authority_denial",
   "requirement_ids": [
     "REQ-CP-001",
-    "REQ-CP-002",
-    "REQ-CP-003",
     "REQ-CP-004",
-    "REQ-CP-005",
-    "REQ-CP-006",
-    "REQ-CP-007",
     "REQ-CP-008",
-    "REQ-CP-009",
     "REQ-CP-010"
   ],
   "subject": {
@@ -53,10 +47,57 @@
         "command_version": null,
         "command_vault_id": null,
         "candidate_agent_id": null,
-        "completion_receipt_present": false,
         "interruption_count": 0,
         "semantic_write_requested": true,
-        "authority_source": "readiness"
+        "authority_source": "readiness",
+        "expected_journal_head_sequence": null,
+        "expected_writer_epoch": null,
+        "recovery_tick": null,
+        "writer_lock_receipt": null,
+        "readiness_observations": [
+          {
+            "ordinal": 1,
+            "gate": "exclusive_writer",
+            "verdict": "pass",
+            "receipt_id": "readiness-receipt:001"
+          },
+          {
+            "ordinal": 2,
+            "gate": "vault_filesystem",
+            "verdict": "pass",
+            "receipt_id": "readiness-receipt:002"
+          },
+          {
+            "ordinal": 3,
+            "gate": "semantic_kernel",
+            "verdict": "pass",
+            "receipt_id": "readiness-receipt:003"
+          },
+          {
+            "ordinal": 4,
+            "gate": "compatibility",
+            "verdict": "pass",
+            "receipt_id": "readiness-receipt:004"
+          },
+          {
+            "ordinal": 5,
+            "gate": "derived_views",
+            "verdict": "pass",
+            "receipt_id": "readiness-receipt:005"
+          },
+          {
+            "ordinal": 6,
+            "gate": "work_journal",
+            "verdict": "fail",
+            "receipt_id": "readiness-receipt:006"
+          },
+          {
+            "ordinal": 7,
+            "gate": "control_channel",
+            "verdict": "not_run",
+            "receipt_id": null
+          }
+        ]
       }
     }
   },

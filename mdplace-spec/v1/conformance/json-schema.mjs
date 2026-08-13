@@ -116,6 +116,22 @@ function validateNode(schema, value, rootSchema, path, errors, state) {
       });
     }
   }
+  if (schema.if !== undefined) {
+    const conditionErrors = [];
+    validateNode(schema.if, value, rootSchema, path, conditionErrors, {
+      depth: state.depth + 1,
+      references: state.references,
+      budget: state.budget,
+    });
+    const branch = conditionErrors.length === 0 ? schema.then : schema.else;
+    if (branch !== undefined) {
+      validateNode(branch, value, rootSchema, path, errors, {
+        depth: state.depth + 1,
+        references: state.references,
+        budget: state.budget,
+      });
+    }
+  }
   if (schema.type !== undefined) {
     const types = Array.isArray(schema.type) ? schema.type : [schema.type];
     if (!types.some((type) => matchesType(value, type))) {
@@ -200,8 +216,25 @@ function validateNode(schema, value, rootSchema, path, errors, state) {
         addError(errors, path, schema.minContains === undefined ? 'contains' : 'minContains');
       }
     }
+    let itemOffset = 0;
+    if (schema.prefixItems !== undefined) {
+      if (!Array.isArray(schema.prefixItems) || schema.prefixItems.length > maxCollectionEntries) {
+        addError(errors, path, 'invalidSchema');
+        return;
+      }
+      itemOffset = schema.prefixItems.length;
+      schema.prefixItems.forEach((itemSchema, index) => {
+        if (index >= value.length) return;
+        validateNode(itemSchema, value[index], rootSchema, `${path}/${index}`, errors, {
+          depth: state.depth + 1,
+          references: state.references,
+          budget: state.budget,
+        });
+      });
+    }
     if (schema.items !== undefined) {
-      value.forEach((entry, index) => {
+      value.slice(itemOffset).forEach((entry, relativeIndex) => {
+        const index = itemOffset + relativeIndex;
         validateNode(schema.items, entry, rootSchema, `${path}/${index}`, errors, {
           depth: state.depth + 1,
           references: state.references,

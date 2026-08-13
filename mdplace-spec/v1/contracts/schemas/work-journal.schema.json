@@ -22,12 +22,13 @@
     "limits": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["max_total_attempts", "retry_delays_ms", "max_recovery_interruptions", "max_resume_count"],
+      "required": ["max_total_attempts", "retry_delays_ms", "max_recovery_interruptions", "max_resume_count", "lease_duration_ticks"],
       "properties": {
         "max_total_attempts": {"const": 3},
         "retry_delays_ms": {"const": [1000, 5000]},
         "max_recovery_interruptions": {"const": 2},
-        "max_resume_count": {"const": 1}
+        "max_resume_count": {"const": 1},
+        "lease_duration_ticks": {"const": 300}
       }
     },
     "budget": {
@@ -44,13 +45,15 @@
     "lease": {
       "type": ["object", "null"],
       "additionalProperties": false,
-      "required": ["lease_id", "owner_agent_id", "work_version", "acquired_tick", "expires_tick"],
+      "required": ["lease_id", "work_id", "owner_agent_id", "work_version", "acquired_tick", "expires_tick", "status"],
       "properties": {
         "lease_id": {"type": "string", "pattern": "^lease:[a-z0-9-]{3,64}$"},
+        "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
         "owner_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
         "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
         "acquired_tick": {"type": "integer", "minimum": 0, "maximum": 1000000},
-        "expires_tick": {"type": "integer", "minimum": 1, "maximum": 1000300}
+        "expires_tick": {"type": "integer", "minimum": 1, "maximum": 1000300},
+        "status": {"enum": ["active", "revoked", "expired"]}
       }
     },
     "cancellation": {
@@ -69,18 +72,35 @@
     "result": {
       "type": ["object", "null"],
       "additionalProperties": false,
-      "required": ["outcome", "receipt_id", "output_digest", "code"],
+      "required": ["outcome", "receipt_id", "work_version", "lease_id", "journal_sequence", "output_digest", "code", "signer_agent_id", "signature_digest", "authenticated"],
       "properties": {
         "outcome": {"enum": ["succeeded", "failed", "cancelled"]},
         "receipt_id": {"type": "string", "pattern": "^receipt:[a-z0-9-]{3,64}$"},
+        "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "lease_id": {"type": ["string", "null"], "pattern": "^lease:[a-z0-9-]{3,64}$"},
+        "journal_sequence": {"type": "integer", "minimum": 1, "maximum": 1000000},
         "output_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
-        "code": {"type": ["string", "null"], "pattern": "^[a-z][a-z0-9_.-]{2,127}$"}
+        "code": {"type": ["string", "null"], "pattern": "^[a-z][a-z0-9_.-]{2,127}$"},
+        "signer_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
+        "signature_digest": {"$ref": "#/$defs/digest"},
+        "authenticated": {"const": true}
+      }
+    },
+    "dependency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "reference_id", "version", "digest"],
+      "properties": {
+        "kind": {"enum": ["work_item", "semantic_head", "mutation_plan"]},
+        "reference_id": {"type": "string", "pattern": "^(work|semantic|plan):[a-z0-9-]{3,64}$"},
+        "version": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "digest": {"$ref": "#/$defs/digest"}
       }
     },
     "workItem": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["work_id", "work_kind", "work_version", "state", "idempotency_key", "input_digest", "dependencies", "budget", "retry_count", "lease", "cancellation", "result"],
+      "required": ["work_id", "work_kind", "work_version", "state", "idempotency_key", "input_digest", "dependencies", "budget", "retry_count", "retry_eligible_tick", "recovery_interruption_count", "lease", "cancellation", "result"],
       "properties": {
         "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
         "work_kind": {"enum": ["capture_promotion", "placement_evaluation", "taxonomy_evolution", "view_rebuild", "intelligence_adapter", "folder_projection"]},
@@ -88,9 +108,11 @@
         "state": {"enum": ["queued", "leased", "executing", "retry_wait", "cancelled", "succeeded", "failed"]},
         "idempotency_key": {"type": "string", "pattern": "^idempotency:[a-z0-9-]{3,64}$"},
         "input_digest": {"$ref": "#/$defs/digest"},
-        "dependencies": {"type": "array", "maxItems": 32, "uniqueItems": true, "items": {"type": "string", "pattern": "^(work|semantic|plan):[a-z0-9-]{3,64}$"}},
+        "dependencies": {"type": "array", "maxItems": 32, "uniqueItems": true, "items": {"$ref": "#/$defs/dependency"}},
         "budget": {"$ref": "#/$defs/budget"},
         "retry_count": {"type": "integer", "minimum": 0, "maximum": 2},
+        "retry_eligible_tick": {"type": ["integer", "null"], "minimum": 0, "maximum": 1000000},
+        "recovery_interruption_count": {"type": "integer", "minimum": 0, "maximum": 2},
         "lease": {"$ref": "#/$defs/lease"},
         "cancellation": {"$ref": "#/$defs/cancellation"},
         "result": {"$ref": "#/$defs/result"}

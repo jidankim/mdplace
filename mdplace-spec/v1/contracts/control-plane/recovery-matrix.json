@@ -17,16 +17,15 @@
         "delegation": "forbidden"
       },
       "durable_observations": [
-        "idempotency key",
-        "journal head"
+        "absence of EnqueueReceipt for the idempotency key",
+        "exact Work Journal head sequence and digest"
       ],
       "preconditions": [
-        "Exclusive Writer Lock is current or recovery remains blocked"
+        "current retained writer receipt binds the persistent Agent and exact next epoch"
       ],
       "base_references": [
-        "exact Work Journal head",
-        "exact Work Item version",
-        "current semantic dependency digest"
+        "idempotency key and input digest",
+        "exact Work Journal head"
       ],
       "emitted_records": [
         "WorkRecoveryDenied"
@@ -37,7 +36,7 @@
       "idempotency": "The same recovery identity and exact observations return the original receipt.",
       "terminal_result": "deny with unchanged semantic truth",
       "failure_result": "control.recovery_precondition_failed; state unchanged",
-      "recovery": "No Work Item was committed; return no accepted work.",
+      "recovery": "Deny acceptance because no durable Work Item exists; an exact future enqueue may create version one.",
       "default_decision": "deny"
     },
     {
@@ -52,16 +51,15 @@
         "delegation": "forbidden"
       },
       "durable_observations": [
-        "enqueue receipt",
-        "Work Item version"
+        "authenticated EnqueueReceipt",
+        "exact committed Work Item version and input digest"
       ],
       "preconditions": [
-        "Exclusive Writer Lock is current or recovery remains blocked"
+        "enqueue receipt sequence is at or below the exact Work Journal head"
       ],
       "base_references": [
         "exact Work Journal head",
-        "exact Work Item version",
-        "current semantic dependency digest"
+        "exact Work Item identity, version, idempotency key, and input digest"
       ],
       "emitted_records": [
         "WorkRecoveryReceipt"
@@ -72,7 +70,7 @@
       "idempotency": "The same recovery identity and exact observations return the original receipt.",
       "terminal_result": "resume with unchanged semantic truth",
       "failure_result": "control.recovery_precondition_failed; state unchanged",
-      "recovery": "Preserve the queued Work Item after process restart.",
+      "recovery": "Preserve the single queued Work Item and return the original EnqueueReceipt.",
       "default_decision": "resume"
     },
     {
@@ -87,16 +85,16 @@
         "delegation": "forbidden"
       },
       "durable_observations": [
-        "Work Lease receipt",
-        "Work Item version"
+        "authenticated WorkLeaseReceipt",
+        "lease owner, version, acquired tick, expiry tick, and status"
       ],
       "preconditions": [
-        "Exclusive Writer Lock is current or recovery remains blocked"
+        "lease remains active and its duration is at most 300 ticks"
       ],
       "base_references": [
         "exact Work Journal head",
         "exact Work Item version",
-        "current semantic dependency digest"
+        "exact active Work Lease"
       ],
       "emitted_records": [
         "WorkRecoveryReceipt"
@@ -107,7 +105,7 @@
       "idempotency": "The same recovery identity and exact observations return the original receipt.",
       "terminal_result": "preserve with unchanged semantic truth",
       "failure_result": "control.recovery_precondition_failed; state unchanged",
-      "recovery": "Return the existing Work Lease receipt before acknowledging dequeue.",
+      "recovery": "Preserve the single lease and return its receipt; do not create a second owner.",
       "default_decision": "preserve"
     },
     {
@@ -122,16 +120,17 @@
         "delegation": "forbidden"
       },
       "durable_observations": [
-        "Work Lease receipt",
-        "lease expiry"
+        "WorkLeaseReceipt",
+        "durable expiry or revocation observation"
       ],
       "preconditions": [
-        "Exclusive Writer Lock is current or recovery remains blocked"
+        "lease identity and work version match",
+        "lease is expired at the recovery tick or explicitly revoked"
       ],
       "base_references": [
         "exact Work Journal head",
         "exact Work Item version",
-        "current semantic dependency digest"
+        "exact expired or revoked Work Lease"
       ],
       "emitted_records": [
         "WorkRecoveryReceipt"
@@ -142,7 +141,7 @@
       "idempotency": "The same recovery identity and exact observations return the original receipt.",
       "terminal_result": "requeue with unchanged semantic truth",
       "failure_result": "control.recovery_precondition_failed; state unchanged",
-      "recovery": "Requeue only after the exact Work Lease expires or is revoked.",
+      "recovery": "Append one WorkRecoveryReceipt and requeue without acknowledging a second owner.",
       "default_decision": "requeue"
     },
     {
@@ -157,16 +156,18 @@
         "delegation": "forbidden"
       },
       "durable_observations": [
-        "Work Lease receipt",
-        "attempt budget"
+        "absence of authenticated completion receipt",
+        "exact retry and recovery interruption counts"
       ],
       "preconditions": [
-        "Exclusive Writer Lock is current or recovery remains blocked"
+        "lease is expired or revoked",
+        "next recovery interruption count equals current count plus one and is at most two"
       ],
       "base_references": [
         "exact Work Journal head",
-        "exact Work Item version",
-        "current semantic dependency digest"
+        "exact executing Work Item version",
+        "exact Work Lease",
+        "versioned semantic dependency digests"
       ],
       "emitted_records": [
         "WorkRecoveryReceipt"
@@ -177,7 +178,7 @@
       "idempotency": "The same recovery identity and exact observations return the original receipt.",
       "terminal_result": "requeue with unchanged semantic truth",
       "failure_result": "control.recovery_precondition_failed; state unchanged",
-      "recovery": "Record one bounded retry without claiming completion.",
+      "recovery": "Consume one recovery interruption and one retry, record an eligibility tick, and never claim completion.",
       "default_decision": "requeue"
     },
     {
@@ -192,16 +193,16 @@
         "delegation": "forbidden"
       },
       "durable_observations": [
-        "completion receipt",
-        "output digest"
+        "authenticated CompletionReceipt",
+        "bound output digest and signer identity"
       ],
       "preconditions": [
-        "Exclusive Writer Lock is current or recovery remains blocked"
+        "receipt signature binds exact work, version, lease, journal sequence, outcome, output, and persistent Agent"
       ],
       "base_references": [
         "exact Work Journal head",
-        "exact Work Item version",
-        "current semantic dependency digest"
+        "exact Work Item version and Work Lease",
+        "authenticated completion receipt"
       ],
       "emitted_records": [
         "WorkRecoveryReceipt"
@@ -212,7 +213,7 @@
       "idempotency": "The same recovery identity and exact observations return the original receipt.",
       "terminal_result": "preserve with unchanged semantic truth",
       "failure_result": "control.recovery_precondition_failed; state unchanged",
-      "recovery": "Finalize the existing completion and never repeat work.",
+      "recovery": "Finalize and preserve the authenticated result without repeating child or parent work.",
       "default_decision": "preserve"
     },
     {
@@ -227,16 +228,16 @@
         "delegation": "forbidden"
       },
       "durable_observations": [
-        "cancellation receipt",
-        "Work Item version"
+        "CancellationReceipt",
+        "active Child Work Invocation identity when present"
       ],
       "preconditions": [
-        "Exclusive Writer Lock is current or recovery remains blocked"
+        "cancellation binds the exact Work Item version"
       ],
       "base_references": [
         "exact Work Journal head",
-        "exact Work Item version",
-        "current semantic dependency digest"
+        "exact Work Item and cancellation versions",
+        "current child capability receipt"
       ],
       "emitted_records": [
         "WorkRecoveryReceipt"
@@ -247,7 +248,7 @@
       "idempotency": "The same recovery identity and exact observations return the original receipt.",
       "terminal_result": "preserve with unchanged semantic truth",
       "failure_result": "control.recovery_precondition_failed; state unchanged",
-      "recovery": "Keep cancelled state and revoke child capability.",
+      "recovery": "Preserve cancellation and revoke the exact child capability without accepting child output.",
       "default_decision": "preserve"
     },
     {
@@ -262,16 +263,17 @@
         "delegation": "forbidden"
       },
       "durable_observations": [
-        "cancellation receipt",
-        "resume count"
+        "CancellationReceipt",
+        "durable resume count and ceiling"
       ],
       "preconditions": [
-        "Exclusive Writer Lock is current or recovery remains blocked"
+        "new retained writer receipt is current",
+        "all seven Readiness Gates pass in order"
       ],
       "base_references": [
+        "exact writer epoch",
         "exact Work Journal head",
-        "exact Work Item version",
-        "current semantic dependency digest"
+        "exact cancelled Work Item version"
       ],
       "emitted_records": [
         "WorkRecoveryReceipt"
@@ -282,7 +284,7 @@
       "idempotency": "The same recovery identity and exact observations return the original receipt.",
       "terminal_result": "preserve with unchanged semantic truth",
       "failure_result": "control.recovery_precondition_failed; state unchanged",
-      "recovery": "Keep the Work Item cancelled until authorized resume.",
+      "recovery": "Keep work cancelled after restart until one separately authenticated resume.",
       "default_decision": "preserve"
     },
     {
@@ -297,16 +299,17 @@
         "delegation": "forbidden"
       },
       "durable_observations": [
-        "recovery receipts",
-        "interruption count"
+        "ordered WorkRecoveryReceipts",
+        "current recovery interruption count"
       ],
       "preconditions": [
-        "Exclusive Writer Lock is current or recovery remains blocked"
+        "next interruption count equals current count plus one",
+        "next count is below or equal to two"
       ],
       "base_references": [
         "exact Work Journal head",
-        "exact Work Item version",
-        "current semantic dependency digest"
+        "exact Work Item and expired lease",
+        "recovery receipt chain"
       ],
       "emitted_records": [
         "WorkRecoveryReceipt"
@@ -317,7 +320,7 @@
       "idempotency": "The same recovery identity and exact observations return the original receipt.",
       "terminal_result": "requeue with unchanged semantic truth",
       "failure_result": "control.recovery_precondition_failed; state unchanged",
-      "recovery": "Consume one recovery interruption and preserve one Work Item identity.",
+      "recovery": "Append one recovery receipt and preserve one Work Item identity.",
       "default_decision": "requeue"
     },
     {
@@ -332,16 +335,16 @@
         "delegation": "forbidden"
       },
       "durable_observations": [
-        "recovery receipts",
-        "interruption count"
+        "ordered WorkRecoveryReceipts",
+        "recovery interruption count equal to two"
       ],
       "preconditions": [
-        "Exclusive Writer Lock is current or recovery remains blocked"
+        "another interruption would exceed the ceiling"
       ],
       "base_references": [
         "exact Work Journal head",
         "exact Work Item version",
-        "current semantic dependency digest"
+        "complete recovery receipt chain"
       ],
       "emitted_records": [
         "WorkRecoveryReceipt"
@@ -352,7 +355,7 @@
       "idempotency": "The same recovery identity and exact observations return the original receipt.",
       "terminal_result": "fail with unchanged semantic truth",
       "failure_result": "control.recovery_precondition_failed; state unchanged",
-      "recovery": "Record terminal failure at the exact recovery ceiling.",
+      "recovery": "Append authenticated terminal failure and deny further recovery retries.",
       "default_decision": "fail"
     },
     {
@@ -367,17 +370,16 @@
         "delegation": "forbidden"
       },
       "durable_observations": [
-        "mutation plan",
-        "filesystem observations",
-        "mutation receipts"
+        "exact mutation plan and preconditions",
+        "filesystem identities, hashes, and mutation receipts"
       ],
       "preconditions": [
-        "Exclusive Writer Lock is current or recovery remains blocked"
+        "observations cannot prove applied or unapplied state exactly"
       ],
       "base_references": [
         "exact Work Journal head",
-        "exact Work Item version",
-        "current semantic dependency digest"
+        "exact Work Item and mutation-plan versions",
+        "current filesystem observations"
       ],
       "emitted_records": [
         "WorkRecoveryBlocked"
@@ -388,7 +390,7 @@
       "idempotency": "The same recovery identity and exact observations return the original receipt.",
       "terminal_result": "block with unchanged semantic truth",
       "failure_result": "control.recovery_precondition_failed; state unchanged",
-      "recovery": "Block for explicit reconciliation; never retry blindly.",
+      "recovery": "Block for explicit Vault Mutation Gate reconciliation; never retry or overwrite blindly.",
       "default_decision": "block"
     },
     {
@@ -403,16 +405,15 @@
         "delegation": "forbidden"
       },
       "durable_observations": [
-        "writer epoch",
-        "writer token digest"
+        "writer owner, epoch, and token digest",
+        "competing or absent operating-system lock observation"
       ],
       "preconditions": [
-        "Exclusive Writer Lock is current or recovery remains blocked"
+        "no current retained writer receipt binds the persistent Agent"
       ],
       "base_references": [
-        "exact Work Journal head",
-        "exact Work Item version",
-        "current semantic dependency digest"
+        "exact prior writer epoch",
+        "observed lock owner and token digest"
       ],
       "emitted_records": [
         "WorkRecoveryBlocked"
@@ -423,7 +424,7 @@
       "idempotency": "The same recovery identity and exact observations return the original receipt.",
       "terminal_result": "block with unchanged semantic truth",
       "failure_result": "control.recovery_precondition_failed; state unchanged",
-      "recovery": "Stop claims and reacquire the Exclusive Writer Lock before recovery.",
+      "recovery": "Block all claims until a new exclusive writer receipt is acquired and validated.",
       "default_decision": "block"
     },
     {
@@ -438,16 +439,15 @@
         "delegation": "forbidden"
       },
       "durable_observations": [
-        "journal availability receipt",
-        "journal path binding"
+        "Work Journal availability receipt",
+        "protected journal path and vault binding"
       ],
       "preconditions": [
-        "Exclusive Writer Lock is current or recovery remains blocked"
+        "Work Journal cannot be read and reconciled"
       ],
       "base_references": [
-        "exact Work Journal head",
-        "exact Work Item version",
-        "current semantic dependency digest"
+        "vault identity",
+        "expected Work Journal identity and path"
       ],
       "emitted_records": [
         "WorkRecoveryBlocked"
@@ -458,7 +458,7 @@
       "idempotency": "The same recovery identity and exact observations return the original receipt.",
       "terminal_result": "block with unchanged semantic truth",
       "failure_result": "control.recovery_precondition_failed; state unchanged",
-      "recovery": "Publish a blocked readiness result and accept no work.",
+      "recovery": "Publish blocked readiness, keep the Control Channel closed, and accept no work.",
       "default_decision": "block"
     },
     {
@@ -473,16 +473,15 @@
         "delegation": "forbidden"
       },
       "durable_observations": [
-        "Work Item version",
-        "Work Lease identity"
+        "observed Work Item version",
+        "observed Work Lease identity and status"
       ],
       "preconditions": [
-        "Exclusive Writer Lock is current or recovery remains blocked"
+        "either work version or lease identity differs from the requested recovery base"
       ],
       "base_references": [
-        "exact Work Journal head",
-        "exact Work Item version",
-        "current semantic dependency digest"
+        "requested and current Work Item versions",
+        "requested and current Work Lease identities"
       ],
       "emitted_records": [
         "WorkRecoveryDenied"
@@ -493,7 +492,7 @@
       "idempotency": "The same recovery identity and exact observations return the original receipt.",
       "terminal_result": "deny with unchanged semantic truth",
       "failure_result": "control.recovery_precondition_failed; state unchanged",
-      "recovery": "Reject stale recovery input without changing Work Journal state.",
+      "recovery": "Deny stale recovery without changing journal, retry, or semantic state.",
       "default_decision": "deny"
     },
     {
@@ -508,16 +507,15 @@
         "delegation": "forbidden"
       },
       "durable_observations": [
-        "child output digest",
-        "completion receipt absence"
+        "schema-valid child output digest",
+        "absence or invalidity of authenticated completion receipt"
       ],
       "preconditions": [
-        "Exclusive Writer Lock is current or recovery remains blocked"
+        "child output alone has no authority and cannot prove completion"
       ],
       "base_references": [
-        "exact Work Journal head",
-        "exact Work Item version",
-        "current semantic dependency digest"
+        "exact Child Work Invocation and Work Item versions",
+        "expected completion-receipt binding"
       ],
       "emitted_records": [
         "WorkRecoveryDenied"
@@ -528,7 +526,7 @@
       "idempotency": "The same recovery identity and exact observations return the original receipt.",
       "terminal_result": "deny with unchanged semantic truth",
       "failure_result": "control.recovery_precondition_failed; state unchanged",
-      "recovery": "Treat child output as non-authoritative and retain recoverable work.",
+      "recovery": "Reject the output as completion evidence, destroy the child process, and retain recoverable work.",
       "default_decision": "deny"
     }
   ]

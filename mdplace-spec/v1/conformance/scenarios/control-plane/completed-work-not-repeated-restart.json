@@ -4,16 +4,10 @@
   "fixture_id": "FIX-CP-REC-006",
   "category": "crash_recovery",
   "requirement_ids": [
-    "REQ-CP-001",
-    "REQ-CP-002",
-    "REQ-CP-003",
     "REQ-CP-004",
-    "REQ-CP-005",
     "REQ-CP-006",
     "REQ-CP-007",
-    "REQ-CP-008",
-    "REQ-CP-009",
-    "REQ-CP-010"
+    "REQ-CP-008"
   ],
   "subject": {
     "kind": "control_plane",
@@ -42,7 +36,23 @@
           "cancellation_id": null,
           "resume_count": 0,
           "resume_ceiling": 1,
-          "completion_receipt_id": "receipt:completion-001"
+          "retry_eligible_tick": null,
+          "recovery_interruption_count": 0,
+          "lease_status": null,
+          "lease_acquired_tick": null,
+          "lease_expires_tick": null,
+          "completion_receipt": {
+            "receipt_id": "receipt:succeeded-001",
+            "work_id": "work:001",
+            "work_version": 3,
+            "lease_id": null,
+            "journal_sequence": 1,
+            "outcome": "succeeded",
+            "output_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+            "signer_agent_id": "agent:primary-001",
+            "signature_digest": "146df2a8d20f23132744ef3dea813ff573fb0cd8f6478f40fb968fb64b71774e",
+            "authenticated": true
+          }
         },
         "control_channel": {
           "state": "open",
@@ -67,10 +77,64 @@
         "command_version": null,
         "command_vault_id": null,
         "candidate_agent_id": null,
-        "completion_receipt_present": true,
         "interruption_count": 0,
         "semantic_write_requested": false,
-        "authority_source": "none"
+        "authority_source": "none",
+        "expected_journal_head_sequence": 1,
+        "expected_writer_epoch": 1,
+        "recovery_tick": null,
+        "writer_lock_receipt": {
+          "lock_id": "writer-lock:vault-001",
+          "prior_epoch": 1,
+          "epoch": 2,
+          "owner_agent_id": "agent:primary-001",
+          "token_digest": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "retained": true
+        },
+        "readiness_observations": [
+          {
+            "ordinal": 1,
+            "gate": "exclusive_writer",
+            "verdict": "pass",
+            "receipt_id": "readiness-receipt:001"
+          },
+          {
+            "ordinal": 2,
+            "gate": "vault_filesystem",
+            "verdict": "pass",
+            "receipt_id": "readiness-receipt:002"
+          },
+          {
+            "ordinal": 3,
+            "gate": "semantic_kernel",
+            "verdict": "pass",
+            "receipt_id": "readiness-receipt:003"
+          },
+          {
+            "ordinal": 4,
+            "gate": "compatibility",
+            "verdict": "pass",
+            "receipt_id": "readiness-receipt:004"
+          },
+          {
+            "ordinal": 5,
+            "gate": "derived_views",
+            "verdict": "pass",
+            "receipt_id": "readiness-receipt:005"
+          },
+          {
+            "ordinal": 6,
+            "gate": "work_journal",
+            "verdict": "pass",
+            "receipt_id": "readiness-receipt:006"
+          },
+          {
+            "ordinal": 7,
+            "gate": "control_channel",
+            "verdict": "pass",
+            "receipt_id": "readiness-receipt:007"
+          }
+        ]
       }
     }
   },

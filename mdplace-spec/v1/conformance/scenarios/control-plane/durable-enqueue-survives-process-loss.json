@@ -6,10 +6,6 @@
   "requirement_ids": [
     "REQ-CP-001",
     "REQ-CP-002",
-    "REQ-CP-003",
-    "REQ-CP-004",
-    "REQ-CP-005",
-    "REQ-CP-006",
     "REQ-CP-007",
     "REQ-CP-008",
     "REQ-CP-009",
@@ -53,10 +49,57 @@
         "command_version": null,
         "command_vault_id": null,
         "candidate_agent_id": null,
-        "completion_receipt_present": false,
         "interruption_count": 1,
         "semantic_write_requested": true,
-        "authority_source": "work_journal"
+        "authority_source": "work_journal",
+        "expected_journal_head_sequence": null,
+        "expected_writer_epoch": null,
+        "recovery_tick": null,
+        "writer_lock_receipt": null,
+        "readiness_observations": [
+          {
+            "ordinal": 1,
+            "gate": "exclusive_writer",
+            "verdict": "not_run",
+            "receipt_id": null
+          },
+          {
+            "ordinal": 2,
+            "gate": "vault_filesystem",
+            "verdict": "not_run",
+            "receipt_id": null
+          },
+          {
+            "ordinal": 3,
+            "gate": "semantic_kernel",
+            "verdict": "not_run",
+            "receipt_id": null
+          },
+          {
+            "ordinal": 4,
+            "gate": "compatibility",
+            "verdict": "not_run",
+            "receipt_id": null
+          },
+          {
+            "ordinal": 5,
+            "gate": "derived_views",
+            "verdict": "not_run",
+            "receipt_id": null
+          },
+          {
+            "ordinal": 6,
+            "gate": "work_journal",
+            "verdict": "not_run",
+            "receipt_id": null
+          },
+          {
+            "ordinal": 7,
+            "gate": "control_channel",
+            "verdict": "not_run",
+            "receipt_id": null
+          }
+        ]
       }
     }
   },
