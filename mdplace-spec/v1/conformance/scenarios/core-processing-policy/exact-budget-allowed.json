@@ -109,7 +109,9 @@
           "retry": {
             "attempts": 1,
             "elapsed_ms": 60000,
-            "cumulative_cost_microunits": 750000
+            "cumulative_cost_microunits": 750000,
+            "input_bytes": 100000,
+            "output_bytes": 10000
           },
           "fallback_chain": [
             {
@@ -117,7 +119,9 @@
               "provider_id": "provider:local-alpha",
               "purpose_id": "purpose:placement",
               "destination_id": "destination:local-alpha",
-              "credential_ref": "credential-ref:local-alpha"
+              "credential_ref": "credential-ref:local-alpha",
+              "adapter_id": "adapter:local-alpha",
+              "consent_binding_id": "consent:fallback"
             }
           ],
           "capabilities": [
@@ -132,12 +136,31 @@
             "alias_promotion"
           ],
           "adapter_ids": [
-            "adapter:fixture-capture"
+            "adapter:remote-alpha",
+            "adapter:local-alpha"
           ],
           "consent_bindings": [
             {
               "consent_binding_id": "consent:primary",
-              "adapter_id": "adapter:fixture-capture",
+              "adapter_id": "adapter:remote-alpha",
+              "provider_id": "provider:remote-alpha",
+              "purpose_id": "purpose:placement",
+              "field_ids": [
+                "field:source-url",
+                "field:title",
+                "field:source-content"
+              ],
+              "artifact_kinds": [
+                "artifact:intelligence-proposal",
+                "artifact:raw-provider-response"
+              ],
+              "destination_id": "destination:remote-alpha",
+              "credential_ref": "credential-ref:remote-alpha",
+              "retention_fact_id": "retention:remote-alpha"
+            },
+            {
+              "consent_binding_id": "consent:fallback",
+              "adapter_id": "adapter:local-alpha",
               "provider_id": "provider:local-alpha",
               "purpose_id": "purpose:placement",
               "field_ids": [
@@ -210,8 +233,8 @@
           "role": "vault_owner",
           "delegated": false,
           "receipt_id": "approval:policy-core",
-          "policy_payload_sha256": "ea2ed5bb8dec4b55a50c03920c4455be28c8125fc7eaec12cafa4c0ecfa91a26",
-          "receipt_sha256": "5cdaa55fb6741551f6b55bbc7efb690a898411b8dd1b55cdd7151a1641091199"
+          "policy_payload_sha256": "01f71f59d294234f841dd5021a5aa8af5613ca2014d26215b15809a3c54409e8",
+          "receipt_sha256": "0cc1e3d78e6d8df56cbf96910dc681167227923a4c27cd8cb047d871511b5f62"
         }
       },
       "source_profile": null,
@@ -222,7 +245,7 @@
         "policy_binding": {
           "policy_id": "policy:core-processing",
           "policy_version": "1.0.0",
-          "policy_sha256": "e60346c3b239ce4054e25e55dd039e605d3db5db8e5e7da1d03e2f31b433aed6"
+          "policy_sha256": "4dcf9e4b1f73d5289ce449d0b61d77fa9551ae04e0fc9074a3d90626eb6264ba"
         },
         "provider_id": "provider:local-alpha",
         "purpose_id": "purpose:placement",
@@ -245,7 +268,9 @@
         "retry": {
           "attempts": 1,
           "elapsed_ms": 60000,
-          "cumulative_cost_microunits": 750000
+          "cumulative_cost_microunits": 750000,
+          "input_bytes": 100000,
+          "output_bytes": 10000
         },
         "fallback_position": 1,
         "capabilities": [
@@ -270,7 +295,7 @@
           "requested_actions": []
         },
         "vault_id": "vault:fixture-vault",
-        "adapter_id": "adapter:fixture-capture",
+        "adapter_id": "adapter:local-alpha",
         "field_grants": [
           {
             "field_id": "field:source-url",
@@ -328,18 +353,41 @@
         "redaction_receipt_refs": [
           {
             "receipt_id": "redaction-receipt:source-url",
-            "receipt_sha256": "4ad64352790702175506b36c7e96ba42be413b4f1f225a74594ff8a24f88d569"
+            "receipt_sha256": "64bcca5d10b1244eefd41dc9a5022537d4ead92a338258e4c5f2b17ac0d21324"
           },
           {
             "receipt_id": "redaction-receipt:title",
-            "receipt_sha256": "535466235cf88154aac6d5e0bda69108d13a7ab916e4cb61d46dddfc00317a40"
+            "receipt_sha256": "7367e8dfc54831ca2290b80fdc5fa9b5e1770458940d796ac2a55c7d175f314e"
           },
           {
             "receipt_id": "redaction-receipt:source-content",
-            "receipt_sha256": "f25868d5fa9d79650210b10702ba4b42f8f3439dc81db9cd73f2104c369414f8"
+            "receipt_sha256": "84a582a599c93e48d975c69ceee46505200f46be31c26a92f1da7b3ff558dc25"
           }
         ],
-        "consent_binding_id": "consent:primary"
+        "consent_binding_id": "consent:fallback",
+        "attempt_chain": [
+          {
+            "sequence": 0,
+            "adapter_id": "adapter:remote-alpha",
+            "consent_binding_id": "consent:primary",
+            "fallback_position": 0,
+            "outcome": "safe_transient_failure"
+          },
+          {
+            "sequence": 1,
+            "adapter_id": "adapter:remote-alpha",
+            "consent_binding_id": "consent:primary",
+            "fallback_position": 0,
+            "outcome": "safe_transient_failure"
+          },
+          {
+            "sequence": 2,
+            "adapter_id": "adapter:local-alpha",
+            "consent_binding_id": "consent:fallback",
+            "fallback_position": 1,
+            "outcome": "pending"
+          }
+        ]
       },
       "descendant_policy": null,
       "observed_binding": null,
@@ -358,7 +406,7 @@
           "policy_ref": {
             "policy_id": "policy:core-processing",
             "policy_version": "1.0.0",
-            "policy_sha256": "e60346c3b239ce4054e25e55dd039e605d3db5db8e5e7da1d03e2f31b433aed6"
+            "policy_sha256": "4dcf9e4b1f73d5289ce449d0b61d77fa9551ae04e0fc9074a3d90626eb6264ba"
           },
           "payload_sha256": "8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c",
           "field_grant": {
@@ -369,7 +417,7 @@
           },
           "outcome": "applied",
           "issuer": "mdplace_local_redactor",
-          "receipt_sha256": "4ad64352790702175506b36c7e96ba42be413b4f1f225a74594ff8a24f88d569",
+          "receipt_sha256": "64bcca5d10b1244eefd41dc9a5022537d4ead92a338258e4c5f2b17ac0d21324",
           "identity_assurance": "trusted_local_redactor",
           "verification_method": "local_redaction_digest_readback"
         },
@@ -381,7 +429,7 @@
           "policy_ref": {
             "policy_id": "policy:core-processing",
             "policy_version": "1.0.0",
-            "policy_sha256": "e60346c3b239ce4054e25e55dd039e605d3db5db8e5e7da1d03e2f31b433aed6"
+            "policy_sha256": "4dcf9e4b1f73d5289ce449d0b61d77fa9551ae04e0fc9074a3d90626eb6264ba"
           },
           "payload_sha256": "8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c",
           "field_grant": {
@@ -392,7 +440,7 @@
           },
           "outcome": "applied",
           "issuer": "mdplace_local_redactor",
-          "receipt_sha256": "535466235cf88154aac6d5e0bda69108d13a7ab916e4cb61d46dddfc00317a40",
+          "receipt_sha256": "7367e8dfc54831ca2290b80fdc5fa9b5e1770458940d796ac2a55c7d175f314e",
           "identity_assurance": "trusted_local_redactor",
           "verification_method": "local_redaction_digest_readback"
         },
@@ -404,7 +452,7 @@
           "policy_ref": {
             "policy_id": "policy:core-processing",
             "policy_version": "1.0.0",
-            "policy_sha256": "e60346c3b239ce4054e25e55dd039e605d3db5db8e5e7da1d03e2f31b433aed6"
+            "policy_sha256": "4dcf9e4b1f73d5289ce449d0b61d77fa9551ae04e0fc9074a3d90626eb6264ba"
           },
           "payload_sha256": "8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c",
           "field_grant": {
@@ -415,7 +463,7 @@
           },
           "outcome": "applied",
           "issuer": "mdplace_local_redactor",
-          "receipt_sha256": "f25868d5fa9d79650210b10702ba4b42f8f3439dc81db9cd73f2104c369414f8",
+          "receipt_sha256": "84a582a599c93e48d975c69ceee46505200f46be31c26a92f1da7b3ff558dc25",
           "identity_assurance": "trusted_local_redactor",
           "verification_method": "local_redaction_digest_readback"
         }
@@ -429,12 +477,12 @@
           "subject_id": "policy:core-processing",
           "subject_version": "1.0.0",
           "vault_id": "vault:fixture-vault",
-          "subject_payload_sha256": "ea2ed5bb8dec4b55a50c03920c4455be28c8125fc7eaec12cafa4c0ecfa91a26",
+          "subject_payload_sha256": "01f71f59d294234f841dd5021a5aa8af5613ca2014d26215b15809a3c54409e8",
           "approved": true,
           "principal_id": "person:vault-owner",
           "role": "vault_owner",
           "delegated": false,
-          "receipt_sha256": "5cdaa55fb6741551f6b55bbc7efb690a898411b8dd1b55cdd7151a1641091199",
+          "receipt_sha256": "0cc1e3d78e6d8df56cbf96910dc681167227923a4c27cd8cb047d871511b5f62",
           "identity_assurance": "canonical_authenticated_human",
           "verification_method": "authenticated_foreground_approval"
         }
@@ -454,7 +502,7 @@
       "apply default-deny Processing Policy"
     ],
     "receipts": [
-      "{\"code\":null,\"consent_binding_id\":\"consent:primary\",\"consent_binding_sha256\":\"c56e46daf4a3335aba73292456589239f0d1de5bb1ae881a28eda408bc282c8b\",\"decision\":\"allowed\",\"network_effect\":\"none\",\"operation\":\"processing_decision\",\"payload_sha256\":\"8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c\",\"policy_ref\":{\"policy_id\":\"policy:core-processing\",\"policy_sha256\":\"e60346c3b239ce4054e25e55dd039e605d3db5db8e5e7da1d03e2f31b433aed6\",\"policy_version\":\"1.0.0\"},\"receipt_id\":\"receipt:cpp-006\",\"receipt_sha256\":\"1a07f0225f6904047b08f00dbbabe0facec344191d7fffb7c1f721f29e66d90b\",\"request_id\":\"request:cpp-006\",\"request_sha256\":\"7e929a28f8076950a69ecf2ff245bf924e8cb87592788f7bf30464bd5ec0afa2\",\"scenario_id\":\"CPP-006\",\"schema_id\":\"mdplace.processing-policy-receipt/v1\",\"source_profile_ref\":null}"
+      "{\"code\":null,\"consent_binding_id\":\"consent:fallback\",\"consent_binding_sha256\":\"2059a145e1d0ff5e85a2464354a00d99afe510aeef0254c2b651292790172a3e\",\"decision\":\"allowed\",\"network_effect\":\"none\",\"operation\":\"processing_decision\",\"payload_sha256\":\"8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c\",\"policy_ref\":{\"policy_id\":\"policy:core-processing\",\"policy_sha256\":\"4dcf9e4b1f73d5289ce449d0b61d77fa9551ae04e0fc9074a3d90626eb6264ba\",\"policy_version\":\"1.0.0\"},\"receipt_id\":\"receipt:cpp-006\",\"receipt_sha256\":\"c24067591105942b834ff6e977193e3577386b55f23f09ba137ca6365ee7cb04\",\"request_id\":\"request:cpp-006\",\"request_sha256\":\"730b7ab3a182bd4da728027a35516a84d9bdb31c92c82e1f9befd00260be11a1\",\"scenario_id\":\"CPP-006\",\"schema_id\":\"mdplace.processing-policy-receipt/v1\",\"source_profile_ref\":null}"
     ],
     "filesystem_effects": [
       "none"

@@ -4,7 +4,7 @@
   "title": "mdplace policy decision request",
   "type": "object",
   "additionalProperties": false,
-  "required": ["$schema", "schema_id", "request_id", "vault_id", "adapter_id", "consent_binding_id", "policy_binding", "provider_id", "purpose_id", "field_ids", "field_grants", "artifact_kinds", "destination_id", "destination", "credential_ref", "credential_boundary", "payload", "budget", "retry", "fallback_position", "capabilities", "semantic_authority", "automation_scope", "redaction_receipt_ids", "redaction_receipt_refs", "retention_fact_ids", "retention_facts", "untrusted_content"],
+  "required": ["$schema", "schema_id", "request_id", "vault_id", "adapter_id", "consent_binding_id", "policy_binding", "provider_id", "purpose_id", "field_ids", "field_grants", "artifact_kinds", "destination_id", "destination", "credential_ref", "credential_boundary", "payload", "budget", "retry", "attempt_chain", "fallback_position", "capabilities", "semantic_authority", "automation_scope", "redaction_receipt_ids", "redaction_receipt_refs", "retention_fact_ids", "retention_facts", "untrusted_content"],
   "properties": {
     "$schema": {"const": "contracts/schemas/processing-request.schema.json"},
     "schema_id": {"const": "mdplace.processing-request/v1"},
@@ -25,6 +25,7 @@
     "payload": {"$ref": "#/$defs/payload"},
     "budget": {"$ref": "#/$defs/budget"},
     "retry": {"$ref": "#/$defs/retry"},
+    "attempt_chain": {"type": "array", "minItems": 1, "maxItems": 3, "uniqueItems": true, "items": {"$ref": "#/$defs/attempt"}},
     "fallback_position": {"type": "integer", "minimum": 0, "maximum": 1},
     "capabilities": {"type": "array", "maxItems": 1, "uniqueItems": true, "items": {"enum": ["capability:produce-proposal"]}},
     "semantic_authority": {"$ref": "#/$defs/stringSet"},
@@ -99,6 +100,11 @@
     "retention": {
       "type": "object", "additionalProperties": false,
       "required": ["retention_fact_id", "destination_id", "status", "max_days", "risk_acknowledged", "data_use", "region", "subprocessors"],
+      "oneOf": [
+        {"properties": {"status": {"const": "known"}, "data_use": {"enum": ["request_only", "provider_training"]}}},
+        {"properties": {"status": {"const": "known"}, "data_use": {"const": "unknown"}, "risk_acknowledged": {"const": true}}},
+        {"properties": {"status": {"const": "unknown"}, "risk_acknowledged": {"const": true}}}
+      ],
       "properties": {
         "retention_fact_id": {"type": "string", "pattern": "^retention:[a-z][a-z0-9-]{2,63}$"},
         "destination_id": {"type": "string", "pattern": "^destination:[a-z][a-z0-9-]{2,63}$"},
@@ -122,11 +128,24 @@
     },
     "retry": {
       "type": "object", "additionalProperties": false,
-      "required": ["attempts", "elapsed_ms", "cumulative_cost_microunits"],
+      "required": ["attempts", "input_bytes", "output_bytes", "elapsed_ms", "cumulative_cost_microunits"],
       "properties": {
         "attempts": {"type": "integer", "minimum": 0, "maximum": 1},
+        "input_bytes": {"type": "integer", "minimum": 0, "maximum": 10000000},
+        "output_bytes": {"type": "integer", "minimum": 0, "maximum": 1000000},
         "elapsed_ms": {"type": "integer", "minimum": 0, "maximum": 3600000},
         "cumulative_cost_microunits": {"type": "integer", "minimum": 0, "maximum": 1000000000}
+      }
+    },
+    "attempt": {
+      "type": "object", "additionalProperties": false,
+      "required": ["sequence", "adapter_id", "consent_binding_id", "fallback_position", "outcome"],
+      "properties": {
+        "sequence": {"type": "integer", "minimum": 0, "maximum": 2},
+        "adapter_id": {"type": "string", "pattern": "^adapter:[a-z][a-z0-9-]{2,63}$"},
+        "consent_binding_id": {"type": "string", "pattern": "^consent:[a-z][a-z0-9-]{2,63}$"},
+        "fallback_position": {"type": "integer", "minimum": 0, "maximum": 1},
+        "outcome": {"enum": ["safe_transient_failure", "pending"]}
       }
     },
     "untrustedContent": {

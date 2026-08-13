@@ -13,13 +13,13 @@
     {"order": 9, "condition": "destination_or_endpoint", "code": "policy.destination_denied"},
     {"order": 10, "condition": "credential_reference_store_authentication_provider_or_purpose", "code": "policy.credential_boundary_denied"},
     {"order": 11, "condition": "budget", "code": "policy.budget_exceeded"},
-    {"order": 12, "condition": "retry", "code": "policy.retry_exceeded"},
-    {"order": 13, "condition": "fallback", "code": "policy.fallback_denied"},
+    {"order": 12, "condition": "same_adapter_retry_and_aggregate_chain_budget", "code": "policy.retry_exceeded"},
+    {"order": 13, "condition": "ordered_adapter_and_consent_bound_fallback", "code": "policy.fallback_denied"},
     {"order": 14, "condition": "closed_advisory_capability", "code": "policy.capability_denied"},
     {"order": 15, "condition": "semantic_authority", "code": "policy.semantic_authority_denied"},
     {"order": 16, "condition": "automation_scope", "code": "policy.automation_scope_denied"},
     {"order": 17, "condition": "trusted_exact_redaction_receipt", "code": "policy.redaction_unproven"},
-    {"order": 18, "condition": "destination_bound_retention_data_use_region_and_subprocessors", "code": "policy.retention_unproven"},
+    {"order": 18, "condition": "destination_bound_retention_and_unknown_risk_acknowledgment", "code": "policy.retention_unproven"},
     {"order": 19, "condition": "hostile_content", "code": "policy.hostile_content_capability_denied"}
   ],
   "narrowing_dimensions": [

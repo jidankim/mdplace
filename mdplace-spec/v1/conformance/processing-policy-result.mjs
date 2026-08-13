@@ -76,3 +76,42 @@ export function processingPolicyDenied(document, code, operation = 'processing_d
       : recovery ? 'recovery_required' : 'denied', illegal,
   });
 }
+
+export function observeProcessingPolicyLifecycleTransition(table, attempt) {
+  const rows = table?.transitions?.filter((row) => row.transition_id === attempt.transition_id &&
+    row.from_state === attempt.from_state && row.command_or_event === attempt.command_or_event) ?? [];
+  const row = rows.length === 1 ? rows[0] : null;
+  const invalid = () => ({
+    verdict: 'fail', codes: ['policy.lifecycle_oracle_invalid'], outputs: ['lifecycle transition denied'],
+    operations: ['validate lifecycle transition'], receipts: [], filesystem_effects: ['none'],
+    network_effects: ['none'], terminal_state: attempt.from_state, illegal_transition: true,
+  });
+  if (row === null || row.allowed) return invalid();
+  const authority = row.actor_authority;
+  const actors = Array.isArray(attempt.actors) ? attempt.actors : [];
+  const eligible = actors.filter(({delegated, roles}) => !delegated &&
+    roles.some((role) => authority.roles.includes(role)));
+  const references = Array.isArray(attempt.base_references) ? attempt.base_references : [];
+  const referenceKeys = references.map(({key}) => key);
+  const expectedIdempotencyKey = `lifecycle:${sha256Json({
+    table_id: table.table_id, transition_id: row.transition_id, base_references: references,
+  })}`;
+  if ((authority.delegation === 'forbidden' && actors.some(({delegated}) => delegated)) ||
+      new Set(eligible.map(({principal_id: id}) => id)).size < authority.quorum ||
+      authority.roles.some((role) => !eligible.some(({roles}) => roles.includes(role))) ||
+      (authority.distinct_actors && new Set(eligible.map(({principal_id: id}) => id)).size !== eligible.length) ||
+      new Set(referenceKeys).size !== referenceKeys.length ||
+      !row.base_references.every((key) => referenceKeys.includes(key)) ||
+      referenceKeys.length !== row.base_references.length || attempt.idempotency_key !== expectedIdempotencyKey) {
+    return invalid();
+  }
+  return {
+    verdict: 'fail', codes: [row.failure_result.code], outputs: ['lifecycle transition denied'],
+    operations: ['validate lifecycle transition'], receipts: row.failure_result.emitted_records,
+    filesystem_effects: row.failure_result.filesystem_effects, network_effects: ['none'],
+    terminal_state: row.failure_result.state_effect === 'unchanged'
+      ? row.from_state
+      : row.failure_result.state_effect,
+    illegal_transition: true,
+  };
+}

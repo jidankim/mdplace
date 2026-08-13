@@ -1,6 +1,7 @@
 import {isDeepStrictEqual} from 'node:util';
 
 import {
+  attemptChainViolation,
   approvalReceiptDigest,
   processingPolicyApprovalDigest,
   processingPolicyDigest,
@@ -35,6 +36,13 @@ function consentBindingCode(policy, request) {
       scope.provider_id !== request.provider_id || scope.purpose_id !== request.purpose_id ||
       scope.destination_id !== request.destination_id || scope.credential_ref !== request.credential_ref ||
       scope.retention_fact_id !== request.destination.retention_fact_id) return 'policy.destination_denied';
+  const destination = policy.grants.destinations.find(({destination_id: id}) => id === scope.destination_id);
+  const fields = new Map(policy.grants.fields.map((field) => [field.field_id, field]));
+  if (scope.field_ids.some((fieldId) => !fields.has(fieldId)) ||
+      (destination?.endpoint.startsWith('https://') &&
+        request.field_ids.some((fieldId) => fields.get(fieldId)?.disclosure !== 'remote'))) {
+    return 'policy.field_denied';
+  }
   if (!valuesAreSubset(request.field_ids, scope.field_ids) ||
       !valuesAreSubset(request.artifact_kinds, scope.artifact_kinds)) return 'policy.destination_denied';
   return null;
@@ -45,7 +53,8 @@ function fallbackMatches(request, policy) {
   const fallback = policy.grants.fallback_chain.find(({position}) => position === request.fallback_position);
   return fallback !== undefined && fallback.provider_id === request.provider_id &&
     fallback.purpose_id === request.purpose_id && fallback.destination_id === request.destination_id &&
-    fallback.credential_ref === request.credential_ref;
+    fallback.credential_ref === request.credential_ref && fallback.adapter_id === request.adapter_id &&
+    fallback.consent_binding_id === request.consent_binding_id;
 }
 
 function redactionsProven(document, policyDigest) {
@@ -153,6 +162,8 @@ export function processingDenialCode(document) {
   if (Object.keys(policy.grants.retry).some((key) => request.retry[key] > policy.grants.retry[key])) {
     return 'policy.retry_exceeded';
   }
+  const attemptCode = attemptChainViolation(policy, request);
+  if (attemptCode !== null) return attemptCode;
   if (!fallbackMatches(request, policy)) return 'policy.fallback_denied';
   if (!valuesAreSubset(request.capabilities, policy.grants.capabilities)) return 'policy.capability_denied';
   if (!valuesAreSubset(request.semantic_authority, policy.grants.semantic_authority)) {
@@ -168,7 +179,8 @@ export function processingDenialCode(document) {
   if (retention === undefined || retention.destination_id !== destination.destination_id ||
       !request.retention_fact_ids.includes(destination.retention_fact_id) ||
       !isDeepStrictEqual(request.retention_facts, [retention]) ||
-      (retention.status === 'unknown' && !retention.risk_acknowledged)) return 'policy.retention_unproven';
+      ((retention.status === 'unknown' || retention.data_use === 'unknown') &&
+        !retention.risk_acknowledged)) return 'policy.retention_unproven';
   if (request.untrusted_content.requested_actions.length > 0) return 'policy.hostile_content_capability_denied';
   return null;
 }

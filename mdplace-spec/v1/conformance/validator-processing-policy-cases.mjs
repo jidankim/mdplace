@@ -16,6 +16,7 @@ import {
   sourceProfileDigest,
 } from './processing-policy-core.mjs';
 import {observeProcessingPolicyScenario} from './processing-policy-observer.mjs';
+import {observeProcessingPolicyLifecycleTransition} from './processing-policy-result.mjs';
 
 const packageRoot = fileURLToPath(new URL('../', import.meta.url));
 const validator = fileURLToPath(new URL('./validator.mjs', import.meta.url));
@@ -274,6 +275,61 @@ test('exact request dimensions deny independently before any network effect', as
     assert.deepEqual(observed.codes, [code]);
     assert.deepEqual(observed.network_effects, ['none']);
   }
+});
+
+test('remote consent cannot authorize a local-only field', async () => {
+  const subject = structuredClone((await fixture('remote-processing-allowed')).subject);
+  subject.document.request.field_ids.push('field:filesystem-path');
+  subject.document.request.field_grants.push(
+    subject.document.policy.grants.fields.find(({field_id: id}) => id === 'field:filesystem-path'),
+  );
+
+  const observed = await observeProcessingPolicyScenario(subject, packageRoot);
+
+  assert.deepEqual(observed.codes, ['policy.field_denied']);
+  assert.deepEqual(observed.network_effects, ['none']);
+});
+
+test('retry and fallback execution remains bound to the exact adapter chain and aggregate budget', async () => {
+  const retry = structuredClone((await fixture('remote-processing-allowed')).subject);
+  retry.document.request.attempt_chain[1].adapter_id = 'adapter:local-alpha';
+  assert.deepEqual((await observeProcessingPolicyScenario(retry, packageRoot)).codes, ['policy.retry_exceeded']);
+
+  const aggregate = structuredClone((await fixture('remote-processing-allowed')).subject);
+  aggregate.document.request.retry.input_bytes = aggregate.document.policy.grants.retry.input_bytes + 1;
+  assert.deepEqual((await observeProcessingPolicyScenario(aggregate, packageRoot)).codes, ['policy.retry_exceeded']);
+
+  const fallback = structuredClone((await fixture('exact-budget-allowed')).subject);
+  fallback.document.request.attempt_chain.at(-1).consent_binding_id = 'consent:primary';
+  assert.deepEqual((await observeProcessingPolicyScenario(fallback, packageRoot)).codes, ['policy.fallback_denied']);
+});
+
+test('unknown training terms require explicit risk acknowledgment', async () => {
+  const subject = structuredClone((await fixture('remote-processing-allowed')).subject);
+  subject.document.request.retention_facts[0].data_use = 'unknown';
+  subject.document.request.retention_facts[0].risk_acknowledged = false;
+
+  const observed = await observeProcessingPolicyScenario(subject, packageRoot);
+
+  assert.deepEqual(observed.codes, ['schema.constraint']);
+  assert.deepEqual(observed.network_effects, ['none']);
+});
+
+test('lifecycle denial declarations are executed through the public transition observer', async () => {
+  const fixtureDocument = (await fixture('intake-before-binding-denied')).subject.document;
+  const table = JSON.parse(await readFile(new URL(
+    `../${fixtureDocument.lifecycle_denials[0].table_id === 'TRANS-PROCESSING-POLICY'
+      ? 'contracts/transitions/processing-policy-lifecycle.json'
+      : 'contracts/transitions/source-profile-lifecycle.json'}`,
+    import.meta.url,
+  )));
+  const attempt = fixtureDocument.lifecycle_denials[0];
+  assert.deepEqual(observeProcessingPolicyLifecycleTransition(table, attempt), attempt.expected);
+
+  const delegated = structuredClone(attempt);
+  delegated.actors[0].delegated = true;
+  assert.deepEqual(observeProcessingPolicyLifecycleTransition(table, delegated).codes,
+    ['policy.lifecycle_oracle_invalid']);
 });
 
 test('standing consent remains exact, current, and request-bound', async () => {

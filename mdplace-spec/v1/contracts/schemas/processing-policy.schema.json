@@ -74,18 +74,22 @@
     },
     "retry": {
       "type": "object", "additionalProperties": false,
-      "required": ["attempts", "elapsed_ms", "cumulative_cost_microunits"],
+      "required": ["attempts", "input_bytes", "output_bytes", "elapsed_ms", "cumulative_cost_microunits"],
       "properties": {
         "attempts": {"type": "integer", "minimum": 0, "maximum": 1},
+        "input_bytes": {"type": "integer", "minimum": 0, "maximum": 10000000},
+        "output_bytes": {"type": "integer", "minimum": 0, "maximum": 1000000},
         "elapsed_ms": {"type": "integer", "minimum": 0, "maximum": 3600000},
         "cumulative_cost_microunits": {"type": "integer", "minimum": 0, "maximum": 1000000000}
       }
     },
     "fallback": {
       "type": "object", "additionalProperties": false,
-      "required": ["position", "provider_id", "purpose_id", "destination_id", "credential_ref"],
+      "required": ["position", "adapter_id", "consent_binding_id", "provider_id", "purpose_id", "destination_id", "credential_ref"],
       "properties": {
         "position": {"const": 1},
+        "adapter_id": {"type": "string", "pattern": "^adapter:[a-z][a-z0-9-]{2,63}$"},
+        "consent_binding_id": {"type": "string", "pattern": "^consent:[a-z][a-z0-9-]{2,63}$"},
         "provider_id": {"type": "string", "pattern": "^provider:[a-z][a-z0-9-]{2,63}$"},
         "purpose_id": {"type": "string", "pattern": "^purpose:[a-z][a-z0-9-]{2,63}$"},
         "destination_id": {"type": "string", "pattern": "^destination:[a-z][a-z0-9-]{2,63}$"},
@@ -139,6 +143,11 @@
     "retention": {
       "type": "object", "additionalProperties": false,
       "required": ["retention_fact_id", "destination_id", "status", "max_days", "risk_acknowledged", "data_use", "region", "subprocessors"],
+      "oneOf": [
+        {"properties": {"status": {"const": "known"}, "data_use": {"enum": ["request_only", "provider_training"]}}},
+        {"properties": {"status": {"const": "known"}, "data_use": {"const": "unknown"}, "risk_acknowledged": {"const": true}}},
+        {"properties": {"status": {"const": "unknown"}, "risk_acknowledged": {"const": true}}}
+      ],
       "properties": {
         "retention_fact_id": {"type": "string", "pattern": "^retention:[a-z][a-z0-9-]{2,63}$"},
         "destination_id": {"type": "string", "pattern": "^destination:[a-z][a-z0-9-]{2,63}$"},

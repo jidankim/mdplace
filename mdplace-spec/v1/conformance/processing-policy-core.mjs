@@ -49,6 +49,34 @@ export function processingPolicyReceiptDigest(receipt) {
   return sha256Json(receiptPayload);
 }
 
+export function attemptChainViolation(policy, request) {
+  const chain = request.attempt_chain;
+  if (!Array.isArray(chain) || chain.length !== request.retry.attempts + request.fallback_position + 1 ||
+      chain.some((attempt, index) => attempt.sequence !== index) ||
+      chain.some((attempt, index) => attempt.outcome !== (index === chain.length - 1
+        ? 'pending'
+        : 'safe_transient_failure'))) return 'policy.retry_exceeded';
+  const initial = chain.filter(({fallback_position: position}) => position === 0);
+  if (initial.length !== request.retry.attempts + 1 || initial.some(({adapter_id: adapterId}) =>
+    adapterId !== initial[0]?.adapter_id) || initial.some(({consent_binding_id: consentId}) =>
+    consentId !== initial[0]?.consent_binding_id)) return 'policy.retry_exceeded';
+  const fallback = chain.filter(({fallback_position: position}) => position > 0);
+  if (fallback.some((attempt, index) => {
+    const expected = policy.grants.fallback_chain[index];
+    return attempt.fallback_position !== index + 1 || expected === undefined ||
+      attempt.adapter_id !== expected.adapter_id ||
+      attempt.consent_binding_id !== expected.consent_binding_id;
+  })) return 'policy.fallback_denied';
+  const current = chain.at(-1);
+  if (current.adapter_id !== request.adapter_id || current.consent_binding_id !== request.consent_binding_id ||
+      current.fallback_position !== request.fallback_position) return 'policy.fallback_denied';
+  if (chain.some((attempt) => !policy.grants.consent_bindings.some((binding) =>
+    binding.consent_binding_id === attempt.consent_binding_id && binding.adapter_id === attempt.adapter_id))) {
+    return 'policy.fallback_denied';
+  }
+  return null;
+}
+
 export function valuesHaveUniqueKey(values, key) {
   return new Set(values.map((value) => value[key])).size === values.length;
 }

@@ -102,14 +102,33 @@
     },
     "lifecycleDenial": {
       "type": "object", "additionalProperties": false,
-      "required": ["table_id", "transition_id", "from_state", "command_or_event", "code", "terminal_state"],
+      "required": ["table_id", "transition_id", "from_state", "command_or_event", "actors", "base_references", "idempotency_key", "expected"],
       "properties": {
         "table_id": {"enum": ["TRANS-PROCESSING-POLICY", "TRANS-SOURCE-PROFILE"]},
         "transition_id": {"type": "string", "pattern": "^TR-(CPP|SP)-[0-9]{3}$"},
         "from_state": {"type": "string", "minLength": 1},
         "command_or_event": {"type": "string", "minLength": 1},
-        "code": {"type": "string", "pattern": "^[a-z][a-z0-9_.]*$"},
-        "terminal_state": {"type": "string", "minLength": 1}
+        "actors": {"type": "array", "minItems": 1, "maxItems": 4, "uniqueItems": true, "items": {"$ref": "#/$defs/lifecycleActor"}},
+        "base_references": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/lifecycleReference"}},
+        "idempotency_key": {"type": "string", "pattern": "^lifecycle:[a-f0-9]{64}$"},
+        "expected": {"$ref": "#/$defs/expectedObservation"}
+      }
+    },
+    "lifecycleActor": {
+      "type": "object", "additionalProperties": false,
+      "required": ["principal_id", "roles", "delegated"],
+      "properties": {
+        "principal_id": {"type": "string", "pattern": "^person:[a-z][a-z0-9-]{2,63}$"},
+        "roles": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "delegated": {"type": "boolean"}
+      }
+    },
+    "lifecycleReference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["key", "value"],
+      "properties": {
+        "key": {"type": "string", "minLength": 1},
+        "value": {"type": "string", "minLength": 1}
       }
     },
     "expectedObservation": {

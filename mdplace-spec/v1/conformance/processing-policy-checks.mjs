@@ -9,6 +9,7 @@ import {
 } from './processing-policy-core.mjs';
 import {processingPolicyEvidenceCodes} from './processing-policy-evidence.mjs';
 import {observeProcessingPolicyScenario} from './processing-policy-observer.mjs';
+import {observeProcessingPolicyLifecycleTransition} from './processing-policy-result.mjs';
 import {readPackageFile} from './safe-path.mjs';
 
 const requiredCategories = [
@@ -196,14 +197,12 @@ export async function checkCoreProcessingPolicyContract(packageRoot, manifest, c
   }
   if (!externalCompatibilityEvidence) codes.push('source_profile.compatibility_evidence_external_missing');
   if (!tableIsComplete(policyTable) || !tableIsComplete(profileTable)) codes.push('policy.lifecycle_incomplete');
-  const deniedRows = [policyTable, profileTable].flatMap((table) => (table?.transitions ?? [])
-    .filter(({allowed}) => !allowed)
-    .map((row) => ({
-      table_id: table.table_id, transition_id: row.transition_id, from_state: row.from_state,
-      command_or_event: row.command_or_event, code: row.failure_result.code, terminal_state: row.terminal_state,
-    })));
   const declaredDenials = owned.flatMap(({fixture}) => fixture?.subject?.document?.lifecycle_denials ?? []);
-  if (deniedRows.length !== 22 || !isDeepStrictEqual(declaredDenials, deniedRows)) {
+  const tables = new Map([policyTable, profileTable].map((table) => [table?.table_id, table]));
+  const observedDenials = declaredDenials.map((attempt) =>
+    observeProcessingPolicyLifecycleTransition(tables.get(attempt.table_id), attempt));
+  if (declaredDenials.length !== 22 || observedDenials.some((observed, index) =>
+    !isDeepStrictEqual(observed, declaredDenials[index].expected))) {
     codes.push('policy.lifecycle_denial_coverage_missing');
   }
   const recoveryDenialIds = owned.flatMap(({fixture}) =>
@@ -213,7 +212,8 @@ export async function checkCoreProcessingPolicyContract(packageRoot, manifest, c
   ])) codes.push('policy.recovery_denial_coverage_missing');
   const transition = (state, command) => profileTable?.transitions?.find((row) =>
     row.from_state === state && row.command_or_event === command);
-  if (transition('active', 'invalidate_source_profile')?.terminal_state !== 'stale' ||
+  if (transition('unbound', 'activate_source_profile')?.failure_result?.state_effect !== 'recovery_required' ||
+      transition('active', 'invalidate_source_profile')?.terminal_state !== 'stale' ||
       transition('recovery_required', 'recover_unapproved_source_profile')?.terminal_state !== 'unbound' ||
       transition('recovery_required', 'recover_approved_source_profile')?.terminal_state !== 'active') {
     codes.push('source_profile.lifecycle_semantics_invalid');
