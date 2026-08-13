@@ -70,13 +70,15 @@
               "destination_id": "destination:remote-alpha",
               "provider_id": "provider:remote-alpha",
               "endpoint": "https://api.remote-alpha.test/v1/process",
-              "retention_fact_id": "retention:remote-alpha"
+              "retention_fact_id": "retention:remote-alpha",
+              "locality": "remote"
             },
             {
               "destination_id": "destination:local-alpha",
               "provider_id": "provider:local-alpha",
               "endpoint": "local://local-alpha",
-              "retention_fact_id": "retention:local-alpha"
+              "retention_fact_id": "retention:local-alpha",
+              "locality": "local"
             }
           ],
           "credential_boundaries": [
@@ -233,8 +235,8 @@
           "role": "vault_owner",
           "delegated": false,
           "receipt_id": "approval:policy-core",
-          "policy_payload_sha256": "01f71f59d294234f841dd5021a5aa8af5613ca2014d26215b15809a3c54409e8",
-          "receipt_sha256": "0cc1e3d78e6d8df56cbf96910dc681167227923a4c27cd8cb047d871511b5f62"
+          "policy_payload_sha256": "66b00a230a76265cb12e0f4797a3c875c325ab7f58048a28474dfca042437c75",
+          "receipt_sha256": "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
         }
       },
       "source_profile": null,
@@ -248,7 +250,7 @@
         "parent_policy": {
           "policy_id": "policy:core-processing",
           "policy_version": "1.0.0",
-          "policy_sha256": "4dcf9e4b1f73d5289ce449d0b61d77fa9551ae04e0fc9074a3d90626eb6264ba"
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766"
         },
         "lifecycle_state": "active",
         "grants": {
@@ -295,13 +297,15 @@
               "destination_id": "destination:remote-alpha",
               "provider_id": "provider:remote-alpha",
               "endpoint": "https://api.remote-alpha.test/v1/process",
-              "retention_fact_id": "retention:remote-alpha"
+              "retention_fact_id": "retention:remote-alpha",
+              "locality": "remote"
             },
             {
               "destination_id": "destination:local-alpha",
               "provider_id": "provider:local-alpha",
               "endpoint": "local://local-alpha",
-              "retention_fact_id": "retention:local-alpha"
+              "retention_fact_id": "retention:local-alpha",
+              "locality": "local"
             }
           ],
           "credential_boundaries": [
@@ -459,8 +463,8 @@
           "role": "vault_owner",
           "delegated": false,
           "receipt_id": "approval:policy-descendant",
-          "policy_payload_sha256": "208a4a163886b4394857334ee1f2dc87237cca11f20920c8084c8cf1af21b739",
-          "receipt_sha256": "b557470e514e0dbe91fae91c86bb8e6a0b2e4954f359ece27b5295d72caf03c3"
+          "policy_payload_sha256": "146e35841b91789c8a73a5b13000fb2c48e32480c660db5b093bd233462deaf0",
+          "receipt_sha256": "6b392044cf5588ce7b2f3589ad34b0d93a57238f6de87d3788f795a50bf22548"
         }
       },
       "observed_binding": null,
@@ -480,12 +484,12 @@
           "subject_id": "policy:core-processing",
           "subject_version": "1.0.0",
           "vault_id": "vault:fixture-vault",
-          "subject_payload_sha256": "01f71f59d294234f841dd5021a5aa8af5613ca2014d26215b15809a3c54409e8",
+          "subject_payload_sha256": "66b00a230a76265cb12e0f4797a3c875c325ab7f58048a28474dfca042437c75",
           "approved": true,
           "principal_id": "person:vault-owner",
           "role": "vault_owner",
           "delegated": false,
-          "receipt_sha256": "0cc1e3d78e6d8df56cbf96910dc681167227923a4c27cd8cb047d871511b5f62",
+          "receipt_sha256": "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1",
           "identity_assurance": "canonical_authenticated_human",
           "verification_method": "authenticated_foreground_approval"
         },
@@ -497,18 +501,19 @@
           "subject_id": "policy:core-processing",
           "subject_version": "1.0.1",
           "vault_id": "vault:fixture-vault",
-          "subject_payload_sha256": "208a4a163886b4394857334ee1f2dc87237cca11f20920c8084c8cf1af21b739",
+          "subject_payload_sha256": "146e35841b91789c8a73a5b13000fb2c48e32480c660db5b093bd233462deaf0",
           "approved": true,
           "principal_id": "person:vault-owner",
           "role": "vault_owner",
           "delegated": false,
-          "receipt_sha256": "b557470e514e0dbe91fae91c86bb8e6a0b2e4954f359ece27b5295d72caf03c3",
+          "receipt_sha256": "6b392044cf5588ce7b2f3589ad34b0d93a57238f6de87d3788f795a50bf22548",
           "identity_assurance": "canonical_authenticated_human",
           "verification_method": "authenticated_foreground_approval"
         }
       ],
       "lifecycle_denials": [],
-      "recovery_denials": []
+      "recovery_denials": [],
+      "attempt_receipts": []
     }
   },
   "expected": {
@@ -524,7 +529,7 @@
       "apply default-deny Processing Policy"
     ],
     "receipts": [
-      "{\"code\":\"policy.widening_disclosure\",\"consent_binding_id\":null,\"consent_binding_sha256\":null,\"decision\":\"denied\",\"network_effect\":\"none\",\"operation\":\"policy_pair\",\"payload_sha256\":null,\"policy_ref\":{\"policy_id\":\"policy:core-processing\",\"policy_sha256\":\"4dcf9e4b1f73d5289ce449d0b61d77fa9551ae04e0fc9074a3d90626eb6264ba\",\"policy_version\":\"1.0.0\"},\"receipt_id\":\"receipt:cpp-038\",\"receipt_sha256\":\"9d8da80729998b2a90e6b662784f335d8950351b2ced8e0f6c40981d4831ae33\",\"request_id\":null,\"request_sha256\":null,\"scenario_id\":\"CPP-038\",\"schema_id\":\"mdplace.processing-policy-receipt/v1\",\"source_profile_ref\":null}"
+      "{\"code\":\"policy.widening_disclosure\",\"consent_binding_id\":null,\"consent_binding_sha256\":null,\"decision\":\"denied\",\"network_effect\":\"none\",\"operation\":\"policy_pair\",\"payload_sha256\":null,\"policy_ref\":{\"policy_id\":\"policy:core-processing\",\"policy_sha256\":\"27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766\",\"policy_version\":\"1.0.0\"},\"receipt_id\":\"receipt:cpp-038\",\"receipt_sha256\":\"16f6e6f5ee6b4fe01cbaaf75a87a951a98938bf32be4bb50ca423b888fb3eb34\",\"request_id\":null,\"request_sha256\":null,\"scenario_id\":\"CPP-038\",\"schema_id\":\"mdplace.processing-policy-receipt/v1\",\"source_profile_ref\":null}"
     ],
     "filesystem_effects": [
       "none"

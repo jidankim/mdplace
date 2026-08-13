@@ -4,7 +4,7 @@
   "title": "mdplace Core Processing Policy conformance scenario",
   "type": "object",
   "additionalProperties": false,
-  "required": ["scenario_id", "operation", "policy", "source_profile", "request", "descendant_policy", "approval_receipts", "redaction_receipts", "observed_binding", "compatibility_claim_ref", "lifecycle", "recovery", "lifecycle_denials", "recovery_denials"],
+  "required": ["scenario_id", "operation", "policy", "source_profile", "request", "descendant_policy", "approval_receipts", "redaction_receipts", "attempt_receipts", "observed_binding", "compatibility_claim_ref", "lifecycle", "recovery", "lifecycle_denials", "recovery_denials"],
   "properties": {
     "scenario_id": {"type": "string", "pattern": "^CPP-[0-9]{3}$"},
     "operation": {"enum": ["processing_decision", "intake_decision", "policy_pair", "recover_binding"]},
@@ -14,6 +14,7 @@
     "descendant_policy": {"description": "Null or validated separately against the closed Processing Policy schema."},
     "approval_receipts": {"type": "array", "maxItems": 4, "uniqueItems": true, "items": {"description": "Validated separately against the closed approval receipt schema."}},
     "redaction_receipts": {"type": "array", "maxItems": 64, "uniqueItems": true, "items": {"description": "Validated separately against the closed redaction receipt schema."}},
+    "attempt_receipts": {"type": "array", "maxItems": 3, "uniqueItems": true, "items": {"description": "Validated separately against the closed local attempt accounting receipt schema."}},
     "observed_binding": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/observedBinding"}]},
     "compatibility_claim_ref": {"type": ["string", "null"], "pattern": "^CLAIM-[A-Z0-9][A-Z0-9-]{2,63}$"},
     "lifecycle": {"$ref": "#/$defs/lifecycle"},

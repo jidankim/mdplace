@@ -75,6 +75,7 @@ const conformanceExecutables = new Set([
   'conformance/package-foundation.mjs',
   'conformance/pattern-evaluation.mjs',
   'conformance/processing-policy-checks.mjs',
+  'conformance/processing-policy-attempts.mjs',
   'conformance/processing-policy-core.mjs',
   'conformance/processing-policy-decision.mjs',
   'conformance/processing-policy-evidence.mjs',

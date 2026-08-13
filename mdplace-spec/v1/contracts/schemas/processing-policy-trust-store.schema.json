@@ -40,7 +40,7 @@
     },
     "scenarioTrust": {
       "type": "object", "additionalProperties": false,
-      "required": ["scenario_id", "vault_id", "owner_principal_id", "policy_bindings", "source_profile_bindings", "approval_receipt_sha256s", "redaction_receipt_sha256s"],
+      "required": ["scenario_id", "vault_id", "owner_principal_id", "policy_bindings", "source_profile_bindings", "approval_receipt_sha256s", "redaction_receipt_sha256s", "attempt_receipt_sha256s"],
       "properties": {
         "scenario_id": {"type": "string", "pattern": "^CPP-[0-9]{3}$"},
         "vault_id": {"type": "string", "pattern": "^vault:[a-z][a-z0-9-]{2,63}$"},
@@ -48,7 +48,8 @@
         "policy_bindings": {"type": "array", "minItems": 1, "maxItems": 2, "uniqueItems": true, "items": {"$ref": "#/$defs/policyTrust"}},
         "source_profile_bindings": {"type": "array", "maxItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/profileTrust"}},
         "approval_receipt_sha256s": {"type": "array", "maxItems": 4, "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}},
-        "redaction_receipt_sha256s": {"type": "array", "maxItems": 64, "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}}
+        "redaction_receipt_sha256s": {"type": "array", "maxItems": 64, "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}},
+        "attempt_receipt_sha256s": {"type": "array", "maxItems": 3, "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}}
       }
     }
   }

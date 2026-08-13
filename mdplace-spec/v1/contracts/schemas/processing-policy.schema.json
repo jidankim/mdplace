@@ -43,10 +43,15 @@
     },
     "destination": {
       "type": "object", "additionalProperties": false,
-      "required": ["destination_id", "provider_id", "endpoint", "retention_fact_id"],
+      "required": ["destination_id", "provider_id", "locality", "endpoint", "retention_fact_id"],
+      "oneOf": [
+        {"properties": {"locality": {"const": "remote"}, "endpoint": {"pattern": "^https://"}}},
+        {"properties": {"locality": {"const": "local"}, "endpoint": {"pattern": "^local://"}}}
+      ],
       "properties": {
         "destination_id": {"type": "string", "pattern": "^destination:[a-z][a-z0-9-]{2,63}$"},
         "provider_id": {"type": "string", "pattern": "^provider:[a-z][a-z0-9-]{2,63}$"},
+        "locality": {"enum": ["local", "remote"]},
         "endpoint": {"type": "string", "pattern": "^(https|local)://[A-Za-z0-9._~:/?#@!$&'()+,;=%-]{1,512}$"},
         "retention_fact_id": {"type": "string", "pattern": "^retention:[a-z][a-z0-9-]{2,63}$"}
       }
@@ -144,7 +149,8 @@
       "type": "object", "additionalProperties": false,
       "required": ["retention_fact_id", "destination_id", "status", "max_days", "risk_acknowledged", "data_use", "region", "subprocessors"],
       "oneOf": [
-        {"properties": {"status": {"const": "known"}, "data_use": {"enum": ["request_only", "provider_training"]}}},
+        {"properties": {"status": {"const": "known"}, "data_use": {"const": "request_only"}}},
+        {"properties": {"status": {"const": "known"}, "data_use": {"const": "provider_training"}, "risk_acknowledged": {"const": true}}},
         {"properties": {"status": {"const": "known"}, "data_use": {"const": "unknown"}, "risk_acknowledged": {"const": true}}},
         {"properties": {"status": {"const": "unknown"}, "risk_acknowledged": {"const": true}}}
       ],

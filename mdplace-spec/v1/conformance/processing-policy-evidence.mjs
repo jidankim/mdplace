@@ -23,13 +23,13 @@ const denialSemantics = [
   ['destination_or_endpoint', 'policy.destination_denied'],
   ['credential_reference_store_authentication_provider_or_purpose', 'policy.credential_boundary_denied'],
   ['budget', 'policy.budget_exceeded'],
-  ['same_adapter_retry_and_aggregate_chain_budget', 'policy.retry_exceeded'],
+  ['trusted_attempt_accounting_and_retry_chain', 'policy.retry_exceeded'],
   ['ordered_adapter_and_consent_bound_fallback', 'policy.fallback_denied'],
   ['closed_advisory_capability', 'policy.capability_denied'],
   ['semantic_authority', 'policy.semantic_authority_denied'],
   ['automation_scope', 'policy.automation_scope_denied'],
   ['trusted_exact_redaction_receipt', 'policy.redaction_unproven'],
-  ['destination_bound_retention_and_unknown_risk_acknowledgment', 'policy.retention_unproven'],
+  ['destination_bound_retention_and_training_risk_acknowledgment', 'policy.retention_unproven'],
   ['hostile_content', 'policy.hostile_content_capability_denied'],
 ];
 

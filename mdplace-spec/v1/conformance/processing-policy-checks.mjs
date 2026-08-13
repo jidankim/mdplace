@@ -2,11 +2,8 @@ import {createHash} from 'node:crypto';
 import {isDeepStrictEqual} from 'node:util';
 
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
-import {
-  processingPolicyDigest,
-  processingPolicyReceiptDigest,
-  sourceProfileDigest,
-} from './processing-policy-core.mjs';
+import {processingPolicyDigest, processingPolicyReceiptDigest, sourceProfileDigest} from './processing-policy-core.mjs';
+import {processingAttemptReceiptDigest} from './processing-policy-attempts.mjs';
 import {processingPolicyEvidenceCodes} from './processing-policy-evidence.mjs';
 import {observeProcessingPolicyScenario} from './processing-policy-observer.mjs';
 import {observeProcessingPolicyLifecycleTransition} from './processing-policy-result.mjs';
@@ -125,7 +122,9 @@ export async function checkCoreProcessingPolicyContract(packageRoot, manifest, c
         !isDeepStrictEqual(trust[0].approval_receipt_sha256s,
           sortedDigests(document.approval_receipts.map(({receipt_sha256: digest}) => digest))) ||
         !isDeepStrictEqual(trust[0].redaction_receipt_sha256s,
-          sortedDigests(document.redaction_receipts.map(({receipt_sha256: digest}) => digest)))) {
+          sortedDigests(document.redaction_receipts.map(({receipt_sha256: digest}) => digest))) ||
+        !isDeepStrictEqual(trust[0].attempt_receipt_sha256s,
+          sortedDigests(document.attempt_receipts.map(({receipt_sha256: digest}) => digest)))) {
       codes.push('policy.trust_store_invalid');
     }
     if (document.source_profile !== null) {
@@ -156,6 +155,12 @@ export async function checkCoreProcessingPolicyContract(packageRoot, manifest, c
     for (const redactionReceipt of document.redaction_receipts) {
       if (await schemaCode(packageRoot, 'contracts/schemas/redaction-receipt.schema.json', redactionReceipt) !== null) {
         codes.push('policy.redaction_receipt_invalid');
+      }
+    }
+    for (const attemptReceipt of document.attempt_receipts) {
+      if (await schemaCode(packageRoot, 'contracts/schemas/processing-attempt-receipt.schema.json', attemptReceipt) !== null ||
+          attemptReceipt.receipt_sha256 !== processingAttemptReceiptDigest(attemptReceipt)) {
+        codes.push('policy.attempt_receipt_invalid');
       }
     }
     for (const receiptValue of fixture.expected?.receipts ?? []) {

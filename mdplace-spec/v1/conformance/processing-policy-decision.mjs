@@ -1,7 +1,6 @@
 import {isDeepStrictEqual} from 'node:util';
 
 import {
-  attemptChainViolation,
   approvalReceiptDigest,
   processingPolicyApprovalDigest,
   processingPolicyDigest,
@@ -12,6 +11,7 @@ import {
   valuesHaveUniqueKey,
   valuesAreSubset,
 } from './processing-policy-core.mjs';
+import {attemptAccountingViolation, attemptChainViolation} from './processing-policy-attempts.mjs';
 
 function policyCollectionCode(policy) {
   if (!valuesHaveUniqueKey(policy.grants.fields, 'field_id')) return 'policy.field_denied';
@@ -39,7 +39,7 @@ function consentBindingCode(policy, request) {
   const destination = policy.grants.destinations.find(({destination_id: id}) => id === scope.destination_id);
   const fields = new Map(policy.grants.fields.map((field) => [field.field_id, field]));
   if (scope.field_ids.some((fieldId) => !fields.has(fieldId)) ||
-      (destination?.endpoint.startsWith('https://') &&
+      (destination?.locality === 'remote' &&
         request.field_ids.some((fieldId) => fields.get(fieldId)?.disclosure !== 'remote'))) {
     return 'policy.field_denied';
   }
@@ -164,6 +164,8 @@ export function processingDenialCode(document) {
   }
   const attemptCode = attemptChainViolation(policy, request);
   if (attemptCode !== null) return attemptCode;
+  const accountingCode = attemptAccountingViolation(document);
+  if (accountingCode !== null) return accountingCode;
   if (!fallbackMatches(request, policy)) return 'policy.fallback_denied';
   if (!valuesAreSubset(request.capabilities, policy.grants.capabilities)) return 'policy.capability_denied';
   if (!valuesAreSubset(request.semantic_authority, policy.grants.semantic_authority)) {
@@ -179,7 +181,7 @@ export function processingDenialCode(document) {
   if (retention === undefined || retention.destination_id !== destination.destination_id ||
       !request.retention_fact_ids.includes(destination.retention_fact_id) ||
       !isDeepStrictEqual(request.retention_facts, [retention]) ||
-      ((retention.status === 'unknown' || retention.data_use === 'unknown') &&
+      ((retention.status === 'unknown' || retention.data_use !== 'request_only') &&
         !retention.risk_acknowledged)) return 'policy.retention_unproven';
   if (request.untrusted_content.requested_actions.length > 0) return 'policy.hostile_content_capability_denied';
   return null;

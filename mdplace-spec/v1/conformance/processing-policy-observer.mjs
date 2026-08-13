@@ -33,6 +33,8 @@ async function receiptSchemaCode(document, packageRoot) {
       document.approval_receipts.length) return 'policy.approval_readback_failed';
   if (new Set(document.redaction_receipts.map(({receipt_id: id}) => id)).size !==
       document.redaction_receipts.length) return 'policy.redaction_unproven';
+  if (new Set(document.attempt_receipts.map(({receipt_id: id}) => id)).size !==
+      document.attempt_receipts.length) return 'policy.retry_exceeded';
   for (const approvalReceipt of document.approval_receipts) {
     if (await schemaCode(packageRoot, 'contracts/schemas/approval-receipt.schema.json', approvalReceipt) !== null) {
       return 'policy.approval_readback_failed';
@@ -41,6 +43,11 @@ async function receiptSchemaCode(document, packageRoot) {
   for (const redactionReceipt of document.redaction_receipts) {
     if (await schemaCode(packageRoot, 'contracts/schemas/redaction-receipt.schema.json', redactionReceipt) !== null) {
       return 'policy.redaction_unproven';
+    }
+  }
+  for (const attemptReceipt of document.attempt_receipts) {
+    if (await schemaCode(packageRoot, 'contracts/schemas/processing-attempt-receipt.schema.json', attemptReceipt) !== null) {
+      return 'policy.retry_exceeded';
     }
   }
   return null;
