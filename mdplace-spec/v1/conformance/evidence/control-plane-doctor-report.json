@@ -7,7 +7,7 @@
   "persistent_agent_id": "agent:primary-001",
   "instance_id": "agent-instance:001",
   "vault_id": "vault:001",
-  "reported_tick": 30000,
+  "reported_tick": 36000,
   "circuit": {
     "version": 3,
     "state": "circuit_open",
@@ -21,9 +21,23 @@
     {
       "receipt_id": "integrity-failure-receipt:primary-001",
       "failure_class": "integrity_failure",
-      "code": "control.restart_ceiling_reached",
-      "observed_tick": 30000,
+      "code": "control.integrity_failure",
+      "observed_tick": 1000,
       "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    {
+      "receipt_id": "integrity-failure-receipt:primary-002",
+      "failure_class": "integrity_failure",
+      "code": "control.integrity_failure",
+      "observed_tick": 6000,
+      "digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    {
+      "receipt_id": "integrity-failure-receipt:primary-003",
+      "failure_class": "integrity_failure",
+      "code": "control.restart_ceiling_reached",
+      "observed_tick": 36000,
+      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     }
   ],
   "readiness_observations": [

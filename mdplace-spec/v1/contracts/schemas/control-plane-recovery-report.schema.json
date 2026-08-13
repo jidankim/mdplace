@@ -15,7 +15,7 @@
     "fixture_ids": {"type": "array", "minItems": 25, "maxItems": 25, "uniqueItems": true, "items": {"$ref": "#/$defs/fixtureId"}},
     "fixture_bindings": {"type": "array", "minItems": 25, "maxItems": 25, "items": {"$ref": "#/$defs/fixtureBinding"}},
     "recovery_matrix": {"$ref": "#/$defs/recoveryMatrix"},
-    "transition_bindings": {"type": "array", "minItems": 7, "maxItems": 7, "items": {"$ref": "#/$defs/transitionBinding"}},
+    "transition_bindings": {"type": "array", "minItems": 8, "maxItems": 8, "items": {"$ref": "#/$defs/transitionBinding"}},
     "claims": {"$ref": "#/$defs/claims"}
   },
   "$defs": {

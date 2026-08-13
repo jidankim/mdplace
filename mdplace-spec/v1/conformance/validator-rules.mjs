@@ -65,6 +65,7 @@ const authorityByCommand = new Map([
   ['retain_writer', {roles: ['mdplace_agent'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
   ['release_writer', {roles: ['mdplace_agent'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
   ['unexpected_exit', {roles: ['operating_system'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['qualifying_failure', {roles: ['mdplace_agent'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
   ['backoff_elapsed', {roles: ['launchd_supervisor'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
   ['restart_ceiling_reached', {roles: ['launchd_supervisor'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
   ['wake_revalidate', {roles: ['mdplace_agent'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],

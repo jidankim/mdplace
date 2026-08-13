@@ -5,6 +5,11 @@ import {fileURLToPath} from 'node:url';
 import test from 'node:test';
 
 import {validateAgainstSchemaPath} from './json-schema.mjs';
+import {
+  signControlPlaneReceipt,
+  verifyVaultOwnerRecoveryApproval,
+} from './control-plane-authentication.mjs';
+import {vaultOwnerRecoveryApprovalFields} from './control-plane-contract-values.mjs';
 import {checkControlPlaneLifecycle} from './control-plane-lifecycle-checks.mjs';
 import {checkTransitionTable} from './package-checks.mjs';
 import {buildValidationReport} from './validation-report.mjs';
@@ -138,7 +143,11 @@ test('LaunchAgent supervision lifecycle is a complete authority-bound matrix', a
 });
 
 test('LaunchAgent supervision enforces bounded backoff, wake checks, and owner recovery', async () => {
-  const table = await readJson(lifecyclePath);
+  const [profile, table, doctor] = await Promise.all([
+    readJson(profilePath),
+    readJson(lifecyclePath),
+    readJson('conformance/evidence/control-plane-doctor-report.json'),
+  ]);
 
   const unexpectedExit = transition(table, 'supervised', 'unexpected_exit');
   assert.equal(unexpectedExit.allowed, true);
@@ -148,6 +157,24 @@ test('LaunchAgent supervision enforces bounded backoff, wake checks, and owner r
   ));
   assert.ok(unexpectedExit.preconditions.includes(
     'work admission changes to diagnostic_only before restart scheduling',
+  ));
+
+  const integrityFailure = transition(table, 'supervised', 'qualifying_failure');
+  assert.equal(integrityFailure.allowed, true);
+  assert.equal(integrityFailure.terminal_state, 'backoff');
+  assert.ok(integrityFailure.emitted_records.includes('QualifyingFailureReceipt'));
+  assert.deepEqual(profile.automatic_restart_delay_ticks, [1000, 5000, 30000]);
+  assert.deepEqual(doctor.startup_failure_receipts.map(({observed_tick}) => observed_tick), [
+    1000, 6000, 36000,
+  ]);
+  assert.equal(doctor.startup_failure_receipts.at(-1).digest, doctor.circuit.trip_receipt_digest);
+  assert.equal(doctor.reported_tick, doctor.startup_failure_receipts.at(-1).observed_tick);
+
+  const directCeiling = transition(table, 'supervised', 'restart_ceiling_reached');
+  assert.equal(directCeiling.allowed, true);
+  assert.equal(directCeiling.terminal_state, 'circuit_open');
+  assert.ok(directCeiling.preconditions.includes(
+    'the third qualifying startup or integrity failure is authenticated and durable',
   ));
 
   const finalFailure = transition(table, 'backoff', 'restart_ceiling_reached');
@@ -219,6 +246,54 @@ test('control-plane lifecycle permits doctor-backed circuit state before owner a
   assert.deepEqual(await checkControlPlaneLifecycle(copiedPackage), {
     id: 'control-plane-lifecycle', verdict: 'pass', codes: [],
   });
+});
+
+test('control-plane lifecycle binds Agent circuit state to doctor and owner evidence', async () => {
+  const copiedPackage = await copyCommittedPackage();
+  const [agent, lifecycleReport] = await Promise.all([
+    readPackageJson(copiedPackage, 'contracts/control-plane/agent-state.json'),
+    readPackageJson(copiedPackage, 'conformance/evidence/control-plane-lifecycle-report.json'),
+  ]);
+  agent.state = 'blocked';
+  agent.control_channel_state = 'diagnostic_only';
+  agent.supervision_state = {
+    state: 'circuit_open', automatic_restart_attempt_count: 3, next_restart_tick: null,
+    circuit: {
+      version: 3, state: 'open', storage: 'durable_agent_state', failure_count: 3,
+      trip_threshold: 3, trip_receipt_digest: 'a'.repeat(64),
+    },
+  };
+  agent.wake_revalidation.verdict = 'pending';
+  agent.doctor_report = {
+    report_id: lifecycleReport.doctor_report_binding.report_id,
+    digest: '0'.repeat(64),
+  };
+  agent.owner_recovery_authorization = null;
+  await writePackageJson(copiedPackage, 'contracts/control-plane/agent-state.json', agent);
+  assert.ok((await checkControlPlaneLifecycle(copiedPackage)).codes
+    .includes('control.lifecycle_binding_invalid'));
+
+  agent.supervision_state.state = 'backoff';
+  agent.supervision_state.next_restart_tick = 1000;
+  await writePackageJson(copiedPackage, 'contracts/control-plane/agent-state.json', agent);
+  const contradictory = await checkControlPlaneLifecycle(copiedPackage);
+  assert.ok(contradictory.codes.includes('control.lifecycle_backoff_invalid'));
+  assert.ok(contradictory.codes.includes('control.lifecycle_breaker_invalid'));
+});
+
+test('Agent signer cannot mint vault-owner recovery approval', async () => {
+  const report = await readJson('conformance/evidence/control-plane-lifecycle-report.json');
+  const approval = report.vault_owner_recovery_approval;
+  const agentSigned = {
+    ...approval,
+    ...signControlPlaneReceipt(
+      'vault_owner_recovery_approval', vaultOwnerRecoveryApprovalFields(approval),
+    ),
+  };
+  assert.equal(
+    verifyVaultOwnerRecoveryApproval(vaultOwnerRecoveryApprovalFields(agentSigned), agentSigned),
+    false,
+  );
 });
 
 test('public validator rejects lifecycle boundary mutations with granular codes', async () => {

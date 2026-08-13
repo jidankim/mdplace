@@ -1,7 +1,7 @@
 import {createHash} from 'node:crypto';
 
 import {checkTransitionTable} from './package-checks.mjs';
-import {verifyControlPlaneReceipt} from './control-plane-authentication.mjs';
+import {verifyVaultOwnerRecoveryApproval} from './control-plane-authentication.mjs';
 import {vaultOwnerRecoveryApprovalFields} from './control-plane-contract-values.mjs';
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {readPackageFile} from './safe-path.mjs';
@@ -24,7 +24,7 @@ const readinessGates = [
 ];
 const lifecycleStates = ['supervised', 'backoff', 'circuit_open', 'recovering'];
 const lifecycleCommands = [
-  'unexpected_exit', 'backoff_elapsed', 'restart_ceiling_reached', 'wake_revalidate',
+  'unexpected_exit', 'qualifying_failure', 'backoff_elapsed', 'restart_ceiling_reached', 'wake_revalidate',
   'emit_doctor_report', 'approve_owner_recovery', 'complete_recovery',
 ];
 
@@ -103,6 +103,8 @@ function lifecycleTableCodes(table) {
   }
 
   const unexpectedExit = transition(table, 'supervised', 'unexpected_exit');
+  const qualifyingFailure = transition(table, 'supervised', 'qualifying_failure');
+  const directCeiling = transition(table, 'supervised', 'restart_ceiling_reached');
   const ceiling = transition(table, 'backoff', 'restart_ceiling_reached');
   const afterCeiling = transition(table, 'circuit_open', 'backoff_elapsed');
   const wake = transition(table, 'supervised', 'wake_revalidate');
@@ -111,6 +113,10 @@ function lifecycleTableCodes(table) {
   if (unexpectedExit?.allowed !== true || unexpectedExit.terminal_state !== 'backoff' ||
       !unexpectedExit.preconditions?.includes('the persisted automatic restart attempt count is below the profile maximum') ||
       !unexpectedExit.preconditions?.includes('work admission changes to diagnostic_only before restart scheduling') ||
+      qualifyingFailure?.allowed !== true || qualifyingFailure.terminal_state !== 'backoff' ||
+      !qualifyingFailure.emitted_records?.includes('QualifyingFailureReceipt') ||
+      directCeiling?.allowed !== true || directCeiling.terminal_state !== 'circuit_open' ||
+      !directCeiling.emitted_records?.includes('PersistentCircuitBreakerTripReceipt') ||
       ceiling?.allowed !== true || ceiling.terminal_state !== 'circuit_open' ||
       !ceiling.emitted_records?.includes('PersistentCircuitBreakerTripReceipt') ||
       afterCeiling?.allowed !== false || afterCeiling.failure_result?.code !== 'control.restart_ceiling_reached') {
@@ -137,6 +143,10 @@ function lifecycleTableCodes(table) {
 
 function doctorCodes(profile, doctor) {
   const codes = [];
+  const failureReceipts = doctor?.startup_failure_receipts;
+  const observedTicks = restartDelays.map((_, index) =>
+    restartDelays.slice(0, index + 1).reduce((total, delay) => total + delay, 0));
+  const lastFailure = Array.isArray(failureReceipts) ? failureReceipts.at(-1) : undefined;
   if (doctor?.persistent_agent_id !== profile?.persistent_agent_id || doctor?.vault_id !== profile?.vault_id ||
       doctor?.circuit?.state !== 'circuit_open' || doctor?.circuit?.storage !== 'durable_agent_state' ||
       doctor?.circuit?.failure_count !== profile?.persistent_circuit_breaker?.trip_on_failure_count ||
@@ -146,7 +156,16 @@ function doctorCodes(profile, doctor) {
       !sameList(doctor?.allowed_recovery_actions, ['revalidate_same_agent_core'])) {
     codes.push('control.lifecycle_doctor_incomplete');
   }
-  if (!Array.isArray(doctor?.startup_failure_receipts) || doctor.startup_failure_receipts.length === 0 ||
+  if (!Array.isArray(failureReceipts) ||
+      failureReceipts.length !== profile?.persistent_circuit_breaker?.trip_on_failure_count ||
+      !failureReceipts.every((receipt, index) =>
+        profile.persistent_circuit_breaker.qualifying_failure_classes.includes(receipt.failure_class) &&
+        receipt.observed_tick === observedTicks[index]) ||
+      new Set(failureReceipts.map(({receipt_id}) => receipt_id)).size !== failureReceipts.length ||
+      new Set(failureReceipts.map(({digest}) => digest)).size !== failureReceipts.length ||
+      lastFailure?.failure_class !== doctor?.circuit?.last_failure_class ||
+      lastFailure?.digest !== doctor?.circuit?.trip_receipt_digest ||
+      lastFailure?.code !== 'control.restart_ceiling_reached' || doctor?.reported_tick !== lastFailure?.observed_tick ||
       !sameList(doctor?.readiness_observations?.map(({ordinal, gate}) => `${ordinal}:${gate}`),
         readinessGates.map((gate, index) => `${index + 1}:${gate}`)) ||
       !sameList(doctor?.wake_observations?.map(({check}) => check), wakeChecks) ||
@@ -156,7 +175,7 @@ function doctorCodes(profile, doctor) {
   return codes;
 }
 
-function agentStateCodes(profile, agentState) {
+function agentStateCodes(profile, agentState, doctor, report, contents) {
   const codes = [];
   const supervision = agentState?.supervision_state;
   if (agentState?.persistent_agent_id !== profile?.persistent_agent_id ||
@@ -167,8 +186,22 @@ function agentStateCodes(profile, agentState) {
     codes.push('control.lifecycle_agent_state_invalid');
   }
   if (supervision?.state === 'backoff' &&
-      (agentState?.control_channel_state !== 'diagnostic_only' || supervision.next_restart_tick === null)) {
+      (agentState?.control_channel_state !== 'diagnostic_only' || supervision.next_restart_tick === null ||
+       supervision.circuit?.state !== 'closed')) {
     codes.push('control.lifecycle_backoff_invalid');
+  }
+  if (supervision?.state === 'supervised' &&
+      (supervision.next_restart_tick !== null || supervision.circuit?.state !== 'closed')) {
+    codes.push('control.lifecycle_agent_state_invalid');
+  }
+  if (supervision?.circuit?.state === 'open' &&
+      !['circuit_open', 'recovering'].includes(supervision?.state)) {
+    codes.push('control.lifecycle_breaker_invalid');
+  }
+  if (supervision?.state === 'circuit_open' &&
+      (supervision.circuit?.state !== 'open' || supervision.next_restart_tick !== null ||
+       agentState?.owner_recovery_authorization !== null)) {
+    codes.push('control.lifecycle_breaker_invalid');
   }
   if ((supervision?.state === 'circuit_open' || supervision?.state === 'recovering') &&
       agentState?.control_channel_state === 'work_admitting') {
@@ -179,6 +212,25 @@ function agentStateCodes(profile, agentState) {
        agentState?.doctor_report === null ||
        (supervision.state === 'recovering' && agentState?.owner_recovery_authorization === null))) {
     codes.push('control.lifecycle_breaker_invalid');
+  }
+  if (supervision?.circuit?.state === 'open') {
+    const doctorDigest = contents.doctor === null ? null : sha256(contents.doctor);
+    const approval = report?.vault_owner_recovery_approval;
+    if (agentState?.doctor_report?.report_id !== doctor?.report_id ||
+        agentState?.doctor_report?.digest !== doctorDigest ||
+        supervision.circuit.version !== doctor?.circuit?.version ||
+        doctor?.vault_id !== agentState?.vault_id ||
+        doctor?.persistent_agent_id !== agentState?.persistent_agent_id) {
+      codes.push('control.lifecycle_binding_invalid');
+    }
+    if (supervision.state === 'recovering' &&
+        (agentState?.owner_recovery_authorization?.receipt_id !== approval?.receipt_id ||
+         agentState?.owner_recovery_authorization?.digest !== approval?.signature_digest ||
+         approval?.circuit_version !== supervision.circuit.version ||
+         approval?.vault_id !== agentState?.vault_id ||
+         approval?.persistent_agent_id !== agentState?.persistent_agent_id)) {
+      codes.push('control.lifecycle_recovery_approval_invalid');
+    }
   }
   return codes;
 }
@@ -201,8 +253,8 @@ function reportCodes(profile, doctor, report, contents) {
       approval?.persistent_agent_id !== profile?.persistent_agent_id || approval?.doctor_report_id !== doctor?.report_id ||
       approval?.doctor_report_digest !== doctorDigest || approval?.circuit_version !== doctor?.circuit?.version ||
       approval?.selected_action !== 'revalidate_same_agent_core' ||
-      !verifyControlPlaneReceipt('vault_owner_recovery_approval', vaultOwnerRecoveryApprovalFields(approval), approval,
-        profile?.persistent_agent_id) || report?.work_admission_after_approval !== 'diagnostic_only' ||
+      !verifyVaultOwnerRecoveryApproval(vaultOwnerRecoveryApprovalFields(approval), approval) ||
+      report?.work_admission_after_approval !== 'diagnostic_only' ||
       !sameList(report?.required_same_core_revalidation, [
         'exclusive_writer', 'readiness_gate_chain', 'wake_revalidation',
       ])) {
@@ -227,7 +279,9 @@ export async function checkControlPlaneLifecycle(packageRoot) {
   ]);
 
   codes.push(...profileCodes(profile.document));
-  codes.push(...agentStateCodes(profile.document, agentState.document));
+  codes.push(...agentStateCodes(profile.document, agentState.document, doctor.document, report.document, {
+    doctor: doctor.content,
+  }));
   codes.push(...lifecycleTableCodes(table.document));
   codes.push(...doctorCodes(profile.document, doctor.document));
   codes.push(...reportCodes(profile.document, doctor.document, report.document, {

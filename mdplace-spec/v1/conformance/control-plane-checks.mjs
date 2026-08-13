@@ -75,7 +75,7 @@ const transitionInventories = new Map([
   }],
   ['contracts/transitions/control-channel-lifecycle.json', {
     prefix: 'TR-CPCHANNEL-',
-    rowsDigest: '4f2e40659c67b4f1ad73598dcb649c0b66b6bff2b867fe1daa21b5b6aaec231d',
+    rowsDigest: '17ca616ebabe7e23e586f14e8fe6cd842fb9ea65110629c10d1dfbb20b390626',
     states: ['closed', 'diagnostic_only', 'work_admitting', 'draining'],
     commands: ['open_control_channel', 'submit_control_command', 'close_control_channel'],
   }],
@@ -86,9 +86,9 @@ const transitionInventories = new Map([
   }],
   ['contracts/transitions/launchagent-supervision-lifecycle.json', {
     prefix: 'TR-CPSUP-',
-    rowsDigest: '5ac2ed79a3de6cc41d1bbcdcf2301e280eb7e5ac7b90e6e5778fba4c75e589c5',
+    rowsDigest: '38e9620eaf4878c61f72b15bdfc42e8e203f9a3f8970841026bd0302b4a383e0',
     states: ['supervised', 'backoff', 'circuit_open', 'recovering'],
-    commands: ['unexpected_exit', 'backoff_elapsed', 'restart_ceiling_reached', 'wake_revalidate',
+    commands: ['unexpected_exit', 'qualifying_failure', 'backoff_elapsed', 'restart_ceiling_reached', 'wake_revalidate',
       'emit_doctor_report', 'approve_owner_recovery', 'complete_recovery'],
   }],
 ]);
@@ -133,7 +133,8 @@ const authorityByTransitionCommand = new Map([
   ['open_control_channel', 'mdplace_agent'], ['submit_control_command', 'control_client'],
   ['close_control_channel', 'mdplace_agent'], ['acquire_writer', 'mdplace_agent'],
   ['retain_writer', 'mdplace_agent'], ['release_writer', 'mdplace_agent'],
-  ['unexpected_exit', 'operating_system'], ['backoff_elapsed', 'launchd_supervisor'],
+  ['unexpected_exit', 'operating_system'], ['qualifying_failure', 'mdplace_agent'],
+  ['backoff_elapsed', 'launchd_supervisor'],
   ['restart_ceiling_reached', 'launchd_supervisor'], ['wake_revalidate', 'mdplace_agent'],
   ['emit_doctor_report', 'mdplace_agent'], ['approve_owner_recovery', 'vault_owner'],
   ['complete_recovery', 'mdplace_agent'],
@@ -181,7 +182,8 @@ function transitionTarget(prefix, state, command) {
     if (state === 'held' && command === 'release_writer') return 'unheld';
   }
   if (prefix === 'TR-CPSUP-') {
-    if (state === 'supervised' && command === 'unexpected_exit') return 'backoff';
+    if (state === 'supervised' && ['unexpected_exit', 'qualifying_failure'].includes(command)) return 'backoff';
+    if (state === 'supervised' && command === 'restart_ceiling_reached') return 'circuit_open';
     if (state === 'supervised' && ['wake_revalidate', 'emit_doctor_report'].includes(command)) {
       return command === 'wake_revalidate' ? 'recovering' : 'supervised';
     }
@@ -190,11 +192,12 @@ function transitionTarget(prefix, state, command) {
       if (command === 'restart_ceiling_reached') return 'circuit_open';
       return 'backoff';
     }
-    if (state === 'circuit_open' && ['unexpected_exit', 'restart_ceiling_reached', 'wake_revalidate', 'emit_doctor_report', 'approve_owner_recovery'].includes(command)) {
+    if (state === 'circuit_open' && ['unexpected_exit', 'qualifying_failure', 'restart_ceiling_reached', 'wake_revalidate', 'emit_doctor_report', 'approve_owner_recovery'].includes(command)) {
       return command === 'approve_owner_recovery' ? 'recovering' : 'circuit_open';
     }
-    if (state === 'recovering' && ['unexpected_exit', 'restart_ceiling_reached', 'wake_revalidate', 'emit_doctor_report', 'complete_recovery'].includes(command)) {
+    if (state === 'recovering' && ['unexpected_exit', 'qualifying_failure', 'restart_ceiling_reached', 'wake_revalidate', 'emit_doctor_report', 'complete_recovery'].includes(command)) {
       if (['unexpected_exit', 'restart_ceiling_reached'].includes(command)) return 'circuit_open';
+      if (command === 'qualifying_failure') return 'backoff';
       if (command === 'complete_recovery') return 'supervised';
       return 'recovering';
     }

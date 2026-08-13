@@ -340,7 +340,7 @@
     },
     {
       "path": "contracts/transitions/control-channel-lifecycle.json",
-      "sha256": "b10a9ab97a8237c653a946547870c7d961fdac3577e70ce7e0ed6a5f9adb47ef",
+      "sha256": "aef2ae16ae18c56384c54ef666ae26d8cb483b450ab2c1ee68d100d08d49a450",
       "denied_transition_ids": [
         "TR-CPCHANNEL-002",
         "TR-CPCHANNEL-010",
@@ -354,6 +354,23 @@
         "TR-CPWRITER-002",
         "TR-CPWRITER-003",
         "TR-CPWRITER-004"
+      ]
+    },
+    {
+      "path": "contracts/transitions/launchagent-supervision-lifecycle.json",
+      "sha256": "7c74a708eb4519c2222b07596e5615bed79851d37be2b9c69362f1164c650fdc",
+      "denied_transition_ids": [
+        "TR-CPSUP-003",
+        "TR-CPSUP-007",
+        "TR-CPSUP-008",
+        "TR-CPSUP-010",
+        "TR-CPSUP-013",
+        "TR-CPSUP-015",
+        "TR-CPSUP-016",
+        "TR-CPSUP-019",
+        "TR-CPSUP-024",
+        "TR-CPSUP-027",
+        "TR-CPSUP-031"
       ]
     }
   ]

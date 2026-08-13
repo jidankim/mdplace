@@ -74,4 +74,7 @@ test('readiness and Control Channel contracts compose without a ready-before-ope
   assert.ok(startingReady.filesystem_effects.includes('promote Control Channel from diagnostic-only to work-admitting'));
   assert.ok(diagnosticOpen.preconditions.some((condition) => condition.includes('starting or blocked')));
   assert.ok(diagnosticOpen.preconditions.every((condition) => !condition.includes('Agent is ready')));
+  assert.ok(diagnosticOpen.preconditions.every((condition) => !condition.includes('retains the Exclusive Writer Lock')));
+  assert.ok(diagnosticOpen.base_references.every((reference) => !reference.includes('writer lock')));
+  assert.ok(diagnosticOpen.idempotency.key_fields.every((field) => !field.includes('writer lock')));
 });

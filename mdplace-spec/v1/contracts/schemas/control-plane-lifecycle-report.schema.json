@@ -64,7 +64,7 @@
     "vaultOwnerRecoveryApprovalReceipt": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["receipt_id", "principal_id", "vault_id", "persistent_agent_id", "doctor_report_id", "doctor_report_digest", "circuit_version", "selected_action", "idempotency_key", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
+      "required": ["receipt_id", "principal_id", "vault_id", "persistent_agent_id", "doctor_report_id", "doctor_report_digest", "circuit_version", "selected_action", "idempotency_key", "signature_scheme", "signing_key_id", "signer_principal_id", "signature_digest", "authenticated"],
       "properties": {
         "receipt_id": {"type": "string", "pattern": "^vault-owner-recovery-approval:[a-z0-9-]{3,64}$"},
         "principal_id": {"const": "person:owner-001"},
@@ -76,8 +76,8 @@
         "selected_action": {"const": "revalidate_same_agent_core"},
         "idempotency_key": {"type": "string", "pattern": "^idempotency:[a-z0-9-]{3,64}$"},
         "signature_scheme": {"const": "hmac-sha256"},
-        "signing_key_id": {"const": "signer-key:primary-001"},
-        "signer_agent_id": {"const": "agent:primary-001"},
+        "signing_key_id": {"const": "signer-key:vault-owner-001"},
+        "signer_principal_id": {"const": "person:owner-001"},
         "signature_digest": {"$ref": "#/$defs/digest"},
         "authenticated": {"const": true}
       }

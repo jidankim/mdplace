@@ -45,6 +45,11 @@ const deniedTransitions = new Map([
   ['contracts/transitions/exclusive-writer-lifecycle.json', [
     'TR-CPWRITER-002', 'TR-CPWRITER-003', 'TR-CPWRITER-004',
   ]],
+  ['contracts/transitions/launchagent-supervision-lifecycle.json', [
+    'TR-CPSUP-003', 'TR-CPSUP-007', 'TR-CPSUP-008', 'TR-CPSUP-010',
+    'TR-CPSUP-013', 'TR-CPSUP-015', 'TR-CPSUP-016', 'TR-CPSUP-019',
+    'TR-CPSUP-024', 'TR-CPSUP-027', 'TR-CPSUP-031',
+  ]],
 ]);
 
 function sha256(value) {
