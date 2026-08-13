@@ -54,10 +54,17 @@
       "required": ["kind", "reference_id", "version", "digest"],
       "properties": {
         "kind": {"enum": ["work_item", "work_journal", "semantic_head", "policy", "mutation_plan"]},
-        "reference_id": {"type": "string", "pattern": "^(work|journal|semantic|policy|plan):[a-z0-9-]{3,64}$"},
+        "reference_id": {"type": "string"},
         "version": {"type": "integer", "minimum": 0, "maximum": 1000000},
         "digest": {"$ref": "#/$defs/digest"}
-      }
+      },
+      "allOf": [
+        {"if": {"properties": {"kind": {"const": "work_item"}}}, "then": {"properties": {"reference_id": {"pattern": "^work:[a-z0-9-]{3,64}$"}}}},
+        {"if": {"properties": {"kind": {"const": "work_journal"}}}, "then": {"properties": {"reference_id": {"pattern": "^journal:[a-z0-9-]{3,64}$"}}}},
+        {"if": {"properties": {"kind": {"const": "semantic_head"}}}, "then": {"properties": {"reference_id": {"pattern": "^semantic:[a-z0-9-]{3,64}$"}}}},
+        {"if": {"properties": {"kind": {"const": "policy"}}}, "then": {"properties": {"reference_id": {"pattern": "^policy:[a-z0-9-]{3,64}$"}}}},
+        {"if": {"properties": {"kind": {"const": "mutation_plan"}}}, "then": {"properties": {"reference_id": {"pattern": "^plan:[a-z0-9-]{3,64}$"}}}}
+      ]
     },
     "limits": {
       "type": "object",

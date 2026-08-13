@@ -1,6 +1,7 @@
 import {createHash} from 'node:crypto';
 
 import {signControlPlaneReceipt, verifyControlPlaneReceipt} from './control-plane-authentication.mjs';
+import {controlPlaneOutcomeFieldsAreValid} from './control-plane-outcome.mjs';
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {canonicalJson} from './semantic-kernel-core.mjs';
 
@@ -45,6 +46,12 @@ function leaseFields(receipt) {
     receipt.work_version, receipt.journal_sequence, receipt.owner_agent_id];
 }
 
+function resumeFields(receipt) {
+  return [receipt.receipt_id, receipt.work_id, receipt.cancelled_work_version,
+    receipt.resumed_work_version, receipt.idempotency_key, receipt.cancellation_receipt_id,
+    receipt.resume_count, receipt.journal_sequence];
+}
+
 function journalHeadFields(receipt) {
   return [receipt.receipt_id, receipt.journal_id, receipt.head_sequence, receipt.head_digest];
 }
@@ -67,11 +74,15 @@ function dependencyStateIsAuthenticated(initial) {
 }
 
 function validPriorLeaseReceipt(initial, work, leaseId, beforeSequence) {
-  return typeof leaseId === 'string' && initial.prior_lease_receipts.some((prior) =>
-    prior.lease_id === leaseId && prior.work_id === work.work_id &&
-    prior.work_version <= work.work_version && prior.journal_sequence < beforeSequence &&
-    prior.owner_agent_id === work.owner_agent_id && prior.owner_agent_id === initial.persistent_agent_id &&
+  if (typeof leaseId !== 'string') return false;
+  const applicable = initial.prior_lease_receipts.filter((prior) =>
+    prior.work_id === work.work_id && prior.work_version <= work.work_version &&
+    prior.journal_sequence < beforeSequence && prior.owner_agent_id === work.owner_agent_id &&
+    prior.owner_agent_id === initial.persistent_agent_id &&
     verifyControlPlaneReceipt('work_lease', leaseFields(prior), prior, initial.persistent_agent_id));
+  const latest = applicable.reduce((candidate, prior) =>
+    candidate === null || prior.journal_sequence > candidate.journal_sequence ? prior : candidate, null);
+  return latest?.lease_id === leaseId;
 }
 
 function cancellationReceiptFor(initial, work, action) {
@@ -85,6 +96,37 @@ function cancellationReceiptFor(initial, work, action) {
     reason_code: 'user_requested',
   };
   return {...receipt, ...signControlPlaneReceipt('work_cancellation', cancellationFields(receipt))};
+}
+
+function resumeReceiptFor(initial, work, action) {
+  const receipt = {
+    receipt_id: `resume-receipt:${work.work_id.slice(5)}`,
+    work_id: work.work_id,
+    cancelled_work_version: initial.work.work_version,
+    resumed_work_version: work.work_version,
+    idempotency_key: action.idempotency_key,
+    cancellation_receipt_id: initial.work.cancellation_receipt.receipt_id,
+    resume_count: work.resume_count,
+    journal_sequence: initial.journal_head_sequence + 1,
+  };
+  return {...receipt, ...signControlPlaneReceipt('work_resume', resumeFields(receipt))};
+}
+
+function validStoredResumeReceipt(initial, work) {
+  const receipt = work?.resume_receipt;
+  return receipt !== null && receipt !== undefined && work.resume_count === 1 &&
+    receipt.work_id === work.work_id && receipt.resumed_work_version <= work.work_version &&
+    receipt.cancelled_work_version === receipt.resumed_work_version - 1 &&
+    receipt.idempotency_key === work.idempotency_key &&
+    receipt.cancellation_receipt_id === work.cancellation_receipt?.receipt_id &&
+    work.cancellation_receipt.work_id === work.work_id &&
+    work.cancellation_receipt.work_version === receipt.cancelled_work_version &&
+    work.cancellation_receipt.idempotency_key === work.idempotency_key &&
+    work.cancellation_receipt.journal_sequence < receipt.journal_sequence &&
+    verifyControlPlaneReceipt('work_cancellation', cancellationFields(work.cancellation_receipt),
+      work.cancellation_receipt, initial.persistent_agent_id) &&
+    receipt.resume_count === work.resume_count && receipt.journal_sequence <= initial.journal_head_sequence &&
+    verifyControlPlaneReceipt('work_resume', resumeFields(receipt), receipt, initial.persistent_agent_id);
 }
 
 function validStoredCancellationReceipt(initial, work) {
@@ -138,9 +180,12 @@ function validCompletionReceipt(initial, work) {
     receipt?.lease_id,
     receipt?.journal_sequence,
   );
-  const outputIsValid = work?.state === 'succeeded'
-    ? typeof receipt?.output_digest === 'string' && /^[a-f0-9]{64}$/.test(receipt.output_digest) && receipt.code === null
-    : receipt?.output_digest === null && typeof receipt?.code === 'string';
+  const outputIsValid = controlPlaneOutcomeFieldsAreValid(receipt, {
+    retryCount: work?.retry_count,
+    retryCeiling: work?.retry_ceiling,
+    recoveryInterruptionCount: work?.recovery_interruption_count,
+    recoveryCeiling: 2,
+  });
   const leaseIsValid = work?.state === 'cancelled'
     ? receipt?.lease_id === null || leaseReceiptIsValid
     : leaseReceiptIsValid;
@@ -281,13 +326,20 @@ function workStateIsConsistent(work) {
   const cancellationIsValid = work.state === 'cancelled'
     ? work.cancellation_receipt !== null
     : work.cancellation_receipt === null || work.resume_count > 0;
+  const resumeIsValid = work.resume_count === 0
+    ? work.resume_receipt === null
+    : work.resume_receipt !== null && work.state !== 'cancelled';
   return scalarBoundsAreValid && (leased ? leaseIsBound : leaseIsAbsent) && retryEligibilityIsValid && completionIsValid &&
     completionBoundsAreValid &&
-    cancellationIsValid && (!terminal || work.completion_receipt.outcome === work.state);
+    cancellationIsValid && resumeIsValid && (!terminal || work.completion_receipt.outcome === work.state);
 }
 
 function enqueue(initial, action) {
   if (!initial.journal_available) return rejected(initial, action, 'control.journal_unavailable', {terminal: 'blocked'});
+  if (action.expected_journal_head_sequence !== initial.journal_head_sequence ||
+      action.expected_journal_head_digest !== initial.journal_head_digest) {
+    return rejected(initial, action, 'control.journal_head_stale', {terminal: 'blocked'});
+  }
   if (initial.work !== null) {
     const compatible = action.work_id === initial.work.work_id &&
       action.idempotency_key === initial.work.idempotency_key &&
@@ -308,7 +360,7 @@ function enqueue(initial, action) {
     retry_eligible_tick: null, recovery_interruption_count: 0,
     lease_id: null, lease_status: null, lease_acquired_tick: null, lease_expires_tick: null,
     owner_agent_id: null, cancellation_id: null, resume_count: 0, resume_ceiling: 1,
-    cancellation_receipt: null, completion_receipt: null,
+    cancellation_receipt: null, resume_receipt: null, completion_receipt: null,
   };
   return observed(initial, action, {
     outputs: [action.interruption_count > 0 ? 'enqueue recovered after process loss' : 'enqueue accepted'],
@@ -398,7 +450,7 @@ function fail(initial, action) {
     const nextRetryCount = initial.work.retry_count + 1;
     const retryDelay = nextRetryCount === 1 ? 1000 : 5000;
     const retryEligibleTick = action.current_tick + retryDelay;
-    if (retryEligibleTick <= 1000000) {
+    if (retryEligibleTick <= 999700) {
       const work = {...initial.work, work_version: initial.work.work_version + 1, state: 'retry_wait',
         retry_count: nextRetryCount, retry_eligible_tick: retryEligibleTick,
         lease_id: null, lease_status: null, lease_acquired_tick: null, lease_expires_tick: null,
@@ -473,13 +525,25 @@ function cancel(initial, action) {
 }
 
 function resume(initial, action) {
+  if (validStoredResumeReceipt(initial, initial.work) && action.work_id === initial.work.work_id &&
+      action.expected_work_version === initial.work.resume_receipt.cancelled_work_version &&
+      action.idempotency_key === initial.work.resume_receipt.idempotency_key) {
+    return observed(initial, action, {
+      outputs: ['resume idempotent'], operations: ['validate exact resume binding', 'return original ResumeReceipt'],
+      receipts: [`ResumeReceipt:${initial.work.resume_receipt.receipt_id}`], terminal: initial.work.state,
+    });
+  }
   if (!exactWorkBase(initial, action)) return rejected(initial, action, 'control.work_version_stale');
+  if (action.idempotency_key !== initial.work?.idempotency_key) {
+    return rejected(initial, action, 'control.idempotency_incompatible');
+  }
   if (initial.work.state !== 'cancelled' || initial.work.resume_count >= initial.work.resume_ceiling) {
     return rejected(initial, action, 'control.resume_budget_exhausted', {illegal: true, terminal: initial.work.state});
   }
   if (!journalCanAppend(initial)) return rejected(initial, action, 'control.journal_capacity_exhausted', {terminal: 'blocked'});
   const work = {...initial.work, work_version: initial.work.work_version + 1, state: 'queued',
     cancellation_id: null, resume_count: initial.work.resume_count + 1, completion_receipt: null};
+  work.resume_receipt = resumeReceiptFor(initial, work, action);
   return observed(initial, action, {
     outputs: ['cancelled work resumed within bound'],
     operations: ['authenticate vault owner', 'compare cancelled Work Item version', 'consume resume budget', 'append resume record'],
@@ -540,7 +604,7 @@ function recover(initial, action) {
   const retryExhausted = initial.work.state === 'executing' && initial.work.retry_count >= initial.work.retry_ceiling;
   const nextRecoveryRetryCount = initial.work.retry_count + 1;
   const recoveryRetryDelay = nextRecoveryRetryCount === 1 ? 1000 : 5000;
-  const retryTickOverflow = initial.work.state === 'executing' && action.recovery_tick + recoveryRetryDelay > 1000000;
+  const retryTickOverflow = initial.work.state === 'executing' && action.recovery_tick + recoveryRetryDelay > 999700;
   if (recoveryExhausted || retryExhausted || retryTickOverflow) {
     const work = {...initial.work, work_version: initial.work.work_version + 1, state: 'failed',
       retry_eligible_tick: null, recovery_interruption_count: Math.min(action.interruption_count, 2),
@@ -576,6 +640,9 @@ function recover(initial, action) {
 function readinessCheck(initial, action) {
   if (!['starting', 'blocked'].includes(initial.agent_state)) {
     return rejected(initial, action, 'control.illegal_transition', {illegal: true, terminal: initial.agent_state});
+  }
+  if (!controlChannelIsClosedForStartup(initial)) {
+    return rejected(initial, action, 'control.control_channel_state_invalid', {terminal: 'blocked'});
   }
   const unavailable = initial.writer_owner_agent_id !== initial.persistent_agent_id ? 'control.readiness_writer_absent'
     : !initial.semantic_dependency_available ? 'control.readiness_semantic_dependency_unavailable'
@@ -636,6 +703,10 @@ export async function observeControlPlaneScenario(subject, packageRoot) {
   }
   if (initial.work?.state === 'cancelled' && !validStoredCancellationReceipt(initial, initial.work)) {
     return rejected(initial, action, 'control.cancellation_receipt_invalid', {terminal: 'blocked'});
+  }
+  if (initial.work?.resume_receipt !== null && initial.work?.resume_receipt !== undefined &&
+      !validStoredResumeReceipt(initial, initial.work)) {
+    return rejected(initial, action, 'control.resume_receipt_invalid', {terminal: 'blocked'});
   }
   if (['cancelled', 'succeeded', 'failed'].includes(initial.work?.state) && !validCompletionReceipt(initial, initial.work)) {
     return rejected(initial, action, 'control.completion_receipt_invalid', {terminal: 'blocked'});

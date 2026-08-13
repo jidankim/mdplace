@@ -42,7 +42,8 @@
           "lease_acquired_tick": null,
           "lease_expires_tick": null,
           "completion_receipt": null,
-          "cancellation_receipt": null
+          "cancellation_receipt": null,
+          "resume_receipt": null
         },
         "control_channel": {
           "state": "open",
@@ -104,7 +105,7 @@
         "interruption_count": 0,
         "semantic_write_requested": true,
         "authority_source": "queue",
-        "expected_journal_head_sequence": null,
+        "expected_journal_head_sequence": 1,
         "expected_writer_epoch": null,
         "recovery_tick": null,
         "writer_lock_receipt": null,
@@ -217,7 +218,7 @@
         ],
         "current_tick": 1,
         "expected_dependency_state_digest": null,
-        "expected_journal_head_digest": null,
+        "expected_journal_head_digest": "a37ec54bcef281a61afc8b70e00ac6f0a5a4e76ebc1839589090a4200d21cc10",
         "expected_scheduler_state_digest": null
       }
     }

@@ -3,6 +3,7 @@ import {createHash} from 'node:crypto';
 import {checkTransitionTable} from './package-checks.mjs';
 import {childWorkInvocationIsValid} from './child-work-validation.mjs';
 import {verifyControlPlaneReceipt} from './control-plane-authentication.mjs';
+import {controlPlaneOutcomeFieldsAreValid} from './control-plane-outcome.mjs';
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {controlPlaneEvidenceCodes} from './control-plane-evidence.mjs';
 import {readPackageFile} from './safe-path.mjs';
@@ -240,21 +241,19 @@ function workJournalStateValid(journal) {
     const matchingCompletionReceipt = terminal
       ? journal.receipts.find((receipt) => receipt.receipt_id === result?.receipt_id)
       : null;
-    const matchingLeaseReceipt = result?.lease_id === null || result?.lease_id === undefined
-      ? null
-      : journal.receipts.find((receipt) => ['lease', 'start'].includes(receipt.receipt_kind) &&
-        receipt.lease_id === result.lease_id && receipt.work_id === work.work_id &&
-        receipt.work_version <= work.work_version && receipt.journal_sequence < result.journal_sequence);
-    const failureCodeIsApplicable = result?.code === 'control.retry_ceiling_exceeded'
-      ? work.retry_count === journal.limits.max_total_attempts - 1
-      : result?.code === 'control.recovery_ceiling_exceeded'
-        ? work.recovery_interruption_count === journal.limits.max_recovery_interruptions
-        : ['control.execution_failed', 'control.retry_tick_overflow'].includes(result?.code);
-    const outcomeFieldsValid = result?.outcome === 'succeeded'
-      ? typeof result.output_digest === 'string' && result.code === null
-      : result?.outcome === 'cancelled'
-        ? result.output_digest === null && result.code === 'control.cancelled'
-        : result?.outcome === 'failed' && result.output_digest === null && failureCodeIsApplicable;
+    const applicableLeaseReceipts = result?.lease_id === null || result?.lease_id === undefined
+      ? []
+      : journal.receipts.filter((receipt) => ['lease', 'start'].includes(receipt.receipt_kind) &&
+        receipt.work_id === work.work_id && receipt.work_version <= work.work_version &&
+        receipt.journal_sequence < result.journal_sequence);
+    const matchingLeaseReceipt = applicableLeaseReceipts.reduce((latest, receipt) =>
+      latest === null || receipt.journal_sequence > latest.journal_sequence ? receipt : latest, null);
+    const outcomeFieldsValid = controlPlaneOutcomeFieldsAreValid(result, {
+      retryCount: work.retry_count,
+      retryCeiling: journal.limits.max_total_attempts - 1,
+      recoveryInterruptionCount: work.recovery_interruption_count,
+      recoveryCeiling: journal.limits.max_recovery_interruptions,
+    });
     const resultValid = terminal
       ? work.result !== null && work.result.outcome === work.state && work.result.work_version === work.work_version &&
         work.result.journal_sequence <= journal.head_sequence &&
@@ -264,7 +263,8 @@ function workJournalStateValid(journal) {
         matchingCompletionReceipt.work_version === work.work_version &&
         matchingCompletionReceipt.lease_id === result.lease_id &&
         matchingCompletionReceipt.state === work.state &&
-        (result.outcome === 'cancelled' || (typeof result.lease_id === 'string' && matchingLeaseReceipt !== undefined)) &&
+        ((result.outcome === 'cancelled' && result.lease_id === null) ||
+          (typeof result.lease_id === 'string' && matchingLeaseReceipt?.lease_id === result.lease_id)) &&
         verifyControlPlaneReceipt('work_completion', [
           result.receipt_id, work.work_id, result.work_version, result.lease_id ?? '',
           result.journal_sequence, result.outcome, result.output_digest ?? '', result.code ?? '',
@@ -295,7 +295,8 @@ function schedulerStateValid(scheduler, journal, agent) {
       lease.lease_id === work.lease.lease_id && lease.work_id === work.work_id &&
       lease.work_version === work.work_version && lease.owner_agent_id === work.lease.owner_agent_id &&
       lease.acquired_tick === work.lease.acquired_tick && lease.expires_tick === work.lease.expires_tick));
-  return scheduler.agent_id === agent?.persistent_agent_id && scheduler.readiness === agent?.state &&
+  return scheduler.agent_id === agent?.persistent_agent_id && scheduler.vault_id === agent?.vault_id &&
+    journal?.vault_id === agent?.vault_id && scheduler.readiness === agent?.state &&
     scheduler.journal_head_sequence === journal?.head_sequence &&
     scheduler.journal_head_digest === journal?.head_digest &&
     !duplicate(queuedIds) && !duplicate(leasedIds) && !duplicate(leasedWorkIds) &&
@@ -333,14 +334,24 @@ function agentStateValid(agent) {
     agent.control_channel_state === 'open' && gatesValid;
 }
 
-function controlCommandStateValid(command) {
+function controlCommandStateValid(command, journal) {
   const peer = command?.peer;
   if (peer?.peer_credentials_verified !== true || peer.local_transport !== true ||
-      peer.peer_uid !== peer.effective_uid || peer.vault_scope !== command.vault_id) return false;
+      peer.peer_uid !== peer.effective_uid || peer.vault_scope !== command.vault_id ||
+      command.vault_id !== journal?.vault_id) return false;
   const expectedBaseKind = ['cancel', 'resume'].includes(command.command_kind) ? 'work_item'
     : command.command_kind === 'enqueue' ? 'work_journal' : null;
-  return expectedBaseKind === null || (Array.isArray(command.base_references) &&
-    command.base_references.filter((base) => record(base) && base.kind === expectedBaseKind).length === 1);
+  if (expectedBaseKind === null) return true;
+  if (!Array.isArray(command.base_references)) return false;
+  const matchingBases = command.base_references.filter((base) => record(base) && base.kind === expectedBaseKind);
+  if (matchingBases.length !== 1) return false;
+  const base = matchingBases[0];
+  if (expectedBaseKind === 'work_journal') {
+    return base.reference_id === journal?.journal_id && base.version === journal?.head_sequence &&
+      base.digest === journal?.head_digest;
+  }
+  const work = journal?.work_items?.find(({work_id: id}) => id === base.reference_id);
+  return work !== undefined && base.version === work.work_version && base.digest === canonicalDigest(work);
 }
 
 const scenarioCategories = new Set([
@@ -405,7 +416,10 @@ export async function checkControlPlaneContract(packageRoot, manifest, conforman
   if (!agentStateValid(instances.get('contracts/control-plane/agent-state.json'))) {
     codes.push('control.agent_state_invalid');
   }
-  if (!controlCommandStateValid(instances.get('contracts/control-plane/control-command.json'))) {
+  if (!controlCommandStateValid(
+    instances.get('contracts/control-plane/control-command.json'),
+    instances.get('contracts/control-plane/work-journal.json'),
+  )) {
     codes.push('control.command_state_invalid');
   }
   if (!childWorkInvocationIsValid(instances.get('contracts/control-plane/child-work-invocation.json'))) {
