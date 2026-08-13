@@ -31,12 +31,12 @@
       },
       "preconditions": [
         "Agent is starting or blocked; readiness and Exclusive Writer Lock status may still be unknown or failed",
-        "Unix-domain transport is local and peer credentials match the effective user",
+        "the configured per-vault Unix-domain socket path is inside the same-user runtime directory",
         "socket directory mode is 0700 and socket mode is 0600"
       ],
       "base_references": [
         "vault identity",
-        "authenticated local peer credentials",
+        "configured same-user runtime directory and per-vault socket path",
         "protocol version 1.0"
       ],
       "emitted_records": [
@@ -49,7 +49,7 @@
         "key_fields": [
         "idempotency_key",
         "vault identity",
-        "authenticated local peer credentials",
+        "configured same-user runtime directory and per-vault socket path",
         "protocol version 1.0"
         ],
         "retry_result": "return the original durable receipt for the exact binding"
@@ -65,7 +65,7 @@
           "none"
         ]
       },
-      "recovery": "Remove an unowned stale socket and reopen diagnostic-only access from the authenticated local peer and vault binding without admitting work or depending on writer-lock success."
+      "recovery": "Remove an unowned stale socket and reopen diagnostic-only access from the configured same-user runtime path and vault binding without admitting work or depending on a connected peer or writer-lock success."
     },
     {
       "transition_id": "TR-CPCHANNEL-002",

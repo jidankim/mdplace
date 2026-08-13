@@ -75,6 +75,13 @@ test('readiness and Control Channel contracts compose without a ready-before-ope
   assert.ok(diagnosticOpen.preconditions.some((condition) => condition.includes('starting or blocked')));
   assert.ok(diagnosticOpen.preconditions.every((condition) => !condition.includes('Agent is ready')));
   assert.ok(diagnosticOpen.preconditions.every((condition) => !condition.includes('retains the Exclusive Writer Lock')));
+  assert.ok(diagnosticOpen.preconditions.every((condition) => !condition.includes('peer credentials')));
   assert.ok(diagnosticOpen.base_references.every((reference) => !reference.includes('writer lock')));
+  assert.ok(diagnosticOpen.base_references.every((reference) => !reference.includes('peer credentials')));
   assert.ok(diagnosticOpen.idempotency.key_fields.every((field) => !field.includes('writer lock')));
+  assert.ok(diagnosticOpen.idempotency.key_fields.every((field) => !field.includes('peer credentials')));
+  const diagnosticSubmit = channel.transitions.find(({from_state, command_or_event: command}) =>
+    from_state === 'diagnostic_only' && command === 'submit_control_command',
+  );
+  assert.ok(diagnosticSubmit.preconditions.some((condition) => condition.includes('peer credentials')));
 });

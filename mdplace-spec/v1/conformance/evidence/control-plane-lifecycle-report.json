@@ -11,12 +11,12 @@
   },
   "lifecycle_table_binding": {
     "path": "contracts/transitions/launchagent-supervision-lifecycle.json",
-    "sha256": "7c74a708eb4519c2222b07596e5615bed79851d37be2b9c69362f1164c650fdc"
+    "sha256": "97b661337ce9171acd0a34b20eddfc716a9d47f044db29ecaaf5dda8f0675821"
   },
   "doctor_report_binding": {
     "report_id": "control-plane-doctor-report:primary-001",
     "path": "conformance/evidence/control-plane-doctor-report.json",
-    "sha256": "ce3180e781049d11fd8b92703d05433e512905398584db65c7b9fddba135c414",
+    "sha256": "c9029d5b608ac299f328b8352920c376067deaff7b79b2961cef8b4aeb019f1f",
     "circuit_version": 3
   },
   "vault_owner_recovery_approval": {
@@ -25,13 +25,13 @@
     "vault_id": "vault:001",
     "persistent_agent_id": "agent:primary-001",
     "doctor_report_id": "control-plane-doctor-report:primary-001",
-    "doctor_report_digest": "ce3180e781049d11fd8b92703d05433e512905398584db65c7b9fddba135c414",
+    "doctor_report_digest": "c9029d5b608ac299f328b8352920c376067deaff7b79b2961cef8b4aeb019f1f",
     "circuit_version": 3,
     "selected_action": "revalidate_same_agent_core",
     "idempotency_key": "idempotency:recovery-approval-001",
     "signature_scheme": "hmac-sha256",
     "signing_key_id": "signer-key:vault-owner-001",
-    "signature_digest": "5df76c935c39aca1ae304e20d88f77322268be68a2595d87418f3976b473b9a6",
+    "signature_digest": "4c48530e7a156fca4bfc6ff0b702f144997eb230f0f5d48533e6a7944884692c",
     "authenticated": true,
     "signer_principal_id": "person:owner-001"
   },

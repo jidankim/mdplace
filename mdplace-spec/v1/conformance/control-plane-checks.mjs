@@ -75,7 +75,7 @@ const transitionInventories = new Map([
   }],
   ['contracts/transitions/control-channel-lifecycle.json', {
     prefix: 'TR-CPCHANNEL-',
-    rowsDigest: '17ca616ebabe7e23e586f14e8fe6cd842fb9ea65110629c10d1dfbb20b390626',
+    rowsDigest: '43632f6f6f4567524144220dd11a3df985f2d5436110443efcd9fe493b322831',
     states: ['closed', 'diagnostic_only', 'work_admitting', 'draining'],
     commands: ['open_control_channel', 'submit_control_command', 'close_control_channel'],
   }],
@@ -86,10 +86,24 @@ const transitionInventories = new Map([
   }],
   ['contracts/transitions/launchagent-supervision-lifecycle.json', {
     prefix: 'TR-CPSUP-',
-    rowsDigest: '38e9620eaf4878c61f72b15bdfc42e8e203f9a3f8970841026bd0302b4a383e0',
+    rowsDigest: 'cd9adcbad534e3b5aef7b37fc12ec4a2cb1d545733349fe99a2008bcbcff655f',
     states: ['supervised', 'backoff', 'circuit_open', 'recovering'],
     commands: ['unexpected_exit', 'qualifying_failure', 'backoff_elapsed', 'restart_ceiling_reached', 'wake_revalidate',
       'emit_doctor_report', 'approve_owner_recovery', 'complete_recovery'],
+    failureCodes: [
+      'control.restart_ceiling_reached', 'control.failure_receipt_invalid', 'control.illegal_transition',
+      'control.restart_ceiling_not_reached', 'control.wake_revalidation_failed',
+      'control.doctor_report_unavailable', 'control.illegal_transition', 'control.illegal_transition',
+      'control.exit_receipt_invalid', 'control.illegal_transition', 'control.restart_precondition_failed',
+      'control.illegal_transition', 'control.work_admission_blocked', 'control.doctor_report_unavailable',
+      'control.illegal_transition', 'control.illegal_transition', 'control.exit_receipt_invalid',
+      'control.failure_receipt_invalid', 'control.restart_ceiling_reached', 'control.circuit_state_invalid',
+      'control.wake_revalidation_failed', 'control.doctor_report_unavailable',
+      'control.recovery_approval_invalid', 'control.illegal_transition', 'control.exit_receipt_invalid',
+      'control.failure_receipt_invalid', 'control.illegal_transition', 'control.restart_ceiling_not_reached',
+      'control.wake_revalidation_failed', 'control.doctor_report_unavailable',
+      'control.recovery_already_authorized', 'control.recovery_revalidation_failed',
+    ],
   }],
 ]);
 
@@ -187,17 +201,15 @@ function transitionTarget(prefix, state, command) {
     if (state === 'supervised' && ['wake_revalidate', 'emit_doctor_report'].includes(command)) {
       return command === 'wake_revalidate' ? 'recovering' : 'supervised';
     }
-    if (state === 'backoff' && ['unexpected_exit', 'backoff_elapsed', 'restart_ceiling_reached', 'emit_doctor_report'].includes(command)) {
+    if (state === 'backoff' && ['unexpected_exit', 'backoff_elapsed', 'emit_doctor_report'].includes(command)) {
       if (command === 'backoff_elapsed') return 'supervised';
-      if (command === 'restart_ceiling_reached') return 'circuit_open';
       return 'backoff';
     }
     if (state === 'circuit_open' && ['unexpected_exit', 'qualifying_failure', 'restart_ceiling_reached', 'wake_revalidate', 'emit_doctor_report', 'approve_owner_recovery'].includes(command)) {
       return command === 'approve_owner_recovery' ? 'recovering' : 'circuit_open';
     }
     if (state === 'recovering' && ['unexpected_exit', 'qualifying_failure', 'restart_ceiling_reached', 'wake_revalidate', 'emit_doctor_report', 'complete_recovery'].includes(command)) {
-      if (['unexpected_exit', 'restart_ceiling_reached'].includes(command)) return 'circuit_open';
-      if (command === 'qualifying_failure') return 'backoff';
+      if (['unexpected_exit', 'qualifying_failure', 'restart_ceiling_reached'].includes(command)) return 'circuit_open';
       if (command === 'complete_recovery') return 'supervised';
       return 'recovering';
     }
@@ -214,7 +226,7 @@ function transitionSemanticsAreExact(table, inventory) {
     const target = transitionTarget(inventory.prefix, state, command);
     const allowed = target !== null;
     const failureCodeIsExact = inventory.prefix === 'TR-CPSUP-'
-      ? /^control\.[a-z0-9_]+$/.test(row.failure_result?.code ?? '')
+      ? row.failure_result?.code === inventory.failureCodes?.[index]
       : row.failure_result?.code === (allowed ? 'control.precondition_failed' : 'control.illegal_transition');
     return row.transition_id === `${inventory.prefix}${String(index + 1).padStart(3, '0')}` &&
       row.from_state === state && row.command_or_event === command && row.allowed === allowed &&

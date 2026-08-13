@@ -104,3 +104,12 @@ export function vaultOwnerRecoveryApprovalFields(receipt) {
     receipt.selected_action, receipt.idempotency_key,
   ];
 }
+
+export function qualifyingFailureReceiptFields(receipt) {
+  return [
+    receipt.receipt_id, receipt.persistent_agent_id, receipt.vault_id,
+    receipt.failure_ordinal, receipt.failure_class, receipt.code,
+    receipt.observed_tick, receipt.selected_delay_ticks,
+    receipt.prior_receipt_digest ?? '', receipt.circuit_version,
+  ];
+}

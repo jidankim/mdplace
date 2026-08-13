@@ -1,8 +1,14 @@
 import {createHash} from 'node:crypto';
 
 import {checkTransitionTable} from './package-checks.mjs';
-import {verifyVaultOwnerRecoveryApproval} from './control-plane-authentication.mjs';
-import {vaultOwnerRecoveryApprovalFields} from './control-plane-contract-values.mjs';
+import {
+  verifyControlPlaneReceipt,
+  verifyVaultOwnerRecoveryApproval,
+} from './control-plane-authentication.mjs';
+import {
+  qualifyingFailureReceiptFields,
+  vaultOwnerRecoveryApprovalFields,
+} from './control-plane-contract-values.mjs';
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {readPackageFile} from './safe-path.mjs';
 
@@ -105,22 +111,38 @@ function lifecycleTableCodes(table) {
   const unexpectedExit = transition(table, 'supervised', 'unexpected_exit');
   const qualifyingFailure = transition(table, 'supervised', 'qualifying_failure');
   const directCeiling = transition(table, 'supervised', 'restart_ceiling_reached');
-  const ceiling = transition(table, 'backoff', 'restart_ceiling_reached');
+  const backoffElapsed = transition(table, 'backoff', 'backoff_elapsed');
+  const backoffCeiling = transition(table, 'backoff', 'restart_ceiling_reached');
   const afterCeiling = transition(table, 'circuit_open', 'backoff_elapsed');
+  const recoveryFailure = transition(table, 'recovering', 'qualifying_failure');
   const wake = transition(table, 'supervised', 'wake_revalidate');
   const approval = transition(table, 'circuit_open', 'approve_owner_recovery');
   const recovery = transition(table, 'recovering', 'complete_recovery');
   if (unexpectedExit?.allowed !== true || unexpectedExit.terminal_state !== 'backoff' ||
-      !unexpectedExit.preconditions?.includes('the persisted automatic restart attempt count is below the profile maximum') ||
+      !unexpectedExit.preconditions?.includes('the resulting failure ordinal is strictly below the profile maximum') ||
       !unexpectedExit.preconditions?.includes('work admission changes to diagnostic_only before restart scheduling') ||
       qualifyingFailure?.allowed !== true || qualifyingFailure.terminal_state !== 'backoff' ||
+      !qualifyingFailure.preconditions?.includes(
+        'the resulting failure ordinal is 1 or 2 and strictly below the profile maximum') ||
       !qualifyingFailure.emitted_records?.includes('QualifyingFailureReceipt') ||
       directCeiling?.allowed !== true || directCeiling.terminal_state !== 'circuit_open' ||
+      !directCeiling.preconditions?.includes(
+        'the authenticated linked failure receipt has ordinal 3 and the durable prior count is 2') ||
+      !directCeiling.emitted_records?.includes('QualifyingFailureReceipt') ||
       !directCeiling.emitted_records?.includes('PersistentCircuitBreakerTripReceipt') ||
-      ceiling?.allowed !== true || ceiling.terminal_state !== 'circuit_open' ||
-      !ceiling.emitted_records?.includes('PersistentCircuitBreakerTripReceipt') ||
+      directCeiling.idempotency?.retry_result !==
+        'return the original qualifying-failure, circuit-trip, and doctor receipts' ||
+      backoffElapsed?.allowed !== true || !backoffElapsed.preconditions?.includes(
+        'the persisted automatic restart attempt count is strictly below the profile maximum') ||
+      backoffCeiling?.allowed !== false || backoffCeiling.terminal_state !== 'backoff' ||
+      backoffCeiling.failure_result?.code !== 'control.illegal_transition' ||
       afterCeiling?.allowed !== false || afterCeiling.failure_result?.code !== 'control.restart_ceiling_reached') {
     codes.push('control.lifecycle_backoff_invalid');
+  }
+  if (recoveryFailure?.allowed !== true || recoveryFailure.terminal_state !== 'circuit_open' ||
+      !recoveryFailure.emitted_records?.includes('RecoveryFailureReceipt') ||
+      !recoveryFailure.filesystem_effects?.includes('no automatic launch')) {
+    codes.push('control.lifecycle_breaker_invalid');
   }
   if (wake?.allowed !== true || wake.terminal_state !== 'recovering' ||
       !sameList(wake.preconditions?.slice(-3), [
@@ -159,12 +181,20 @@ function doctorCodes(profile, doctor) {
   if (!Array.isArray(failureReceipts) ||
       failureReceipts.length !== profile?.persistent_circuit_breaker?.trip_on_failure_count ||
       !failureReceipts.every((receipt, index) =>
+        receipt.persistent_agent_id === profile.persistent_agent_id &&
+        receipt.vault_id === profile.vault_id && receipt.failure_ordinal === index + 1 &&
         profile.persistent_circuit_breaker.qualifying_failure_classes.includes(receipt.failure_class) &&
-        receipt.observed_tick === observedTicks[index]) ||
+        receipt.observed_tick === observedTicks[index] &&
+        receipt.selected_delay_ticks === restartDelays[index] &&
+        receipt.circuit_version === doctor.circuit.version &&
+        receipt.prior_receipt_digest === (index === 0 ? null : failureReceipts[index - 1].signature_digest) &&
+        verifyControlPlaneReceipt(
+          'qualifying_failure', qualifyingFailureReceiptFields(receipt), receipt, profile.persistent_agent_id,
+        )) ||
       new Set(failureReceipts.map(({receipt_id}) => receipt_id)).size !== failureReceipts.length ||
-      new Set(failureReceipts.map(({digest}) => digest)).size !== failureReceipts.length ||
+      new Set(failureReceipts.map(({signature_digest}) => signature_digest)).size !== failureReceipts.length ||
       lastFailure?.failure_class !== doctor?.circuit?.last_failure_class ||
-      lastFailure?.digest !== doctor?.circuit?.trip_receipt_digest ||
+      lastFailure?.signature_digest !== doctor?.circuit?.trip_receipt_digest ||
       lastFailure?.code !== 'control.restart_ceiling_reached' || doctor?.reported_tick !== lastFailure?.observed_tick ||
       !sameList(doctor?.readiness_observations?.map(({ordinal, gate}) => `${ordinal}:${gate}`),
         readinessGates.map((gate, index) => `${index + 1}:${gate}`)) ||
@@ -219,6 +249,7 @@ function agentStateCodes(profile, agentState, doctor, report, contents) {
     if (agentState?.doctor_report?.report_id !== doctor?.report_id ||
         agentState?.doctor_report?.digest !== doctorDigest ||
         supervision.circuit.version !== doctor?.circuit?.version ||
+        supervision.circuit.trip_receipt_digest !== doctor?.circuit?.trip_receipt_digest ||
         doctor?.vault_id !== agentState?.vault_id ||
         doctor?.persistent_agent_id !== agentState?.persistent_agent_id) {
       codes.push('control.lifecycle_binding_invalid');

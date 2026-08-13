@@ -68,13 +68,23 @@
     "failureReceipt": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["receipt_id", "failure_class", "code", "observed_tick", "digest"],
+      "required": ["receipt_id", "persistent_agent_id", "vault_id", "failure_ordinal", "failure_class", "code", "observed_tick", "selected_delay_ticks", "prior_receipt_digest", "circuit_version", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
       "properties": {
         "receipt_id": {"type": "string", "pattern": "^(unexpected-exit|integrity-failure|wake-revalidation)-receipt:[a-z0-9-]{3,64}$"},
+        "persistent_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
+        "vault_id": {"type": "string", "pattern": "^vault:[a-z0-9-]{3,64}$"},
+        "failure_ordinal": {"type": "integer", "minimum": 1, "maximum": 3},
         "failure_class": {"enum": ["unexpected_exit", "integrity_failure", "wake_revalidation_failure"]},
         "code": {"type": "string", "pattern": "^control\\.[a-z0-9_]+$"},
         "observed_tick": {"type": "integer", "minimum": 0, "maximum": 1000000},
-        "digest": {"$ref": "#/$defs/digest"}
+        "selected_delay_ticks": {"enum": [1000, 5000, 30000]},
+        "prior_receipt_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "circuit_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "signature_scheme": {"const": "hmac-sha256"},
+        "signing_key_id": {"const": "signer-key:primary-001"},
+        "signer_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
+        "signature_digest": {"$ref": "#/$defs/digest"},
+        "authenticated": {"const": true}
       }
     },
     "readinessObservation": {

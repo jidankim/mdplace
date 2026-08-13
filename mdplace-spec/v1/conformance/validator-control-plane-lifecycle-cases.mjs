@@ -7,9 +7,13 @@ import test from 'node:test';
 import {validateAgainstSchemaPath} from './json-schema.mjs';
 import {
   signControlPlaneReceipt,
+  verifyControlPlaneReceipt,
   verifyVaultOwnerRecoveryApproval,
 } from './control-plane-authentication.mjs';
-import {vaultOwnerRecoveryApprovalFields} from './control-plane-contract-values.mjs';
+import {
+  qualifyingFailureReceiptFields,
+  vaultOwnerRecoveryApprovalFields,
+} from './control-plane-contract-values.mjs';
 import {checkControlPlaneLifecycle} from './control-plane-lifecycle-checks.mjs';
 import {checkTransitionTable} from './package-checks.mjs';
 import {buildValidationReport} from './validation-report.mjs';
@@ -153,7 +157,7 @@ test('LaunchAgent supervision enforces bounded backoff, wake checks, and owner r
   assert.equal(unexpectedExit.allowed, true);
   assert.equal(unexpectedExit.terminal_state, 'backoff');
   assert.ok(unexpectedExit.preconditions.includes(
-    'the persisted automatic restart attempt count is below the profile maximum',
+    'the resulting failure ordinal is strictly below the profile maximum',
   ));
   assert.ok(unexpectedExit.preconditions.includes(
     'work admission changes to diagnostic_only before restart scheduling',
@@ -163,24 +167,52 @@ test('LaunchAgent supervision enforces bounded backoff, wake checks, and owner r
   assert.equal(integrityFailure.allowed, true);
   assert.equal(integrityFailure.terminal_state, 'backoff');
   assert.ok(integrityFailure.emitted_records.includes('QualifyingFailureReceipt'));
+  assert.ok(integrityFailure.preconditions.includes(
+    'the resulting failure ordinal is 1 or 2 and strictly below the profile maximum',
+  ));
   assert.deepEqual(profile.automatic_restart_delay_ticks, [1000, 5000, 30000]);
   assert.deepEqual(doctor.startup_failure_receipts.map(({observed_tick}) => observed_tick), [
     1000, 6000, 36000,
   ]);
-  assert.equal(doctor.startup_failure_receipts.at(-1).digest, doctor.circuit.trip_receipt_digest);
+  assert.deepEqual(doctor.startup_failure_receipts.map(({failure_ordinal}) => failure_ordinal), [1, 2, 3]);
+  assert.deepEqual(doctor.startup_failure_receipts.map(({selected_delay_ticks}) => selected_delay_ticks), [
+    1000, 5000, 30000,
+  ]);
+  assert.equal(
+    doctor.startup_failure_receipts.at(-1).signature_digest,
+    doctor.circuit.trip_receipt_digest,
+  );
+  doctor.startup_failure_receipts.forEach((receipt, index) => {
+    assert.equal(receipt.prior_receipt_digest,
+      index === 0 ? null : doctor.startup_failure_receipts[index - 1].signature_digest);
+    assert.equal(verifyControlPlaneReceipt(
+      'qualifying_failure', qualifyingFailureReceiptFields(receipt), receipt, doctor.persistent_agent_id,
+    ), true);
+  });
   assert.equal(doctor.reported_tick, doctor.startup_failure_receipts.at(-1).observed_tick);
 
   const directCeiling = transition(table, 'supervised', 'restart_ceiling_reached');
   assert.equal(directCeiling.allowed, true);
   assert.equal(directCeiling.terminal_state, 'circuit_open');
   assert.ok(directCeiling.preconditions.includes(
-    'the third qualifying startup or integrity failure is authenticated and durable',
+    'the authenticated linked failure receipt has ordinal 3 and the durable prior count is 2',
   ));
+  assert.ok(directCeiling.emitted_records.includes('QualifyingFailureReceipt'));
+  assert.equal(directCeiling.idempotency.retry_result,
+    'return the original qualifying-failure, circuit-trip, and doctor receipts');
 
   const finalFailure = transition(table, 'backoff', 'restart_ceiling_reached');
-  assert.equal(finalFailure.allowed, true);
-  assert.equal(finalFailure.terminal_state, 'circuit_open');
-  assert.ok(finalFailure.emitted_records.includes('PersistentCircuitBreakerTripReceipt'));
+  assert.equal(finalFailure.allowed, false);
+  assert.equal(finalFailure.terminal_state, 'backoff');
+  assert.equal(finalFailure.failure_result.code, 'control.illegal_transition');
+  assert.ok(transition(table, 'backoff', 'backoff_elapsed').preconditions.includes(
+    'the persisted automatic restart attempt count is strictly below the profile maximum',
+  ));
+
+  const recoveryFailure = transition(table, 'recovering', 'qualifying_failure');
+  assert.equal(recoveryFailure.allowed, true);
+  assert.equal(recoveryFailure.terminal_state, 'circuit_open');
+  assert.ok(recoveryFailure.filesystem_effects.includes('no automatic launch'));
 
   const afterCeiling = transition(table, 'circuit_open', 'backoff_elapsed');
   assert.equal(afterCeiling.allowed, false);
@@ -216,9 +248,10 @@ test('control-plane lifecycle checker accepts canonical bound supervision eviden
 
 test('control-plane lifecycle permits doctor-backed circuit state before owner approval', async () => {
   const copiedPackage = await copyCommittedPackage();
-  const [agent, lifecycleReport] = await Promise.all([
+  const [agent, lifecycleReport, doctor] = await Promise.all([
     readPackageJson(copiedPackage, 'contracts/control-plane/agent-state.json'),
     readPackageJson(copiedPackage, 'conformance/evidence/control-plane-lifecycle-report.json'),
+    readPackageJson(copiedPackage, 'conformance/evidence/control-plane-doctor-report.json'),
   ]);
   agent.state = 'blocked';
   agent.control_channel_state = 'diagnostic_only';
@@ -232,7 +265,7 @@ test('control-plane lifecycle permits doctor-backed circuit state before owner a
       storage: 'durable_agent_state',
       failure_count: 3,
       trip_threshold: 3,
-      trip_receipt_digest: 'a'.repeat(64),
+      trip_receipt_digest: doctor.circuit.trip_receipt_digest,
     },
   };
   agent.wake_revalidation.verdict = 'pending';
@@ -250,9 +283,10 @@ test('control-plane lifecycle permits doctor-backed circuit state before owner a
 
 test('control-plane lifecycle binds Agent circuit state to doctor and owner evidence', async () => {
   const copiedPackage = await copyCommittedPackage();
-  const [agent, lifecycleReport] = await Promise.all([
+  const [agent, lifecycleReport, doctor] = await Promise.all([
     readPackageJson(copiedPackage, 'contracts/control-plane/agent-state.json'),
     readPackageJson(copiedPackage, 'conformance/evidence/control-plane-lifecycle-report.json'),
+    readPackageJson(copiedPackage, 'conformance/evidence/control-plane-doctor-report.json'),
   ]);
   agent.state = 'blocked';
   agent.control_channel_state = 'diagnostic_only';
@@ -260,7 +294,7 @@ test('control-plane lifecycle binds Agent circuit state to doctor and owner evid
     state: 'circuit_open', automatic_restart_attempt_count: 3, next_restart_tick: null,
     circuit: {
       version: 3, state: 'open', storage: 'durable_agent_state', failure_count: 3,
-      trip_threshold: 3, trip_receipt_digest: 'a'.repeat(64),
+      trip_threshold: 3, trip_receipt_digest: doctor.circuit.trip_receipt_digest,
     },
   };
   agent.wake_revalidation.verdict = 'pending';
@@ -324,6 +358,27 @@ test('public validator rejects lifecycle boundary mutations with granular codes'
       path: 'conformance/evidence/control-plane-doctor-report.json',
       mutate(doctor) {
         doctor.readiness_observations.pop();
+      },
+    },
+    {
+      code: 'control.lifecycle_doctor_incomplete',
+      path: 'conformance/evidence/control-plane-doctor-report.json',
+      mutate(doctor) {
+        doctor.startup_failure_receipts[0].selected_delay_ticks = 5000;
+      },
+    },
+    {
+      code: 'control.lifecycle_doctor_incomplete',
+      path: 'conformance/evidence/control-plane-doctor-report.json',
+      mutate(doctor) {
+        doctor.startup_failure_receipts[1].prior_receipt_digest = '0'.repeat(64);
+      },
+    },
+    {
+      code: 'control.lifecycle_doctor_incomplete',
+      path: 'conformance/evidence/control-plane-doctor-report.json',
+      mutate(doctor) {
+        doctor.startup_failure_receipts[2].signature_digest = '0'.repeat(64);
       },
     },
     {

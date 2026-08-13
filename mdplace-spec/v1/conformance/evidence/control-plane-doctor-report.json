@@ -15,29 +15,59 @@
     "failure_count": 3,
     "trip_threshold": 3,
     "last_failure_class": "integrity_failure",
-    "trip_receipt_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    "trip_receipt_digest": "34082df981c583ce63176b39ac80efda0be919af8ee6d1b32ec13e48d99eb0b6"
   },
   "startup_failure_receipts": [
     {
       "receipt_id": "integrity-failure-receipt:primary-001",
+      "persistent_agent_id": "agent:primary-001",
+      "vault_id": "vault:001",
+      "failure_ordinal": 1,
       "failure_class": "integrity_failure",
       "code": "control.integrity_failure",
       "observed_tick": 1000,
-      "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      "selected_delay_ticks": 1000,
+      "prior_receipt_digest": null,
+      "circuit_version": 3,
+      "signature_scheme": "hmac-sha256",
+      "signing_key_id": "signer-key:primary-001",
+      "signer_agent_id": "agent:primary-001",
+      "signature_digest": "191cb981237eef0ead8049df716442250ef0a451354f7512a162c5ef77282cbd",
+      "authenticated": true
     },
     {
       "receipt_id": "integrity-failure-receipt:primary-002",
+      "persistent_agent_id": "agent:primary-001",
+      "vault_id": "vault:001",
+      "failure_ordinal": 2,
       "failure_class": "integrity_failure",
       "code": "control.integrity_failure",
       "observed_tick": 6000,
-      "digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+      "selected_delay_ticks": 5000,
+      "prior_receipt_digest": "191cb981237eef0ead8049df716442250ef0a451354f7512a162c5ef77282cbd",
+      "circuit_version": 3,
+      "signature_scheme": "hmac-sha256",
+      "signing_key_id": "signer-key:primary-001",
+      "signer_agent_id": "agent:primary-001",
+      "signature_digest": "781b1205f4e2df95856b5b02ab198cd5c82d775598a28a8863305cc2105e6c41",
+      "authenticated": true
     },
     {
       "receipt_id": "integrity-failure-receipt:primary-003",
+      "persistent_agent_id": "agent:primary-001",
+      "vault_id": "vault:001",
+      "failure_ordinal": 3,
       "failure_class": "integrity_failure",
       "code": "control.restart_ceiling_reached",
       "observed_tick": 36000,
-      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      "selected_delay_ticks": 30000,
+      "prior_receipt_digest": "781b1205f4e2df95856b5b02ab198cd5c82d775598a28a8863305cc2105e6c41",
+      "circuit_version": 3,
+      "signature_scheme": "hmac-sha256",
+      "signing_key_id": "signer-key:primary-001",
+      "signer_agent_id": "agent:primary-001",
+      "signature_digest": "34082df981c583ce63176b39ac80efda0be919af8ee6d1b32ec13e48d99eb0b6",
+      "authenticated": true
     }
   ],
   "readiness_observations": [
