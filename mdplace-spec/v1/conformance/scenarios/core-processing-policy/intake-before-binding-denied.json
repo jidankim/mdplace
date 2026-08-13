@@ -1,0 +1,1724 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-CPP-ILLEGAL-001",
+  "category": "illegal_transition",
+  "requirement_ids": [
+    "REQ-CPP-001",
+    "REQ-CPP-002",
+    "REQ-CPP-003",
+    "REQ-CPP-004",
+    "REQ-CPP-005",
+    "REQ-CPP-006",
+    "REQ-CPP-007"
+  ],
+  "subject": {
+    "kind": "processing_policy",
+    "schema": "contracts/schemas/processing-policy-scenario.schema.json",
+    "document": {
+      "scenario_id": "CPP-027",
+      "operation": "intake_decision",
+      "policy": {
+        "$schema": "contracts/schemas/processing-policy.schema.json",
+        "schema_id": "mdplace.processing-policy/v1",
+        "policy_id": "policy:core-processing",
+        "policy_version": "1.0.0",
+        "vault_id": "vault:fixture-vault",
+        "parent_policy": null,
+        "lifecycle_state": "active",
+        "grants": {
+          "provider_ids": [
+            "provider:remote-alpha",
+            "provider:local-alpha"
+          ],
+          "purpose_ids": [
+            "purpose:placement",
+            "purpose:taxonomy"
+          ],
+          "fields": [
+            {
+              "field_id": "field:source-url",
+              "data_class": "data:source-url",
+              "disclosure": "remote",
+              "redaction_rule_id": "redaction:sanitize-url"
+            },
+            {
+              "field_id": "field:title",
+              "data_class": "data:title",
+              "disclosure": "remote",
+              "redaction_rule_id": "redaction:remove-identifiers"
+            },
+            {
+              "field_id": "field:source-content",
+              "data_class": "data:source-content",
+              "disclosure": "remote",
+              "redaction_rule_id": "redaction:remove-secrets"
+            },
+            {
+              "field_id": "field:filesystem-path",
+              "data_class": "data:filesystem-path",
+              "disclosure": "local_only",
+              "redaction_rule_id": "redaction:mask-path"
+            }
+          ],
+          "artifact_kinds": [
+            "artifact:intelligence-proposal",
+            "artifact:raw-provider-response"
+          ],
+          "destinations": [
+            {
+              "destination_id": "destination:remote-alpha",
+              "provider_id": "provider:remote-alpha",
+              "endpoint": "https://api.remote-alpha.test/v1/process",
+              "retention_fact_id": "retention:remote-alpha",
+              "locality": "remote"
+            },
+            {
+              "destination_id": "destination:local-alpha",
+              "provider_id": "provider:local-alpha",
+              "endpoint": "local://local-alpha",
+              "retention_fact_id": "retention:local-alpha",
+              "locality": "local"
+            }
+          ],
+          "credential_boundaries": [
+            {
+              "credential_ref": "credential-ref:remote-alpha",
+              "store": "os_credential_store",
+              "provider_id": "provider:remote-alpha",
+              "purpose_ids": [
+                "purpose:placement",
+                "purpose:taxonomy"
+              ],
+              "authentication_method": "api_key"
+            },
+            {
+              "credential_ref": "credential-ref:local-alpha",
+              "store": "os_credential_store",
+              "provider_id": "provider:local-alpha",
+              "purpose_ids": [
+                "purpose:placement"
+              ],
+              "authentication_method": "local_process"
+            }
+          ],
+          "budget": {
+            "input_bytes": 100000,
+            "output_bytes": 10000,
+            "runtime_ms": 30000,
+            "cost_microunits": 500000
+          },
+          "retry": {
+            "attempts": 1,
+            "elapsed_ms": 60000,
+            "cumulative_cost_microunits": 750000,
+            "input_bytes": 100000,
+            "output_bytes": 10000
+          },
+          "fallback_chain": [
+            {
+              "position": 1,
+              "provider_id": "provider:local-alpha",
+              "purpose_id": "purpose:placement",
+              "destination_id": "destination:local-alpha",
+              "credential_ref": "credential-ref:local-alpha",
+              "adapter_id": "adapter:local-alpha",
+              "consent_binding_id": "consent:fallback"
+            }
+          ],
+          "capabilities": [
+            "capability:produce-proposal"
+          ],
+          "semantic_authority": [
+            "produce_advisory_evidence"
+          ],
+          "automation_scope": [
+            "initial_existing_category_placement",
+            "new_leaf_promotion",
+            "alias_promotion"
+          ],
+          "adapter_ids": [
+            "adapter:remote-alpha",
+            "adapter:local-alpha"
+          ],
+          "consent_bindings": [
+            {
+              "consent_binding_id": "consent:primary",
+              "adapter_id": "adapter:remote-alpha",
+              "provider_id": "provider:remote-alpha",
+              "purpose_id": "purpose:placement",
+              "field_ids": [
+                "field:source-url",
+                "field:title",
+                "field:source-content"
+              ],
+              "artifact_kinds": [
+                "artifact:intelligence-proposal",
+                "artifact:raw-provider-response"
+              ],
+              "destination_id": "destination:remote-alpha",
+              "credential_ref": "credential-ref:remote-alpha",
+              "retention_fact_id": "retention:remote-alpha"
+            },
+            {
+              "consent_binding_id": "consent:fallback",
+              "adapter_id": "adapter:local-alpha",
+              "provider_id": "provider:local-alpha",
+              "purpose_id": "purpose:placement",
+              "field_ids": [
+                "field:source-url",
+                "field:title",
+                "field:source-content",
+                "field:filesystem-path"
+              ],
+              "artifact_kinds": [
+                "artifact:intelligence-proposal",
+                "artifact:raw-provider-response"
+              ],
+              "destination_id": "destination:local-alpha",
+              "credential_ref": "credential-ref:local-alpha",
+              "retention_fact_id": "retention:local-alpha"
+            }
+          ]
+        },
+        "redaction_obligations": [
+          {
+            "redaction_rule_id": "redaction:sanitize-url",
+            "method": "remove",
+            "failure_mode": "deny"
+          },
+          {
+            "redaction_rule_id": "redaction:remove-identifiers",
+            "method": "mask",
+            "failure_mode": "deny"
+          },
+          {
+            "redaction_rule_id": "redaction:remove-secrets",
+            "method": "remove",
+            "failure_mode": "deny"
+          },
+          {
+            "redaction_rule_id": "redaction:mask-path",
+            "method": "mask",
+            "failure_mode": "deny"
+          }
+        ],
+        "retention_facts": [
+          {
+            "retention_fact_id": "retention:remote-alpha",
+            "destination_id": "destination:remote-alpha",
+            "status": "known",
+            "max_days": 30,
+            "risk_acknowledged": true,
+            "data_use": "request_only",
+            "region": "global",
+            "subprocessors": [
+              "none"
+            ]
+          },
+          {
+            "retention_fact_id": "retention:local-alpha",
+            "destination_id": "destination:local-alpha",
+            "status": "known",
+            "max_days": 0,
+            "risk_acknowledged": true,
+            "data_use": "request_only",
+            "region": "local",
+            "subprocessors": [
+              "none"
+            ]
+          }
+        ],
+        "approval": {
+          "approved": true,
+          "principal_id": "person:vault-owner",
+          "role": "vault_owner",
+          "delegated": false,
+          "receipt_id": "approval:policy-core",
+          "policy_payload_sha256": "66b00a230a76265cb12e0f4797a3c875c325ab7f58048a28474dfca042437c75",
+          "receipt_sha256": "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+        }
+      },
+      "source_profile": null,
+      "request": {
+        "$schema": "contracts/schemas/processing-request.schema.json",
+        "schema_id": "mdplace.processing-request/v1",
+        "request_id": "request:cpp-027",
+        "policy_binding": {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766"
+        },
+        "provider_id": "provider:remote-alpha",
+        "purpose_id": "purpose:placement",
+        "field_ids": [
+          "field:source-url",
+          "field:title",
+          "field:source-content"
+        ],
+        "artifact_kinds": [
+          "artifact:intelligence-proposal"
+        ],
+        "destination_id": "destination:remote-alpha",
+        "credential_ref": "credential-ref:remote-alpha",
+        "budget": {
+          "input_bytes": 50000,
+          "output_bytes": 5000,
+          "runtime_ms": 15000,
+          "cost_microunits": 250000
+        },
+        "retry": {
+          "attempts": 1,
+          "elapsed_ms": 30000,
+          "cumulative_cost_microunits": 250000,
+          "input_bytes": 50000,
+          "output_bytes": 5000
+        },
+        "fallback_position": 0,
+        "capabilities": [
+          "capability:produce-proposal"
+        ],
+        "semantic_authority": [
+          "produce_advisory_evidence"
+        ],
+        "automation_scope": [
+          "initial_existing_category_placement"
+        ],
+        "redaction_receipt_ids": [
+          "redaction:sanitize-url",
+          "redaction:remove-identifiers",
+          "redaction:remove-secrets"
+        ],
+        "retention_fact_ids": [
+          "retention:remote-alpha"
+        ],
+        "untrusted_content": {
+          "present": true,
+          "requested_actions": []
+        },
+        "vault_id": "vault:fixture-vault",
+        "adapter_id": "adapter:remote-alpha",
+        "field_grants": [
+          {
+            "field_id": "field:source-url",
+            "data_class": "data:source-url",
+            "disclosure": "remote",
+            "redaction_rule_id": "redaction:sanitize-url"
+          },
+          {
+            "field_id": "field:title",
+            "data_class": "data:title",
+            "disclosure": "remote",
+            "redaction_rule_id": "redaction:remove-identifiers"
+          },
+          {
+            "field_id": "field:source-content",
+            "data_class": "data:source-content",
+            "disclosure": "remote",
+            "redaction_rule_id": "redaction:remove-secrets"
+          }
+        ],
+        "destination": {
+          "destination_id": "destination:remote-alpha",
+          "provider_id": "provider:remote-alpha",
+          "endpoint": "https://api.remote-alpha.test/v1/process",
+          "retention_fact_id": "retention:remote-alpha",
+          "locality": "remote"
+        },
+        "credential_boundary": {
+          "credential_ref": "credential-ref:remote-alpha",
+          "store": "os_credential_store",
+          "provider_id": "provider:remote-alpha",
+          "purpose_ids": [
+            "purpose:placement",
+            "purpose:taxonomy"
+          ],
+          "authentication_method": "api_key"
+        },
+        "payload": {
+          "media_type": "text/markdown",
+          "bytes": "# Fixture payload\n",
+          "sha256": "8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c"
+        },
+        "retention_facts": [
+          {
+            "retention_fact_id": "retention:remote-alpha",
+            "destination_id": "destination:remote-alpha",
+            "status": "known",
+            "max_days": 30,
+            "risk_acknowledged": true,
+            "data_use": "request_only",
+            "region": "global",
+            "subprocessors": [
+              "none"
+            ]
+          }
+        ],
+        "redaction_receipt_refs": [
+          {
+            "receipt_id": "redaction-receipt:source-url",
+            "receipt_sha256": "a7a212ee618f3abb6735229da35d32f148a004eeb56bf91d6bdd82021c1b6743"
+          },
+          {
+            "receipt_id": "redaction-receipt:title",
+            "receipt_sha256": "05b8d3789297a20622b96e615ae64c202ca9c18e791a06ae7d4cf9859c7b3eed"
+          },
+          {
+            "receipt_id": "redaction-receipt:source-content",
+            "receipt_sha256": "1c582dccd8f405b3a4559ebe5731496771af0fc247b1d8e2b3c79da6219ff7f9"
+          }
+        ],
+        "consent_binding_id": "consent:primary",
+        "attempt_chain": [
+          {
+            "sequence": 0,
+            "adapter_id": "adapter:remote-alpha",
+            "consent_binding_id": "consent:primary",
+            "fallback_position": 0,
+            "outcome": "safe_transient_failure",
+            "receipt_id": "attempt-receipt:cpp-027-0",
+            "receipt_sha256": "c94804bdaa1bc4b64a4587bd629893ca25556658b5404fa6f357630030cb3a40"
+          },
+          {
+            "sequence": 1,
+            "adapter_id": "adapter:remote-alpha",
+            "consent_binding_id": "consent:primary",
+            "fallback_position": 0,
+            "outcome": "pending",
+            "receipt_id": "attempt-receipt:cpp-027-1",
+            "receipt_sha256": "a21ce5edbca502a7943eef845408e127313404869000138688fa53f34fc1be3c"
+          }
+        ]
+      },
+      "descendant_policy": null,
+      "observed_binding": null,
+      "compatibility_claim_ref": "CLAIM-WEBCLIPPER-001",
+      "lifecycle": {
+        "policy_state": "active",
+        "source_profile_state": "stale"
+      },
+      "recovery": null,
+      "redaction_receipts": [
+        {
+          "$schema": "contracts/schemas/redaction-receipt.schema.json",
+          "schema_id": "mdplace.redaction-receipt/v1",
+          "receipt_id": "redaction-receipt:source-url",
+          "request_id": "request:cpp-027",
+          "policy_ref": {
+            "policy_id": "policy:core-processing",
+            "policy_version": "1.0.0",
+            "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766"
+          },
+          "payload_sha256": "8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c",
+          "field_grant": {
+            "field_id": "field:source-url",
+            "data_class": "data:source-url",
+            "disclosure": "remote",
+            "redaction_rule_id": "redaction:sanitize-url"
+          },
+          "outcome": "applied",
+          "issuer": "mdplace_local_redactor",
+          "receipt_sha256": "a7a212ee618f3abb6735229da35d32f148a004eeb56bf91d6bdd82021c1b6743",
+          "identity_assurance": "trusted_local_redactor",
+          "verification_method": "local_redaction_digest_readback"
+        },
+        {
+          "$schema": "contracts/schemas/redaction-receipt.schema.json",
+          "schema_id": "mdplace.redaction-receipt/v1",
+          "receipt_id": "redaction-receipt:title",
+          "request_id": "request:cpp-027",
+          "policy_ref": {
+            "policy_id": "policy:core-processing",
+            "policy_version": "1.0.0",
+            "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766"
+          },
+          "payload_sha256": "8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c",
+          "field_grant": {
+            "field_id": "field:title",
+            "data_class": "data:title",
+            "disclosure": "remote",
+            "redaction_rule_id": "redaction:remove-identifiers"
+          },
+          "outcome": "applied",
+          "issuer": "mdplace_local_redactor",
+          "receipt_sha256": "05b8d3789297a20622b96e615ae64c202ca9c18e791a06ae7d4cf9859c7b3eed",
+          "identity_assurance": "trusted_local_redactor",
+          "verification_method": "local_redaction_digest_readback"
+        },
+        {
+          "$schema": "contracts/schemas/redaction-receipt.schema.json",
+          "schema_id": "mdplace.redaction-receipt/v1",
+          "receipt_id": "redaction-receipt:source-content",
+          "request_id": "request:cpp-027",
+          "policy_ref": {
+            "policy_id": "policy:core-processing",
+            "policy_version": "1.0.0",
+            "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766"
+          },
+          "payload_sha256": "8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c",
+          "field_grant": {
+            "field_id": "field:source-content",
+            "data_class": "data:source-content",
+            "disclosure": "remote",
+            "redaction_rule_id": "redaction:remove-secrets"
+          },
+          "outcome": "applied",
+          "issuer": "mdplace_local_redactor",
+          "receipt_sha256": "1c582dccd8f405b3a4559ebe5731496771af0fc247b1d8e2b3c79da6219ff7f9",
+          "identity_assurance": "trusted_local_redactor",
+          "verification_method": "local_redaction_digest_readback"
+        }
+      ],
+      "approval_receipts": [
+        {
+          "$schema": "contracts/schemas/approval-receipt.schema.json",
+          "schema_id": "mdplace.approval-receipt/v1",
+          "receipt_id": "approval:policy-core",
+          "subject_kind": "processing_policy",
+          "subject_id": "policy:core-processing",
+          "subject_version": "1.0.0",
+          "vault_id": "vault:fixture-vault",
+          "subject_payload_sha256": "66b00a230a76265cb12e0f4797a3c875c325ab7f58048a28474dfca042437c75",
+          "approved": true,
+          "principal_id": "person:vault-owner",
+          "role": "vault_owner",
+          "delegated": false,
+          "receipt_sha256": "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1",
+          "identity_assurance": "canonical_authenticated_human",
+          "verification_method": "authenticated_foreground_approval"
+        }
+      ],
+      "lifecycle_denials": [
+        {
+          "table_id": "TRANS-PROCESSING-POLICY",
+          "transition_id": "TR-CPP-002",
+          "from_state": "draft",
+          "command_or_event": "revoke_policy",
+          "actors": [
+            {
+              "principal_id": "person:lifecycle-actor",
+              "roles": [
+                "vault_owner"
+              ],
+              "delegated": false
+            }
+          ],
+          "base_references": [
+            {
+              "key": "policy_id",
+              "value": "policy_id:fixture"
+            },
+            {
+              "key": "policy_version",
+              "value": "policy_version:fixture"
+            }
+          ],
+          "idempotency_key": "lifecycle:90d6fa264a43b7335feffd0195dc9bdcce964dc0b360c7dd717f8f519b5b416e",
+          "expected": {
+            "verdict": "fail",
+            "codes": [
+              "policy.not_active"
+            ],
+            "outputs": [
+              "lifecycle transition denied"
+            ],
+            "operations": [
+              "validate lifecycle transition"
+            ],
+            "receipts": [
+              "ProcessingPolicyDenialReceipt"
+            ],
+            "filesystem_effects": [
+              "none"
+            ],
+            "network_effects": [
+              "none"
+            ],
+            "terminal_state": "draft",
+            "illegal_transition": true
+          }
+        },
+        {
+          "table_id": "TRANS-PROCESSING-POLICY",
+          "transition_id": "TR-CPP-003",
+          "from_state": "active",
+          "command_or_event": "activate_policy",
+          "actors": [
+            {
+              "principal_id": "person:lifecycle-actor",
+              "roles": [
+                "vault_owner"
+              ],
+              "delegated": false
+            }
+          ],
+          "base_references": [
+            {
+              "key": "policy_id",
+              "value": "policy_id:fixture"
+            },
+            {
+              "key": "policy_version",
+              "value": "policy_version:fixture"
+            },
+            {
+              "key": "policy_sha256",
+              "value": "policy_sha256:fixture"
+            }
+          ],
+          "idempotency_key": "lifecycle:71e8fb4885ecd5f26d66650285eb8100cb9ea91d833626d3d65ded12423454f9",
+          "expected": {
+            "verdict": "fail",
+            "codes": [
+              "policy.already_active"
+            ],
+            "outputs": [
+              "lifecycle transition denied"
+            ],
+            "operations": [
+              "validate lifecycle transition"
+            ],
+            "receipts": [
+              "ProcessingPolicyDenialReceipt"
+            ],
+            "filesystem_effects": [
+              "none"
+            ],
+            "network_effects": [
+              "none"
+            ],
+            "terminal_state": "active",
+            "illegal_transition": true
+          }
+        },
+        {
+          "table_id": "TRANS-PROCESSING-POLICY",
+          "transition_id": "TR-CPP-005",
+          "from_state": "revoked",
+          "command_or_event": "activate_policy",
+          "actors": [
+            {
+              "principal_id": "person:lifecycle-actor",
+              "roles": [
+                "vault_owner"
+              ],
+              "delegated": false
+            }
+          ],
+          "base_references": [
+            {
+              "key": "policy_id",
+              "value": "policy_id:fixture"
+            },
+            {
+              "key": "policy_version",
+              "value": "policy_version:fixture"
+            }
+          ],
+          "idempotency_key": "lifecycle:d681910852980fea0689958411ae6b2f817bc3c274e96107d9037424942c5b19",
+          "expected": {
+            "verdict": "fail",
+            "codes": [
+              "policy.fresh_consent_required"
+            ],
+            "outputs": [
+              "lifecycle transition denied"
+            ],
+            "operations": [
+              "validate lifecycle transition"
+            ],
+            "receipts": [
+              "ProcessingPolicyDenialReceipt"
+            ],
+            "filesystem_effects": [
+              "none"
+            ],
+            "network_effects": [
+              "none"
+            ],
+            "terminal_state": "revoked",
+            "illegal_transition": true
+          }
+        },
+        {
+          "table_id": "TRANS-PROCESSING-POLICY",
+          "transition_id": "TR-CPP-006",
+          "from_state": "revoked",
+          "command_or_event": "revoke_policy",
+          "actors": [
+            {
+              "principal_id": "person:lifecycle-actor",
+              "roles": [
+                "vault_owner"
+              ],
+              "delegated": false
+            }
+          ],
+          "base_references": [
+            {
+              "key": "policy_id",
+              "value": "policy_id:fixture"
+            },
+            {
+              "key": "policy_version",
+              "value": "policy_version:fixture"
+            }
+          ],
+          "idempotency_key": "lifecycle:66eeeac2c50a26403924b2ad3878c275ce21aaa8936dd267fb576330e53f44a8",
+          "expected": {
+            "verdict": "fail",
+            "codes": [
+              "policy.already_revoked"
+            ],
+            "outputs": [
+              "lifecycle transition denied"
+            ],
+            "operations": [
+              "validate lifecycle transition"
+            ],
+            "receipts": [
+              "ProcessingPolicyDenialReceipt"
+            ],
+            "filesystem_effects": [
+              "none"
+            ],
+            "network_effects": [
+              "none"
+            ],
+            "terminal_state": "revoked",
+            "illegal_transition": true
+          }
+        },
+        {
+          "table_id": "TRANS-SOURCE-PROFILE",
+          "transition_id": "TR-SP-002",
+          "from_state": "unbound",
+          "command_or_event": "revoke_source_profile",
+          "actors": [
+            {
+              "principal_id": "person:lifecycle-actor",
+              "roles": [
+                "vault_owner"
+              ],
+              "delegated": false
+            }
+          ],
+          "base_references": [
+            {
+              "key": "profile_id",
+              "value": "profile_id:fixture"
+            },
+            {
+              "key": "profile_version",
+              "value": "profile_version:fixture"
+            },
+            {
+              "key": "profile_sha256",
+              "value": "profile_sha256:fixture"
+            }
+          ],
+          "idempotency_key": "lifecycle:95202a3fe14e865297e23b20bff25abb8c731eabe39a73e82294e9e2f534e7be",
+          "expected": {
+            "verdict": "fail",
+            "codes": [
+              "source_profile.transition_denied"
+            ],
+            "outputs": [
+              "lifecycle transition denied"
+            ],
+            "operations": [
+              "validate lifecycle transition"
+            ],
+            "receipts": [
+              "SourceProfileDenialReceipt"
+            ],
+            "filesystem_effects": [
+              "none"
+            ],
+            "network_effects": [
+              "none"
+            ],
+            "terminal_state": "unbound",
+            "illegal_transition": true
+          }
+        },
+        {
+          "table_id": "TRANS-SOURCE-PROFILE",
+          "transition_id": "TR-SP-003",
+          "from_state": "unbound",
+          "command_or_event": "invalidate_source_profile",
+          "actors": [
+            {
+              "principal_id": "person:lifecycle-actor",
+              "roles": [
+                "capture_adapter"
+              ],
+              "delegated": false
+            }
+          ],
+          "base_references": [
+            {
+              "key": "profile_id",
+              "value": "profile_id:fixture"
+            },
+            {
+              "key": "profile_version",
+              "value": "profile_version:fixture"
+            },
+            {
+              "key": "profile_sha256",
+              "value": "profile_sha256:fixture"
+            }
+          ],
+          "idempotency_key": "lifecycle:42483b4f59a379bf2be5382d9d38861b9c0e25c9ac05ad52fdde02da9aec4b91",
+          "expected": {
+            "verdict": "fail",
+            "codes": [
+              "source_profile.transition_denied"
+            ],
+            "outputs": [
+              "lifecycle transition denied"
+            ],
+            "operations": [
+              "validate lifecycle transition"
+            ],
+            "receipts": [
+              "SourceProfileDenialReceipt"
+            ],
+            "filesystem_effects": [
+              "none"
+            ],
+            "network_effects": [
+              "none"
+            ],
+            "terminal_state": "unbound",
+            "illegal_transition": true
+          }
+        },
+        {
+          "table_id": "TRANS-SOURCE-PROFILE",
+          "transition_id": "TR-SP-004",
+          "from_state": "unbound",
+          "command_or_event": "recover_unapproved_source_profile",
+          "actors": [
+            {
+              "principal_id": "person:lifecycle-actor",
+              "roles": [
+                "foreground_recovery"
+              ],
+              "delegated": false
+            }
+          ],
+          "base_references": [
+            {
+              "key": "profile_id",
+              "value": "profile_id:fixture"
+            },
+            {
+              "key": "profile_version",
+              "value": "profile_version:fixture"
+            },
+            {
+              "key": "profile_sha256",
+              "value": "profile_sha256:fixture"
+            }
+          ],
+          "idempotency_key": "lifecycle:fce9ece24d6353ff2b63bd661d6939e996ce746b9775ca82ad0eb21c7b2723dd",
+          "expected": {
+            "verdict": "fail",
+            "codes": [
+              "source_profile.transition_denied"
+            ],
+            "outputs": [
+              "lifecycle transition denied"
+            ],
+            "operations": [
+              "validate lifecycle transition"
+            ],
+            "receipts": [
+              "SourceProfileDenialReceipt"
+            ],
+            "filesystem_effects": [
+              "none"
+            ],
+            "network_effects": [
+              "none"
+            ],
+            "terminal_state": "unbound",
+            "illegal_transition": true
+          }
+        },
+        {
+          "table_id": "TRANS-SOURCE-PROFILE",
+          "transition_id": "TR-SP-005",
+          "from_state": "unbound",
+          "command_or_event": "recover_approved_source_profile",
+          "actors": [
+            {
+              "principal_id": "person:lifecycle-actor",
+              "roles": [
+                "foreground_recovery"
+              ],
+              "delegated": false
+            }
+          ],
+          "base_references": [
+            {
+              "key": "profile_id",
+              "value": "profile_id:fixture"
+            },
+            {
+              "key": "profile_version",
+              "value": "profile_version:fixture"
+            },
+            {
+              "key": "profile_sha256",
+              "value": "profile_sha256:fixture"
+            }
+          ],
+          "idempotency_key": "lifecycle:6f1577a1b70437f21bc5b865c9e3988c7d79d88a1d7b8d5f7895b6ff0165b7af",
+          "expected": {
+            "verdict": "fail",
+            "codes": [
+              "source_profile.transition_denied"
+            ],
+            "outputs": [
+              "lifecycle transition denied"
+            ],
+            "operations": [
+              "validate lifecycle transition"
+            ],
+            "receipts": [
+              "SourceProfileDenialReceipt"
+            ],
+            "filesystem_effects": [
+              "none"
+            ],
+            "network_effects": [
+              "none"
+            ],
+            "terminal_state": "unbound",
+            "illegal_transition": true
+          }
+        },
+        {
+          "table_id": "TRANS-SOURCE-PROFILE",
+          "transition_id": "TR-SP-006",
+          "from_state": "active",
+          "command_or_event": "activate_source_profile",
+          "actors": [
+            {
+              "principal_id": "person:lifecycle-actor",
+              "roles": [
+                "vault_owner"
+              ],
+              "delegated": false
+            }
+          ],
+          "base_references": [
+            {
+              "key": "profile_id",
+              "value": "profile_id:fixture"
+            },
+            {
+              "key": "profile_version",
+              "value": "profile_version:fixture"
+            },
+            {
+              "key": "profile_sha256",
+              "value": "profile_sha256:fixture"
+            }
+          ],
+          "idempotency_key": "lifecycle:8408ee1b8e321261269931dc61358d5224e566602ba12697edd1f2b0ebb21846",
+          "expected": {
+            "verdict": "fail",
+            "codes": [
+              "source_profile.transition_denied"
+            ],
+            "outputs": [
+              "lifecycle transition denied"
+            ],
+            "operations": [
+              "validate lifecycle transition"
+            ],
+            "receipts": [
+              "SourceProfileDenialReceipt"
+            ],
+            "filesystem_effects": [
+              "none"
+            ],
+            "network_effects": [
+              "none"
+            ],
+            "terminal_state": "active",
+            "illegal_transition": true
+          }
+        },
+        {
+          "table_id": "TRANS-SOURCE-PROFILE",
+          "transition_id": "TR-SP-009",
+          "from_state": "active",
+          "command_or_event": "recover_unapproved_source_profile",
+          "actors": [
+            {
+              "principal_id": "person:lifecycle-actor",
+              "roles": [
+                "foreground_recovery"
+              ],
+              "delegated": false
+            }
+          ],
+          "base_references": [
+            {
+              "key": "profile_id",
+              "value": "profile_id:fixture"
+            },
+            {
+              "key": "profile_version",
+              "value": "profile_version:fixture"
+            },
+            {
+              "key": "profile_sha256",
+              "value": "profile_sha256:fixture"
+            }
+          ],
+          "idempotency_key": "lifecycle:a35958819f19388acf8e707e053695fedf172b4ed8fb394bf3a49719991a5aaf",
+          "expected": {
+            "verdict": "fail",
+            "codes": [
+              "source_profile.transition_denied"
+            ],
+            "outputs": [
+              "lifecycle transition denied"
+            ],
+            "operations": [
+              "validate lifecycle transition"
+            ],
+            "receipts": [
+              "SourceProfileDenialReceipt"
+            ],
+            "filesystem_effects": [
+              "none"
+            ],
+            "network_effects": [
+              "none"
+            ],
+            "terminal_state": "active",
+            "illegal_transition": true
+          }
+        },
+        {
+          "table_id": "TRANS-SOURCE-PROFILE",
+          "transition_id": "TR-SP-010",
+          "from_state": "active",
+          "command_or_event": "recover_approved_source_profile",
+          "actors": [
+            {
+              "principal_id": "person:lifecycle-actor",
+              "roles": [
+                "foreground_recovery"
+              ],
+              "delegated": false
+            }
+          ],
+          "base_references": [
+            {
+              "key": "profile_id",
+              "value": "profile_id:fixture"
+            },
+            {
+              "key": "profile_version",
+              "value": "profile_version:fixture"
+            },
+            {
+              "key": "profile_sha256",
+              "value": "profile_sha256:fixture"
+            }
+          ],
+          "idempotency_key": "lifecycle:efe660aab8adcc6f0fc08ae5b5afb5c4fd941b35afdf1c11a660c41e9ea9975a",
+          "expected": {
+            "verdict": "fail",
+            "codes": [
+              "source_profile.transition_denied"
+            ],
+            "outputs": [
+              "lifecycle transition denied"
+            ],
+            "operations": [
+              "validate lifecycle transition"
+            ],
+            "receipts": [
+              "SourceProfileDenialReceipt"
+            ],
+            "filesystem_effects": [
+              "none"
+            ],
+            "network_effects": [
+              "none"
+            ],
+            "terminal_state": "active",
+            "illegal_transition": true
+          }
+        },
+        {
+          "table_id": "TRANS-SOURCE-PROFILE",
+          "transition_id": "TR-SP-013",
+          "from_state": "stale",
+          "command_or_event": "invalidate_source_profile",
+          "actors": [
+            {
+              "principal_id": "person:lifecycle-actor",
+              "roles": [
+                "capture_adapter"
+              ],
+              "delegated": false
+            }
+          ],
+          "base_references": [
+            {
+              "key": "profile_id",
+              "value": "profile_id:fixture"
+            },
+            {
+              "key": "profile_version",
+              "value": "profile_version:fixture"
+            },
+            {
+              "key": "profile_sha256",
+              "value": "profile_sha256:fixture"
+            }
+          ],
+          "idempotency_key": "lifecycle:4e356564f90d029d2c25ecfe68b16fa5de90c311e533721f680a56de26dd8496",
+          "expected": {
+            "verdict": "fail",
+            "codes": [
+              "source_profile.transition_denied"
+            ],
+            "outputs": [
+              "lifecycle transition denied"
+            ],
+            "operations": [
+              "validate lifecycle transition"
+            ],
+            "receipts": [
+              "SourceProfileDenialReceipt"
+            ],
+            "filesystem_effects": [
+              "none"
+            ],
+            "network_effects": [
+              "none"
+            ],
+            "terminal_state": "stale",
+            "illegal_transition": true
+          }
+        },
+        {
+          "table_id": "TRANS-SOURCE-PROFILE",
+          "transition_id": "TR-SP-014",
+          "from_state": "stale",
+          "command_or_event": "recover_unapproved_source_profile",
+          "actors": [
+            {
+              "principal_id": "person:lifecycle-actor",
+              "roles": [
+                "foreground_recovery"
+              ],
+              "delegated": false
+            }
+          ],
+          "base_references": [
+            {
+              "key": "profile_id",
+              "value": "profile_id:fixture"
+            },
+            {
+              "key": "profile_version",
+              "value": "profile_version:fixture"
+            },
+            {
+              "key": "profile_sha256",
+              "value": "profile_sha256:fixture"
+            }
+          ],
+          "idempotency_key": "lifecycle:ad2d197c2c99e7fc7b865c1637832952c7a1943c1ef9441a37d36da75160bd80",
+          "expected": {
+            "verdict": "fail",
+            "codes": [
+              "source_profile.transition_denied"
+            ],
+            "outputs": [
+              "lifecycle transition denied"
+            ],
+            "operations": [
+              "validate lifecycle transition"
+            ],
+            "receipts": [
+              "SourceProfileDenialReceipt"
+            ],
+            "filesystem_effects": [
+              "none"
+            ],
+            "network_effects": [
+              "none"
+            ],
+            "terminal_state": "stale",
+            "illegal_transition": true
+          }
+        },
+        {
+          "table_id": "TRANS-SOURCE-PROFILE",
+          "transition_id": "TR-SP-015",
+          "from_state": "stale",
+          "command_or_event": "recover_approved_source_profile",
+          "actors": [
+            {
+              "principal_id": "person:lifecycle-actor",
+              "roles": [
+                "foreground_recovery"
+              ],
+              "delegated": false
+            }
+          ],
+          "base_references": [
+            {
+              "key": "profile_id",
+              "value": "profile_id:fixture"
+            },
+            {
+              "key": "profile_version",
+              "value": "profile_version:fixture"
+            },
+            {
+              "key": "profile_sha256",
+              "value": "profile_sha256:fixture"
+            }
+          ],
+          "idempotency_key": "lifecycle:0fb813ec44733b7498e49e0470885c2f8bd111ab5ad25ec2a98dd149791b83f1",
+          "expected": {
+            "verdict": "fail",
+            "codes": [
+              "source_profile.transition_denied"
+            ],
+            "outputs": [
+              "lifecycle transition denied"
+            ],
+            "operations": [
+              "validate lifecycle transition"
+            ],
+            "receipts": [
+              "SourceProfileDenialReceipt"
+            ],
+            "filesystem_effects": [
+              "none"
+            ],
+            "network_effects": [
+              "none"
+            ],
+            "terminal_state": "stale",
+            "illegal_transition": true
+          }
+        },
+        {
+          "table_id": "TRANS-SOURCE-PROFILE",
+          "transition_id": "TR-SP-016",
+          "from_state": "revoked",
+          "command_or_event": "activate_source_profile",
+          "actors": [
+            {
+              "principal_id": "person:lifecycle-actor",
+              "roles": [
+                "vault_owner"
+              ],
+              "delegated": false
+            }
+          ],
+          "base_references": [
+            {
+              "key": "profile_id",
+              "value": "profile_id:fixture"
+            },
+            {
+              "key": "profile_version",
+              "value": "profile_version:fixture"
+            },
+            {
+              "key": "profile_sha256",
+              "value": "profile_sha256:fixture"
+            }
+          ],
+          "idempotency_key": "lifecycle:2873a038d804dd0f182b58888ec54e9a677041e6353f754f0b94d6fc41e5ec3f",
+          "expected": {
+            "verdict": "fail",
+            "codes": [
+              "source_profile.transition_denied"
+            ],
+            "outputs": [
+              "lifecycle transition denied"
+            ],
+            "operations": [
+              "validate lifecycle transition"
+            ],
+            "receipts": [
+              "SourceProfileDenialReceipt"
+            ],
+            "filesystem_effects": [
+              "none"
+            ],
+            "network_effects": [
+              "none"
+            ],
+            "terminal_state": "revoked",
+            "illegal_transition": true
+          }
+        },
+        {
+          "table_id": "TRANS-SOURCE-PROFILE",
+          "transition_id": "TR-SP-017",
+          "from_state": "revoked",
+          "command_or_event": "revoke_source_profile",
+          "actors": [
+            {
+              "principal_id": "person:lifecycle-actor",
+              "roles": [
+                "vault_owner"
+              ],
+              "delegated": false
+            }
+          ],
+          "base_references": [
+            {
+              "key": "profile_id",
+              "value": "profile_id:fixture"
+            },
+            {
+              "key": "profile_version",
+              "value": "profile_version:fixture"
+            },
+            {
+              "key": "profile_sha256",
+              "value": "profile_sha256:fixture"
+            }
+          ],
+          "idempotency_key": "lifecycle:df3374832b2f2d600d7f1f0850bcf79b8b469133b7cda42c8bf4c0f9a853ad62",
+          "expected": {
+            "verdict": "fail",
+            "codes": [
+              "source_profile.transition_denied"
+            ],
+            "outputs": [
+              "lifecycle transition denied"
+            ],
+            "operations": [
+              "validate lifecycle transition"
+            ],
+            "receipts": [
+              "SourceProfileDenialReceipt"
+            ],
+            "filesystem_effects": [
+              "none"
+            ],
+            "network_effects": [
+              "none"
+            ],
+            "terminal_state": "revoked",
+            "illegal_transition": true
+          }
+        },
+        {
+          "table_id": "TRANS-SOURCE-PROFILE",
+          "transition_id": "TR-SP-018",
+          "from_state": "revoked",
+          "command_or_event": "invalidate_source_profile",
+          "actors": [
+            {
+              "principal_id": "person:lifecycle-actor",
+              "roles": [
+                "capture_adapter"
+              ],
+              "delegated": false
+            }
+          ],
+          "base_references": [
+            {
+              "key": "profile_id",
+              "value": "profile_id:fixture"
+            },
+            {
+              "key": "profile_version",
+              "value": "profile_version:fixture"
+            },
+            {
+              "key": "profile_sha256",
+              "value": "profile_sha256:fixture"
+            }
+          ],
+          "idempotency_key": "lifecycle:7801de9bd27ecbebfacf3651695bff45020ff6e4433e68931142212f3234d35c",
+          "expected": {
+            "verdict": "fail",
+            "codes": [
+              "source_profile.transition_denied"
+            ],
+            "outputs": [
+              "lifecycle transition denied"
+            ],
+            "operations": [
+              "validate lifecycle transition"
+            ],
+            "receipts": [
+              "SourceProfileDenialReceipt"
+            ],
+            "filesystem_effects": [
+              "none"
+            ],
+            "network_effects": [
+              "none"
+            ],
+            "terminal_state": "revoked",
+            "illegal_transition": true
+          }
+        },
+        {
+          "table_id": "TRANS-SOURCE-PROFILE",
+          "transition_id": "TR-SP-019",
+          "from_state": "revoked",
+          "command_or_event": "recover_unapproved_source_profile",
+          "actors": [
+            {
+              "principal_id": "person:lifecycle-actor",
+              "roles": [
+                "foreground_recovery"
+              ],
+              "delegated": false
+            }
+          ],
+          "base_references": [
+            {
+              "key": "profile_id",
+              "value": "profile_id:fixture"
+            },
+            {
+              "key": "profile_version",
+              "value": "profile_version:fixture"
+            },
+            {
+              "key": "profile_sha256",
+              "value": "profile_sha256:fixture"
+            }
+          ],
+          "idempotency_key": "lifecycle:8da1212ef70f722d37017b82ec517fadcdb37c67cb7d321313a2e42c1350fb1c",
+          "expected": {
+            "verdict": "fail",
+            "codes": [
+              "source_profile.transition_denied"
+            ],
+            "outputs": [
+              "lifecycle transition denied"
+            ],
+            "operations": [
+              "validate lifecycle transition"
+            ],
+            "receipts": [
+              "SourceProfileDenialReceipt"
+            ],
+            "filesystem_effects": [
+              "none"
+            ],
+            "network_effects": [
+              "none"
+            ],
+            "terminal_state": "revoked",
+            "illegal_transition": true
+          }
+        },
+        {
+          "table_id": "TRANS-SOURCE-PROFILE",
+          "transition_id": "TR-SP-020",
+          "from_state": "revoked",
+          "command_or_event": "recover_approved_source_profile",
+          "actors": [
+            {
+              "principal_id": "person:lifecycle-actor",
+              "roles": [
+                "foreground_recovery"
+              ],
+              "delegated": false
+            }
+          ],
+          "base_references": [
+            {
+              "key": "profile_id",
+              "value": "profile_id:fixture"
+            },
+            {
+              "key": "profile_version",
+              "value": "profile_version:fixture"
+            },
+            {
+              "key": "profile_sha256",
+              "value": "profile_sha256:fixture"
+            }
+          ],
+          "idempotency_key": "lifecycle:d6f35160d8b5c096c5027bdda3a15792c1af81720a1c71e0217a649c0afe7324",
+          "expected": {
+            "verdict": "fail",
+            "codes": [
+              "source_profile.transition_denied"
+            ],
+            "outputs": [
+              "lifecycle transition denied"
+            ],
+            "operations": [
+              "validate lifecycle transition"
+            ],
+            "receipts": [
+              "SourceProfileDenialReceipt"
+            ],
+            "filesystem_effects": [
+              "none"
+            ],
+            "network_effects": [
+              "none"
+            ],
+            "terminal_state": "revoked",
+            "illegal_transition": true
+          }
+        },
+        {
+          "table_id": "TRANS-SOURCE-PROFILE",
+          "transition_id": "TR-SP-021",
+          "from_state": "recovery_required",
+          "command_or_event": "activate_source_profile",
+          "actors": [
+            {
+              "principal_id": "person:lifecycle-actor",
+              "roles": [
+                "vault_owner"
+              ],
+              "delegated": false
+            }
+          ],
+          "base_references": [
+            {
+              "key": "profile_id",
+              "value": "profile_id:fixture"
+            },
+            {
+              "key": "profile_version",
+              "value": "profile_version:fixture"
+            },
+            {
+              "key": "profile_sha256",
+              "value": "profile_sha256:fixture"
+            }
+          ],
+          "idempotency_key": "lifecycle:9489d3ffe57fb402d7dce1f032282277d039895b032d598970d75ccf79680f22",
+          "expected": {
+            "verdict": "fail",
+            "codes": [
+              "source_profile.transition_denied"
+            ],
+            "outputs": [
+              "lifecycle transition denied"
+            ],
+            "operations": [
+              "validate lifecycle transition"
+            ],
+            "receipts": [
+              "SourceProfileDenialReceipt"
+            ],
+            "filesystem_effects": [
+              "none"
+            ],
+            "network_effects": [
+              "none"
+            ],
+            "terminal_state": "recovery_required",
+            "illegal_transition": true
+          }
+        },
+        {
+          "table_id": "TRANS-SOURCE-PROFILE",
+          "transition_id": "TR-SP-022",
+          "from_state": "recovery_required",
+          "command_or_event": "revoke_source_profile",
+          "actors": [
+            {
+              "principal_id": "person:lifecycle-actor",
+              "roles": [
+                "vault_owner"
+              ],
+              "delegated": false
+            }
+          ],
+          "base_references": [
+            {
+              "key": "profile_id",
+              "value": "profile_id:fixture"
+            },
+            {
+              "key": "profile_version",
+              "value": "profile_version:fixture"
+            },
+            {
+              "key": "profile_sha256",
+              "value": "profile_sha256:fixture"
+            }
+          ],
+          "idempotency_key": "lifecycle:a0a5a18960b75c6ff03bda79a58963e9695b4c774c00a30591cf53c30500872a",
+          "expected": {
+            "verdict": "fail",
+            "codes": [
+              "source_profile.transition_denied"
+            ],
+            "outputs": [
+              "lifecycle transition denied"
+            ],
+            "operations": [
+              "validate lifecycle transition"
+            ],
+            "receipts": [
+              "SourceProfileDenialReceipt"
+            ],
+            "filesystem_effects": [
+              "none"
+            ],
+            "network_effects": [
+              "none"
+            ],
+            "terminal_state": "recovery_required",
+            "illegal_transition": true
+          }
+        },
+        {
+          "table_id": "TRANS-SOURCE-PROFILE",
+          "transition_id": "TR-SP-023",
+          "from_state": "recovery_required",
+          "command_or_event": "invalidate_source_profile",
+          "actors": [
+            {
+              "principal_id": "person:lifecycle-actor",
+              "roles": [
+                "capture_adapter"
+              ],
+              "delegated": false
+            }
+          ],
+          "base_references": [
+            {
+              "key": "profile_id",
+              "value": "profile_id:fixture"
+            },
+            {
+              "key": "profile_version",
+              "value": "profile_version:fixture"
+            },
+            {
+              "key": "profile_sha256",
+              "value": "profile_sha256:fixture"
+            }
+          ],
+          "idempotency_key": "lifecycle:07dbec2ab68fff5b3a9fb341bfe8ccaa6f1fd12ef2e65b728e39f18ecf6c1b03",
+          "expected": {
+            "verdict": "fail",
+            "codes": [
+              "source_profile.transition_denied"
+            ],
+            "outputs": [
+              "lifecycle transition denied"
+            ],
+            "operations": [
+              "validate lifecycle transition"
+            ],
+            "receipts": [
+              "SourceProfileDenialReceipt"
+            ],
+            "filesystem_effects": [
+              "none"
+            ],
+            "network_effects": [
+              "none"
+            ],
+            "terminal_state": "recovery_required",
+            "illegal_transition": true
+          }
+        }
+      ],
+      "recovery_denials": [],
+      "attempt_receipts": [
+        {
+          "$schema": "contracts/schemas/processing-attempt-receipt.schema.json",
+          "schema_id": "mdplace.processing-attempt-receipt/v1",
+          "receipt_id": "attempt-receipt:cpp-027-0",
+          "request_id": "request:cpp-027",
+          "sequence": 0,
+          "adapter_id": "adapter:remote-alpha",
+          "consent_binding_id": "consent:primary",
+          "fallback_position": 0,
+          "outcome": "safe_transient_failure",
+          "accounting_kind": "measured",
+          "payload_sha256": "8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c",
+          "usage": {
+            "input_bytes": 25000,
+            "output_bytes": 2500,
+            "elapsed_ms": 15000,
+            "cost_microunits": 125000
+          },
+          "issuer": "mdplace_local_attempt_accountant",
+          "identity_assurance": "trusted_local_accountant",
+          "verification_method": "manifest_bound_attempt_accounting_readback",
+          "receipt_sha256": "c94804bdaa1bc4b64a4587bd629893ca25556658b5404fa6f357630030cb3a40",
+          "request_sha256": "a63ec4b1709d45860ebc085b2c06a1f774d15b19958a457ae53c8844d384c749"
+        },
+        {
+          "$schema": "contracts/schemas/processing-attempt-receipt.schema.json",
+          "schema_id": "mdplace.processing-attempt-receipt/v1",
+          "receipt_id": "attempt-receipt:cpp-027-1",
+          "request_id": "request:cpp-027",
+          "sequence": 1,
+          "adapter_id": "adapter:remote-alpha",
+          "consent_binding_id": "consent:primary",
+          "fallback_position": 0,
+          "outcome": "pending",
+          "accounting_kind": "reserved",
+          "payload_sha256": "8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c",
+          "usage": {
+            "input_bytes": 25000,
+            "output_bytes": 2500,
+            "elapsed_ms": 15000,
+            "cost_microunits": 125000
+          },
+          "issuer": "mdplace_local_attempt_accountant",
+          "identity_assurance": "trusted_local_accountant",
+          "verification_method": "manifest_bound_attempt_accounting_readback",
+          "receipt_sha256": "a21ce5edbca502a7943eef845408e127313404869000138688fa53f34fc1be3c",
+          "request_sha256": "a63ec4b1709d45860ebc085b2c06a1f774d15b19958a457ae53c8844d384c749"
+        }
+      ]
+    }
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": [
+      "source_profile.binding_required"
+    ],
+    "outputs": [
+      "intake denied"
+    ],
+    "operations": [
+      "validate Source Profile binding",
+      "apply default-deny Processing Policy"
+    ],
+    "receipts": [
+      "{\"code\":\"source_profile.binding_required\",\"consent_binding_id\":\"consent:primary\",\"consent_binding_sha256\":\"11a22d43c5ca437235ebb8b683c05e89404565ffdbcc866a259e80cec31f0f51\",\"decision\":\"denied\",\"network_effect\":\"none\",\"operation\":\"intake_decision\",\"payload_sha256\":\"8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c\",\"policy_ref\":{\"policy_id\":\"policy:core-processing\",\"policy_sha256\":\"27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766\",\"policy_version\":\"1.0.0\"},\"receipt_id\":\"receipt:cpp-027\",\"receipt_sha256\":\"ed2a0b73383eaa96d3a7bee23c27cb86e2d7af990b20176c6b9188748056aa39\",\"request_id\":\"request:cpp-027\",\"request_sha256\":\"b1758a3c11cab34eaa6a95287ba0e7b9df6e4fdac877ca0eb32c27bb9a58e6ee\",\"scenario_id\":\"CPP-027\",\"schema_id\":\"mdplace.processing-policy-receipt/v1\",\"source_profile_ref\":null}"
+    ],
+    "filesystem_effects": [
+      "none"
+    ],
+    "network_effects": [
+      "none"
+    ],
+    "terminal_state": "stale",
+    "illegal_transition": true
+  }
+}

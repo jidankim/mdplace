@@ -53,6 +53,17 @@ export const requiredSchemaPaths = [
   'contracts/schemas/control-plane-doctor-report.schema.json',
   'contracts/schemas/control-plane-lifecycle-report.schema.json',
   'contracts/schemas/child-work-invocation.schema.json',
+  'contracts/schemas/processing-policy.schema.json',
+  'contracts/schemas/processing-policy-trust-store.schema.json',
+  'contracts/schemas/approval-receipt.schema.json',
+  'contracts/schemas/redaction-receipt.schema.json',
+  'contracts/schemas/processing-attempt-receipt.schema.json',
+  'contracts/schemas/source-profile.schema.json',
+  'contracts/schemas/processing-request.schema.json',
+  'contracts/schemas/processing-policy-scenario.schema.json',
+  'contracts/schemas/processing-policy-receipt.schema.json',
+  'contracts/schemas/processing-policy-rules.schema.json',
+  'contracts/schemas/core-processing-policy-recovery-report.schema.json',
 ];
 
 export const requiredCandidateFoundationSlots = [

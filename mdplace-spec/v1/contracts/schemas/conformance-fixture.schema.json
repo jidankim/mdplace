@@ -20,7 +20,8 @@
         {"$ref": "#/$defs/digestSubject"},
         {"$ref": "#/$defs/recoverySubject"},
         {"$ref": "#/$defs/semanticKernelSubject"},
-        {"$ref": "#/$defs/controlPlaneSubject"}
+        {"$ref": "#/$defs/controlPlaneSubject"},
+        {"$ref": "#/$defs/processingPolicySubject"}
       ]
     },
     "expected": {"$ref": "#/$defs/expected"}
@@ -252,6 +253,16 @@
         "document": {"description": "Closed control-plane scenario validated against subject.schema before observation."}
       }
     },
+    "processingPolicySubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "schema", "document"],
+      "properties": {
+        "kind": {"const": "processing_policy"},
+        "schema": {"const": "contracts/schemas/processing-policy-scenario.schema.json"},
+        "document": {"description": "Closed Core Processing Policy scenario validated against subject.schema before observation."}
+      }
+    },
     "expected": {
       "type": "object",
       "additionalProperties": false,
@@ -263,6 +274,7 @@
         "operations": {"$ref": "#/$defs/stringList"},
         "receipts": {"$ref": "#/$defs/stringList"},
         "filesystem_effects": {"$ref": "#/$defs/stringList"},
+        "network_effects": {"$ref": "#/$defs/stringList"},
         "terminal_state": {"type": "string", "minLength": 1},
         "illegal_transition": {"type": "boolean"}
       }

@@ -1,0 +1,1404 @@
+{
+  "$schema": "contracts/schemas/processing-policy-trust-store.schema.json",
+  "schema_id": "mdplace.processing-policy-trust-store/v1",
+  "observer_id": "mdplace.package-validator/v1",
+  "identity_assurance": "trusted_local_validator",
+  "verification_method": "manifest_bound_receipt_readback",
+  "scenarios": [
+    {
+      "scenario_id": "CPP-001",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "24a4845c2cbce985522d61b8b44bf42a0f5fa7b25c6a5e16320729d23b3c43a0",
+        "4a1b52bf2f36e1bc834b20df223c921abb8ea01bb0d673bb08da5d4e6bfda807",
+        "5d171a461e2853ec1dc122ca1fc761222ad41caf86ccbb4aead38dfbbc3af110"
+      ],
+      "attempt_receipt_sha256s": [
+        "90ece6ead9d965f11729281f4caefbe5c615303c0fe4a2e8fd66ecdd28bf4cfe",
+        "e95e17342f17d5487d70248b15ffdf754329a2c79ee3d4602f3c4d33c4d802fd"
+      ]
+    },
+    {
+      "scenario_id": "CPP-002",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [
+        {
+          "profile_id": "source-profile:web-clipper",
+          "profile_version": "1.0.0",
+          "profile_sha256": "e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549",
+          "lifecycle_state": "active"
+        }
+      ],
+      "approval_receipt_sha256s": [
+        "6543c2e4f1400816b4fc0cbc538df661d97f0ee06bd18e2ab630683118425d10",
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "6cdf87df03076bcff386616d599593e665f1d7ec00da846445c4249bc6c0b653",
+        "7f03797d7f2cd581c507f7acdae2001eb8fd6b60a3592bfc92b395849d05176d",
+        "9855e215aeff595d1f349d42ebc2cd4ea2903dfd50cd1b604ec5684997cda868"
+      ],
+      "attempt_receipt_sha256s": [
+        "561f307e4652f44e5d7da4b4b804c8110af2c720bb901d5e497e21c77e50d945",
+        "f73d4aeeb3c3990e7fc34da53a740737373a725363242c177334e0f7fc9e8b03"
+      ]
+    },
+    {
+      "scenario_id": "CPP-003",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "bb738e1590e53c85f5f7f2a97c83b976818f318d398a94d0e538d86c5fa0bf46",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "b0491da51b17fd8bc40e90282e954b6672ed8462b95971c10f32eaf3fe827de0"
+      ],
+      "redaction_receipt_sha256s": [
+        "2e152e2c36fd4280abb42b0428e7b54f755cf9451af5ff040f7fc10dcde59210",
+        "94da5a447a8c3d5b5b37efd0ed99793476cdab22b7cb6293fbc1018ea714b8a8",
+        "df21f0ddc8cede083b70031c4585bf998ee20620b592cf585463e78eb600e701"
+      ],
+      "attempt_receipt_sha256s": [
+        "24f3e5c93b8db2ece184e6b185d463e65090ad33abdcf19430fb8130d5a8a9ea",
+        "c4085283d3e137c8ff7679c5958b681af044f0db5c8087e88bcbbcad87a17328"
+      ]
+    },
+    {
+      "scenario_id": "CPP-004",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        },
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.1",
+          "policy_sha256": "b1b6227eb6b0f5bbe580dcb93e77f5a780e98c745655f35661bf05d143ef029f",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "8df4d3c27437719186320bea471067ba3f9c661dff2848bb023eb671816fb7e3",
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [],
+      "attempt_receipt_sha256s": []
+    },
+    {
+      "scenario_id": "CPP-005",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        },
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.1",
+          "policy_sha256": "9f4de9ac0dde6f1c4eff53c35c91be47551f5463aa161a3dc1958d9b39624b18",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "126b879d81a7eea72b1756ab5f1ea8610d12d55ef418b24486b12f2f0732c35d",
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [],
+      "attempt_receipt_sha256s": []
+    },
+    {
+      "scenario_id": "CPP-006",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "3615dae0e2eb7cb1e1c3add26339287de6cd90b95b82fd7dc445d66b2131d945",
+        "7aec63c8eef59a4df152994f8bb6b78cd34e45a733f8f97056072956f2d71ce4",
+        "c5ba40090275fbc9c8928b768f394f1f314e8d8ae2de30d4c6bba1d531fb1412"
+      ],
+      "attempt_receipt_sha256s": [
+        "1c68541a7b0db461a4e14fff854e11a8386ea323a50b2030452d25e8a70efe21",
+        "3a0fd8a95625160ff58b2498e577357cabba916b84ad667f7cf65ee79664e01e",
+        "5c54230082fbd3fafd015971ea2aa776f3e290d5a5b907a9e0a3d1995f1cd45b"
+      ]
+    },
+    {
+      "scenario_id": "CPP-007",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        },
+        {
+          "policy_id": "policy:core-processing-child",
+          "policy_version": "1.0.1",
+          "policy_sha256": "8cad65de3d55756a9e9e023dd87d7b17f1a661515505e8d8b3862f1064caf79b",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "92d0a4b2a57980bb0c8e2df9537b0c3a85922590deb1606697ffdce2c180f22e",
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "21cddb146a646df2776f01576585108189b736acecf17baa3abbc257016307c0",
+        "58838d4ec99a1309b2c32f44c922047b5a55c02208139149c9138f1eb5b2417a",
+        "fdda703276f24126c4bfa9a2c25934c7fc13ec4e35a3d591040653cb3de5dad9"
+      ],
+      "attempt_receipt_sha256s": [
+        "9ccf8ebc9af4a584afa8155fab15cfdfd49f417c03f7fdd214028af77dc44f61",
+        "fdef46517e1e73e5f9affd7409703bbace7ec7a7be1419d5efb69c1736bdd78a"
+      ]
+    },
+    {
+      "scenario_id": "CPP-008",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        },
+        {
+          "policy_id": "policy:core-processing-child",
+          "policy_version": "1.0.1",
+          "policy_sha256": "7567e23cb5e5046fbc31ae185a370e014453d48120739c718029b5cb6662341a",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "a3cabe47b939c7f128f35b3c5c21f912d276fc201a9b0aedbdf2c9cd3b436d3b",
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "10fe64ef3cb7acd31842e23ecac83947549c2d7c3b8529555814d2978d8622ee",
+        "deefd71569ad06d0ceaaa849f362f84214cbd7bd215c0f45f6e831584b8d8e8d",
+        "f65ae9e23d35d29fe2c7d38333b74432f67f8b65955e8ab8dbe86049a2667b4a"
+      ],
+      "attempt_receipt_sha256s": [
+        "1f054d37602855a5665eb50a64c0b1211d5f21db5953143d77e4c0dcaf5925f4",
+        "8c043b37c4319fc5a980465e5357523accde6bb090fd28a994e2ca5e8942efd2",
+        "cf87c9ce8fb38b384a206da3113c26e8ac89b132347d9882d0cc4f075943512a"
+      ]
+    },
+    {
+      "scenario_id": "CPP-009",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "02471585f2c5917bca6e5877fb699a5f6a5e1bada7c744f22ce892f21a507689",
+        "88103fb52c6dac1d1fb0f4a06cb62535f1e8502c1a3d46b3b1d8180b1ec31802",
+        "967e5479d1cde44550d4949a40290fa22a13f521c4568d4d42cec8621ff1514c"
+      ],
+      "attempt_receipt_sha256s": [
+        "77209fa5df1419a3d94f67847aac5a29612d2b54ac152b40f8b7c0966e4c4826",
+        "9a6f230b2a87291b9aa5ac5ff79215340848eecd1d12c99ebbea87ac5b7534bc"
+      ]
+    },
+    {
+      "scenario_id": "CPP-010",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "34710d2095e0823be7892893f2911327d3a784739280b31dbd0068952d997b5c",
+        "6aaaf881dda453b65686e89b651afa09c331592b0196d303ad14649d522e59b6",
+        "ab2922aa0d78db66fab047db39c6ca374e3cab8188868cd389d0836b3ade6876"
+      ],
+      "attempt_receipt_sha256s": [
+        "71f7a54552efeccb3e92a6b89c4b0971281dd78c133e4935f4e6736631627d31",
+        "73837e10e3f22804a84d8101e3be82f2246ba464c3e983c9f3898474ba2057f7"
+      ]
+    },
+    {
+      "scenario_id": "CPP-011",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "226a1f15fde5fbfcc7100ca691c60e2d1b2dcd2cfcdb0b8b861e7801da1177ab",
+        "35d833d80bcf1d7bf9d6dbcb398187b7ac5b3b9168ee6590603c5ff66891b2f1",
+        "492ff5f5d746fc73daf529637d7698a965ef1010ea285b79e539e8cd01313c60"
+      ],
+      "attempt_receipt_sha256s": [
+        "76e4da7522a7ec4c237546a42486aaeffd9907c5acb1d7f85e1fee2643b64305",
+        "cff2a4e724ebe8576dcf8efda69ed9a896f8cf298cf8d4ab56df14bd65bbb8b0"
+      ]
+    },
+    {
+      "scenario_id": "CPP-012",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "0948d83d282824adbb3ac9292ff19c1bcd3539a8ff11e011bd534480cb2261f6",
+        "2c6930d865c7c702eefb3fd34c12cfe485665b8283a759be913fc81ebf9cf432",
+        "bda2ed6b6dc55b6828e7c6b621cf124a5b821428575b514cf77e0284e1783b85"
+      ],
+      "attempt_receipt_sha256s": [
+        "761db9e9927272594783b0740e7950173827682e4a4e22e46cc764d4913207b2",
+        "d99cf8178a64169721ba003684739de40de7efc7898f20a7feeb09e44c7b47f5"
+      ]
+    },
+    {
+      "scenario_id": "CPP-013",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "2573cfe67e273627024dbc4101e56c2867be916c3322def7762aae92f36f234e",
+        "583450b77108180c91092fc94a66f82b3dba8290912a7f7d0cd0733f615de802",
+        "8ca0787cc8ae60327b58ec8cd47ec9ce6e51f4daf8c5ed3acd192a8875d776b8"
+      ],
+      "attempt_receipt_sha256s": [
+        "063f5585592c1c474a9c4741ca02f367250f79c590d92d85debe6287d1dff5e6",
+        "c1a15e122e102829bc63a0dd3be8b9e7b1fa2b61a15898c02bf5888f238b4711"
+      ]
+    },
+    {
+      "scenario_id": "CPP-014",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "0dd96baa45cbb03e3eae7729523d66fa8d239b5da97e3734e4e68e20f1f771b7",
+        "4ee771d11de699a19680b2c51793bd5adc0e3b86a83f4f98b5caabba13672d28",
+        "78d74b4ba3e211e476d932dd14e8b1f93e4d925a6397f6510fbc5bdaf3311612"
+      ],
+      "attempt_receipt_sha256s": [
+        "19d21161b9d34929495442f857dea125e3235ccf24ebcce8b068a22f584a5da4",
+        "955e9f313f648ae7c0f7157b5ba69914221821858dd98a66c36d8d5131955851"
+      ]
+    },
+    {
+      "scenario_id": "CPP-015",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "0ea0cfe6b7934b98fa6d8ff2988aa5041bdff590e9dfb73625e8a2ebdd6f79bc",
+        "13faa84ccb9bd990d23a1077c217eed5f8c05f667321b37ea8be695827fe622e",
+        "76089a650eef9d5d87ffe60f7f81d0c8687a09994ff5ff3ab5344b38d0a7d84a"
+      ],
+      "attempt_receipt_sha256s": [
+        "45943b95663320e1c25dac239a0f66921c88c7ac3b3b9e302511a5f7b3813eab",
+        "5d39df5a408cea76c00e3eb609e4ce339a1f644edf7c41bef4a2ff0237071c63"
+      ]
+    },
+    {
+      "scenario_id": "CPP-016",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "933a197ff06c83ac48c38b49278e6a01678531e6911336b0cc258ea456e08690",
+        "e61937a6030bd747ffe4211479e8446672a6122d077809f1debe9e4a7fea1a20",
+        "f8232f28de02fffa0957d1828ea669007192efac2aa1b23a3566d9ef900b991a"
+      ],
+      "attempt_receipt_sha256s": [
+        "7f76587336fb9d89df8cb1c0c9c8f30367a05b8c63916fb1f4add6a06df6c281",
+        "dd38f663b83d14824da842fd68d94296d1f50f01f548e662e86d6570e85b190b"
+      ]
+    },
+    {
+      "scenario_id": "CPP-017",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "9fe12b7674cca7d8eb05bfed8d6df0cf8040ad857f45e2d291c7359d81e5f144",
+        "ce376a913ecc2a5e127d1a93fe7878cbbf74667e2bac6d98dc94203f46098100",
+        "fc350fdddc80d66e3361c5943157da5ef7a0aab8eefa95ff11566e578a581ec7"
+      ],
+      "attempt_receipt_sha256s": [
+        "6f0cd20b953eb51530fc7fdb4602b1736ca8ee6dd9ad13163be3ec33df8382f1",
+        "9e1364c70356a36afe5e3f1be1cf1c1d4dc36d7de060157d422b5985f0197c5e",
+        "db0f573a99004bc408f70e32be121da94d6706c695a84fc3073dc87ce2b47dd0"
+      ]
+    },
+    {
+      "scenario_id": "CPP-018",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [],
+      "attempt_receipt_sha256s": [
+        "7c7c549e89293a924bca1a5801eebb4ef1999fdb05d3872cd774e54179c8b89f",
+        "cef1ac9117ab464c4fce8bd583e855fb3ad67525be4f180a35bcd2dc40ca1b34"
+      ]
+    },
+    {
+      "scenario_id": "CPP-019",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "4ef8ed30b6076a5a4da41e9fc2c58e372dfc0dd5f7655ce6b5b11cd1aed2fdac",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "c9501190f9418dbe8c50b42609f14249b79e88cc9e56418bb54e64576a0bc661"
+      ],
+      "redaction_receipt_sha256s": [
+        "27ccaab20ed7d2a9887e4e674539f0c0502154fd182209c0d10536a00a9dd642",
+        "5d68b8a28e8521f0aeb20c6ce7c3c69d8b36bf06c1512e075ebfc4418188f7c9",
+        "9266c36afc5840b75e95eb9224de9520569f97aa3c9b9095fbd82bb1c07cb5b3"
+      ],
+      "attempt_receipt_sha256s": [
+        "203de4dcacfe19c8f9e10e90225a47e23ba976fa347d8c1b841d553807e9948d",
+        "41564df5cb73149d53b4374ce7e41d4d17d40253a8ec844685aa66b41a8edace"
+      ]
+    },
+    {
+      "scenario_id": "CPP-020",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "a087c0cef5e9a591e2cc4ac5840b249c5804e3524803f308cd078241a7d41e8f",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "53a9866ea1676c1092f913a8a1302f2974688d0e0219b7137d76dad0ee7440c9"
+      ],
+      "redaction_receipt_sha256s": [
+        "1dc42218b82f787100e8ca64ddae36e8db993787c51826daacca3464b6aeca71",
+        "8c49762881f4911954fc9d4c75989782fee4d7afd2bd00814b0a415f471b95c1",
+        "c4c0abf2108dbe8f2d6df43d7bfca617cf6a7ff6b712f19197356c7fc37799b2"
+      ],
+      "attempt_receipt_sha256s": [
+        "c317a630cb1fdb1ab11b11c71885ddc9890b4ccda9ac69452e9355c795c8e78f",
+        "d2975077e318b29da3ce0d108aec33786da3c20f6d7f54686089f6b29e3b979a"
+      ]
+    },
+    {
+      "scenario_id": "CPP-021",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "82b3d29382dc76d549c16f621a6cf97bb3cba6151fefc671f0b7174bfcca404f",
+        "94759c6cd7df70b184e46f12df83bbd383f3dd1e14f9865f6daf708f1094357c",
+        "dd456df59c0694dece17716316a042af6201b75f37b276c10a55dbb1a7ed8cd4"
+      ],
+      "attempt_receipt_sha256s": [
+        "59128979fbb470385899ba2c86d71835fdc90e59c2bbc2ddf811171dad5b4e1d",
+        "f42d1f41b9613c2052afc26392ec98566ab709257f84b9009be12ca32cbf31c1"
+      ]
+    },
+    {
+      "scenario_id": "CPP-022",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [
+        {
+          "profile_id": "source-profile:web-clipper",
+          "profile_version": "1.0.0",
+          "profile_sha256": "e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549",
+          "lifecycle_state": "active"
+        }
+      ],
+      "approval_receipt_sha256s": [
+        "6543c2e4f1400816b4fc0cbc538df661d97f0ee06bd18e2ab630683118425d10",
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "6cdf87df03076bcff386616d599593e665f1d7ec00da846445c4249bc6c0b653",
+        "7f03797d7f2cd581c507f7acdae2001eb8fd6b60a3592bfc92b395849d05176d",
+        "9855e215aeff595d1f349d42ebc2cd4ea2903dfd50cd1b604ec5684997cda868"
+      ],
+      "attempt_receipt_sha256s": [
+        "20b6371876daf0dc2874c49f02b484cbd2e67445d7f2e3d9e649ae9577264255",
+        "b4aee73c06f7752b00d093af8cffd11c973b1420bd550c3e1f3966468907d368"
+      ]
+    },
+    {
+      "scenario_id": "CPP-023",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "7b2d974e581cac8319329d6e7685dee63f6f88772bf7644ebb0713d7f3427f31",
+        "8825a7515e854cbfcc485bfa5d7fc9379a8548dd122c0a0a451c298f4a6c3e14",
+        "af1ad706e56f6bc7f8e39cd9d6b7c15d4dbe089a15d5085583e0fd35fef336d6"
+      ],
+      "attempt_receipt_sha256s": [
+        "60ec41d26ee03220a4831804473662b78dccd840bf391b5900acf669746bddf2",
+        "bfcb093e15b47b7b76fb633083182639a5193b9420cf3e309f8cf2e39593bed9"
+      ]
+    },
+    {
+      "scenario_id": "CPP-024",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "022c2093a285d3e291d1b571df99a5f4dc4513a680aed3556245ab017a8edbe1",
+        "10bc150ecaa2bdbb90f1f1bddb947fb87982af81438038dbfbc6d89e3d753b93",
+        "c92a6e7a4cb0ca9ffce04f82b5541ff1e97ae420ba3635db3f1ac55826f184ca"
+      ],
+      "attempt_receipt_sha256s": [
+        "019622a699c21b8a666250c7e314363f271ee106b6aab2e8d67869771e717201",
+        "773498c5cc088b5eee14a4008ed51e9195cf29930e9f4e2d05821f3b52b8b46e"
+      ]
+    },
+    {
+      "scenario_id": "CPP-025",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "4825639fd4c6b9f04e94e4ce9b7295c3768928180682d80cfc57d9044bdbc54d",
+        "78322825f3881829b41860ccb50e19de7a7832aa229dfb2937ca0afa416121f0",
+        "e736170c9430042d6f8658519369b37650a66c2a54ad7251ea3b851ce33552c9"
+      ],
+      "attempt_receipt_sha256s": [
+        "290a74e6f72b95a8868ba099509e6271b3afc39e34d4176968d8a818a1d4f9eb",
+        "3630e6c87ad78fc3905ff7ec39aafb5d563cb13f7d0c13d55902e2eb7c96fed5"
+      ]
+    },
+    {
+      "scenario_id": "CPP-026",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "07b4827d11ac5e9288fca53250bda1678b1635f9984b0e8834c533a3923d26e2",
+        "18cf4877a85e160fffd3d60e9d58f339f18a930c55c9779132fdad0f6031f569",
+        "781142117476ba35db29743d5775470a7c30ce281f3b1b5d9add88e3273d5a2d"
+      ],
+      "attempt_receipt_sha256s": [
+        "2c46a331cd9d0dfb4f86ff2d452b865421640d833c1f37086e2d907304a6731d",
+        "90dc9dd0d7f16319136c38b9cc8e506d618398cd6fffbe9441276351c8858e40"
+      ]
+    },
+    {
+      "scenario_id": "CPP-027",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "05b8d3789297a20622b96e615ae64c202ca9c18e791a06ae7d4cf9859c7b3eed",
+        "1c582dccd8f405b3a4559ebe5731496771af0fc247b1d8e2b3c79da6219ff7f9",
+        "a7a212ee618f3abb6735229da35d32f148a004eeb56bf91d6bdd82021c1b6743"
+      ],
+      "attempt_receipt_sha256s": [
+        "a21ce5edbca502a7943eef845408e127313404869000138688fa53f34fc1be3c",
+        "c94804bdaa1bc4b64a4587bd629893ca25556658b5404fa6f357630030cb3a40"
+      ]
+    },
+    {
+      "scenario_id": "CPP-028",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [
+        {
+          "profile_id": "source-profile:web-clipper",
+          "profile_version": "1.0.0",
+          "profile_sha256": "98b4b2dfadd778874f78c2e47b84eeef1ae7c94c00b4ff6f74aac1e285dedeea",
+          "lifecycle_state": "active"
+        }
+      ],
+      "approval_receipt_sha256s": [
+        "536b0e0c2ba437ae72a92f0b3ec63ccf0d23e3ff0f177d9fb81a2c9b4947fb54",
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "0020b262479431b680240d54913fb5710d18883ee10c7f615fd96f930624c917",
+        "1b3ed042e19845bc1778a4d789ed722443be86f8839c4dc7a4eb016f2cf087dc",
+        "7409475a484cf1c3adf0d022d4f9b95e8d7de0b1797f35cb5d7f797aa5e239d1"
+      ],
+      "attempt_receipt_sha256s": [
+        "537f756569e10e60899233ebfd3ab87381c99fa93091d45f18f389efa475eab0",
+        "7daf9efabc8cd80f6e33edf75d43aa34775075e39d243d98928042d6533162a0"
+      ]
+    },
+    {
+      "scenario_id": "CPP-029",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "9e82c13ba9b0ebd6dc63ca5dbf11373316059a806eeb1e6e1de21b114e18823c",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [
+        {
+          "profile_id": "source-profile:web-clipper",
+          "profile_version": "1.0.0",
+          "profile_sha256": "f912eaecaaf0f5fccbf75ea02f9f002fa022d6186f85d7ef5cfe81028789d5d2",
+          "lifecycle_state": "active"
+        }
+      ],
+      "approval_receipt_sha256s": [
+        "67138579c509382f560bf41adb97312ca6395b8ab22110f7058e70e94c5f2dff",
+        "6ac196dc7dc56a373c970d0c4f8d3b1ce21bb2aaeb36d3e5ff0fb116b9d81213"
+      ],
+      "redaction_receipt_sha256s": [
+        "48e498578777a7fa29a8396b39503ac72bc80793cae14b0a6db474e2eebbd64a",
+        "83bd931523d31a35d358d841f63f1baa846dd158ed0d56d24188d269861f5a5e",
+        "b3ced51ca66e8283b2b3251517f6c0cc382d735b72702baf195d0b99d3688b96"
+      ],
+      "attempt_receipt_sha256s": [
+        "69c20748ae73c565648cd933119fae9daf2673944de13dbbe3d54a1fd5ff3ef6",
+        "6ba994574c5f96ff708fac1c5f50db743dfd101a952aac75050c2084e419ce80"
+      ]
+    },
+    {
+      "scenario_id": "CPP-030",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [
+        {
+          "profile_id": "source-profile:web-clipper",
+          "profile_version": "1.0.0",
+          "profile_sha256": "e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549",
+          "lifecycle_state": "active"
+        }
+      ],
+      "approval_receipt_sha256s": [
+        "6543c2e4f1400816b4fc0cbc538df661d97f0ee06bd18e2ab630683118425d10",
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "1424f7b059c950d9613aaf1f65170dbc8774256f5f35c9640debc09661af1c9a",
+        "30fdd348180f71d6f945031f9868642bead3ea309e49ca068bb7623651294887",
+        "3cc915800805241e2ff4eefe8d33c04b6c567f4f1be5320340fa1805e38c823f"
+      ],
+      "attempt_receipt_sha256s": [
+        "204434c13121dcf05a97c2f405ccd2d2bd345e3db060bbf10a55c2ae5502c911",
+        "5297cf5e9b894b93077285504ef0a5b441e6205c44366205dacd90ea55e6de04"
+      ]
+    },
+    {
+      "scenario_id": "CPP-031",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [
+        {
+          "profile_id": "source-profile:web-clipper",
+          "profile_version": "1.0.0",
+          "profile_sha256": "e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549",
+          "lifecycle_state": "active"
+        }
+      ],
+      "approval_receipt_sha256s": [
+        "6543c2e4f1400816b4fc0cbc538df661d97f0ee06bd18e2ab630683118425d10",
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "11ee2caa972d62502bcc4e140802b3b150de2f62c45e9a381ffff24854d4ea35",
+        "18c51f87b02f08ca07d38063adb39def492bdb47807939664f4b9cf4f206efbb",
+        "f88659986a202fd1d0f8e6636c5e4f13f030651b7b75ceeec983c621045a8dd4"
+      ],
+      "attempt_receipt_sha256s": [
+        "61bdcc4251701aac7d99a5a84bb24e29890dd904e75e5b9c869d9db038c1641a",
+        "f4677cc2e6977105f044b3957862e0dfa04b76011eb7e98a498188bf43f9fe35"
+      ]
+    },
+    {
+      "scenario_id": "CPP-032",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [
+        {
+          "profile_id": "source-profile:web-clipper",
+          "profile_version": "1.0.0",
+          "profile_sha256": "e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549",
+          "lifecycle_state": "active"
+        }
+      ],
+      "approval_receipt_sha256s": [
+        "6543c2e4f1400816b4fc0cbc538df661d97f0ee06bd18e2ab630683118425d10",
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "3b5e5c6ead961f38697c550b05f113dcf8f58ffc2654a0d420a0595447b91f3f",
+        "7990f35091d41beb13c7a3f2a88500659d2d8e3963d526ed96da085a085178b6",
+        "8e4bd112dfaa65e6a52799484a01e940de51387ce29126d0314d4ea7aff5783d"
+      ],
+      "attempt_receipt_sha256s": [
+        "51e6a9d2aadcb78a0210c90f10cbd021a551a7c4ea28d6fb1a4a95106343c0ab",
+        "85745a284ebb405b67db2e95cafb5f8dbbdb162cbf6821c5011bdfd81d4294bc"
+      ]
+    },
+    {
+      "scenario_id": "CPP-033",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [
+        {
+          "profile_id": "source-profile:web-clipper",
+          "profile_version": "1.0.0",
+          "profile_sha256": "e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549",
+          "lifecycle_state": "active"
+        }
+      ],
+      "approval_receipt_sha256s": [
+        "6543c2e4f1400816b4fc0cbc538df661d97f0ee06bd18e2ab630683118425d10",
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "b18ea3677f7a5d1792c57b5286539cd8dff9257e3c8ca2bd42096cc2e0f0dd2f",
+        "cfcd6ef1708e31184a714ca77d0b15bdd24253d69fe015c23e88393ab0237490",
+        "d40b8db5a6a10822d4fa59b50b4d0b534ee339d1916b9f833d164fa7e7621e7d"
+      ],
+      "attempt_receipt_sha256s": [
+        "9f7f8df97e5dc962422bb9e1a89f7df006c10f180aec5f3ae28458dd5864aeab",
+        "c9fa5d570ea95e1e5ffcf246d5a9ac7b9c8d5347d4139f347eeb92a13a92374c"
+      ]
+    },
+    {
+      "scenario_id": "CPP-034",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [
+        {
+          "profile_id": "source-profile:web-clipper",
+          "profile_version": "1.0.0",
+          "profile_sha256": "e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549",
+          "lifecycle_state": "active"
+        }
+      ],
+      "approval_receipt_sha256s": [
+        "6543c2e4f1400816b4fc0cbc538df661d97f0ee06bd18e2ab630683118425d10",
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "37e8b0559a0ee89c003ea7ac1af7a15d7201cf0c38e4ddcd7d602b5fb830c99d",
+        "90ec7162f16fae74f533689b60a391fd19b74ec3b8dced53697470098233c7ff",
+        "a18538aad02f10d883a45c66a3508f7e83f6e40fcdcae6956e0b930e3ad515a4"
+      ],
+      "attempt_receipt_sha256s": [
+        "26852c36691488c3b7de32513d2d5239b0cf54ff20d4477581279e34c3806fb8",
+        "dadc2e1b83e5ece904d3432525308769da58da01f7cf6d39ba9c8c247691a024"
+      ]
+    },
+    {
+      "scenario_id": "CPP-035",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [
+        {
+          "profile_id": "source-profile:web-clipper",
+          "profile_version": "1.0.0",
+          "profile_sha256": "e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549",
+          "lifecycle_state": "active"
+        }
+      ],
+      "approval_receipt_sha256s": [
+        "6543c2e4f1400816b4fc0cbc538df661d97f0ee06bd18e2ab630683118425d10",
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [
+        "5f11e44a31cadc1b1957483c2f74240f45acbbf49d1b4dfe0d83301d5a98809c",
+        "758cc7cc50595a198cbffcdccad0fd883729d58412d27a8c3bf7d68093b3d3b4",
+        "a2eb4a5d61b6c7acd3d4e8856633aaea6bf4b712b3436b8095e16e2a56f6b7bc"
+      ],
+      "attempt_receipt_sha256s": [
+        "6028531bf3f0698e3a1cda16399f778fe9c54e87823c400e9cd8bb251f6ca633",
+        "bea13988c449a90012c4da252105201b5833bcd6c78f3dc8bd3f14ce8775d982"
+      ]
+    },
+    {
+      "scenario_id": "CPP-036",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        },
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.1",
+          "policy_sha256": "b790c259cd633fa2f73b34b3ca0b8b515e7ceef494dabbde17ecb711a9bb325e",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "721d4a52153057f2a431017906c928218d35db287bee828cdd1eec7328e0ee67",
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [],
+      "attempt_receipt_sha256s": []
+    },
+    {
+      "scenario_id": "CPP-037",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        },
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.1",
+          "policy_sha256": "1fe33f268fd0235e16ab738648adf685f38c8cc9bb7fa6384e55d199e71a3dcc",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "b4eae5b6af0dd57a522cb1bd9d64ffc9f145625cd2a5cceac9531696a2fdffbf",
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [],
+      "attempt_receipt_sha256s": []
+    },
+    {
+      "scenario_id": "CPP-038",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        },
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.1",
+          "policy_sha256": "4e475bbab44e3f45aa1d2dbe907ccbb22ceeb4c594d6dd62f351d3fc1dbf9681",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "6b392044cf5588ce7b2f3589ad34b0d93a57238f6de87d3788f795a50bf22548",
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [],
+      "attempt_receipt_sha256s": []
+    },
+    {
+      "scenario_id": "CPP-039",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        },
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.1",
+          "policy_sha256": "d488b3aceac8d71c2bc26845cd6584083d6a77382b47ccd59c56d9dbe01acf69",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1",
+        "f391db6b9de65f9c65a3d0857ee17d8f40b1fb3235c37d91855e8e5e11278fce"
+      ],
+      "redaction_receipt_sha256s": [],
+      "attempt_receipt_sha256s": []
+    },
+    {
+      "scenario_id": "CPP-040",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        },
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.1",
+          "policy_sha256": "68690d765b36074e7f1cf200f2dfaabd70d083bd2a3f7700771195cd86dec79a",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "00902055cf1c798aecfad61da0f576715d649653f0a5c7084bffdd46c8d570f2",
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [],
+      "attempt_receipt_sha256s": []
+    },
+    {
+      "scenario_id": "CPP-041",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        },
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.1",
+          "policy_sha256": "427664300788185d486b9d2d5fb405a0cf38d5e9a88bc385900cfef50e39e1df",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "984286973f818c4c5dbc05f9cfc1fcec682a7010db9d5fd2fd2c9bf871508af8",
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [],
+      "attempt_receipt_sha256s": []
+    },
+    {
+      "scenario_id": "CPP-042",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        },
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.1",
+          "policy_sha256": "31e91bc9a95ce5ea25300feb77925f7c287a3bef5e9b1af2bbad365825b76565",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "938383495ad161b12569b1995e71290a4cd191c81d078c41f0ad5712be810cb0",
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [],
+      "attempt_receipt_sha256s": []
+    },
+    {
+      "scenario_id": "CPP-043",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        },
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.1",
+          "policy_sha256": "8e970fa048d97d7011c9abf59b72793efa891ff97c042d3323edfb3dfc31e0d1",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "279ce1dfc199f945227f7b9ae6030dd2ea269d9de684c7604af7ab1666546f2d",
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [],
+      "attempt_receipt_sha256s": []
+    },
+    {
+      "scenario_id": "CPP-044",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        },
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.1",
+          "policy_sha256": "485229ec3a466ed971b8bc2a80d5a1e41cff9e467c8b14ee6f62e9e644f65519",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "181e0b3cacfae954bf94d78c4905ed137ccd515992aab212d768b16b0417737d",
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [],
+      "attempt_receipt_sha256s": []
+    },
+    {
+      "scenario_id": "CPP-045",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "bb738e1590e53c85f5f7f2a97c83b976818f318d398a94d0e538d86c5fa0bf46",
+          "lifecycle_state": "active"
+        },
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.1",
+          "policy_sha256": "6a2d7b5499e18111e7b92b093eff1043a38c7e8da4cb2fed77d7cee132fc1f5e",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "2074c5451604febcae82c882935794b01b7dfebd8025387e77576129ff5b8efd",
+        "b0491da51b17fd8bc40e90282e954b6672ed8462b95971c10f32eaf3fe827de0"
+      ],
+      "redaction_receipt_sha256s": [],
+      "attempt_receipt_sha256s": []
+    },
+    {
+      "scenario_id": "CPP-046",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "c1fab49c15079cf756316d4b61f35e3a68796d50a5b94d8c84714133571879c5",
+          "lifecycle_state": "active"
+        },
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.1",
+          "policy_sha256": "07530ca627bc4299dc2604997dabd62c02ab628af288ade29495db527fec41fa",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "244f52531b845dd9713fb1551c552af78b1d7e8eda5dda9d31aef70a9007f65e",
+        "ec0e5087244be5055d87d310872ae4e17c08e4f8e7700e27e3b2e9fc49f026f1"
+      ],
+      "redaction_receipt_sha256s": [],
+      "attempt_receipt_sha256s": []
+    },
+    {
+      "scenario_id": "CPP-047",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "a059e7a44228fc8e086b0467a281f1155aebedec09e964d70c9937091efae743",
+          "lifecycle_state": "active"
+        },
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.1",
+          "policy_sha256": "832d93ff779ddb520457f4d3970608e6b2357c61be5b665057d5603d2dd89190",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [],
+      "approval_receipt_sha256s": [
+        "4dea9947593b55c4573db072bf780b6b19e60247e7df636fff565aae52288139",
+        "9194a23743da0e6fc7bbfb68f3eb43ba95f456ac62f6970ad006efe1fd2c4b50"
+      ],
+      "redaction_receipt_sha256s": [],
+      "attempt_receipt_sha256s": []
+    },
+    {
+      "scenario_id": "CPP-048",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [
+        {
+          "profile_id": "source-profile:web-clipper",
+          "profile_version": "1.0.0",
+          "profile_sha256": "9ffdec23b40cdb3142f33e8dfc0bf85bf7637bd227fb1e3605ffa5d8dafb1964",
+          "lifecycle_state": "recovery_required"
+        }
+      ],
+      "approval_receipt_sha256s": [
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [],
+      "attempt_receipt_sha256s": []
+    },
+    {
+      "scenario_id": "CPP-049",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [
+        {
+          "profile_id": "source-profile:web-clipper",
+          "profile_version": "1.0.0",
+          "profile_sha256": "e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549",
+          "lifecycle_state": "recovery_required"
+        }
+      ],
+      "approval_receipt_sha256s": [
+        "6543c2e4f1400816b4fc0cbc538df661d97f0ee06bd18e2ab630683118425d10",
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [],
+      "attempt_receipt_sha256s": []
+    },
+    {
+      "scenario_id": "CPP-050",
+      "vault_id": "vault:fixture-vault",
+      "owner_principal_id": "person:vault-owner",
+      "policy_bindings": [
+        {
+          "policy_id": "policy:core-processing",
+          "policy_version": "1.0.0",
+          "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+          "lifecycle_state": "active"
+        }
+      ],
+      "source_profile_bindings": [
+        {
+          "profile_id": "source-profile:web-clipper",
+          "profile_version": "1.0.0",
+          "profile_sha256": "e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549",
+          "lifecycle_state": "recovery_required"
+        }
+      ],
+      "approval_receipt_sha256s": [
+        "6543c2e4f1400816b4fc0cbc538df661d97f0ee06bd18e2ab630683118425d10",
+        "e7377f1ece5b8d711b3dac62fe4f93e0ff1940fc3001bf66c0e78401a4fe54f1"
+      ],
+      "redaction_receipt_sha256s": [],
+      "attempt_receipt_sha256s": []
+    }
+  ]
+}

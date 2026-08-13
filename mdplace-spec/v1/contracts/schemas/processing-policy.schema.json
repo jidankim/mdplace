@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:processing-policy:v1",
+  "title": "mdplace Core Processing Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "policy_id", "policy_version", "vault_id", "parent_policy", "lifecycle_state", "grants", "redaction_obligations", "retention_facts", "approval"],
+  "properties": {
+    "$schema": {"const": "contracts/schemas/processing-policy.schema.json"},
+    "schema_id": {"const": "mdplace.processing-policy/v1"},
+    "policy_id": {"type": "string", "pattern": "^policy:[a-z][a-z0-9-]{2,63}$"},
+    "policy_version": {"$ref": "#/$defs/semver"},
+    "vault_id": {"type": "string", "pattern": "^vault:[a-z][a-z0-9-]{2,63}$"},
+    "parent_policy": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/policyRef"}]},
+    "lifecycle_state": {"enum": ["draft", "active", "revoked"]},
+    "grants": {"$ref": "#/$defs/grants"},
+    "redaction_obligations": {"type": "array", "maxItems": 64, "uniqueItems": true, "items": {"$ref": "#/$defs/redaction"}},
+    "retention_facts": {"type": "array", "maxItems": 32, "uniqueItems": true, "items": {"$ref": "#/$defs/retention"}},
+    "approval": {"$ref": "#/$defs/approval"}
+  },
+  "$defs": {
+    "semver": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "stringSet": {"type": "array", "maxItems": 64, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_.:-]{1,95}$"}},
+    "policyRef": {
+      "type": "object", "additionalProperties": false,
+      "required": ["policy_id", "policy_version", "policy_sha256"],
+      "properties": {
+        "policy_id": {"type": "string", "pattern": "^policy:[a-z][a-z0-9-]{2,63}$"},
+        "policy_version": {"$ref": "#/$defs/semver"},
+        "policy_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "fieldGrant": {
+      "type": "object", "additionalProperties": false,
+      "required": ["field_id", "data_class", "disclosure", "redaction_rule_id"],
+      "properties": {
+        "field_id": {"type": "string", "pattern": "^field:[a-z][a-z0-9_.-]{2,63}$"},
+        "data_class": {"type": "string", "pattern": "^data:[a-z][a-z0-9_.-]{2,63}$"},
+        "disclosure": {"enum": ["local_only", "remote"]},
+        "redaction_rule_id": {"type": "string", "pattern": "^redaction:[a-z][a-z0-9-]{2,63}$"}
+      }
+    },
+    "destination": {
+      "type": "object", "additionalProperties": false,
+      "required": ["destination_id", "provider_id", "locality", "endpoint", "retention_fact_id"],
+      "oneOf": [
+        {"properties": {"locality": {"const": "remote"}, "endpoint": {"pattern": "^https://"}}},
+        {"properties": {"locality": {"const": "local"}, "endpoint": {"pattern": "^local://"}}}
+      ],
+      "properties": {
+        "destination_id": {"type": "string", "pattern": "^destination:[a-z][a-z0-9-]{2,63}$"},
+        "provider_id": {"type": "string", "pattern": "^provider:[a-z][a-z0-9-]{2,63}$"},
+        "locality": {"enum": ["local", "remote"]},
+        "endpoint": {"type": "string", "pattern": "^(https|local)://[A-Za-z0-9._~:/?#@!$&'()+,;=%-]{1,512}$"},
+        "retention_fact_id": {"type": "string", "pattern": "^retention:[a-z][a-z0-9-]{2,63}$"}
+      }
+    },
+    "credentialBoundary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["credential_ref", "store", "authentication_method", "provider_id", "purpose_ids"],
+      "properties": {
+        "credential_ref": {"type": "string", "pattern": "^credential-ref:[a-z][a-z0-9-]{2,63}$"},
+        "store": {"const": "os_credential_store"},
+        "authentication_method": {"enum": ["api_key", "delegated_login", "local_process"]},
+        "provider_id": {"type": "string", "pattern": "^provider:[a-z][a-z0-9-]{2,63}$"},
+        "purpose_ids": {"$ref": "#/$defs/stringSet"}
+      }
+    },
+    "budget": {
+      "type": "object", "additionalProperties": false,
+      "required": ["input_bytes", "output_bytes", "runtime_ms", "cost_microunits"],
+      "properties": {
+        "input_bytes": {"type": "integer", "minimum": 0, "maximum": 10000000},
+        "output_bytes": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "runtime_ms": {"type": "integer", "minimum": 0, "maximum": 3600000},
+        "cost_microunits": {"type": "integer", "minimum": 0, "maximum": 1000000000}
+      }
+    },
+    "retry": {
+      "type": "object", "additionalProperties": false,
+      "required": ["attempts", "input_bytes", "output_bytes", "elapsed_ms", "cumulative_cost_microunits"],
+      "properties": {
+        "attempts": {"type": "integer", "minimum": 0, "maximum": 1},
+        "input_bytes": {"type": "integer", "minimum": 0, "maximum": 10000000},
+        "output_bytes": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "elapsed_ms": {"type": "integer", "minimum": 0, "maximum": 3600000},
+        "cumulative_cost_microunits": {"type": "integer", "minimum": 0, "maximum": 1000000000}
+      }
+    },
+    "fallback": {
+      "type": "object", "additionalProperties": false,
+      "required": ["position", "adapter_id", "consent_binding_id", "provider_id", "purpose_id", "destination_id", "credential_ref"],
+      "properties": {
+        "position": {"const": 1},
+        "adapter_id": {"type": "string", "pattern": "^adapter:[a-z][a-z0-9-]{2,63}$"},
+        "consent_binding_id": {"type": "string", "pattern": "^consent:[a-z][a-z0-9-]{2,63}$"},
+        "provider_id": {"type": "string", "pattern": "^provider:[a-z][a-z0-9-]{2,63}$"},
+        "purpose_id": {"type": "string", "pattern": "^purpose:[a-z][a-z0-9-]{2,63}$"},
+        "destination_id": {"type": "string", "pattern": "^destination:[a-z][a-z0-9-]{2,63}$"},
+        "credential_ref": {"type": "string", "pattern": "^credential-ref:[a-z][a-z0-9-]{2,63}$"}
+      }
+    },
+    "grants": {
+      "type": "object", "additionalProperties": false,
+      "required": ["adapter_ids", "provider_ids", "purpose_ids", "fields", "artifact_kinds", "destinations", "credential_boundaries", "consent_bindings", "budget", "retry", "fallback_chain", "capabilities", "semantic_authority", "automation_scope"],
+      "properties": {
+        "adapter_ids": {"type": "array", "maxItems": 16, "uniqueItems": true, "items": {"type": "string", "pattern": "^adapter:[a-z][a-z0-9-]{2,63}$"}},
+        "provider_ids": {"$ref": "#/$defs/stringSet"},
+        "purpose_ids": {"$ref": "#/$defs/stringSet"},
+        "fields": {"type": "array", "maxItems": 64, "uniqueItems": true, "items": {"$ref": "#/$defs/fieldGrant"}},
+        "artifact_kinds": {"$ref": "#/$defs/stringSet"},
+        "destinations": {"type": "array", "maxItems": 16, "uniqueItems": true, "items": {"$ref": "#/$defs/destination"}},
+        "credential_boundaries": {"type": "array", "maxItems": 16, "uniqueItems": true, "items": {"$ref": "#/$defs/credentialBoundary"}},
+        "consent_bindings": {"type": "array", "maxItems": 16, "uniqueItems": true, "items": {"$ref": "#/$defs/consentBinding"}},
+        "budget": {"$ref": "#/$defs/budget"},
+        "retry": {"$ref": "#/$defs/retry"},
+        "fallback_chain": {"type": "array", "maxItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/fallback"}},
+        "capabilities": {"type": "array", "maxItems": 1, "uniqueItems": true, "items": {"enum": ["capability:produce-proposal"]}},
+        "semantic_authority": {"type": "array", "maxItems": 4, "uniqueItems": true, "items": {"enum": ["produce_advisory_evidence"]}},
+        "automation_scope": {"type": "array", "maxItems": 8, "uniqueItems": true, "items": {"enum": ["initial_existing_category_placement", "new_leaf_promotion", "alias_promotion"]}}
+      }
+    },
+    "consentBinding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["consent_binding_id", "adapter_id", "provider_id", "purpose_id", "field_ids", "artifact_kinds", "destination_id", "credential_ref", "retention_fact_id"],
+      "properties": {
+        "consent_binding_id": {"type": "string", "pattern": "^consent:[a-z][a-z0-9-]{2,63}$"},
+        "adapter_id": {"type": "string", "pattern": "^adapter:[a-z][a-z0-9-]{2,63}$"},
+        "provider_id": {"type": "string", "pattern": "^provider:[a-z][a-z0-9-]{2,63}$"},
+        "purpose_id": {"type": "string", "pattern": "^purpose:[a-z][a-z0-9-]{2,63}$"},
+        "field_ids": {"$ref": "#/$defs/stringSet"},
+        "artifact_kinds": {"$ref": "#/$defs/stringSet"},
+        "destination_id": {"type": "string", "pattern": "^destination:[a-z][a-z0-9-]{2,63}$"},
+        "credential_ref": {"type": "string", "pattern": "^credential-ref:[a-z][a-z0-9-]{2,63}$"},
+        "retention_fact_id": {"type": "string", "pattern": "^retention:[a-z][a-z0-9-]{2,63}$"}
+      }
+    },
+    "redaction": {
+      "type": "object", "additionalProperties": false,
+      "required": ["redaction_rule_id", "method", "failure_mode"],
+      "properties": {
+        "redaction_rule_id": {"type": "string", "pattern": "^redaction:[a-z][a-z0-9-]{2,63}$"},
+        "method": {"enum": ["remove", "mask", "hash"]},
+        "failure_mode": {"const": "deny"}
+      }
+    },
+    "retention": {
+      "type": "object", "additionalProperties": false,
+      "required": ["retention_fact_id", "destination_id", "status", "max_days", "risk_acknowledged", "data_use", "region", "subprocessors"],
+      "oneOf": [
+        {"properties": {"status": {"const": "known"}, "data_use": {"const": "request_only"}}},
+        {"properties": {"status": {"const": "known"}, "data_use": {"const": "provider_training"}, "risk_acknowledged": {"const": true}}},
+        {"properties": {"status": {"const": "known"}, "data_use": {"const": "unknown"}, "risk_acknowledged": {"const": true}}},
+        {"properties": {"status": {"const": "unknown"}, "risk_acknowledged": {"const": true}}}
+      ],
+      "properties": {
+        "retention_fact_id": {"type": "string", "pattern": "^retention:[a-z][a-z0-9-]{2,63}$"},
+        "destination_id": {"type": "string", "pattern": "^destination:[a-z][a-z0-9-]{2,63}$"},
+        "status": {"enum": ["known", "unknown"]},
+        "max_days": {"type": "integer", "minimum": 0, "maximum": 36500},
+        "risk_acknowledged": {"type": "boolean"},
+        "data_use": {"enum": ["request_only", "provider_training", "unknown"]},
+        "region": {"type": "string", "pattern": "^(local|global|[A-Z]{2})$"},
+        "subprocessors": {"type": "array", "maxItems": 16, "uniqueItems": true, "items": {"type": "string", "pattern": "^(none|unknown|provider:[a-z][a-z0-9-]{2,63})$"}}
+      }
+    },
+    "approval": {
+      "type": "object", "additionalProperties": false,
+      "required": ["approved", "principal_id", "role", "delegated", "receipt_id", "receipt_sha256", "policy_payload_sha256"],
+      "properties": {
+        "approved": {"type": "boolean"},
+        "principal_id": {"type": "string", "pattern": "^person:[a-z][a-z0-9-]{2,63}$"},
+        "role": {"enum": ["vault_owner", "capture_adapter", "compatibility_claim"]},
+        "delegated": {"type": "boolean"},
+        "receipt_id": {"type": "string", "pattern": "^approval:[a-z][a-z0-9-]{2,63}$"},
+        "receipt_sha256": {"$ref": "#/$defs/digest"},
+        "policy_payload_sha256": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}

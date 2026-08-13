@@ -36,6 +36,10 @@ export async function checkSchemaInstances(packageRoot, conformance) {
     ['contracts/transitions/control-channel-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
     ['contracts/transitions/exclusive-writer-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
     ['contracts/transitions/launchagent-supervision-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
+    ['contracts/processing-policy-rules.json', 'contracts/schemas/processing-policy-rules.schema.json'],
+    ['contracts/processing-policy-trust-store.json', 'contracts/schemas/processing-policy-trust-store.schema.json'],
+    ['contracts/transitions/processing-policy-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
+    ['contracts/transitions/source-profile-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
     ['conformance/manifest.yaml', 'contracts/schemas/conformance-manifest.schema.json'],
     ['traceability.yaml', 'contracts/schemas/traceability.schema.json'],
     ['claims-and-evidence.yaml', 'contracts/schemas/claims-and-evidence.schema.json'],
@@ -46,6 +50,7 @@ export async function checkSchemaInstances(packageRoot, conformance) {
     ['conformance/evidence/control-plane-recovery-report.json', 'contracts/schemas/control-plane-recovery-report.schema.json'],
     ['conformance/evidence/control-plane-doctor-report.json', 'contracts/schemas/control-plane-doctor-report.schema.json'],
     ['conformance/evidence/control-plane-lifecycle-report.json', 'contracts/schemas/control-plane-lifecycle-report.schema.json'],
+    ['conformance/evidence/core-processing-policy-recovery-report.json', 'contracts/schemas/core-processing-policy-recovery-report.schema.json'],
   ];
   const fixtureEntries = Array.isArray(conformance?.fixtures) ? conformance.fixtures : [];
   for (const entry of fixtureEntries) {

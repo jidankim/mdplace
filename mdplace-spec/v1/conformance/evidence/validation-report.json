@@ -3,8 +3,8 @@
   "package_series": "mdplace-spec/v1",
   "release_version": "1.0.0",
   "validator_version": "1.2.0",
-  "normative_digest": "3cc6ca9097e4f6ae1988710abaea114bdcd81c45af1c72299929046e63e89800",
-  "conformance_digest": "f70b8c3093892b6a5e38fc8219a6632efc9398e2073b10a3d434e451c84eaa2f",
+  "normative_digest": "e90cea944750b6c52eacc720996c0b10c8dab00d8718fd5d90d2445e104bd246",
+  "conformance_digest": "710562a73781e9484d23821dc681278c3818a6f4f844b918d31d0d1614524407",
   "verdict": "pass",
   "checks": [
     {
@@ -38,6 +38,16 @@
       "codes": []
     },
     {
+      "id": "processing-policy-lifecycle",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "source-profile-lifecycle",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
       "id": "contract-schemas",
       "verdict": "pass",
       "codes": []
@@ -64,6 +74,11 @@
     },
     {
       "id": "control-plane-lifecycle",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "core-processing-policy-contract",
       "verdict": "pass",
       "codes": []
     },
@@ -661,6 +676,256 @@
     },
     {
       "id": "FIX-CHILD-AUTH-003",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-POS-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-POS-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-014",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-POS-004",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-POS-005",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-BND-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_REDACTION-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_RETENTION-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-003",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-004",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-005",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-006",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-007",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-008",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-009",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-010",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-011",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-STATE-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-STATE-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-STATE-010",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-012",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-NEG-013",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-AUTH-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-AUTH-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-ILLEGAL-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-AUTH-003",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-AUTH-005",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-STATE-004",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-STATE-005",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-STATE-006",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-STATE-007",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-STATE-008",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-STATE-009",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_PROVIDER-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_PURPOSE-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_DISCLOSURE-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_ARTIFACT-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_DESTINATION-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_CREDENTIAL-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_BUDGET-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_RETRY-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_FALLBACK-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_CAPABILITY-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_SEMANTIC-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-PAIR_AUTOMATION-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-REC-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-REC-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CPP-REC-003",
       "verdict": "pass",
       "codes": []
     }
