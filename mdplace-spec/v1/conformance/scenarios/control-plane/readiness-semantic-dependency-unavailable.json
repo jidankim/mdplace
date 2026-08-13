@@ -35,7 +35,11 @@
         "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
         "dependency_state_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "active_work_count": 0,
-        "max_concurrent_work": 8
+        "max_concurrent_work": 8,
+        "journal_head_digest": "a37ec54bcef281a61afc8b70e00ac6f0a5a4e76ebc1839589090a4200d21cc10",
+        "active_lease_ids": [],
+        "scheduler_state_digest": "6974ab1c0f4e5f5cfbb45d9756a8756121a07522cf16a73e07b08dc281ea1c43",
+        "prior_lease_receipts": []
       },
       "action": {
         "kind": "readiness_check",
@@ -53,9 +57,21 @@
         "semantic_write_requested": false,
         "authority_source": "none",
         "expected_journal_head_sequence": null,
-        "expected_writer_epoch": null,
+        "expected_writer_epoch": 1,
         "recovery_tick": null,
-        "writer_lock_receipt": null,
+        "writer_lock_receipt": {
+          "lock_id": "writer-lock:vault-001",
+          "prior_epoch": 0,
+          "epoch": 1,
+          "owner_agent_id": "agent:primary-001",
+          "token_digest": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "retained": true,
+          "signature_scheme": "hmac-sha256",
+          "signing_key_id": "signer-key:primary-001",
+          "signer_agent_id": "agent:primary-001",
+          "signature_digest": "808d0d436bef7c726d304f58aee78f08dd42d40df161501f8c098c47c4e18ec5",
+          "authenticated": true
+        },
         "readiness_observations": [
           {
             "ordinal": 1,
@@ -65,11 +81,11 @@
             "agent_id": "agent:primary-001",
             "vault_id": "vault:001",
             "observation_digest": "49e9157c5b99d1485a899e0e0d75c0d737d91e5f2a7b8dc575c48a1b2b6c0cbd",
-            "previous_receipt_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+            "previous_receipt_digest": "808d0d436bef7c726d304f58aee78f08dd42d40df161501f8c098c47c4e18ec5",
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "c060dedfab98dbfc35fd165486a4f3b33ea1684ef17cbd5b171e1dfab312d37b",
+            "signature_digest": "07544696f20ad3ef044726e03962bbd9a92ada03ba6409da51c5bd048667e4b1",
             "authenticated": true
           },
           {
@@ -80,11 +96,11 @@
             "agent_id": "agent:primary-001",
             "vault_id": "vault:001",
             "observation_digest": "6573af4f8c27f5c3ba864ac69358fbd226894c386adc6af8c9f654d39a9c3425",
-            "previous_receipt_digest": "c060dedfab98dbfc35fd165486a4f3b33ea1684ef17cbd5b171e1dfab312d37b",
+            "previous_receipt_digest": "07544696f20ad3ef044726e03962bbd9a92ada03ba6409da51c5bd048667e4b1",
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "073efbeec1ebc4b7d096be3d7cd77c899ffd90c3df2d084b49ab06022f958808",
+            "signature_digest": "67edfd36aed6a936efa10cb67bdd5fe533343e47de52940585bfc88e264875da",
             "authenticated": true
           },
           {
@@ -95,11 +111,11 @@
             "agent_id": "agent:primary-001",
             "vault_id": "vault:001",
             "observation_digest": "6adc3d0fdc35e5d7e365284797f458fd6b9e61e2a9483383457771d01bb4fa85",
-            "previous_receipt_digest": "073efbeec1ebc4b7d096be3d7cd77c899ffd90c3df2d084b49ab06022f958808",
+            "previous_receipt_digest": "67edfd36aed6a936efa10cb67bdd5fe533343e47de52940585bfc88e264875da",
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "c78e8217e6a11ec1e77f59348e4b376dd96e5e271862f1912019806e227eef02",
+            "signature_digest": "3432862d7205658590815b212c5ab8a4348039fd2d5b43e7df3023c26587966a",
             "authenticated": true
           },
           {
@@ -164,7 +180,9 @@
           }
         ],
         "current_tick": 1,
-        "expected_dependency_state_digest": null
+        "expected_dependency_state_digest": null,
+        "expected_journal_head_digest": null,
+        "expected_scheduler_state_digest": null
       }
     }
   },

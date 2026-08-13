@@ -22,7 +22,7 @@
         "writer_epoch": 1,
         "journal_available": true,
         "semantic_dependency_available": true,
-        "journal_head_sequence": 1,
+        "journal_head_sequence": 2,
         "work": {
           "work_id": "work:001",
           "work_version": 3,
@@ -45,16 +45,18 @@
             "receipt_id": "receipt:succeeded-001",
             "work_id": "work:001",
             "work_version": 3,
-            "lease_id": null,
-            "journal_sequence": 1,
+            "lease_id": "lease:001",
+            "journal_sequence": 2,
             "outcome": "succeeded",
             "output_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "df5f1e0f467a69b82a9e0f9607033a6d616df9ab2437d7252a85b2f43ffd1097",
+            "signature_digest": "3bc8c44578a71f7b14e33ea85c874474d47a74f9186a1599f643d8b6ed19382f",
             "authenticated": true,
             "signature_scheme": "hmac-sha256",
-            "signing_key_id": "signer-key:primary-001"
-          }
+            "signing_key_id": "signer-key:primary-001",
+            "code": null
+          },
+          "cancellation_receipt": null
         },
         "control_channel": {
           "state": "open",
@@ -68,7 +70,26 @@
         "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
         "dependency_state_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "active_work_count": 0,
-        "max_concurrent_work": 8
+        "max_concurrent_work": 8,
+        "journal_head_digest": "7506e731ae240001df07cacaf10c038c237edb444533b61adf424765298b0b4b",
+        "active_lease_ids": [],
+        "scheduler_state_digest": "6974ab1c0f4e5f5cfbb45d9756a8756121a07522cf16a73e07b08dc281ea1c43",
+        "prior_lease_receipts": [
+          {
+            "receipt_id": "lease-receipt:001",
+            "receipt_kind": "lease",
+            "lease_id": "lease:001",
+            "work_id": "work:001",
+            "work_version": 2,
+            "journal_sequence": 1,
+            "owner_agent_id": "agent:primary-001",
+            "signature_scheme": "hmac-sha256",
+            "signing_key_id": "signer-key:primary-001",
+            "signer_agent_id": "agent:primary-001",
+            "signature_digest": "ef970b7a9b5714bcb301aa13eb15a4a2635e53ef9fbd5ea3660c18c83fa8d34b",
+            "authenticated": true
+          }
+        ]
       },
       "action": {
         "kind": "restart",
@@ -85,7 +106,7 @@
         "interruption_count": 0,
         "semantic_write_requested": false,
         "authority_source": "none",
-        "expected_journal_head_sequence": 1,
+        "expected_journal_head_sequence": 2,
         "expected_writer_epoch": 1,
         "recovery_tick": null,
         "writer_lock_receipt": {
@@ -209,7 +230,9 @@
           }
         ],
         "current_tick": 1,
-        "expected_dependency_state_digest": null
+        "expected_dependency_state_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_journal_head_digest": "7506e731ae240001df07cacaf10c038c237edb444533b61adf424765298b0b4b",
+        "expected_scheduler_state_digest": null
       }
     }
   },

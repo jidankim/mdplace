@@ -48,10 +48,25 @@
             "outcome": "cancelled",
             "output_digest": null,
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "95838611ffdeb110d2f0ebb11373b800207ff6c8b0567aff57c71f71680f106a",
+            "signature_digest": "22b76d355306badc7cee851dbfb2ef19f4fd9aab8dd537fdd6485357ed77f248",
             "authenticated": true,
             "signature_scheme": "hmac-sha256",
-            "signing_key_id": "signer-key:primary-001"
+            "signing_key_id": "signer-key:primary-001",
+            "code": "control.cancelled"
+          },
+          "cancellation_receipt": {
+            "receipt_id": "cancellation-receipt:001",
+            "cancellation_id": "cancel:001",
+            "work_id": "work:001",
+            "work_version": 2,
+            "idempotency_key": "idempotency:work-001",
+            "journal_sequence": 1,
+            "reason_code": "user_requested",
+            "signature_scheme": "hmac-sha256",
+            "signing_key_id": "signer-key:primary-001",
+            "signer_agent_id": "agent:primary-001",
+            "signature_digest": "d06770fcf5b95fd1177a4e072f1e8af64d7367bbeb0da6768b8725d6fe2c523e",
+            "authenticated": true
           }
         },
         "control_channel": {
@@ -66,7 +81,11 @@
         "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
         "dependency_state_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "active_work_count": 0,
-        "max_concurrent_work": 8
+        "max_concurrent_work": 8,
+        "journal_head_digest": "a37ec54bcef281a61afc8b70e00ac6f0a5a4e76ebc1839589090a4200d21cc10",
+        "active_lease_ids": [],
+        "scheduler_state_digest": "6974ab1c0f4e5f5cfbb45d9756a8756121a07522cf16a73e07b08dc281ea1c43",
+        "prior_lease_receipts": []
       },
       "action": {
         "kind": "resume",
@@ -195,7 +214,9 @@
           }
         ],
         "current_tick": 1,
-        "expected_dependency_state_digest": null
+        "expected_dependency_state_digest": null,
+        "expected_journal_head_digest": null,
+        "expected_scheduler_state_digest": null
       }
     }
   },

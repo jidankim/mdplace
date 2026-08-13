@@ -31,7 +31,7 @@ const transitionPaths = [
 const transitionInventories = new Map([
   ['contracts/transitions/work-queue-lifecycle.json', {
     prefix: 'TR-CPWORK-',
-    rowsDigest: '1786540bf1b49821ffd67244ccb9a17e0d443afffda05195d8f1a4f13cc48047',
+    rowsDigest: '6244393da8af5fb464fc9626601242413306de7bed005077b86a8b297abe3f69',
     states: ['absent', 'queued', 'leased', 'executing', 'terminal'],
     commands: ['enqueue_work', 'dispatch_work', 'acknowledge_work', 'complete_work', 'recover_work'],
   }],
@@ -194,6 +194,11 @@ function workJournalStateValid(journal) {
   const sequences = journal.receipts.map((receipt) => receipt.journal_sequence);
   if (duplicate(workIds) || duplicate(idempotencyKeys) || duplicate(receiptIds) || duplicate(sequences) ||
       sequences.some((sequence) => sequence > journal.head_sequence)) return false;
+  const orderedReceipts = [...journal.receipts].sort((left, right) => left.journal_sequence - right.journal_sequence);
+  const expectedHeadSequence = orderedReceipts.at(-1)?.journal_sequence ?? 0;
+  const receiptsAreContiguous = orderedReceipts.every((receipt, index) => receipt.journal_sequence === index + 1);
+  if (!receiptsAreContiguous || journal.head_sequence !== expectedHeadSequence ||
+      journal.head_digest !== canonicalDigest(orderedReceipts)) return false;
   const workById = new Map(journal.work_items.map((work) => [work.work_id, work]));
   if (journal.receipts.some((receipt) => {
     const work = workById.get(receipt.work_id);
@@ -214,6 +219,11 @@ function workJournalStateValid(journal) {
     const matchingCompletionReceipt = terminal
       ? journal.receipts.find((receipt) => receipt.receipt_id === result?.receipt_id)
       : null;
+    const matchingLeaseReceipt = result?.lease_id === null || result?.lease_id === undefined
+      ? null
+      : journal.receipts.find((receipt) => ['lease', 'start'].includes(receipt.receipt_kind) &&
+        receipt.lease_id === result.lease_id && receipt.work_id === work.work_id &&
+        receipt.work_version <= work.work_version && receipt.journal_sequence < result.journal_sequence);
     const outcomeFieldsValid = result?.outcome === 'succeeded'
       ? typeof result.output_digest === 'string' && result.code === null
       : result?.output_digest === null && typeof result?.code === 'string';
@@ -224,7 +234,9 @@ function workJournalStateValid(journal) {
         matchingCompletionReceipt.journal_sequence === result.journal_sequence &&
         matchingCompletionReceipt.work_id === work.work_id &&
         matchingCompletionReceipt.work_version === work.work_version &&
+        matchingCompletionReceipt.lease_id === result.lease_id &&
         matchingCompletionReceipt.state === work.state &&
+        (result.outcome === 'cancelled' || (typeof result.lease_id === 'string' && matchingLeaseReceipt !== undefined)) &&
         verifyControlPlaneReceipt('work_completion', [
           result.receipt_id, work.work_id, result.work_version, result.lease_id ?? '',
           result.journal_sequence, result.outcome, result.output_digest ?? '', result.code ?? '',

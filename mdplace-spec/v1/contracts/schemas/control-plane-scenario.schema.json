@@ -16,7 +16,7 @@
     "completionReceipt": {
       "type": ["object", "null"],
       "additionalProperties": false,
-      "required": ["receipt_id", "work_id", "work_version", "lease_id", "journal_sequence", "outcome", "output_digest", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
+      "required": ["receipt_id", "work_id", "work_version", "lease_id", "journal_sequence", "outcome", "output_digest", "code", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
       "properties": {
         "receipt_id": {"type": "string", "pattern": "^receipt:[a-z0-9-]{3,64}$"},
         "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
@@ -25,6 +25,7 @@
         "journal_sequence": {"type": "integer", "minimum": 1, "maximum": 1000000},
         "outcome": {"enum": ["succeeded", "failed", "cancelled"]},
         "output_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "code": {"type": ["string", "null"], "pattern": "^[a-z][a-z0-9_.-]{2,127}$"},
         "signature_scheme": {"const": "hmac-sha256"},
         "signing_key_id": {"const": "signer-key:primary-001"},
         "signer_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
@@ -32,10 +33,48 @@
         "authenticated": {"type": "boolean"}
       }
     },
+    "cancellationReceipt": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["receipt_id", "cancellation_id", "work_id", "work_version", "idempotency_key", "journal_sequence", "reason_code", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
+      "properties": {
+        "receipt_id": {"type": "string", "pattern": "^cancellation-receipt:[a-z0-9-]{3,64}$"},
+        "cancellation_id": {"type": "string", "pattern": "^cancel:[a-z0-9-]{3,64}$"},
+        "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
+        "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "idempotency_key": {"type": "string", "pattern": "^idempotency:[a-z0-9-]{3,64}$"},
+        "journal_sequence": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "reason_code": {"const": "user_requested"},
+        "signature_scheme": {"const": "hmac-sha256"},
+        "signing_key_id": {"const": "signer-key:primary-001"},
+        "signer_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
+        "signature_digest": {"$ref": "#/$defs/digest"},
+        "authenticated": {"const": true}
+      }
+    },
+    "leaseReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["receipt_id", "receipt_kind", "lease_id", "work_id", "work_version", "journal_sequence", "owner_agent_id", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
+      "properties": {
+        "receipt_id": {"type": "string", "pattern": "^lease-receipt:[a-z0-9-]{3,64}$"},
+        "receipt_kind": {"enum": ["lease", "start"]},
+        "lease_id": {"type": "string", "pattern": "^lease:[a-z0-9-]{3,64}$"},
+        "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
+        "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "journal_sequence": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "owner_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
+        "signature_scheme": {"const": "hmac-sha256"},
+        "signing_key_id": {"const": "signer-key:primary-001"},
+        "signer_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
+        "signature_digest": {"$ref": "#/$defs/digest"},
+        "authenticated": {"const": true}
+      }
+    },
     "work": {
       "type": ["object", "null"],
       "additionalProperties": false,
-      "required": ["work_id", "work_version", "state", "idempotency_key", "input_digest", "retry_count", "retry_ceiling", "retry_eligible_tick", "recovery_interruption_count", "lease_id", "lease_status", "lease_acquired_tick", "lease_expires_tick", "owner_agent_id", "cancellation_id", "resume_count", "resume_ceiling", "completion_receipt"],
+      "required": ["work_id", "work_version", "state", "idempotency_key", "input_digest", "retry_count", "retry_ceiling", "retry_eligible_tick", "recovery_interruption_count", "lease_id", "lease_status", "lease_acquired_tick", "lease_expires_tick", "owner_agent_id", "cancellation_id", "cancellation_receipt", "resume_count", "resume_ceiling", "completion_receipt"],
       "properties": {
         "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
         "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
@@ -52,6 +91,7 @@
         "lease_expires_tick": {"type": ["integer", "null"], "minimum": 1, "maximum": 1000300},
         "owner_agent_id": {"type": ["string", "null"], "pattern": "^agent:[a-z0-9-]{3,64}$"},
         "cancellation_id": {"type": ["string", "null"], "pattern": "^cancel:[a-z0-9-]{3,64}$"},
+        "cancellation_receipt": {"$ref": "#/$defs/cancellationReceipt"},
         "resume_count": {"type": "integer", "minimum": 0, "maximum": 1},
         "resume_ceiling": {"const": 1},
         "completion_receipt": {"$ref": "#/$defs/completionReceipt"}
@@ -126,7 +166,7 @@
     "initial": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["agent_state", "persistent_agent_id", "writer_owner_agent_id", "writer_epoch", "journal_available", "semantic_dependency_available", "dependency_state_digest", "active_work_count", "max_concurrent_work", "journal_head_sequence", "work", "control_channel", "prior_receipts", "semantic_state_digest"],
+      "required": ["agent_state", "persistent_agent_id", "writer_owner_agent_id", "writer_epoch", "journal_available", "semantic_dependency_available", "dependency_state_digest", "journal_head_sequence", "journal_head_digest", "active_work_count", "active_lease_ids", "max_concurrent_work", "scheduler_state_digest", "work", "control_channel", "prior_receipts", "prior_lease_receipts", "semantic_state_digest"],
       "properties": {
         "agent_state": {"enum": ["stopped", "starting", "recovering", "ready", "draining", "blocked", "crashed"]},
         "persistent_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
@@ -138,24 +178,30 @@
         "active_work_count": {"type": "integer", "minimum": 0, "maximum": 8},
         "max_concurrent_work": {"const": 8},
         "journal_head_sequence": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "journal_head_digest": {"$ref": "#/$defs/digest"},
+        "active_lease_ids": {"type": "array", "maxItems": 8, "uniqueItems": true, "items": {"type": "string", "pattern": "^lease:[a-z0-9-]{3,64}$"}},
+        "scheduler_state_digest": {"$ref": "#/$defs/digest"},
         "work": {"$ref": "#/$defs/work"},
         "control_channel": {"$ref": "#/$defs/controlChannel"},
         "prior_receipts": {"type": "array", "maxItems": 64, "uniqueItems": true, "items": {"type": "string", "pattern": "^[A-Za-z]+Receipt:[a-z0-9:-]{3,96}$"}},
+        "prior_lease_receipts": {"type": "array", "maxItems": 64, "items": {"$ref": "#/$defs/leaseReceipt"}},
         "semantic_state_digest": {"$ref": "#/$defs/digest"}
       }
     },
     "action": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["kind", "actor_role", "work_id", "expected_work_version", "expected_journal_head_sequence", "expected_writer_epoch", "expected_dependency_state_digest", "lease_id", "idempotency_key", "proposed_work_input_digest", "retryable", "command_version", "command_vault_id", "candidate_agent_id", "current_tick", "recovery_tick", "interruption_count", "writer_lock_receipt", "readiness_observations", "semantic_write_requested", "authority_source"],
+      "required": ["kind", "actor_role", "work_id", "expected_work_version", "expected_journal_head_sequence", "expected_journal_head_digest", "expected_writer_epoch", "expected_dependency_state_digest", "expected_scheduler_state_digest", "lease_id", "idempotency_key", "proposed_work_input_digest", "retryable", "command_version", "command_vault_id", "candidate_agent_id", "current_tick", "recovery_tick", "interruption_count", "writer_lock_receipt", "readiness_observations", "semantic_write_requested", "authority_source"],
       "properties": {
         "kind": {"enum": ["enqueue", "dispatch", "acknowledge", "fail", "retry", "cancel", "resume", "restart", "recover", "readiness_check", "control_command", "acquire_writer"]},
         "actor_role": {"enum": ["work_submitter", "scheduler", "mdplace_agent", "vault_owner", "control_client", "launchd_supervisor", "operating_system"]},
         "work_id": {"type": ["string", "null"], "pattern": "^work:[a-z0-9-]{3,64}$"},
         "expected_work_version": {"type": ["integer", "null"], "minimum": 1, "maximum": 1000000},
         "expected_journal_head_sequence": {"type": ["integer", "null"], "minimum": 0, "maximum": 1000000},
+        "expected_journal_head_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
         "expected_writer_epoch": {"type": ["integer", "null"], "minimum": 0, "maximum": 1000000},
         "expected_dependency_state_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "expected_scheduler_state_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
         "lease_id": {"type": ["string", "null"], "pattern": "^lease:[a-z0-9-]{3,64}$"},
         "idempotency_key": {"type": ["string", "null"], "pattern": "^idempotency:[a-z0-9-]{3,64}$"},
         "proposed_work_input_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},

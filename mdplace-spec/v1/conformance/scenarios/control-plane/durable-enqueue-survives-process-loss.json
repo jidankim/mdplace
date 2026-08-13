@@ -38,7 +38,11 @@
         "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
         "dependency_state_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "active_work_count": 0,
-        "max_concurrent_work": 8
+        "max_concurrent_work": 8,
+        "journal_head_digest": "521d05cfb824f10821eeeeeb0870ec99e4a36a8be9176820c45e9af733bfd906",
+        "active_lease_ids": [],
+        "scheduler_state_digest": "6974ab1c0f4e5f5cfbb45d9756a8756121a07522cf16a73e07b08dc281ea1c43",
+        "prior_lease_receipts": []
       },
       "action": {
         "kind": "enqueue",
@@ -167,7 +171,9 @@
           }
         ],
         "current_tick": 0,
-        "expected_dependency_state_digest": null
+        "expected_dependency_state_digest": null,
+        "expected_journal_head_digest": null,
+        "expected_scheduler_state_digest": null
       }
     }
   },

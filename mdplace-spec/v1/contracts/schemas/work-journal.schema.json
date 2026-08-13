@@ -123,13 +123,14 @@
     "receipt": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["receipt_id", "receipt_kind", "journal_sequence", "work_id", "work_version", "state", "operation_digest", "semantic_state_digest"],
+      "required": ["receipt_id", "receipt_kind", "journal_sequence", "work_id", "work_version", "lease_id", "state", "operation_digest", "semantic_state_digest"],
       "properties": {
         "receipt_id": {"type": "string", "pattern": "^receipt:[a-z0-9-]{3,64}$"},
         "receipt_kind": {"enum": ["enqueue", "lease", "start", "retry", "cancellation", "resume", "completion", "rejection", "recovery"]},
         "journal_sequence": {"type": "integer", "minimum": 1, "maximum": 1000000},
         "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
         "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "lease_id": {"type": ["string", "null"], "pattern": "^lease:[a-z0-9-]{3,64}$"},
         "state": {"enum": ["queued", "leased", "executing", "retry_wait", "cancelled", "succeeded", "failed", "rejected"]},
         "operation_digest": {"$ref": "#/$defs/digest"},
         "semantic_state_digest": {"$ref": "#/$defs/digest"}
