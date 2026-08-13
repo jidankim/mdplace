@@ -91,6 +91,7 @@ const conformanceExecutables = new Set([
   'conformance/transition-evidence.mjs',
   'conformance/validator-boundary-cases.mjs',
   'conformance/validator-contract-cases.mjs',
+  'conformance/validator-processing-policy-boundary-cases.mjs',
   'conformance/validator-processing-policy-cases.mjs',
   'conformance/validator-coderabbit-review-cases.mjs',
   'conformance/validator-evidence-cases.mjs',

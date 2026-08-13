@@ -207,13 +207,13 @@
       "path": "conformance/evidence/traceability-report.json",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "58ff3e5e9e971a33dcc606eb939ed4fb4309e1f49e14854afe29f401c3b5c7df"
+      "sha256": "dd6f5ce4a555ac0c4aeda9b013737eb9147570dfda9f290c81d526851737f7d3"
     },
     {
       "path": "conformance/evidence/validation-report.json",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "ccf0bab1364baad2c026b104673189979380c1ce0b10bc7905a651b278d4c5fa"
+      "sha256": "ad780a7ee76bce4e5208f13446292d8a9d2ce9ddc63496b84bb25e200af459ca"
     },
     {
       "path": "conformance/evidence/version-amendment-report.json",
@@ -1764,10 +1764,16 @@
       "sha256": "b707775d98d75a03f57d90535ff84d489376f3bf191ec509aa40b593a3169a0c"
     },
     {
+      "path": "conformance/validator-processing-policy-boundary-cases.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "63dc4b8a7155dd5b2f048e43172ed39160d94a4818b410d7812bcb93704ec989"
+    },
+    {
       "path": "conformance/validator-processing-policy-cases.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "6c5addca4e4464100e3c85fb2747a78dc5bc9e9971f945ad1aa23cac835812f1"
+      "sha256": "d75d68864ddc4ca6bb5f6708e4eaab92ab1f9a0917b903b12d73528f5b953b2d"
     },
     {
       "path": "conformance/validator-review-round-three-cases.mjs",
@@ -1785,7 +1791,7 @@
       "path": "conformance/validator-rules.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "8270054406db8e59904631708b5080f661852c197269618999ea95f1e2efb46f"
+      "sha256": "ae43c056b5681db6c8405329f9c928cdd37127f65b84abec816319fd8c1ad3c1"
     },
     {
       "path": "conformance/validator-security-cases.mjs",
@@ -1833,7 +1839,7 @@
       "path": "conformance/validator.test.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "fe1650320a307f558fff12d4e7facc432e1a607d32894e38a0b88cf1853ad854"
+      "sha256": "41f66ce3cec3390810d1d84a42b68b3c3c4e179e2098fc4f9d93dc049503e21f"
     },
     {
       "path": "contracts/processing-policy-rules.json",
@@ -2161,7 +2167,7 @@
     }
   ],
   "normative_digest": "e07f68f0b080e58625a5b4b804752f9d17e1b76df9b7e14eaf94b69b95bbae19",
-  "conformance_digest": "2eb8e6ae3838988aa3cf5fe3905b1ce20bdbb47fba4afc05e1169b5d8f6531ea",
+  "conformance_digest": "8bc413a4066f7855867a422740a80274ace4106576fe754765c375e2e8ac646b",
   "amendment_policy": {
     "immutable_after_release": true,
     "in_place_mutation": "forbidden",
