@@ -1,6 +1,7 @@
 import {createHash} from 'node:crypto';
 
 import {verifyControlPlaneReceipt} from './control-plane-authentication.mjs';
+import {replayControlPlaneLifecycle} from './control-plane-lifecycle-replay.mjs';
 import {
   cancellationReceiptFields,
   completionReceiptFields,
@@ -117,162 +118,84 @@ export function scenarioLifecycleIsValid(initial) {
       records.some(({kind, receipt}) => !receiptIsAuthenticated(initial, kind, receipt))) return false;
   if (work === null) return records.length === 0;
 
-  let state = 'absent';
-  let version = 0;
-  let retryCount = 0;
-  let recoveryCount = 0;
-  let retryEligibleTick = null;
-  let lease = null;
-  let startedTick = null;
-  let cancellation = null;
-  let completion = null;
-  let failedRecovery = null;
-
+  const events = [];
   for (const {kind, receipt} of records) {
     if (receipt.work_id !== work.work_id) return false;
-    switch (kind) {
-      case 'enqueue':
-        if (state !== 'absent' || receipt.work_version !== 1 ||
-            receipt.base_head_sequence !== prefix.head_sequence ||
-            receipt.base_head_digest !== prefix.head_digest ||
-            receipt.journal_sequence !== prefix.head_sequence + 1) return false;
-        state = 'queued'; version = 1;
-        break;
-      case 'lease':
-        if (!['queued', 'retry_wait'].includes(state) || receipt.work_version !== version + 1 ||
-            receipt.owner_agent_id !== initial.persistent_agent_id ||
-            receipt.started_tick !== null || receipt.status !== 'active' ||
-            receipt.expires_tick <= receipt.acquired_tick ||
-            receipt.expires_tick - receipt.acquired_tick > controlPlaneLimits.leaseDurationTicks ||
-            receipt.acquired_tick > controlPlaneLimits.latestDispatchTick ||
-            (state === 'retry_wait' && receipt.acquired_tick < retryEligibleTick)) return false;
-        state = 'leased'; version = receipt.work_version; lease = receipt; startedTick = null;
-        retryEligibleTick = null;
-        break;
-      case 'start':
-        if (state !== 'leased' || lease === null || receipt.work_version !== version + 1 ||
-            receipt.lease_id !== lease.lease_id || receipt.owner_agent_id !== lease.owner_agent_id ||
-            receipt.acquired_tick !== lease.acquired_tick || receipt.expires_tick !== lease.expires_tick ||
-            receipt.status !== 'active' || receipt.started_tick < lease.acquired_tick ||
-            receipt.started_tick >= lease.expires_tick) return false;
-        state = 'executing'; version = receipt.work_version; startedTick = receipt.started_tick;
-        break;
-      case 'retry': {
-        const delay = controlPlaneLimits.retryDelays[retryCount];
-        if (state !== 'executing' || lease === null || receipt.work_version !== version + 1 ||
-            receipt.lease_id !== lease.lease_id || receipt.prior_retry_count !== retryCount ||
-            receipt.resulting_retry_count !== retryCount + 1 ||
-            receipt.failure_tick < startedTick || receipt.failure_tick >= lease.expires_tick ||
-            receipt.selected_retry_delay_ticks !== delay ||
-            receipt.retry_eligible_tick !== receipt.failure_tick + delay ||
-            receipt.retry_eligible_tick > controlPlaneLimits.latestDispatchTick) return false;
-        state = 'retry_wait'; version = receipt.work_version; retryCount += 1;
-        retryEligibleTick = receipt.retry_eligible_tick; lease = null; startedTick = null;
-        break;
-      }
-      case 'recovery': {
-        const wasExecuting = state === 'executing';
-        const delay = wasExecuting ? controlPlaneLimits.retryDelays[retryCount] : null;
-        const recoveryExhausted = recoveryCount + 1 > controlPlaneLimits.recoveryInterruptionCeiling;
-        const retryExhausted = wasExecuting && retryCount >= controlPlaneLimits.retryCeiling;
-        const tickOverflow = wasExecuting && !retryExhausted &&
-          receipt.recovery_tick + delay > controlPlaneLimits.latestDispatchTick;
-        const failureRequired = recoveryExhausted || retryExhausted || tickOverflow;
-        if (!['leased', 'executing'].includes(state) || lease === null ||
-            receipt.work_version !== version + 1 || receipt.lease_id !== lease.lease_id ||
-            receipt.prior_state !== state || receipt.prior_retry_count !== retryCount ||
-            receipt.recovery_interruption_count !== recoveryCount + 1 ||
-            receipt.recovery_lease_status !== 'expired' ||
-            receipt.recovery_tick < (wasExecuting ? startedTick : lease.acquired_tick) ||
-            receipt.recovery_tick < lease.expires_tick ||
-            (receipt.recovery_decision === 'fail') !== failureRequired) return false;
-        if (failureRequired) {
-          if (receipt.resulting_state !== 'failed' || receipt.resulting_retry_count !== retryCount ||
-              receipt.selected_retry_delay_ticks !== (tickOverflow && !recoveryExhausted ? delay : null)) return false;
-          state = 'failed'; failedRecovery = receipt;
-        } else if (wasExecuting) {
-          if (receipt.resulting_state !== 'retry_wait' ||
-              receipt.resulting_retry_count !== retryCount + 1 ||
-              receipt.selected_retry_delay_ticks !== delay) return false;
-          state = 'retry_wait'; retryCount += 1;
-          retryEligibleTick = receipt.recovery_tick + delay;
-        } else {
-          if (receipt.resulting_state !== 'queued' || receipt.resulting_retry_count !== retryCount ||
-              receipt.selected_retry_delay_ticks !== null) return false;
-          state = 'queued';
-        }
-        version = receipt.work_version; recoveryCount += 1; lease = null; startedTick = null;
-        break;
-      }
-      case 'cancellation':
-        if (!['queued', 'leased', 'executing', 'retry_wait'].includes(state) ||
-            receipt.work_version !== version + 1 ||
-            receipt.vault_owner_receipt.vault_id !== initial.vault_id ||
-            receipt.vault_owner_receipt.action_kind !== 'cancel' ||
-            !((lease === null && receipt.vault_owner_receipt.lease_id === null) ||
-              (lease !== null && receipt.vault_owner_receipt.lease_id === lease.lease_id)) ||
-            (lease !== null && (lease.status !== 'active' ||
-              receipt.cancellation_tick < (state === 'executing' ? startedTick : lease.acquired_tick) ||
-              receipt.cancellation_tick >= lease.expires_tick))) return false;
-        state = 'cancelled'; version = receipt.work_version; cancellation = receipt;
-        lease = null; startedTick = null;
-        break;
-      case 'completion':
-        if (state === 'cancelled') {
-          if (cancellation === null || receipt.outcome !== 'cancelled' ||
-              receipt.work_version !== version ||
-              receipt.idempotency_key !== work.idempotency_key ||
-              receipt.base_head_sequence !== cancellation.journal_sequence - 1 ||
-              receipt.base_head_digest !== scenarioLifecycleDigestAtSequence(
-                initial, receipt.base_head_sequence,
-              ) ||
-              receipt.completion_tick !== cancellation.cancellation_tick ||
-              receipt.journal_sequence !== cancellation.journal_sequence + 1) return false;
-        } else if (state === 'failed') {
-          if (receipt.outcome !== 'failed' || receipt.work_version !== version ||
-              receipt.idempotency_key !== work.idempotency_key ||
-              receipt.base_head_sequence !== failedRecovery.journal_sequence - 1 ||
-              receipt.base_head_digest !== scenarioLifecycleDigestAtSequence(
-                initial, receipt.base_head_sequence,
-              ) ||
-              receipt.completion_tick !== failedRecovery?.recovery_tick ||
-              receipt.journal_sequence !== failedRecovery.journal_sequence + 1) return false;
-        } else if (state === 'executing') {
-          if (!['succeeded', 'failed'].includes(receipt.outcome) ||
-              receipt.work_version !== version + 1 || receipt.lease_id !== lease?.lease_id ||
-              receipt.idempotency_key !== work.idempotency_key ||
-              receipt.base_head_sequence !== receipt.journal_sequence - 1 ||
-              receipt.base_head_digest !== scenarioLifecycleDigestAtSequence(
-                initial, receipt.base_head_sequence,
-              ) ||
-              receipt.completion_tick < startedTick || receipt.completion_tick >= lease.expires_tick ||
-              (receipt.outcome === 'failed' && receipt.completion_tick !== receipt.failure_observed_tick)) return false;
-          state = receipt.outcome; version = receipt.work_version; lease = null; startedTick = null;
-        } else {
-          return false;
-        }
-        completion = receipt;
-        break;
-      case 'resume':
-        if (state !== 'cancelled' || completion?.outcome !== 'cancelled' ||
-            receipt.cancelled_work_version !== version ||
-            receipt.resumed_work_version !== version + 1 ||
-            receipt.journal_sequence !== completion.journal_sequence + 1) return false;
-        state = 'queued'; version = receipt.resumed_work_version;
-        cancellation = null; completion = null;
-        break;
-      default:
-        return false;
+    const precedingRecord = records.find(({receipt: candidate}) =>
+      candidate.journal_sequence === receipt.journal_sequence - 1);
+    const preceding = precedingRecord?.receipt;
+    if (kind === 'enqueue' && (receipt.base_head_sequence !== prefix.head_sequence ||
+        receipt.base_head_digest !== prefix.head_digest ||
+        receipt.journal_sequence !== prefix.head_sequence + 1)) return false;
+    if (kind === 'lease' && (receipt.owner_agent_id !== initial.persistent_agent_id ||
+        receipt.started_tick !== null)) return false;
+    if (kind === 'cancellation' &&
+        (receipt.vault_owner_receipt.vault_id !== initial.vault_id ||
+         receipt.vault_owner_receipt.action_kind !== 'cancel')) return false;
+    if (kind === 'completion') {
+      const adjacentTerminal = ['cancellation', 'recovery'].includes(precedingRecord?.kind);
+      const expectedBase = adjacentTerminal ? preceding.journal_sequence : receipt.journal_sequence - 1;
+      if (receipt.idempotency_key !== work.idempotency_key ||
+          receipt.base_head_sequence !== expectedBase ||
+          receipt.base_head_digest !== scenarioLifecycleDigestAtSequence(initial, expectedBase) ||
+          (adjacentTerminal && receipt.journal_sequence !== preceding.journal_sequence + 1) ||
+          (precedingRecord?.kind === 'cancellation' && receipt.completion_tick !== preceding.cancellation_tick) ||
+          (precedingRecord?.kind === 'recovery' && receipt.completion_tick !== preceding.recovery_tick) ||
+          (receipt.outcome === 'failed' && receipt.failure_observed_tick !== null &&
+            receipt.completion_tick !== receipt.failure_observed_tick)) return false;
     }
+    if (kind === 'resume' && (preceding?.outcome !== 'cancelled' ||
+        receipt.cancelled_work_version !== preceding.work_version ||
+        receipt.resumed_work_version !== preceding.work_version + 1)) return false;
+    events.push(scenarioEvent(kind, receipt));
   }
-
-  const leaseIsExact = ['leased', 'executing'].includes(state)
-    ? lease !== null && work.lease_id === lease.lease_id && work.owner_agent_id === lease.owner_agent_id &&
-      work.lease_acquired_tick === lease.acquired_tick && work.lease_expires_tick === lease.expires_tick &&
-      work.lease_status === lease.status
+  const replay = replayControlPlaneLifecycle(events, {
+    leaseDurationTicks: controlPlaneLimits.leaseDurationTicks,
+    retryDelays: controlPlaneLimits.retryDelays,
+    retryCeiling: controlPlaneLimits.retryCeiling,
+    recoveryCeiling: controlPlaneLimits.recoveryInterruptionCeiling,
+    latestDispatchTick: controlPlaneLimits.latestDispatchTick,
+  });
+  if (replay === null) return false;
+  const {current} = replay;
+  const leaseIsExact = ['leased', 'executing'].includes(current.state)
+    ? current.lease !== null && work.lease_id === current.lease.leaseId &&
+      work.owner_agent_id === current.lease.ownerId &&
+      work.lease_acquired_tick === current.lease.acquiredTick &&
+      work.lease_expires_tick === current.lease.expiresTick && work.lease_status === current.lease.status
     : work.lease_id === null && work.owner_agent_id === null && work.lease_acquired_tick === null &&
       work.lease_expires_tick === null && work.lease_status === null;
-  return state === work.state && version === work.work_version && retryCount === work.retry_count &&
-    recoveryCount === work.recovery_interruption_count &&
-    retryEligibleTick === work.retry_eligible_tick && leaseIsExact;
+  return current.state === work.state && current.version === work.work_version &&
+    current.retryCount === work.retry_count && current.recoveryCount === work.recovery_interruption_count &&
+    current.retryEligibleTick === work.retry_eligible_tick && leaseIsExact;
+}
+
+function scenarioEvent(kind, receipt) {
+  const common = {kind, version: receipt.work_version, leaseId: receipt.lease_id ?? null};
+  switch (kind) {
+    case 'enqueue': return {...common, declaredState: 'queued'};
+    case 'lease': return {...common, declaredState: 'leased', ownerId: receipt.owner_agent_id,
+      acquiredTick: receipt.acquired_tick, expiresTick: receipt.expires_tick, status: receipt.status};
+    case 'start': return {...common, declaredState: 'executing', ownerId: receipt.owner_agent_id,
+      acquiredTick: receipt.acquired_tick, expiresTick: receipt.expires_tick,
+      observedTick: receipt.started_tick, status: receipt.status};
+    case 'retry': return {...common, declaredState: 'retry_wait', priorRetryCount: receipt.prior_retry_count,
+      resultingRetryCount: receipt.resulting_retry_count, observedTick: receipt.failure_tick,
+      selectedDelay: receipt.selected_retry_delay_ticks, retryEligibleTick: receipt.retry_eligible_tick};
+    case 'recovery': return {...common, declaredState: receipt.resulting_state,
+      priorState: receipt.prior_state, priorRetryCount: receipt.prior_retry_count,
+      recoveryCount: receipt.recovery_interruption_count,
+      resultingRetryCount: receipt.resulting_retry_count, observedTick: receipt.recovery_tick,
+      status: receipt.recovery_lease_status, decision: receipt.recovery_decision,
+      selectedDelay: receipt.selected_retry_delay_ticks,
+      retryEligibleTick: receipt.resulting_state === 'retry_wait'
+        ? receipt.recovery_tick + receipt.selected_retry_delay_ticks : null};
+    case 'cancellation': return {...common, declaredState: 'cancelled',
+      leaseId: receipt.vault_owner_receipt.lease_id, observedTick: receipt.cancellation_tick};
+    case 'completion': return {...common, declaredState: receipt.outcome,
+      outcome: receipt.outcome, observedTick: receipt.completion_tick};
+    case 'resume': return {...common, version: receipt.resumed_work_version,
+      leaseId: null, declaredState: 'queued'};
+    default: return common;
+  }
 }

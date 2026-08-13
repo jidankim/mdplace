@@ -80,6 +80,7 @@ const conformanceExecutables = new Set([
   'conformance/control-plane-checks.mjs',
   'conformance/control-plane-contract-values.mjs',
   'conformance/control-plane-evidence.mjs',
+  'conformance/control-plane-lifecycle-replay.mjs',
   'conformance/control-plane-observer.mjs',
   'conformance/control-plane-scenario-history.mjs',
   'conformance/child-work-validation.mjs',
