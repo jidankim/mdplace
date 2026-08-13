@@ -81,7 +81,7 @@ const recoveryInventory = [
   ['RC-CP-007', 'after_cancellation_receipt_before_child_stop', 'preserve'],
   ['RC-CP-008', 'restart_with_cancelled_work', 'preserve'],
   ['RC-CP-009', 'repeated_interruption_with_budget', 'requeue'],
-  ['RC-CP-010', 'repeated_interruption_exhausted', 'fail'],
+  ['RC-CP-010', 'recovery_or_retry_budget_exhausted', 'fail'],
   ['RC-CP-011', 'unknown_mutation_completion', 'block'],
   ['RC-CP-012', 'exclusive_writer_lost', 'block'],
   ['RC-CP-013', 'work_journal_unavailable', 'block'],
@@ -94,7 +94,7 @@ const recoveryInventory = [
   terminal_result: `${decision} with unchanged semantic truth`,
   failure_result: 'control.recovery_precondition_failed; state unchanged',
 }));
-const recoveryRowsDigest = '32a4d35d7b661551872babf4015dd129b061b4915e5e3a64621a87d7434d1b84';
+const recoveryRowsDigest = '616cf4e18befc360b0822d9b642c87b863c5e5d03d9b24f742547aa3227c0de8';
 
 function canonicalDigest(value) {
   return createHash('sha256').update(canonicalJson(value)).digest('hex');
@@ -262,6 +262,7 @@ function workReceiptChainIsValid(work, receipts, journal) {
   let rejectionCount = 0;
   let currentLeaseId = null;
   let currentLeaseReceipt = null;
+  let failedRecovery = null;
   for (const receipt of receipts) {
     if (!journalRecordIsAuthenticated(receipt)) return false;
     switch (receipt.receipt_kind) {
@@ -317,6 +318,23 @@ function workReceiptChainIsValid(work, receipts, journal) {
         if (['cancelled', 'failed'].includes(state)) {
           if (receipt.work_version !== version || completion.outcome !== state ||
               receipt.lease_id !== currentLeaseId) return false;
+          if (state === 'failed') {
+            if (failedRecovery === null || receipt.journal_sequence !== failedRecovery.journal_sequence + 1) return false;
+            const expectedCode = failedRecovery.recovery_interruption_count > journal.limits.max_recovery_interruptions
+              ? 'control.recovery_ceiling_exceeded'
+              : failedRecovery.priorRetryCount >= journal.limits.max_total_attempts - 1
+                ? 'control.retry_ceiling_exceeded' : 'control.retry_tick_overflow';
+            const expectedDelay = expectedCode === 'control.retry_tick_overflow'
+              ? journal.limits.retry_delays_ms[failedRecovery.priorRetryCount] : null;
+            const failureBasisIsExact = expectedCode === 'control.recovery_ceiling_exceeded'
+              ? completion.failure_retryable === null && completion.failure_observed_tick === null &&
+                completion.selected_retry_delay_ticks === null
+              : completion.failure_retryable === true &&
+                completion.failure_observed_tick === failedRecovery.recovery_tick &&
+                completion.selected_retry_delay_ticks === expectedDelay;
+            if (completion.code !== expectedCode || !failureBasisIsExact) return false;
+            failedRecovery = null;
+          }
         } else {
           if (state !== 'executing' || receipt.work_version !== version + 1 ||
               !['succeeded', 'failed'].includes(completion.outcome) ||
@@ -343,6 +361,12 @@ function workReceiptChainIsValid(work, receipts, journal) {
             (receipt.recovery_lease_status === 'expired' && receipt.recovery_tick < currentLeaseReceipt.expires_tick)) return false;
         const wasExecuting = state === 'executing';
         const expectedDelay = journal.limits.retry_delays_ms[retryCount];
+        const recoveryExhausted = receipt.recovery_interruption_count > journal.limits.max_recovery_interruptions;
+        const retryExhausted = wasExecuting && retryCount >= journal.limits.max_total_attempts - 1;
+        const retryTickOverflow = wasExecuting && !retryExhausted &&
+          receipt.recovery_tick + expectedDelay > 999700;
+        const failRequired = recoveryExhausted || retryExhausted || retryTickOverflow;
+        if ((receipt.recovery_decision === 'fail') !== failRequired) return false;
         const executingRequeueValid = !wasExecuting || receipt.recovery_decision !== 'requeue' ||
           receipt.state === 'retry_wait' && receipt.resulting_retry_count === retryCount + 1 &&
           receipt.selected_retry_delay_ticks === expectedDelay &&
@@ -359,6 +383,12 @@ function workReceiptChainIsValid(work, receipts, journal) {
             ? ['queued', 'retry_wait'].includes(receipt.state)
             : receipt.state === state;
         if (!decisionStateValid) return false;
+        if (receipt.recovery_decision === 'fail') {
+          const expectedSelectedDelay = retryTickOverflow ? expectedDelay : undefined;
+          if (receipt.selected_retry_delay_ticks !== expectedSelectedDelay ||
+              receipt.retry_eligible_tick !== undefined) return false;
+          failedRecovery = {...receipt, priorRetryCount: retryCount};
+        }
         state = receipt.state; version = receipt.work_version;
         retryCount = receipt.resulting_retry_count; recoveryCount = receipt.recovery_interruption_count;
         if (['queued', 'retry_wait'].includes(state)) {
@@ -509,8 +539,15 @@ function workJournalStateValid(journal) {
       const matchingLeaseReceipt = completion.lease_id === null ? null : journal.receipts.find((receipt) =>
         receipt.receipt_kind === 'lease' && receipt.lease_id === completion.lease_id &&
         receipt.work_id === work.work_id && receipt.journal_sequence < completion.journal_sequence);
+      const matchingFailedRecovery = journal.receipts.find((receipt) =>
+        receipt.receipt_kind === 'recovery' && receipt.recovery_decision === 'fail' &&
+        receipt.work_id === work.work_id && receipt.work_version === completion.work_version &&
+        receipt.lease_id === completion.lease_id &&
+        receipt.journal_sequence + 1 === completion.journal_sequence);
       const failureTickIsWithinLease = completion.outcome !== 'failed' ||
         completion.code === 'control.recovery_ceiling_exceeded' ||
+        matchingFailedRecovery !== undefined &&
+          completion.failure_observed_tick === matchingFailedRecovery.recovery_tick ||
         Number.isInteger(completion.failure_observed_tick) && matchingLeaseReceipt !== null &&
         completion.failure_observed_tick >= matchingLeaseReceipt.acquired_tick &&
         completion.failure_observed_tick < matchingLeaseReceipt.expires_tick;
@@ -627,7 +664,8 @@ function controlCommandStateValid(command, journal) {
   const peer = command?.peer;
   if (peer?.peer_credentials_verified !== true || peer.local_transport !== true ||
       peer.peer_uid !== peer.effective_uid || peer.vault_scope !== command.vault_id ||
-      command.vault_id !== journal?.vault_id || command.payload_digest !== canonicalDigest({
+      command.vault_id !== journal?.vault_id || command.command_version !== 1 ||
+      command.payload_digest !== canonicalDigest({
         command_kind: command.command_kind,
         command_version: command.command_version,
         idempotency_key: command.idempotency_key,
@@ -643,6 +681,8 @@ function controlCommandStateValid(command, journal) {
   const base = matchingBases[0];
   if (expectedBaseKind === 'work_journal') {
     const replayWork = journal?.work_items?.find(({idempotency_key: key}) => key === command.idempotency_key);
+    const collidingWork = journal?.work_items?.find(({work_id: id}) => id === command.payload.work_id);
+    if (replayWork === undefined && collidingWork !== undefined) return false;
     const expectedSequence = replayWork?.enqueue_receipt?.base_head_sequence ?? journal?.head_sequence;
     const expectedDigest = replayWork?.enqueue_receipt?.base_head_digest ?? journal?.head_digest;
     const payloadMatchesReplay = replayWork === undefined ||

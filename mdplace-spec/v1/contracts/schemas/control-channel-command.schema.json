@@ -16,7 +16,7 @@
     "request_id": {"type": "string", "pattern": "^request:[a-z0-9-]{3,64}$"},
     "command_id": {"type": "string", "pattern": "^control-command:[a-z0-9-]{3,64}$"},
     "command_kind": {"enum": ["status", "doctor", "enqueue", "cancel", "resume", "shutdown"]},
-    "command_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
+    "command_version": {"const": 1},
     "idempotency_key": {"type": "string", "pattern": "^idempotency:[a-z0-9-]{3,64}$"},
     "payload": {"oneOf": [
       {"$ref": "#/$defs/statusPayload"},

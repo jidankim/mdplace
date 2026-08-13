@@ -81,6 +81,33 @@
         "authenticated": {"const": true}
       }
     },
+    "recoveryReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["receipt_id", "receipt_kind", "lease_id", "work_id", "work_version", "journal_sequence", "prior_state", "prior_retry_count", "recovery_interruption_count", "resulting_retry_count", "recovery_tick", "recovery_lease_status", "recovery_decision", "selected_retry_delay_ticks", "resulting_state", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
+      "properties": {
+        "receipt_id": {"type": "string", "pattern": "^recovery-receipt:[a-z0-9-]{3,64}$"},
+        "receipt_kind": {"const": "recovery"},
+        "lease_id": {"type": "string", "pattern": "^lease:[a-z0-9-]{3,64}$"},
+        "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
+        "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "journal_sequence": {"type": "integer", "minimum": 1, "maximum": 999999},
+        "prior_state": {"enum": ["leased", "executing"]},
+        "prior_retry_count": {"type": "integer", "minimum": 0, "maximum": 2},
+        "recovery_interruption_count": {"type": "integer", "minimum": 1, "maximum": 3},
+        "resulting_retry_count": {"type": "integer", "minimum": 0, "maximum": 2},
+        "recovery_tick": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "recovery_lease_status": {"enum": ["revoked", "expired"]},
+        "recovery_decision": {"enum": ["requeue", "fail"]},
+        "selected_retry_delay_ticks": {"enum": [1000, 5000, null]},
+        "resulting_state": {"enum": ["queued", "retry_wait", "failed"]},
+        "signature_scheme": {"const": "hmac-sha256"},
+        "signing_key_id": {"const": "signer-key:primary-001"},
+        "signer_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
+        "signature_digest": {"$ref": "#/$defs/digest"},
+        "authenticated": {"const": true}
+      }
+    },
     "resumeReceipt": {
       "type": ["object", "null"],
       "additionalProperties": false,
@@ -311,6 +338,7 @@
         "control_channel": {"$ref": "#/$defs/controlChannel"},
         "prior_receipts": {"type": "array", "maxItems": 64, "uniqueItems": true, "items": {"type": "string", "pattern": "^[A-Za-z]+Receipt:[a-z0-9:-]{3,96}$"}},
         "prior_lease_receipts": {"type": "array", "maxItems": 64, "items": {"$ref": "#/$defs/leaseReceipt"}},
+        "prior_recovery_receipts": {"type": "array", "maxItems": 64, "items": {"$ref": "#/$defs/recoveryReceipt"}},
         "semantic_state_digest": {"$ref": "#/$defs/digest"}
       }
     },

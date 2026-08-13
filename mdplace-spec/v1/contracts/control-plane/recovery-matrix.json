@@ -125,7 +125,8 @@
       ],
       "preconditions": [
         "lease identity and work version match",
-        "lease is expired at the recovery tick or explicitly revoked"
+        "lease is expired at the recovery tick or explicitly revoked",
+        "next recovery interruption count is at most two"
       ],
       "base_references": [
         "exact Work Journal head",
@@ -161,7 +162,8 @@
       ],
       "preconditions": [
         "lease is expired or revoked",
-        "next recovery interruption count equals current count plus one and is at most two"
+        "next recovery interruption count equals current count plus one and is at most two",
+        "one retry remains and its derived eligibility tick is within the closed scheduling horizon"
       ],
       "base_references": [
         "exact Work Journal head",
@@ -304,7 +306,8 @@
       ],
       "preconditions": [
         "next interruption count equals current count plus one",
-        "next count is below or equal to two"
+        "next count is below or equal to two",
+        "for interrupted execution one retry remains and its derived eligibility tick is within the closed scheduling horizon"
       ],
       "base_references": [
         "exact Work Journal head",
@@ -325,7 +328,7 @@
     },
     {
       "case_id": "RC-CP-010",
-      "interruption_point": "repeated_interruption_exhausted",
+      "interruption_point": "recovery_or_retry_budget_exhausted",
       "actor_authority": {
         "roles": [
           "mdplace_agent"
@@ -336,10 +339,11 @@
       },
       "durable_observations": [
         "ordered WorkRecoveryReceipts",
-        "recovery interruption count equal to two"
+        "exact recovery interruption and retry counts",
+        "exact recovery tick and derived retry delay"
       ],
       "preconditions": [
-        "another interruption would exceed the ceiling"
+        "another interruption would exceed the recovery ceiling, or interrupted execution has exhausted retry budget, or its derived eligibility tick exceeds the closed scheduling horizon"
       ],
       "base_references": [
         "exact Work Journal head",
@@ -347,15 +351,17 @@
         "complete recovery receipt chain"
       ],
       "emitted_records": [
-        "TerminalFailureReceipt"
+        "WorkRecoveryReceipt",
+        "CompletionReceipt"
       ],
       "filesystem_effects": [
-        "append durable terminal failure"
+        "append durable Work Recovery record",
+        "append durable terminal completion record"
       ],
       "idempotency": "The same recovery identity and exact observations return the original receipt.",
       "terminal_result": "fail with unchanged semantic truth",
       "failure_result": "control.recovery_precondition_failed; state unchanged",
-      "recovery": "Append authenticated terminal failure and deny further recovery retries.",
+      "recovery": "Append an authenticated failed WorkRecoveryReceipt followed immediately by the exact applicable CompletionReceipt and deny further recovery retries.",
       "default_decision": "fail"
     },
     {
