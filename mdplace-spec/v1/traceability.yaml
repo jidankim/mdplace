@@ -1138,7 +1138,13 @@
         "contracts/schemas/agent-state.schema.json",
         "contracts/transitions/agent-lifecycle.json",
         "contracts/transitions/readiness-lifecycle.json",
-        "contracts/transitions/exclusive-writer-lifecycle.json"
+        "contracts/transitions/exclusive-writer-lifecycle.json",
+        "contracts/schemas/launchagent-supervision-profile.schema.json",
+        "contracts/schemas/control-plane-doctor-report.schema.json",
+        "contracts/schemas/control-plane-lifecycle-report.schema.json",
+        "contracts/control-plane/launchagent-supervision-profile.json",
+        "contracts/transitions/control-channel-lifecycle.json",
+        "contracts/transitions/launchagent-supervision-lifecycle.json"
       ],
       "positive_fixture_ids": [
         "FIX-CP-REC-004",
@@ -1152,11 +1158,13 @@
         "FIX-CP-AUTH-003",
         "FIX-CP-AUTH-005"
       ],
-      "acceptance_gate": "Closed Agent state and complete Agent, readiness, and writer matrices prove ordered startup, fail-closed dependencies, retained exclusive ownership, restart reconciliation, and denial of a competing Agent.",
+      "acceptance_gate": "Closed Agent state, supervision profile, and complete Agent, readiness, writer, channel, and LaunchAgent supervision matrices prove six ordered readiness gates, diagnostic-only blocked access, bounded restart backoff, wake lock/filesystem/drift revalidation, a durable persistent circuit breaker, exact owner-approved recovery, retained exclusive ownership, and denial of a competing Agent.",
       "scope": "control-plane",
       "evidence_refs": [
         "conformance/evidence/validation-report.json",
-        "conformance/evidence/control-plane-recovery-report.json"
+        "conformance/evidence/control-plane-recovery-report.json",
+        "conformance/evidence/control-plane-doctor-report.json",
+        "conformance/evidence/control-plane-lifecycle-report.json"
       ]
     },
     {
@@ -1177,7 +1185,9 @@
       ],
       "schema_or_transition_refs": [
         "contracts/schemas/control-channel-command.schema.json",
-        "contracts/transitions/control-channel-lifecycle.json"
+        "contracts/schemas/control-plane-doctor-report.schema.json",
+        "contracts/transitions/control-channel-lifecycle.json",
+        "contracts/transitions/readiness-lifecycle.json"
       ],
       "positive_fixture_ids": [
         "FIX-CP-POS-007"
@@ -1186,11 +1196,12 @@
         "FIX-CP-STATE-003",
         "FIX-CP-AUTH-004"
       ],
-      "acceptance_gate": "A closed Control Command and complete Control Channel matrix enforce Unix-domain transport, modes, same-user peer credentials, vault scope, protocol and base versions, size, time, response, and concurrency limits while granting no downstream authority.",
+      "acceptance_gate": "A closed Control Command and complete Control Channel matrix enforce Unix-domain transport, diagnostic-only versus work-admitting modes, same-user peer credentials, vault scope, protocol and base versions, size, time, response, and concurrency limits; blocked status and doctor remain observable while every work-taking command remains denied and no downstream authority is granted.",
       "scope": "control-plane",
       "evidence_refs": [
         "conformance/evidence/validation-report.json",
-        "conformance/evidence/control-plane-recovery-report.json"
+        "conformance/evidence/control-plane-recovery-report.json",
+        "conformance/evidence/control-plane-doctor-report.json"
       ]
     },
     {
@@ -1257,7 +1268,10 @@
       "schema_or_transition_refs": [
         "contracts/schemas/control-plane-recovery-matrix.schema.json",
         "contracts/schemas/control-plane-recovery-report.schema.json",
-        "contracts/control-plane/recovery-matrix.json"
+        "contracts/schemas/control-plane-doctor-report.schema.json",
+        "contracts/schemas/control-plane-lifecycle-report.schema.json",
+        "contracts/control-plane/recovery-matrix.json",
+        "contracts/transitions/launchagent-supervision-lifecycle.json"
       ],
       "positive_fixture_ids": [
         "FIX-CP-REC-001",
@@ -1272,11 +1286,13 @@
         "FIX-CP-STATE-001",
         "FIX-CP-STATE-002"
       ],
-      "acceptance_gate": "The closed recovery matrix and digest-bound report prove committed enqueue, leased and in-flight recovery, terminal non-repetition, durable cancellation, repeated-interruption bounds, unknown-completion blocking, and exact receipt and base validation.",
+      "acceptance_gate": "The closed recovery matrix and digest-bound reports prove committed enqueue, leased and in-flight recovery, terminal non-repetition, durable cancellation, repeated-interruption bounds, unknown-completion blocking, bounded supervisor recovery, durable doctor evidence, exact owner recovery approval, and exact receipt and base validation.",
       "scope": "control-plane",
       "evidence_refs": [
         "conformance/evidence/validation-report.json",
-        "conformance/evidence/control-plane-recovery-report.json"
+        "conformance/evidence/control-plane-recovery-report.json",
+        "conformance/evidence/control-plane-doctor-report.json",
+        "conformance/evidence/control-plane-lifecycle-report.json"
       ]
     },
     {
@@ -1360,7 +1376,11 @@
       "schema_or_transition_refs": [
         "contracts/schemas/agent-state.schema.json",
         "contracts/schemas/control-channel-command.schema.json",
-        "contracts/transitions/agent-lifecycle.json"
+        "contracts/transitions/agent-lifecycle.json",
+        "contracts/schemas/launchagent-supervision-profile.schema.json",
+        "contracts/schemas/control-plane-doctor-report.schema.json",
+        "contracts/schemas/control-plane-lifecycle-report.schema.json",
+        "contracts/transitions/launchagent-supervision-lifecycle.json"
       ],
       "positive_fixture_ids": [
         "FIX-CP-REC-001",
@@ -1370,11 +1390,13 @@
         "FIX-CP-AUTH-004",
         "FIX-CP-AUTH-005"
       ],
-      "acceptance_gate": "Every control-plane requirement traces to both accepted decisions as input_without_reopening and preserves their one-Agent, local Control Channel, isolated-child, LaunchAgent, startup, and writer boundaries.",
+      "acceptance_gate": "Every control-plane requirement traces to both accepted decisions as input_without_reopening and preserves their one-Agent, local diagnostic/work-admission Control Channel, isolated-child, bounded LaunchAgent backoff, wake revalidation, persistent circuit breaker, doctor-guided owner recovery, startup, and writer boundaries.",
       "scope": "control-plane",
       "evidence_refs": [
         "conformance/evidence/validation-report.json",
-        "conformance/evidence/control-plane-recovery-report.json"
+        "conformance/evidence/control-plane-recovery-report.json",
+        "conformance/evidence/control-plane-doctor-report.json",
+        "conformance/evidence/control-plane-lifecycle-report.json"
       ]
     },
     {

@@ -1,0 +1,44 @@
+{
+  "$schema": "../../contracts/schemas/control-plane-lifecycle-report.schema.json",
+  "schema_id": "mdplace.control-plane-lifecycle-report/v1",
+  "report_id": "control-plane-lifecycle-report:primary-001",
+  "package_series": "mdplace-spec/v1",
+  "persistent_agent_id": "agent:primary-001",
+  "vault_id": "vault:001",
+  "profile_binding": {
+    "path": "contracts/control-plane/launchagent-supervision-profile.json",
+    "sha256": "3a1148c22e9e9040edeaa7306f9eca5ff8b09d1942c02112db710e2df37eb162"
+  },
+  "lifecycle_table_binding": {
+    "path": "contracts/transitions/launchagent-supervision-lifecycle.json",
+    "sha256": "f7d6c556db180973072c0fb247d17222c4148d238d93b66ca1d1c0ab9a59208d"
+  },
+  "doctor_report_binding": {
+    "report_id": "control-plane-doctor-report:primary-001",
+    "path": "conformance/evidence/control-plane-doctor-report.json",
+    "sha256": "5a67fc428ca00bf4d6707931b92926d15a1cba7c922d26fe54705d1de6704cce",
+    "circuit_version": 3
+  },
+  "vault_owner_recovery_approval": {
+    "receipt_id": "vault-owner-recovery-approval:primary-001",
+    "principal_id": "person:owner-001",
+    "vault_id": "vault:001",
+    "persistent_agent_id": "agent:primary-001",
+    "doctor_report_id": "control-plane-doctor-report:primary-001",
+    "doctor_report_digest": "5a67fc428ca00bf4d6707931b92926d15a1cba7c922d26fe54705d1de6704cce",
+    "circuit_version": 3,
+    "selected_action": "revalidate_same_agent_core",
+    "idempotency_key": "idempotency:recovery-approval-001",
+    "signature_scheme": "hmac-sha256",
+    "signing_key_id": "signer-key:primary-001",
+    "signer_agent_id": "agent:primary-001",
+    "signature_digest": "f199ee4eeaf208243c33df6af49c1a21dd92ae6f8198a4a56df9a8a3a410baf8",
+    "authenticated": true
+  },
+  "work_admission_after_approval": "diagnostic_only",
+  "required_same_core_revalidation": [
+    "exclusive_writer",
+    "readiness_gate_chain",
+    "wake_revalidation"
+  ]
+}

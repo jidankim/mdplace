@@ -28,8 +28,8 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "Control Channel is closed before startup",
-        "all seven Readiness Gates pass in canonical order with receipts and gate seven authenticates and opens the Control Channel"
+        "Control Channel is diagnostic-only before startup",
+        "all six Readiness Gates pass in canonical order with authenticated receipts"
       ],
       "base_references": [
         "current writer lock receipt",
@@ -38,13 +38,13 @@
         "compatibility versions",
         "derived-view recovery receipt",
         "Work Journal head",
-        "Control Channel receipt"
+        "diagnostic Control Channel receipt"
       ],
       "emitted_records": [
         "ReadinessReceipt"
       ],
       "filesystem_effects": [
-        "open Control Channel only after Work Journal reconciliation"
+        "promote Control Channel from diagnostic-only to work-admitting"
       ],
       "idempotency": {
         "key_fields": [
@@ -55,7 +55,7 @@
           "compatibility versions",
           "derived-view recovery receipt",
           "Work Journal head",
-          "Control Channel receipt"
+          "diagnostic Control Channel receipt"
         ],
         "retry_result": "return the original durable receipt for the exact binding"
       },
@@ -96,7 +96,7 @@
         "ReadinessBlockedReceipt"
       ],
       "filesystem_effects": [
-        "close Control Channel and stop dispatch"
+        "demote Control Channel to diagnostic-only and stop dispatch"
       ],
       "idempotency": {
         "key_fields": [
@@ -117,7 +117,7 @@
           "none"
         ]
       },
-      "recovery": "Return to starting only after dependency repair and run all gates again."
+      "recovery": "Publish the durable blocked reason over diagnostic-only status and doctor; run all six gates again after repair."
     },
     {
       "transition_id": "TR-CPREADY-003",
@@ -188,7 +188,7 @@
         "ReadinessBlockedReceipt"
       ],
       "filesystem_effects": [
-        "close Control Channel and stop dispatch"
+        "demote Control Channel to diagnostic-only and stop dispatch"
       ],
       "idempotency": {
         "key_fields": [
@@ -209,7 +209,7 @@
           "none"
         ]
       },
-      "recovery": "Return to starting only after dependency repair and run all gates again."
+      "recovery": "Publish the durable blocked reason over diagnostic-only status and doctor; run all six gates again after repair."
     },
     {
       "transition_id": "TR-CPREADY-005",
@@ -225,7 +225,8 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "all seven Readiness Gates pass in canonical order with receipts"
+        "Control Channel remains diagnostic-only while blocked",
+        "all six Readiness Gates pass in canonical order with authenticated receipts"
       ],
       "base_references": [
         "current writer lock receipt",
@@ -234,13 +235,13 @@
         "compatibility versions",
         "derived-view recovery receipt",
         "Work Journal head",
-        "Control Channel receipt"
+        "diagnostic Control Channel receipt"
       ],
       "emitted_records": [
         "ReadinessReceipt"
       ],
       "filesystem_effects": [
-        "open Control Channel only after Work Journal reconciliation"
+        "promote Control Channel from diagnostic-only to work-admitting"
       ],
       "idempotency": {
         "key_fields": [
@@ -251,7 +252,7 @@
           "compatibility versions",
           "derived-view recovery receipt",
           "Work Journal head",
-          "Control Channel receipt"
+          "diagnostic Control Channel receipt"
         ],
         "retry_result": "return the original durable receipt for the exact binding"
       },
@@ -292,7 +293,7 @@
         "ReadinessBlockedReceipt"
       ],
       "filesystem_effects": [
-        "close Control Channel and stop dispatch"
+        "demote Control Channel to diagnostic-only and stop dispatch"
       ],
       "idempotency": {
         "key_fields": [
@@ -313,7 +314,7 @@
           "none"
         ]
       },
-      "recovery": "Return to starting only after dependency repair and run all gates again."
+      "recovery": "Publish the durable blocked reason over diagnostic-only status and doctor; run all six gates again after repair."
     }
   ]
 }

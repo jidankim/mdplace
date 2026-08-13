@@ -195,7 +195,9 @@ function commandPayloadDigest(command) {
 
 function authenticateVaultOwnerAction(subject) {
   const {action, initial} = subject.document;
-  Object.assign(initial.control_channel, {state: 'open', same_user_authenticated: true, local_transport: true});
+  Object.assign(initial.control_channel, {
+    state: 'work_admitting', same_user_authenticated: true, local_transport: true,
+  });
   action.vault_owner_receipt = {
     receipt_id: `vault-owner-receipt:${action.kind}-${action.work_id.slice(5)}`,
     principal_id: 'person:owner-001', vault_id: initial.control_channel.vault_id,
@@ -1181,9 +1183,9 @@ test('restart and recovery bind current journal and dependency state before open
   staleRestart.document.action.expected_dependency_state_digest = '0'.repeat(64);
   assert.deepEqual((await observeControlPlaneScenario(staleRestart, packageRoot)).codes,
     ['control.dependency_base_stale']);
-  const authenticatedClosedRestart = structuredClone(restartFixture.subject);
-  authenticatedClosedRestart.document.initial.control_channel.same_user_authenticated = true;
-  assert.deepEqual((await observeControlPlaneScenario(authenticatedClosedRestart, packageRoot)).codes,
+  const workAdmittingRestart = structuredClone(restartFixture.subject);
+  workAdmittingRestart.document.initial.control_channel.state = 'work_admitting';
+  assert.deepEqual((await observeControlPlaneScenario(workAdmittingRestart, packageRoot)).codes,
     ['control.control_channel_state_invalid']);
 
   const recoveryFixture = JSON.parse(await readFile(new URL('./scenarios/control-plane/in-flight-work-recovers-agent-crash.json', import.meta.url)));
@@ -1193,7 +1195,7 @@ test('restart and recovery bind current journal and dependency state before open
     ['control.journal_unavailable', (subject) => { subject.document.initial.journal_available = false; }],
     ['control.semantic_dependency_unavailable', (subject) => { subject.document.initial.semantic_dependency_available = false; }],
     ['control.control_channel_state_invalid', (subject) => {
-      subject.document.initial.control_channel.state = 'open';
+      subject.document.initial.control_channel.state = 'work_admitting';
       subject.document.initial.control_channel.same_user_authenticated = true;
     }],
   ];
@@ -1214,14 +1216,13 @@ test('readiness rejects a retained writer receipt from a stale epoch', async () 
   const readyFixture = JSON.parse(await readFile(new URL('./scenarios/control-plane/dequeue-acknowledges-after-receipt.json', import.meta.url)));
   Object.assign(readyFixture.subject.document.action, {kind: 'readiness_check', actor_role: 'mdplace_agent'});
   readyFixture.subject.document.initial.agent_state = 'starting';
-  readyFixture.subject.document.initial.control_channel.state = 'closed';
-  readyFixture.subject.document.initial.control_channel.same_user_authenticated = false;
+  readyFixture.subject.document.initial.control_channel.state = 'diagnostic_only';
+  readyFixture.subject.document.initial.control_channel.same_user_authenticated = true;
   const readyResult = await observeControlPlaneScenario(readyFixture.subject, packageRoot);
   assert.equal(readyResult.verdict, 'pass');
   assert.equal(readyResult.terminal_state, 'ready');
 
-  readyFixture.subject.document.initial.control_channel.state = 'open';
-  readyFixture.subject.document.initial.control_channel.same_user_authenticated = true;
+  readyFixture.subject.document.initial.control_channel.state = 'work_admitting';
   assert.deepEqual((await observeControlPlaneScenario(readyFixture.subject, packageRoot)).codes,
     ['control.control_channel_state_invalid']);
 });
@@ -1604,6 +1605,7 @@ test('recovery exhaustion commits an authenticated terminal failure', async () =
 test('idempotent cancellation and readiness lifecycle observations match their matrices', async () => {
   const cancelledFixture = JSON.parse(await readFile(new URL('./scenarios/control-plane/cancelled-work-persists-restart.json', import.meta.url)));
   const cancelled = structuredClone(cancelledFixture.subject);
+  cancelled.document.initial.control_channel.state = 'work_admitting';
   Object.assign(cancelled.document.action, {kind: 'cancel', actor_role: 'vault_owner',
     work_id: cancelled.document.initial.work.work_id,
     expected_work_version: cancelled.document.initial.work.work_version,

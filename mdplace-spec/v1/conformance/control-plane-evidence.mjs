@@ -39,7 +39,9 @@ const deniedTransitions = new Map([
     'TR-CPAGENT-009', 'TR-CPAGENT-013', 'TR-CPAGENT-015', 'TR-CPAGENT-017',
     'TR-CPAGENT-019', 'TR-CPAGENT-021', 'TR-CPAGENT-022',
   ]],
-  ['contracts/transitions/control-channel-lifecycle.json', ['TR-CPCHANNEL-002']],
+  ['contracts/transitions/control-channel-lifecycle.json', [
+    'TR-CPCHANNEL-002', 'TR-CPCHANNEL-010', 'TR-CPCHANNEL-011',
+  ]],
   ['contracts/transitions/exclusive-writer-lifecycle.json', [
     'TR-CPWRITER-002', 'TR-CPWRITER-003', 'TR-CPWRITER-004',
   ]],

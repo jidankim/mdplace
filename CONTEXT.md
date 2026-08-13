@@ -29,7 +29,7 @@ The per-vault operating-system lock that permits exactly one background or foreg
 _Avoid_: Semantic authority, distributed lock, second writer
 
 **Readiness Gate**:
-A fail-closed startup or wake check whose durable result states whether the mdplace Agent may accept work. The ordered gates include the Exclusive Writer Lock, vault and filesystem profile, canonical Semantic Kernel state, executable and schema compatibility, derived-view recovery, Work Journal reconciliation, and Control Channel activation.
+A fail-closed startup or wake integrity check whose durable result states whether the mdplace Agent may accept work. The six ordered gates are the Exclusive Writer Lock, vault and filesystem profile, canonical Semantic Kernel state, executable and schema compatibility, derived-view recovery, and Work Journal reconciliation. After all six pass, the Agent atomically promotes its authenticated diagnostic-only Control Channel to work-admitting mode.
 _Avoid_: Liveness probe, optimistic startup, warning-only check
 
 **Control Command**:
@@ -49,7 +49,7 @@ The sole authority that validates commands and appends canonical semantic operat
 _Avoid_: direct ledger writer, database writer
 
 **Control Channel**:
-The same-user, per-vault, operating-system-local path through which a Control Client sends commands to the mdplace Agent.
+The same-user, per-vault, operating-system-local path through which a Control Client sends commands to the mdplace Agent. Its diagnostic-only mode exposes authenticated status and doctor results while accepting no work; work-affecting commands require work-admitting mode after readiness.
 _Avoid_: network API, loopback service, remote control endpoint
 
 **Vault Mutation Gate**:

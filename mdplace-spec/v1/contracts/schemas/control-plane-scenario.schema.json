@@ -343,7 +343,7 @@
       "additionalProperties": false,
       "required": ["state", "vault_id", "protocol_version", "command_version", "same_user_authenticated", "local_transport"],
       "properties": {
-        "state": {"enum": ["closed", "open"]},
+        "state": {"enum": ["closed", "diagnostic_only", "work_admitting", "draining"]},
         "vault_id": {"const": "vault:001"},
         "protocol_version": {"const": "1.0"},
         "command_version": {"const": 1},
@@ -374,8 +374,8 @@
       "additionalProperties": false,
       "required": ["ordinal", "gate", "verdict", "receipt_id", "agent_id", "vault_id", "observation_digest", "previous_receipt_digest", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
       "properties": {
-        "ordinal": {"type": "integer", "minimum": 1, "maximum": 7},
-        "gate": {"enum": ["exclusive_writer", "vault_filesystem", "semantic_kernel", "compatibility", "derived_views", "work_journal", "control_channel"]},
+        "ordinal": {"type": "integer", "minimum": 1, "maximum": 6},
+        "gate": {"enum": ["exclusive_writer", "vault_filesystem", "semantic_kernel", "compatibility", "derived_views", "work_journal"]},
         "verdict": {"enum": ["pass", "fail", "not_run"]},
         "receipt_id": {"type": ["string", "null"], "pattern": "^readiness-receipt:[a-z0-9-]{3,64}$"},
         "agent_id": {"type": ["string", "null"], "pattern": "^agent:[a-z0-9-]{3,64}$"},
@@ -391,16 +391,15 @@
     },
     "readinessObservations": {
       "type": "array",
-      "minItems": 7,
-      "maxItems": 7,
+      "minItems": 6,
+      "maxItems": 6,
       "prefixItems": [
         {"$ref": "#/$defs/readinessGate", "properties": {"ordinal": {"const": 1}, "gate": {"const": "exclusive_writer"}}},
         {"$ref": "#/$defs/readinessGate", "properties": {"ordinal": {"const": 2}, "gate": {"const": "vault_filesystem"}}},
         {"$ref": "#/$defs/readinessGate", "properties": {"ordinal": {"const": 3}, "gate": {"const": "semantic_kernel"}}},
         {"$ref": "#/$defs/readinessGate", "properties": {"ordinal": {"const": 4}, "gate": {"const": "compatibility"}}},
         {"$ref": "#/$defs/readinessGate", "properties": {"ordinal": {"const": 5}, "gate": {"const": "derived_views"}}},
-        {"$ref": "#/$defs/readinessGate", "properties": {"ordinal": {"const": 6}, "gate": {"const": "work_journal"}}},
-        {"$ref": "#/$defs/readinessGate", "properties": {"ordinal": {"const": 7}, "gate": {"const": "control_channel"}}}
+        {"$ref": "#/$defs/readinessGate", "properties": {"ordinal": {"const": 6}, "gate": {"const": "work_journal"}}}
       ],
       "items": false
     },
@@ -435,7 +434,8 @@
         "prior_retry_receipts": {"type": "array", "maxItems": 2, "items": {"$ref": "#/$defs/retryReceipt"}},
         "prior_recovery_receipts": {"type": "array", "maxItems": 64, "items": {"$ref": "#/$defs/recoveryReceipt"}},
         "semantic_state_version": {"const": 1},
-        "semantic_state_digest": {"const": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"}
+        "semantic_state_digest": {"const": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"},
+        "blocked_reason": {"type": ["string", "null"], "enum": ["control.readiness_writer_absent", "control.readiness_semantic_dependency_unavailable", "control.readiness_journal_unavailable", "control.integrity_circuit_open", null]}
       }
     },
     "action": {
@@ -458,6 +458,7 @@
         "completion_output_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
         "retryable": {"type": ["boolean", "null"]},
         "command_version": {"enum": [1, null]},
+        "command_kind": {"type": ["string", "null"], "enum": ["status", "doctor", "enqueue", "cancel", "resume", "shutdown", null]},
         "command_vault_id": {"type": ["string", "null"], "pattern": "^vault:[a-z0-9-]{3,64}$"},
         "candidate_agent_id": {"type": ["string", "null"], "pattern": "^agent:[a-z0-9-]{3,64}$"},
         "current_tick": {"type": ["integer", "null"], "minimum": 0, "maximum": 1000000},
@@ -470,6 +471,10 @@
         "authority_source": {"enum": ["none", "work_journal", "scheduler", "mdplace_agent", "child_work", "control_channel", "readiness", "retry", "queue"]}
       },
       "allOf": [
+        {
+          "if": {"properties": {"kind": {"const": "control_command"}}},
+          "then": {"required": ["command_kind"], "properties": {"command_kind": {"type": "string"}}}
+        },
         {
           "if": {"properties": {"kind": {"const": "enqueue"}}},
           "then": {"properties": {

@@ -45,10 +45,13 @@ export const requiredSchemaPaths = [
   'contracts/schemas/work-journal.schema.json',
   'contracts/schemas/scheduler-state.schema.json',
   'contracts/schemas/agent-state.schema.json',
+  'contracts/schemas/launchagent-supervision-profile.schema.json',
   'contracts/schemas/control-channel-command.schema.json',
   'contracts/schemas/control-plane-recovery-matrix.schema.json',
   'contracts/schemas/control-plane-scenario.schema.json',
   'contracts/schemas/control-plane-recovery-report.schema.json',
+  'contracts/schemas/control-plane-doctor-report.schema.json',
+  'contracts/schemas/control-plane-lifecycle-report.schema.json',
   'contracts/schemas/child-work-invocation.schema.json',
 ];
 

@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:control-plane-doctor-report:v1",
+  "title": "mdplace persistent Agent diagnostic doctor report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "report_id", "package_series", "release_version", "persistent_agent_id", "instance_id", "vault_id", "reported_tick", "circuit", "startup_failure_receipts", "readiness_observations", "work_admission_mode", "blocked_code", "work_journal_head", "semantic_kernel", "wake_observations", "allowed_recovery_actions", "report_authority"],
+  "properties": {
+    "$schema": {"const": "../../contracts/schemas/control-plane-doctor-report.schema.json"},
+    "schema_id": {"const": "mdplace.control-plane-doctor-report/v1"},
+    "report_id": {"type": "string", "pattern": "^control-plane-doctor-report:[a-z0-9-]{3,64}$"},
+    "package_series": {"const": "mdplace-spec/v1"},
+    "release_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "persistent_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
+    "instance_id": {"type": "string", "pattern": "^agent-instance:[a-z0-9-]{3,64}$"},
+    "vault_id": {"type": "string", "pattern": "^vault:[a-z0-9-]{3,64}$"},
+    "reported_tick": {"type": "integer", "minimum": 0, "maximum": 1000000},
+    "circuit": {"$ref": "#/$defs/circuit"},
+    "startup_failure_receipts": {"type": "array", "minItems": 1, "maxItems": 3, "uniqueItems": true, "items": {"$ref": "#/$defs/failureReceipt"}},
+    "readiness_observations": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "prefixItems": [
+        {"$ref": "#/$defs/readinessObservation", "properties": {"ordinal": {"const": 1}, "gate": {"const": "exclusive_writer"}}},
+        {"$ref": "#/$defs/readinessObservation", "properties": {"ordinal": {"const": 2}, "gate": {"const": "vault_filesystem"}}},
+        {"$ref": "#/$defs/readinessObservation", "properties": {"ordinal": {"const": 3}, "gate": {"const": "semantic_kernel"}}},
+        {"$ref": "#/$defs/readinessObservation", "properties": {"ordinal": {"const": 4}, "gate": {"const": "compatibility"}}},
+        {"$ref": "#/$defs/readinessObservation", "properties": {"ordinal": {"const": 5}, "gate": {"const": "derived_views"}}},
+        {"$ref": "#/$defs/readinessObservation", "properties": {"ordinal": {"const": 6}, "gate": {"const": "work_journal"}}}
+      ],
+      "items": false
+    },
+    "work_admission_mode": {"const": "diagnostic_only"},
+    "blocked_code": {"enum": ["control.work_admission_blocked", "control.restart_ceiling_reached", "control.wake_revalidation_failed"]},
+    "work_journal_head": {"$ref": "#/$defs/journalHead"},
+    "semantic_kernel": {"$ref": "#/$defs/semanticKernel"},
+    "wake_observations": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "prefixItems": [
+        {"$ref": "#/$defs/wakeObservation", "properties": {"check": {"const": "exclusive_writer"}}},
+        {"$ref": "#/$defs/wakeObservation", "properties": {"check": {"const": "vault_filesystem"}}},
+        {"$ref": "#/$defs/wakeObservation", "properties": {"check": {"const": "filesystem_drift"}}}
+      ],
+      "items": false
+    },
+    "allowed_recovery_actions": {"type": "array", "minItems": 1, "maxItems": 1, "uniqueItems": true, "items": {"const": "revalidate_same_agent_core"}},
+    "report_authority": {"const": "diagnostic_evidence_only"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "circuit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "state", "storage", "failure_count", "trip_threshold", "last_failure_class", "trip_receipt_digest"],
+      "properties": {
+        "version": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "state": {"const": "circuit_open"},
+        "storage": {"const": "durable_agent_state"},
+        "failure_count": {"const": 3},
+        "trip_threshold": {"const": 3},
+        "last_failure_class": {"enum": ["unexpected_exit", "integrity_failure", "wake_revalidation_failure"]},
+        "trip_receipt_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "failureReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["receipt_id", "failure_class", "code", "observed_tick", "digest"],
+      "properties": {
+        "receipt_id": {"type": "string", "pattern": "^(unexpected-exit|integrity-failure|wake-revalidation)-receipt:[a-z0-9-]{3,64}$"},
+        "failure_class": {"enum": ["unexpected_exit", "integrity_failure", "wake_revalidation_failure"]},
+        "code": {"type": "string", "pattern": "^control\\.[a-z0-9_]+$"},
+        "observed_tick": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "readinessObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ordinal", "gate", "verdict", "receipt_id", "receipt_digest", "observation_digest"],
+      "properties": {
+        "ordinal": {"type": "integer", "minimum": 1, "maximum": 6},
+        "gate": {"enum": ["exclusive_writer", "vault_filesystem", "semantic_kernel", "compatibility", "derived_views", "work_journal"]},
+        "verdict": {"enum": ["pass", "fail", "pending"]},
+        "receipt_id": {"type": "string", "pattern": "^readiness-receipt:[a-z0-9-]{3,64}$"},
+        "receipt_digest": {"$ref": "#/$defs/digest"},
+        "observation_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "journalHead": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["journal_id", "head_sequence", "head_digest"],
+      "properties": {
+        "journal_id": {"type": "string", "pattern": "^journal:[a-z0-9-]{3,64}$"},
+        "head_sequence": {"type": "integer", "minimum": 0, "maximum": 500},
+        "head_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "semanticKernel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reference_id", "version", "digest"],
+      "properties": {
+        "reference_id": {"type": "string", "pattern": "^semantic:[a-z0-9-]{3,64}$"},
+        "version": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "wakeObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["check", "verdict", "observation_digest"],
+      "properties": {
+        "check": {"enum": ["exclusive_writer", "vault_filesystem", "filesystem_drift"]},
+        "verdict": {"enum": ["pending", "pass", "fail"]},
+        "observation_digest": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}

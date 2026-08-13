@@ -270,7 +270,7 @@
       "normative_anchor": "normative/control-plane-contract.md#req-cp-004-one-persistent-mdplace-agent-becomes-ready-in-strict-order",
       "decision_urls": ["https://github.com/jidankim/mdplace/issues/26#issuecomment-5187140948", "https://github.com/jidankim/mdplace/issues/28#issuecomment-5196131324"],
       "canonical_terms": ["mdplace Agent", "Readiness Gate", "Exclusive Writer Lock", "Work Journal", "Semantic Kernel", "Control Channel", "Work Recovery"],
-      "acceptance_gate": "Closed Agent state and complete Agent, readiness, and writer matrices prove ordered startup, fail-closed dependencies, retained exclusive ownership, restart reconciliation, and denial of a competing Agent.",
+      "acceptance_gate": "Closed Agent state, supervision profile, and complete Agent, readiness, writer, channel, and LaunchAgent supervision matrices prove six ordered readiness gates, diagnostic-only blocked access, bounded restart backoff, wake lock/filesystem/drift revalidation, a durable persistent circuit breaker, exact owner-approved recovery, retained exclusive ownership, and denial of a competing Agent.",
       "scope": "control-plane"
     },
     {
@@ -279,7 +279,7 @@
       "normative_anchor": "normative/control-plane-contract.md#req-cp-005-the-control-channel-is-local-authenticated-bounded-and-stale-safe",
       "decision_urls": ["https://github.com/jidankim/mdplace/issues/26#issuecomment-5187140948", "https://github.com/jidankim/mdplace/issues/28#issuecomment-5196131324"],
       "canonical_terms": ["Control Channel", "Control Command", "mdplace Agent", "Semantic Kernel", "Vault Mutation Gate"],
-      "acceptance_gate": "A closed Control Command and complete Control Channel matrix enforce Unix-domain transport, modes, same-user peer credentials, vault scope, protocol and base versions, size, time, response, and concurrency limits while granting no downstream authority.",
+      "acceptance_gate": "A closed Control Command and complete Control Channel matrix enforce Unix-domain transport, diagnostic-only versus work-admitting modes, same-user peer credentials, vault scope, protocol and base versions, size, time, response, and concurrency limits; blocked status and doctor remain observable while every work-taking command remains denied and no downstream authority is granted.",
       "scope": "control-plane"
     },
     {
@@ -297,7 +297,7 @@
       "normative_anchor": "normative/control-plane-contract.md#req-cp-007-work-recovery-is-default-deny-and-receipt-driven",
       "decision_urls": ["https://github.com/jidankim/mdplace/issues/26#issuecomment-5187140948", "https://github.com/jidankim/mdplace/issues/28#issuecomment-5196131324"],
       "canonical_terms": ["Work Recovery", "Work Journal", "Work Item", "Work Lease", "Exclusive Writer Lock", "Semantic Kernel", "Vault Mutation Gate"],
-      "acceptance_gate": "The closed recovery matrix and digest-bound report prove committed enqueue, leased and in-flight recovery, terminal non-repetition, durable cancellation, repeated-interruption bounds, unknown-completion blocking, and exact receipt and base validation.",
+      "acceptance_gate": "The closed recovery matrix and digest-bound reports prove committed enqueue, leased and in-flight recovery, terminal non-repetition, durable cancellation, repeated-interruption bounds, unknown-completion blocking, bounded supervisor recovery, durable doctor evidence, exact owner recovery approval, and exact receipt and base validation.",
       "scope": "control-plane"
     },
     {
@@ -315,7 +315,7 @@
       "normative_anchor": "normative/control-plane-contract.md#req-cp-009-accepted-component-and-lifecycle-decisions-remain-inputs",
       "decision_urls": ["https://github.com/jidankim/mdplace/issues/26#issuecomment-5187140948", "https://github.com/jidankim/mdplace/issues/28#issuecomment-5196131324"],
       "canonical_terms": ["mdplace Agent", "Work Journal", "Scheduler", "Control Channel", "Child Work Invocation", "Exclusive Writer Lock"],
-      "acceptance_gate": "Every control-plane requirement traces to both accepted decisions as input_without_reopening and preserves their one-Agent, local Control Channel, isolated-child, LaunchAgent, startup, and writer boundaries.",
+      "acceptance_gate": "Every control-plane requirement traces to both accepted decisions as input_without_reopening and preserves their one-Agent, local diagnostic/work-admission Control Channel, isolated-child, bounded LaunchAgent backoff, wake revalidation, persistent circuit breaker, doctor-guided owner recovery, startup, and writer boundaries.",
       "scope": "control-plane"
     },
     {

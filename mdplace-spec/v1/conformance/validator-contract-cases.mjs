@@ -32,6 +32,7 @@ test('CLI validates every committed conformance fixture', () => {
     'validator-evidence-contract',
     'semantic-kernel-contract',
     'control-plane-contract',
+    'control-plane-lifecycle',
     'traceability',
     'conformance-manifest',
   ]);

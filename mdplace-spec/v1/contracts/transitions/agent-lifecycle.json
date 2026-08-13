@@ -1058,10 +1058,14 @@
         "delegation": "forbidden"
       },
       "preconditions": [
+        "the durable supervision state is recovering rather than circuit_open",
+        "if a persistent circuit was open, the exact vault-owner recovery approval has already produced OwnerRecoveryAuthorizationReceipt",
         "new Exclusive Writer Lock receipt is current",
         "recovery observations and interruption budgets validate"
       ],
       "base_references": [
+        "persistent Agent supervision state and circuit version",
+        "exact ControlPlaneDoctorReport and OwnerRecoveryAuthorizationReceipt when circuit recovery applies",
         "exact writer epoch",
         "exact Work Journal head",
         "exact Semantic Kernel dependency"
@@ -1075,6 +1079,8 @@
       "idempotency": {
         "key_fields": [
           "idempotency_key",
+          "persistent Agent supervision state and circuit version",
+          "exact ControlPlaneDoctorReport and OwnerRecoveryAuthorizationReceipt when circuit recovery applies",
           "exact writer epoch",
           "exact Work Journal head",
           "exact Semantic Kernel dependency"
@@ -1092,7 +1098,7 @@
           "none"
         ]
       },
-      "recovery": "Remain blocked on a stale base, competing writer, failed gate, or unknown completion."
+      "recovery": "A circuit-open Agent remains blocked and diagnostic-only until an exact doctor-bound vault-owner approval; otherwise reacquire the writer and repeat all six readiness gates."
     },
     {
       "transition_id": "TR-CPAGENT-024",

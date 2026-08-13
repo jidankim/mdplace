@@ -24,11 +24,11 @@
         "journal_head_sequence": 0,
         "work": null,
         "control_channel": {
-          "state": "closed",
+          "state": "diagnostic_only",
           "vault_id": "vault:001",
           "protocol_version": "1.0",
           "command_version": 1,
-          "same_user_authenticated": false,
+          "same_user_authenticated": true,
           "local_transport": true
         },
         "prior_receipts": [],
@@ -194,21 +194,6 @@
           {
             "ordinal": 6,
             "gate": "work_journal",
-            "verdict": "not_run",
-            "receipt_id": null,
-            "agent_id": null,
-            "vault_id": null,
-            "observation_digest": null,
-            "previous_receipt_digest": null,
-            "signature_scheme": null,
-            "signing_key_id": null,
-            "signer_agent_id": null,
-            "signature_digest": null,
-            "authenticated": false
-          },
-          {
-            "ordinal": 7,
-            "gate": "control_channel",
             "verdict": "not_run",
             "receipt_id": null,
             "agent_id": null,

@@ -95,3 +95,12 @@ export function vaultOwnerReceiptFields(receipt) {
     receipt.work_id, receipt.work_version, receipt.lease_id ?? '', receipt.idempotency_key,
   ];
 }
+
+export function vaultOwnerRecoveryApprovalFields(receipt) {
+  return [
+    receipt.receipt_id, receipt.principal_id, receipt.vault_id,
+    receipt.persistent_agent_id, receipt.doctor_report_id,
+    receipt.doctor_report_digest, receipt.circuit_version,
+    receipt.selected_action, receipt.idempotency_key,
+  ];
+}

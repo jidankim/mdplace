@@ -26,7 +26,7 @@
         "journal_head_sequence": 0,
         "work": null,
         "control_channel": {
-          "state": "open",
+          "state": "work_admitting",
           "vault_id": "vault:001",
           "protocol_version": "1.0",
           "command_version": 1,
@@ -195,21 +195,6 @@
             "signer_agent_id": null,
             "signature_digest": null,
             "authenticated": false
-          },
-          {
-            "ordinal": 7,
-            "gate": "control_channel",
-            "verdict": "not_run",
-            "receipt_id": null,
-            "agent_id": null,
-            "vault_id": null,
-            "observation_digest": null,
-            "previous_receipt_digest": null,
-            "signature_scheme": null,
-            "signing_key_id": null,
-            "signer_agent_id": null,
-            "signature_digest": null,
-            "authenticated": false
           }
         ],
         "current_tick": 1,
@@ -217,7 +202,8 @@
         "expected_journal_head_digest": null,
         "expected_scheduler_state_digest": null,
         "vault_owner_receipt": null,
-        "completion_output_digest": null
+        "completion_output_digest": null,
+        "command_kind": "status"
       }
     }
   },

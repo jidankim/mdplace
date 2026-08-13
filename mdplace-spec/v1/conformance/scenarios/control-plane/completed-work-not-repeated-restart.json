@@ -115,11 +115,11 @@
           ]
         },
         "control_channel": {
-          "state": "closed",
+          "state": "diagnostic_only",
           "vault_id": "vault:001",
           "protocol_version": "1.0",
           "command_version": 1,
-          "same_user_authenticated": false,
+          "same_user_authenticated": true,
           "local_transport": true
         },
         "prior_receipts": [],
@@ -335,21 +335,6 @@
             "signer_agent_id": "agent:primary-001",
             "signature_digest": "37508e2230aa42bbe30853a4cfdceecdef42c50bbd82bfdff834084090985e76",
             "authenticated": true
-          },
-          {
-            "ordinal": 7,
-            "gate": "control_channel",
-            "verdict": "pass",
-            "receipt_id": "readiness-receipt:007",
-            "agent_id": "agent:primary-001",
-            "vault_id": "vault:001",
-            "observation_digest": "1324bcaa87699c9ff4d404522155580f42e2d9dbda57c3aec44b0e95fea58ce6",
-            "previous_receipt_digest": "37508e2230aa42bbe30853a4cfdceecdef42c50bbd82bfdff834084090985e76",
-            "signature_scheme": "hmac-sha256",
-            "signing_key_id": "signer-key:primary-001",
-            "signer_agent_id": "agent:primary-001",
-            "signature_digest": "3cbf02d83fc287a6ba66edc66d305ddcca90e435bcae5c518e25ed4bf83b9202",
-            "authenticated": true
           }
         ],
         "current_tick": 1,
@@ -376,7 +361,7 @@
       "validate compatibility",
       "rebuild disposable views",
       "reconcile Work Journal",
-      "open Control Channel"
+      "promote Control Channel to work-admitting"
     ],
     "receipts": [
       "AgentRestartReceipt:agent:primary-001"

@@ -3,8 +3,8 @@
   "package_series": "mdplace-spec/v1",
   "release_version": "1.0.0",
   "validator_version": "1.2.0",
-  "normative_digest": "432a95eda3345317079d35f82247ddb49fb725a3d5ef3bced08e6a591413e1ec",
-  "conformance_digest": "b31fb16676906aa3c5a2ea8de8b138b597f07cec99f7241952e5a70e22e093f1",
+  "normative_digest": "56fbf46bd792568bea60ffe201f9ba0d0a304197ddc5c950e4d281fedb7d1c03",
+  "conformance_digest": "ac551a19b518c7feae9d93875c039c4763e1e727c5694d721a46a911a63a2751",
   "verdict": "pass",
   "checks": [
     {
@@ -59,6 +59,11 @@
     },
     {
       "id": "control-plane-contract",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "control-plane-lifecycle",
       "verdict": "pass",
       "codes": []
     },

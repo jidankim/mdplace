@@ -70,7 +70,7 @@
           ]
         },
         "control_channel": {
-          "state": "open",
+          "state": "work_admitting",
           "vault_id": "vault:001",
           "protocol_version": "1.0",
           "command_version": 1,
@@ -290,21 +290,6 @@
             "signing_key_id": "signer-key:primary-001",
             "signer_agent_id": "agent:primary-001",
             "signature_digest": "bbfea3f683c4d6737258414194424a700d3fa261f7625905efc3ba29224b9f69",
-            "authenticated": true
-          },
-          {
-            "ordinal": 7,
-            "gate": "control_channel",
-            "verdict": "pass",
-            "receipt_id": "readiness-receipt:007",
-            "agent_id": "agent:primary-001",
-            "vault_id": "vault:001",
-            "observation_digest": "1324bcaa87699c9ff4d404522155580f42e2d9dbda57c3aec44b0e95fea58ce6",
-            "previous_receipt_digest": "bbfea3f683c4d6737258414194424a700d3fa261f7625905efc3ba29224b9f69",
-            "signature_scheme": "hmac-sha256",
-            "signing_key_id": "signer-key:primary-001",
-            "signer_agent_id": "agent:primary-001",
-            "signature_digest": "bb05bb2877e00f86438dfbc8d3a80b371d7196e82ec22885385862889bc9e0b4",
             "authenticated": true
           }
         ],

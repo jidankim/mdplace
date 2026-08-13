@@ -23,6 +23,7 @@ import {
 } from './control-plane-scenario-history.mjs';
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {canonicalJson} from './semantic-kernel-core.mjs';
+import {completeControlPlaneOutputs} from './control-plane-observation.mjs';
 
 const authorityByAction = new Map([
   ['enqueue', 'work_submitter'],
@@ -42,7 +43,7 @@ const authorityByAction = new Map([
 
 const readinessGateNames = [
   'exclusive_writer', 'vault_filesystem', 'semantic_kernel', 'compatibility',
-  'derived_views', 'work_journal', 'control_channel',
+  'derived_views', 'work_journal',
 ];
 
 function digestCanonical(value) {
@@ -508,9 +509,8 @@ function observed(initial, action, {
     completeOutputs.push(`semantic_write:denied:${action.authority_source}`);
     completeOperations.push('deny control-plane semantic write');
   }
-  completeOutputs.push(`semantic_state_digest:${initial.semantic_state_digest}`);
   return {
-    verdict, codes, outputs: completeOutputs, operations: completeOperations, receipts,
+    verdict, codes, outputs: completeControlPlaneOutputs(completeOutputs, initial), operations: completeOperations, receipts,
     filesystem_effects: effects, terminal_state: terminal, illegal_transition: illegal,
   };
 }
@@ -533,13 +533,13 @@ function journalCanAppend(initial, count = 1) {
 }
 
 function controlChannelIsCurrent(initial) {
-  return initial.control_channel.state === 'open' && initial.control_channel.same_user_authenticated === true &&
+  return initial.control_channel.state === 'work_admitting' && initial.control_channel.same_user_authenticated === true &&
     initial.control_channel.local_transport === true;
 }
 
 function controlChannelIsClosedForStartup(initial) {
-  return initial.control_channel.state === 'closed' &&
-    initial.control_channel.same_user_authenticated === false;
+  return initial.control_channel.state === 'diagnostic_only' &&
+    initial.control_channel.same_user_authenticated === true && initial.control_channel.local_transport === true;
 }
 
 function workStateIsConsistent(work) {
@@ -935,7 +935,7 @@ function restart(initial, action) {
       : initial.work?.state === 'succeeded' ? ['completed work not repeated after restart'] : ['Agent restart reconciled'];
   return observed(initial, action, {
     outputs,
-    operations: ['acquire Exclusive Writer Lock', 'validate vault and filesystem profile', 'validate Semantic Kernel', 'validate compatibility', 'rebuild disposable views', 'reconcile Work Journal', 'open Control Channel'],
+    operations: ['acquire Exclusive Writer Lock', 'validate vault and filesystem profile', 'validate Semantic Kernel', 'validate compatibility', 'rebuild disposable views', 'reconcile Work Journal', 'promote Control Channel to work-admitting'],
     receipts: [`AgentRestartReceipt:${initial.persistent_agent_id}`], terminal: 'ready',
   });
 }
@@ -1107,21 +1107,33 @@ function readinessCheck(initial, action) {
   }
   if (unavailable !== null) return rejected(initial, action, unavailable, {terminal: 'blocked'});
   return observed(initial, action, {
-    outputs: ['Readiness Gate passed'], operations: ['check Exclusive Writer Lock', 'check vault filesystem profile', 'check semantic dependency', 'check compatibility', 'recover derived views', 'check Work Journal', 'open Control Channel'],
+    outputs: ['Readiness Gate passed'], operations: ['check Exclusive Writer Lock', 'check vault filesystem profile', 'check semantic dependency', 'check compatibility', 'recover derived views', 'check Work Journal', 'promote Control Channel to work-admitting'],
     receipts: ['ReadinessReceipt:ready'], terminal: 'ready',
   });
 }
 
 function controlCommand(initial, action) {
-  if (initial.control_channel.state !== 'open' || !initial.control_channel.same_user_authenticated ||
+  const channelMode = initial.control_channel.state;
+  if (!['diagnostic_only', 'work_admitting'].includes(channelMode) || !initial.control_channel.same_user_authenticated ||
       !initial.control_channel.local_transport || action.command_vault_id !== initial.vault_id) {
     return rejected(initial, action, 'control.authentication_denied');
   }
   if (action.command_version !== initial.control_channel.command_version) return rejected(initial, action, 'control.command_stale');
+  if (channelMode === 'diagnostic_only' && !['status', 'doctor'].includes(action.command_kind)) {
+    return rejected(initial, action, 'control.work_admission_blocked', {terminal: initial.agent_state});
+  }
+  const diagnostic = channelMode === 'diagnostic_only';
+  const blockedReason = initial.blocked_reason ?? (initial.writer_owner_agent_id !== initial.persistent_agent_id
+    ? 'control.readiness_writer_absent' : !initial.semantic_dependency_available
+      ? 'control.readiness_semantic_dependency_unavailable' : !initial.journal_available
+        ? 'control.readiness_journal_unavailable' : 'control.integrity_circuit_open');
   return observed(initial, action, {
-    outputs: ['authenticated local Control Command accepted'],
-    operations: ['verify Unix-domain transport', 'verify same-user peer credentials', 'verify vault scope', 'compare command version', 'admit Control Command'],
-    receipts: [`ControlCommandReceipt:${action.command_version}`], terminal: 'ready',
+    outputs: diagnostic
+      ? ['authenticated diagnostic Control Command accepted', `blocked_reason:${blockedReason}`]
+      : ['authenticated local Control Command accepted'],
+    operations: ['verify Unix-domain transport', 'verify same-user peer credentials', 'verify vault scope',
+      'compare command version', diagnostic ? 'admit diagnostic Control Command' : 'admit Control Command'],
+    receipts: [`ControlCommandReceipt:${action.command_version}`], terminal: diagnostic ? 'blocked' : 'ready',
   });
 }
 
@@ -1141,7 +1153,7 @@ export async function observeControlPlaneScenario(subject, packageRoot) {
   const errors = await validateAgainstSchemaPath(packageRoot, subject.schema, subject.document);
   const schemaCode = schemaErrorCode(errors);
   if (schemaCode !== null) {
-    return {verdict: 'fail', codes: [schemaCode], outputs: ['scenario rejected'], operations: ['validate control-plane scenario'], receipts: ['ControlPlaneRejectionReceipt:schema'], filesystem_effects: ['none'], terminal_state: 'rejected', illegal_transition: false};
+    return {verdict: 'fail', codes: [schemaCode], outputs: completeControlPlaneOutputs(['scenario rejected'], subject.document?.initial), operations: ['validate control-plane scenario'], receipts: ['ControlPlaneRejectionReceipt:schema'], filesystem_effects: ['none'], terminal_state: 'rejected', illegal_transition: false};
   }
   const {action, initial} = subject.document;
   if (initial.control_channel.vault_id !== initial.vault_id) {

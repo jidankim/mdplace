@@ -16,16 +16,16 @@
       "schema_id": "mdplace.control-plane-scenario/v1",
       "scenario_id": "CP-022",
       "initial": {
-        "agent_state": "ready",
+        "agent_state": "blocked",
         "persistent_agent_id": "agent:primary-001",
         "writer_owner_agent_id": "agent:primary-001",
         "writer_epoch": 1,
-        "journal_available": true,
+        "journal_available": false,
         "semantic_dependency_available": true,
         "journal_head_sequence": 0,
         "work": null,
         "control_channel": {
-          "state": "open",
+          "state": "diagnostic_only",
           "vault_id": "vault:001",
           "protocol_version": "1.0",
           "command_version": 1,
@@ -83,7 +83,8 @@
         },
         "scheduler_active_lease_receipts": [],
         "semantic_state_version": 1,
-        "scheduler_observed_tick": 1
+        "scheduler_observed_tick": 1,
+        "blocked_reason": "control.readiness_journal_unavailable"
       },
       "action": {
         "kind": "control_command",
@@ -194,21 +195,6 @@
             "signer_agent_id": null,
             "signature_digest": null,
             "authenticated": false
-          },
-          {
-            "ordinal": 7,
-            "gate": "control_channel",
-            "verdict": "not_run",
-            "receipt_id": null,
-            "agent_id": null,
-            "vault_id": null,
-            "observation_digest": null,
-            "previous_receipt_digest": null,
-            "signature_scheme": null,
-            "signing_key_id": null,
-            "signer_agent_id": null,
-            "signature_digest": null,
-            "authenticated": false
           }
         ],
         "current_tick": 1,
@@ -216,7 +202,8 @@
         "expected_journal_head_digest": null,
         "expected_scheduler_state_digest": null,
         "vault_owner_receipt": null,
-        "completion_output_digest": null
+        "completion_output_digest": null,
+        "command_kind": "status"
       }
     }
   },
@@ -224,7 +211,8 @@
     "verdict": "pass",
     "codes": [],
     "outputs": [
-      "authenticated local Control Command accepted",
+      "authenticated diagnostic Control Command accepted",
+      "blocked_reason:control.readiness_journal_unavailable",
       "work_state:none",
       "semantic_write:denied:control_channel",
       "semantic_state_digest:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
@@ -234,7 +222,7 @@
       "verify same-user peer credentials",
       "verify vault scope",
       "compare command version",
-      "admit Control Command",
+      "admit diagnostic Control Command",
       "deny control-plane semantic write"
     ],
     "receipts": [
@@ -243,7 +231,7 @@
     "filesystem_effects": [
       "none"
     ],
-    "terminal_state": "ready",
+    "terminal_state": "blocked",
     "illegal_transition": false
   }
 }

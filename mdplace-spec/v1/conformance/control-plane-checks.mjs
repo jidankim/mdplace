@@ -25,6 +25,7 @@ const instanceBindings = [
   ['contracts/control-plane/work-journal.json', 'contracts/schemas/work-journal.schema.json'],
   ['contracts/control-plane/scheduler-state.json', 'contracts/schemas/scheduler-state.schema.json'],
   ['contracts/control-plane/agent-state.json', 'contracts/schemas/agent-state.schema.json'],
+  ['contracts/control-plane/launchagent-supervision-profile.json', 'contracts/schemas/launchagent-supervision-profile.schema.json'],
   ['contracts/control-plane/control-command.json', 'contracts/schemas/control-channel-command.schema.json'],
   ['contracts/control-plane/child-work-invocation.json', 'contracts/schemas/child-work-invocation.schema.json'],
   ['contracts/control-plane/recovery-matrix.json', 'contracts/schemas/control-plane-recovery-matrix.schema.json'],
@@ -39,6 +40,7 @@ const transitionPaths = [
   'contracts/transitions/agent-lifecycle.json',
   'contracts/transitions/control-channel-lifecycle.json',
   'contracts/transitions/exclusive-writer-lifecycle.json',
+  'contracts/transitions/launchagent-supervision-lifecycle.json',
 ];
 
 const transitionInventories = new Map([
@@ -62,24 +64,32 @@ const transitionInventories = new Map([
   }],
   ['contracts/transitions/readiness-lifecycle.json', {
     prefix: 'TR-CPREADY-',
-    rowsDigest: 'cd2c2252d8b69246c276da19af1005e0af66b3e80617d38c41d003ffadfb8a0a',
+    rowsDigest: '10fd9dee0bd2ab85bb3b1531465be9c3e1f5b714b2f42886552be24b3e94c2b0',
     states: ['starting', 'ready', 'blocked'], commands: ['evaluate_readiness', 'dependency_lost'],
   }],
   ['contracts/transitions/agent-lifecycle.json', {
     prefix: 'TR-CPAGENT-',
-    rowsDigest: '2e61383c92b4db87b896f9eea7e8d130ee3e916dd0abb19ee2c88aa3192ebc66',
+    rowsDigest: 'dd054a8a2a2664b0535aec92f7fce66b1aea2c1d20119a5508c73950574be905',
     states: ['stopped', 'starting', 'recovering', 'ready', 'draining', 'blocked'],
     commands: ['start_agent', 'crash_agent', 'recover_agent', 'stop_agent'],
   }],
   ['contracts/transitions/control-channel-lifecycle.json', {
     prefix: 'TR-CPCHANNEL-',
-    rowsDigest: '1e658046f5c7aaeaf4e6bec507174f30a9b64158a92e7a35c3473a9a6f509f9e',
-    states: ['closed', 'open'], commands: ['open_control_channel', 'submit_control_command', 'close_control_channel'],
+    rowsDigest: '4f2e40659c67b4f1ad73598dcb649c0b66b6bff2b867fe1daa21b5b6aaec231d',
+    states: ['closed', 'diagnostic_only', 'work_admitting', 'draining'],
+    commands: ['open_control_channel', 'submit_control_command', 'close_control_channel'],
   }],
   ['contracts/transitions/exclusive-writer-lifecycle.json', {
     prefix: 'TR-CPWRITER-',
     rowsDigest: '4c5474dbc6b88ab2d769f08a40ab21d2101cf7e8eb8a8dbe0a0e8c0e048954cc',
     states: ['unheld', 'held'], commands: ['acquire_writer', 'retain_writer', 'release_writer'],
+  }],
+  ['contracts/transitions/launchagent-supervision-lifecycle.json', {
+    prefix: 'TR-CPSUP-',
+    rowsDigest: '5ac2ed79a3de6cc41d1bbcdcf2301e280eb7e5ac7b90e6e5778fba4c75e589c5',
+    states: ['supervised', 'backoff', 'circuit_open', 'recovering'],
+    commands: ['unexpected_exit', 'backoff_elapsed', 'restart_ceiling_reached', 'wake_revalidate',
+      'emit_doctor_report', 'approve_owner_recovery', 'complete_recovery'],
   }],
 ]);
 
@@ -106,7 +116,7 @@ const recoveryInventory = [
   terminal_result: `${decision} with unchanged semantic truth`,
   failure_result: 'control.recovery_precondition_failed; state unchanged',
 }));
-const recoveryRowsDigest = '269342ca0a03fd65a1ae19fda5af874fab0f31baf9d6cda93b319a3549d98701';
+const recoveryRowsDigest = '6d2c5147a602134d6d5b07efd290d1b8d0b9a8e3a5737e1392ef89acf6fa2626';
 
 function canonicalDigest(value) {
   return createHash('sha256').update(canonicalJson(value)).digest('hex');
@@ -123,6 +133,10 @@ const authorityByTransitionCommand = new Map([
   ['open_control_channel', 'mdplace_agent'], ['submit_control_command', 'control_client'],
   ['close_control_channel', 'mdplace_agent'], ['acquire_writer', 'mdplace_agent'],
   ['retain_writer', 'mdplace_agent'], ['release_writer', 'mdplace_agent'],
+  ['unexpected_exit', 'operating_system'], ['backoff_elapsed', 'launchd_supervisor'],
+  ['restart_ceiling_reached', 'launchd_supervisor'], ['wake_revalidate', 'mdplace_agent'],
+  ['emit_doctor_report', 'mdplace_agent'], ['approve_owner_recovery', 'vault_owner'],
+  ['complete_recovery', 'mdplace_agent'],
 ]);
 
 function transitionTarget(prefix, state, command) {
@@ -155,14 +169,35 @@ function transitionTarget(prefix, state, command) {
     if (command === 'stop_agent') return state === 'ready' ? 'draining' : 'stopped';
   }
   if (prefix === 'TR-CPCHANNEL-') {
-    if (command === 'open_control_channel') return 'open';
+    if (command === 'open_control_channel' && state === 'closed') return 'diagnostic_only';
+    if (command === 'open_control_channel' && state === 'diagnostic_only') return 'work_admitting';
+    if (command === 'open_control_channel' && state === 'work_admitting') return 'work_admitting';
     if (command === 'close_control_channel') return 'closed';
-    if (command === 'submit_control_command' && state === 'open') return 'open';
+    if (command === 'submit_control_command' && ['diagnostic_only', 'work_admitting'].includes(state)) return state;
   }
   if (prefix === 'TR-CPWRITER-') {
     if (state === 'unheld' && command === 'acquire_writer') return 'held';
     if (state === 'held' && command === 'retain_writer') return 'held';
     if (state === 'held' && command === 'release_writer') return 'unheld';
+  }
+  if (prefix === 'TR-CPSUP-') {
+    if (state === 'supervised' && command === 'unexpected_exit') return 'backoff';
+    if (state === 'supervised' && ['wake_revalidate', 'emit_doctor_report'].includes(command)) {
+      return command === 'wake_revalidate' ? 'recovering' : 'supervised';
+    }
+    if (state === 'backoff' && ['unexpected_exit', 'backoff_elapsed', 'restart_ceiling_reached', 'emit_doctor_report'].includes(command)) {
+      if (command === 'backoff_elapsed') return 'supervised';
+      if (command === 'restart_ceiling_reached') return 'circuit_open';
+      return 'backoff';
+    }
+    if (state === 'circuit_open' && ['unexpected_exit', 'restart_ceiling_reached', 'wake_revalidate', 'emit_doctor_report', 'approve_owner_recovery'].includes(command)) {
+      return command === 'approve_owner_recovery' ? 'recovering' : 'circuit_open';
+    }
+    if (state === 'recovering' && ['unexpected_exit', 'restart_ceiling_reached', 'wake_revalidate', 'emit_doctor_report', 'complete_recovery'].includes(command)) {
+      if (['unexpected_exit', 'restart_ceiling_reached'].includes(command)) return 'circuit_open';
+      if (command === 'complete_recovery') return 'supervised';
+      return 'recovering';
+    }
   }
   return null;
 }
@@ -175,13 +210,16 @@ function transitionSemanticsAreExact(table, inventory) {
     const command = inventory.commands[index % inventory.commands.length];
     const target = transitionTarget(inventory.prefix, state, command);
     const allowed = target !== null;
+    const failureCodeIsExact = inventory.prefix === 'TR-CPSUP-'
+      ? /^control\.[a-z0-9_]+$/.test(row.failure_result?.code ?? '')
+      : row.failure_result?.code === (allowed ? 'control.precondition_failed' : 'control.illegal_transition');
     return row.transition_id === `${inventory.prefix}${String(index + 1).padStart(3, '0')}` &&
       row.from_state === state && row.command_or_event === command && row.allowed === allowed &&
       row.terminal_state === (target ?? state) &&
       sameOrder(row.actor_authority?.roles, [authorityByTransitionCommand.get(command)]) &&
       row.actor_authority?.quorum === 1 && row.actor_authority?.distinct_actors === false &&
       row.actor_authority?.delegation === 'forbidden' &&
-      row.failure_result?.code === (allowed ? 'control.precondition_failed' : 'control.illegal_transition') &&
+      failureCodeIsExact &&
       row.failure_result?.state_effect === 'unchanged';
   });
 }
@@ -640,9 +678,14 @@ function schedulerStateValid(scheduler, journal, agent) {
 }
 
 function agentStateValid(agent) {
-  const gateNames = ['exclusive_writer', 'vault_filesystem', 'semantic_kernel', 'compatibility', 'derived_views', 'work_journal', 'control_channel'];
+  const gateNames = ['exclusive_writer', 'vault_filesystem', 'semantic_kernel', 'compatibility', 'derived_views', 'work_journal'];
   if (!Array.isArray(agent?.readiness_gates) || agent.readiness_gates.length !== gateNames.length ||
       agent.readiness_gates.some((gate, index) => !record(gate) || gate.ordinal !== index + 1 || gate.gate !== gateNames[index])) return false;
+  if (agent.supervision_profile !== 'contracts/control-plane/launchagent-supervision-profile.json' ||
+      !record(agent.supervision_state) || !record(agent.supervision_state.circuit) ||
+      agent.supervision_state.automatic_restart_attempt_count > 3 ||
+      agent.supervision_state.circuit.storage !== 'durable_agent_state' ||
+      agent.supervision_state.circuit.trip_threshold !== 3 || !record(agent.wake_revalidation)) return false;
   if (agent.state !== 'ready') return true;
   const writer = agent.writer_lock;
   if (writer?.owner_agent_id !== agent.persistent_agent_id || writer.epoch <= 0 || writer.prior_epoch !== writer.epoch - 1 ||
@@ -661,7 +704,11 @@ function agentStateValid(agent) {
   });
   return writer.owner_agent_id === agent.persistent_agent_id && writer.epoch > 0 &&
     agent.writer_lock.retained === true && typeof agent.writer_lock.token_digest === 'string' &&
-    agent.control_channel_state === 'open' && gatesValid;
+    agent.control_channel_state === 'work_admitting' && gatesValid &&
+    agent.supervision_state.state === 'supervised' && agent.supervision_state.automatic_restart_attempt_count === 0 &&
+    agent.supervision_state.next_restart_tick === null && agent.supervision_state.circuit.state === 'closed' &&
+    agent.wake_revalidation.verdict === 'pass' && agent.doctor_report === null &&
+    agent.owner_recovery_authorization === null;
 }
 
 function controlCommandStateValid(command, journal) {

@@ -14,4 +14,7 @@ import './validator-semantic-kernel-cases.mjs';
 import './validator-semantic-kernel-boundary-cases.mjs';
 import './validator-semantic-kernel-review-cases.mjs';
 import './validator-control-plane-cases.mjs';
+import './validator-control-plane-diagnostics-cases.mjs';
+import './validator-control-plane-lifecycle-cases.mjs';
+import './validator-control-plane-observation-cases.mjs';
 import './validator-coderabbit-review-cases.mjs';

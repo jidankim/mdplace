@@ -1,0 +1,56 @@
+{
+  "$schema": "../../contracts/schemas/control-plane-doctor-report.schema.json",
+  "schema_id": "mdplace.control-plane-doctor-report/v1",
+  "report_id": "control-plane-doctor-report:primary-001",
+  "package_series": "mdplace-spec/v1",
+  "release_version": "1.0.0",
+  "persistent_agent_id": "agent:primary-001",
+  "instance_id": "agent-instance:001",
+  "vault_id": "vault:001",
+  "reported_tick": 30000,
+  "circuit": {
+    "version": 3,
+    "state": "circuit_open",
+    "storage": "durable_agent_state",
+    "failure_count": 3,
+    "trip_threshold": 3,
+    "last_failure_class": "integrity_failure",
+    "trip_receipt_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "startup_failure_receipts": [
+    {
+      "receipt_id": "integrity-failure-receipt:primary-001",
+      "failure_class": "integrity_failure",
+      "code": "control.restart_ceiling_reached",
+      "observed_tick": 30000,
+      "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+  ],
+  "readiness_observations": [
+    {"ordinal": 1, "gate": "exclusive_writer", "verdict": "pass", "receipt_id": "readiness-receipt:001", "receipt_digest": "1111111111111111111111111111111111111111111111111111111111111111", "observation_digest": "2111111111111111111111111111111111111111111111111111111111111111"},
+    {"ordinal": 2, "gate": "vault_filesystem", "verdict": "pass", "receipt_id": "readiness-receipt:002", "receipt_digest": "1222222222222222222222222222222222222222222222222222222222222222", "observation_digest": "2222222222222222222222222222222222222222222222222222222222222222"},
+    {"ordinal": 3, "gate": "semantic_kernel", "verdict": "pass", "receipt_id": "readiness-receipt:003", "receipt_digest": "1333333333333333333333333333333333333333333333333333333333333333", "observation_digest": "2333333333333333333333333333333333333333333333333333333333333333"},
+    {"ordinal": 4, "gate": "compatibility", "verdict": "pass", "receipt_id": "readiness-receipt:004", "receipt_digest": "1444444444444444444444444444444444444444444444444444444444444444", "observation_digest": "2444444444444444444444444444444444444444444444444444444444444444"},
+    {"ordinal": 5, "gate": "derived_views", "verdict": "pass", "receipt_id": "readiness-receipt:005", "receipt_digest": "1555555555555555555555555555555555555555555555555555555555555555", "observation_digest": "2555555555555555555555555555555555555555555555555555555555555555"},
+    {"ordinal": 6, "gate": "work_journal", "verdict": "fail", "receipt_id": "readiness-receipt:006", "receipt_digest": "1666666666666666666666666666666666666666666666666666666666666666", "observation_digest": "2666666666666666666666666666666666666666666666666666666666666666"}
+  ],
+  "work_admission_mode": "diagnostic_only",
+  "blocked_code": "control.restart_ceiling_reached",
+  "work_journal_head": {
+    "journal_id": "journal:primary-001",
+    "head_sequence": 0,
+    "head_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+  },
+  "semantic_kernel": {
+    "reference_id": "semantic:head-001",
+    "version": 1,
+    "digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+  },
+  "wake_observations": [
+    {"check": "exclusive_writer", "verdict": "pending", "observation_digest": "3111111111111111111111111111111111111111111111111111111111111111"},
+    {"check": "vault_filesystem", "verdict": "pending", "observation_digest": "3222222222222222222222222222222222222222222222222222222222222222"},
+    {"check": "filesystem_drift", "verdict": "pending", "observation_digest": "3333333333333333333333333333333333333333333333333333333333333333"}
+  ],
+  "allowed_recovery_actions": ["revalidate_same_agent_core"],
+  "report_authority": "diagnostic_evidence_only"
+}

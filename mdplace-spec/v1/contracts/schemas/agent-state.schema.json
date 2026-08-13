@@ -4,7 +4,7 @@
   "title": "mdplace Agent lifecycle and Readiness Gate state",
   "type": "object",
   "additionalProperties": false,
-  "required": ["$schema", "schema_id", "persistent_agent_id", "instance_id", "vault_id", "state", "supervisor", "semantic_authority", "writer_lock", "readiness_gates", "control_channel_state"],
+  "required": ["$schema", "schema_id", "persistent_agent_id", "instance_id", "vault_id", "state", "supervisor", "supervision_profile", "supervision_state", "wake_revalidation", "doctor_report", "owner_recovery_authorization", "semantic_authority", "writer_lock", "readiness_gates", "control_channel_state"],
   "properties": {
     "$schema": {"const": "../schemas/agent-state.schema.json"},
     "schema_id": {"const": "mdplace.agent-state/v1"},
@@ -13,24 +13,28 @@
     "vault_id": {"type": "string", "pattern": "^vault:[a-z0-9-]{3,64}$"},
     "state": {"enum": ["stopped", "starting", "recovering", "ready", "draining", "blocked"]},
     "supervisor": {"const": "launchd_launchagent"},
+    "supervision_profile": {"const": "contracts/control-plane/launchagent-supervision-profile.json"},
+    "supervision_state": {"$ref": "#/$defs/supervisionState"},
+    "wake_revalidation": {"$ref": "#/$defs/wakeRevalidation"},
+    "doctor_report": {"$ref": "#/$defs/reportBinding"},
+    "owner_recovery_authorization": {"$ref": "#/$defs/recoveryAuthorizationBinding"},
     "semantic_authority": {"const": "none"},
     "writer_lock": {"$ref": "#/$defs/writerLock"},
     "readiness_gates": {
       "type": "array",
-      "minItems": 7,
-      "maxItems": 7,
+      "minItems": 6,
+      "maxItems": 6,
       "prefixItems": [
         {"$ref": "#/$defs/readinessGate", "properties": {"ordinal": {"const": 1}, "gate": {"const": "exclusive_writer"}}},
         {"$ref": "#/$defs/readinessGate", "properties": {"ordinal": {"const": 2}, "gate": {"const": "vault_filesystem"}}},
         {"$ref": "#/$defs/readinessGate", "properties": {"ordinal": {"const": 3}, "gate": {"const": "semantic_kernel"}}},
         {"$ref": "#/$defs/readinessGate", "properties": {"ordinal": {"const": 4}, "gate": {"const": "compatibility"}}},
         {"$ref": "#/$defs/readinessGate", "properties": {"ordinal": {"const": 5}, "gate": {"const": "derived_views"}}},
-        {"$ref": "#/$defs/readinessGate", "properties": {"ordinal": {"const": 6}, "gate": {"const": "work_journal"}}},
-        {"$ref": "#/$defs/readinessGate", "properties": {"ordinal": {"const": 7}, "gate": {"const": "control_channel"}}}
+        {"$ref": "#/$defs/readinessGate", "properties": {"ordinal": {"const": 6}, "gate": {"const": "work_journal"}}}
       ],
       "items": false
     },
-    "control_channel_state": {"enum": ["closed", "open", "draining"]}
+    "control_channel_state": {"enum": ["closed", "diagnostic_only", "work_admitting", "draining"]}
   },
   "if": {"properties": {"state": {"const": "ready"}}},
   "then": {
@@ -49,15 +53,65 @@
           {"properties": {"verdict": {"const": "pass"}, "receipt_id": {"type": "string", "pattern": "^readiness-receipt:[a-z0-9-]{3,64}$"}}},
           {"properties": {"verdict": {"const": "pass"}, "receipt_id": {"type": "string", "pattern": "^readiness-receipt:[a-z0-9-]{3,64}$"}}},
           {"properties": {"verdict": {"const": "pass"}, "receipt_id": {"type": "string", "pattern": "^readiness-receipt:[a-z0-9-]{3,64}$"}}},
-          {"properties": {"verdict": {"const": "pass"}, "receipt_id": {"type": "string", "pattern": "^readiness-receipt:[a-z0-9-]{3,64}$"}}},
           {"properties": {"verdict": {"const": "pass"}, "receipt_id": {"type": "string", "pattern": "^readiness-receipt:[a-z0-9-]{3,64}$"}}}
         ]
       },
-      "control_channel_state": {"const": "open"}
+      "control_channel_state": {"const": "work_admitting"},
+      "supervision_state": {"properties": {"state": {"const": "supervised"}, "automatic_restart_attempt_count": {"const": 0}, "next_restart_tick": {"type": "null"}, "circuit": {"properties": {"state": {"const": "closed"}}}}},
+      "wake_revalidation": {"properties": {"verdict": {"const": "pass"}}},
+      "doctor_report": {"type": "null"},
+      "owner_recovery_authorization": {"type": "null"}
     }
   },
   "$defs": {
     "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "supervisionState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "automatic_restart_attempt_count", "next_restart_tick", "circuit"],
+      "properties": {
+        "state": {"enum": ["supervised", "backoff", "circuit_open", "recovering"]},
+        "automatic_restart_attempt_count": {"type": "integer", "minimum": 0, "maximum": 3},
+        "next_restart_tick": {"type": ["integer", "null"], "minimum": 0, "maximum": 1000000},
+        "circuit": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["version", "state", "storage", "failure_count", "trip_threshold", "trip_receipt_digest"],
+          "properties": {
+            "version": {"type": "integer", "minimum": 0, "maximum": 1000000},
+            "state": {"enum": ["closed", "open"]},
+            "storage": {"const": "durable_agent_state"},
+            "failure_count": {"type": "integer", "minimum": 0, "maximum": 3},
+            "trip_threshold": {"const": 3},
+            "trip_receipt_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]}
+          }
+        }
+      }
+    },
+    "wakeRevalidation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["writer_epoch", "vault_filesystem_profile_digest", "filesystem_drift_digest", "observed_tick", "verdict"],
+      "properties": {
+        "writer_epoch": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "vault_filesystem_profile_digest": {"$ref": "#/$defs/digest"},
+        "filesystem_drift_digest": {"$ref": "#/$defs/digest"},
+        "observed_tick": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "verdict": {"enum": ["pending", "pass", "fail"]}
+      }
+    },
+    "reportBinding": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "object", "additionalProperties": false, "required": ["report_id", "digest"], "properties": {"report_id": {"type": "string", "pattern": "^control-plane-doctor-report:[a-z0-9-]{3,64}$"}, "digest": {"$ref": "#/$defs/digest"}}}
+      ]
+    },
+    "recoveryAuthorizationBinding": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "object", "additionalProperties": false, "required": ["receipt_id", "digest"], "properties": {"receipt_id": {"type": "string", "pattern": "^vault-owner-recovery-approval:[a-z0-9-]{3,64}$"}, "digest": {"$ref": "#/$defs/digest"}}}
+      ]
+    },
     "writerLock": {
       "type": "object",
       "additionalProperties": false,
@@ -81,8 +135,8 @@
       "additionalProperties": false,
       "required": ["ordinal", "gate", "verdict", "receipt_id", "agent_id", "vault_id", "observation_digest", "previous_receipt_digest", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
       "properties": {
-        "ordinal": {"type": "integer", "minimum": 1, "maximum": 7},
-        "gate": {"enum": ["exclusive_writer", "vault_filesystem", "semantic_kernel", "compatibility", "derived_views", "work_journal", "control_channel"]},
+        "ordinal": {"type": "integer", "minimum": 1, "maximum": 6},
+        "gate": {"enum": ["exclusive_writer", "vault_filesystem", "semantic_kernel", "compatibility", "derived_views", "work_journal"]},
         "verdict": {"enum": ["pending", "pass", "fail"]},
         "receipt_id": {"type": ["string", "null"], "pattern": "^readiness-receipt:[a-z0-9-]{3,64}$"},
         "agent_id": {"type": ["string", "null"], "pattern": "^agent:[a-z0-9-]{3,64}$"},

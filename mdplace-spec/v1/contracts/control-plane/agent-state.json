@@ -6,6 +6,29 @@
   "vault_id": "vault:001",
   "state": "ready",
   "supervisor": "launchd_launchagent",
+  "supervision_profile": "contracts/control-plane/launchagent-supervision-profile.json",
+  "supervision_state": {
+    "state": "supervised",
+    "automatic_restart_attempt_count": 0,
+    "next_restart_tick": null,
+    "circuit": {
+      "version": 0,
+      "state": "closed",
+      "storage": "durable_agent_state",
+      "failure_count": 0,
+      "trip_threshold": 3,
+      "trip_receipt_digest": null
+    }
+  },
+  "wake_revalidation": {
+    "writer_epoch": 1,
+    "vault_filesystem_profile_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "filesystem_drift_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "observed_tick": 1,
+    "verdict": "pass"
+  },
+  "doctor_report": null,
+  "owner_recovery_authorization": null,
   "semantic_authority": "none",
   "writer_lock": {
     "lock_id": "writer-lock:vault-001",
@@ -110,22 +133,7 @@
       "signer_agent_id": "agent:primary-001",
       "signature_digest": "c1134a8310ba2d07e1628da6101051d126e649ca9ab0a28f1e1c741f2857b87f",
       "authenticated": true
-    },
-    {
-      "ordinal": 7,
-      "gate": "control_channel",
-      "verdict": "pass",
-      "receipt_id": "readiness-receipt:007",
-      "agent_id": "agent:primary-001",
-      "vault_id": "vault:001",
-      "observation_digest": "1324bcaa87699c9ff4d404522155580f42e2d9dbda57c3aec44b0e95fea58ce6",
-      "previous_receipt_digest": "c1134a8310ba2d07e1628da6101051d126e649ca9ab0a28f1e1c741f2857b87f",
-      "signature_scheme": "hmac-sha256",
-      "signing_key_id": "signer-key:primary-001",
-      "signer_agent_id": "agent:primary-001",
-      "signature_digest": "930d432ccff41603faf18e3b30d329c2c7039f68dde29d04c91e08f33c776d64",
-      "authenticated": true
     }
   ],
-  "control_channel_state": "open"
+  "control_channel_state": "work_admitting"
 }
