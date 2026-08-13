@@ -28,7 +28,7 @@ const wakeChecks = ['exclusive_writer', 'vault_filesystem', 'filesystem_drift'];
 const readinessGates = [
   'exclusive_writer', 'vault_filesystem', 'semantic_kernel', 'compatibility', 'derived_views', 'work_journal',
 ];
-const lifecycleStates = ['supervised', 'backoff', 'circuit_open', 'recovering'];
+const lifecycleStates = ['supervised', 'backoff', 'circuit_open', 'recovering', 'wake_revalidating'];
 const lifecycleCommands = [
   'unexpected_exit', 'qualifying_failure', 'backoff_elapsed', 'restart_ceiling_reached', 'wake_revalidate',
   'emit_doctor_report', 'approve_owner_recovery', 'complete_recovery',
@@ -115,6 +115,8 @@ function lifecycleTableCodes(table) {
   const backoffCeiling = transition(table, 'backoff', 'restart_ceiling_reached');
   const afterCeiling = transition(table, 'circuit_open', 'backoff_elapsed');
   const recoveryFailure = transition(table, 'recovering', 'qualifying_failure');
+  const wakeFailure = transition(table, 'wake_revalidating', 'qualifying_failure');
+  const wakeCeiling = transition(table, 'wake_revalidating', 'restart_ceiling_reached');
   const wake = transition(table, 'supervised', 'wake_revalidate');
   const approval = transition(table, 'circuit_open', 'approve_owner_recovery');
   const recovery = transition(table, 'recovering', 'complete_recovery');
@@ -144,7 +146,15 @@ function lifecycleTableCodes(table) {
       !recoveryFailure.filesystem_effects?.includes('no automatic launch')) {
     codes.push('control.lifecycle_breaker_invalid');
   }
-  if (wake?.allowed !== true || wake.terminal_state !== 'recovering' ||
+  if (wakeFailure?.allowed !== true || wakeFailure.terminal_state !== 'backoff' ||
+      !wakeFailure.preconditions?.includes(
+        'the resulting failure ordinal is 1 or 2 and strictly below the profile maximum') ||
+      wakeCeiling?.allowed !== true || wakeCeiling.terminal_state !== 'circuit_open' ||
+      !wakeCeiling.emitted_records?.includes('QualifyingFailureReceipt') ||
+      !wakeCeiling.emitted_records?.includes('PersistentCircuitBreakerTripReceipt')) {
+    codes.push('control.lifecycle_backoff_invalid');
+  }
+  if (wake?.allowed !== true || wake.terminal_state !== 'wake_revalidating' ||
       !sameList(wake.preconditions?.slice(-3), [
         'wake revalidation observes the retained Exclusive Writer Lock',
         'wake revalidation observes the bound vault filesystem profile',
@@ -212,7 +222,7 @@ function agentStateCodes(profile, agentState, doctor, report, contents) {
       agentState?.vault_id !== profile?.vault_id || agentState?.supervision_profile !== profilePath ||
       supervision?.circuit?.storage !== 'durable_agent_state' ||
       supervision?.circuit?.trip_threshold !== profile?.persistent_circuit_breaker?.trip_on_failure_count ||
-      !['supervised', 'backoff', 'circuit_open', 'recovering'].includes(supervision?.state)) {
+      !['supervised', 'backoff', 'circuit_open', 'recovering', 'wake_revalidating'].includes(supervision?.state)) {
     codes.push('control.lifecycle_agent_state_invalid');
   }
   if (supervision?.state === 'backoff' &&
@@ -224,6 +234,12 @@ function agentStateCodes(profile, agentState, doctor, report, contents) {
       (supervision.next_restart_tick !== null || supervision.circuit?.state !== 'closed')) {
     codes.push('control.lifecycle_agent_state_invalid');
   }
+  if (supervision?.state === 'wake_revalidating' &&
+      (supervision.next_restart_tick !== null || supervision.circuit?.state !== 'closed' ||
+       agentState?.control_channel_state !== 'diagnostic_only' ||
+       agentState?.owner_recovery_authorization !== null)) {
+    codes.push('control.lifecycle_wake_invalid');
+  }
   if (supervision?.circuit?.state === 'open' &&
       !['circuit_open', 'recovering'].includes(supervision?.state)) {
     codes.push('control.lifecycle_breaker_invalid');
@@ -233,7 +249,7 @@ function agentStateCodes(profile, agentState, doctor, report, contents) {
        agentState?.owner_recovery_authorization !== null)) {
     codes.push('control.lifecycle_breaker_invalid');
   }
-  if ((supervision?.state === 'circuit_open' || supervision?.state === 'recovering') &&
+  if (['circuit_open', 'recovering', 'wake_revalidating'].includes(supervision?.state) &&
       agentState?.control_channel_state === 'work_admitting') {
     codes.push('control.lifecycle_wake_invalid');
   }

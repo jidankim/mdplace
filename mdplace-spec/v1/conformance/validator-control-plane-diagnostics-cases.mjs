@@ -84,4 +84,14 @@ test('readiness and Control Channel contracts compose without a ready-before-ope
     from_state === 'diagnostic_only' && command === 'submit_control_command',
   );
   assert.ok(diagnosticSubmit.preconditions.some((condition) => condition.includes('peer credentials')));
+  const wakeDemotion = channel.transitions.find(({from_state, command_or_event: command}) =>
+    from_state === 'work_admitting' && command === 'close_control_channel',
+  );
+  assert.equal(wakeDemotion.allowed, true);
+  assert.equal(wakeDemotion.terminal_state, 'diagnostic_only');
+  assert.ok(wakeDemotion.preconditions.some((condition) => condition.includes('wake revalidation')));
+  assert.ok(wakeDemotion.filesystem_effects.includes(
+    'atomically demote Control Channel from work-admitting to diagnostic-only',
+  ));
+  assert.ok(wakeDemotion.filesystem_effects.every((effect) => !effect.includes('remove')));
 });

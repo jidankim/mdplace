@@ -214,13 +214,24 @@ test('LaunchAgent supervision enforces bounded backoff, wake checks, and owner r
   assert.equal(recoveryFailure.terminal_state, 'circuit_open');
   assert.ok(recoveryFailure.filesystem_effects.includes('no automatic launch'));
 
+  const wakeFailure = transition(table, 'wake_revalidating', 'qualifying_failure');
+  assert.equal(wakeFailure.allowed, true);
+  assert.equal(wakeFailure.terminal_state, 'backoff');
+  assert.ok(wakeFailure.preconditions.includes(
+    'the resulting failure ordinal is 1 or 2 and strictly below the profile maximum',
+  ));
+  const wakeCeiling = transition(table, 'wake_revalidating', 'restart_ceiling_reached');
+  assert.equal(wakeCeiling.allowed, true);
+  assert.equal(wakeCeiling.terminal_state, 'circuit_open');
+  assert.ok(wakeCeiling.emitted_records.includes('QualifyingFailureReceipt'));
+
   const afterCeiling = transition(table, 'circuit_open', 'backoff_elapsed');
   assert.equal(afterCeiling.allowed, false);
   assert.equal(afterCeiling.failure_result.code, 'control.restart_ceiling_reached');
 
   const wake = transition(table, 'supervised', 'wake_revalidate');
   assert.equal(wake.allowed, true);
-  assert.equal(wake.terminal_state, 'recovering');
+  assert.equal(wake.terminal_state, 'wake_revalidating');
   assert.deepEqual(wake.preconditions.slice(-3), [
     'wake revalidation observes the retained Exclusive Writer Lock',
     'wake revalidation observes the bound vault filesystem profile',
@@ -238,6 +249,7 @@ test('LaunchAgent supervision enforces bounded backoff, wake checks, and owner r
   assert.equal(recovery.allowed, true);
   assert.equal(recovery.terminal_state, 'supervised');
   assert.ok(recovery.preconditions.includes('all three wake revalidation checks passed for the same persistent Agent core'));
+  assert.equal(transition(table, 'wake_revalidating', 'complete_recovery').terminal_state, 'supervised');
 });
 
 test('control-plane lifecycle checker accepts canonical bound supervision evidence', async () => {

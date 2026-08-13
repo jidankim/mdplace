@@ -126,7 +126,7 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "Agent is draining, blocked, or stopping, or the socket is already absent"
+        "socket is absent or already closed"
       ],
       "base_references": [
         "current Control Channel version",
@@ -136,7 +136,7 @@
         "ControlChannelCloseReceipt"
       ],
       "filesystem_effects": [
-        "remove per-vault Unix-domain socket"
+        "none"
       ],
       "idempotency": {
         "key_fields": [
@@ -157,7 +157,7 @@
           "none"
         ]
       },
-      "recovery": "A repeated close returns the original receipt."
+      "recovery": "A repeated close is harmless."
     },
     {
       "transition_id": "TR-CPCHANNEL-004",
@@ -422,17 +422,18 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "Agent is draining, blocked, or stopping, or the socket is already absent"
+        "wake revalidation is starting, or the Agent is blocked or draining",
+        "the current work-admitting channel version is bound to the suspension receipt"
       ],
       "base_references": [
         "current Control Channel version",
         "vault identity"
       ],
       "emitted_records": [
-        "ControlChannelCloseReceipt"
+        "ControlChannelWorkAdmissionSuspendedReceipt"
       ],
       "filesystem_effects": [
-        "remove per-vault Unix-domain socket"
+        "atomically demote Control Channel from work-admitting to diagnostic-only"
       ],
       "idempotency": {
         "key_fields": [
@@ -440,9 +441,9 @@
           "current Control Channel version",
           "vault identity"
         ],
-        "retry_result": "return the original durable receipt for the exact binding"
+        "retry_result": "return the original work-admission suspension receipt for the exact binding"
       },
-      "terminal_state": "closed",
+      "terminal_state": "diagnostic_only",
       "failure_result": {
         "code": "control.precondition_failed",
         "state_effect": "unchanged",
@@ -453,7 +454,7 @@
           "none"
         ]
       },
-      "recovery": "A repeated close returns the original receipt."
+      "recovery": "Retain the authenticated listener in diagnostic-only mode; a later diagnostic-only close removes the socket, while successful readiness may promote it again."
     },
     {
       "transition_id": "TR-CPCHANNEL-010",

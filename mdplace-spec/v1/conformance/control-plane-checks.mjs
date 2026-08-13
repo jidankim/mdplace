@@ -75,7 +75,7 @@ const transitionInventories = new Map([
   }],
   ['contracts/transitions/control-channel-lifecycle.json', {
     prefix: 'TR-CPCHANNEL-',
-    rowsDigest: '43632f6f6f4567524144220dd11a3df985f2d5436110443efcd9fe493b322831',
+    rowsDigest: 'a91260245777e0ee16ad1bdc1288c72e8b37a3bdac7ae4fae8a3c6db496bcb5e',
     states: ['closed', 'diagnostic_only', 'work_admitting', 'draining'],
     commands: ['open_control_channel', 'submit_control_command', 'close_control_channel'],
   }],
@@ -86,8 +86,8 @@ const transitionInventories = new Map([
   }],
   ['contracts/transitions/launchagent-supervision-lifecycle.json', {
     prefix: 'TR-CPSUP-',
-    rowsDigest: 'cd9adcbad534e3b5aef7b37fc12ec4a2cb1d545733349fe99a2008bcbcff655f',
-    states: ['supervised', 'backoff', 'circuit_open', 'recovering'],
+    rowsDigest: '9dfa41a327b0e37149476808ab7d54a88cc788c1018e8981ddb7227aef398674',
+    states: ['supervised', 'backoff', 'circuit_open', 'recovering', 'wake_revalidating'],
     commands: ['unexpected_exit', 'qualifying_failure', 'backoff_elapsed', 'restart_ceiling_reached', 'wake_revalidate',
       'emit_doctor_report', 'approve_owner_recovery', 'complete_recovery'],
     failureCodes: [
@@ -103,6 +103,10 @@ const transitionInventories = new Map([
       'control.failure_receipt_invalid', 'control.illegal_transition', 'control.restart_ceiling_not_reached',
       'control.wake_revalidation_failed', 'control.doctor_report_unavailable',
       'control.recovery_already_authorized', 'control.recovery_revalidation_failed',
+      'control.restart_ceiling_reached', 'control.failure_receipt_invalid', 'control.illegal_transition',
+      'control.restart_ceiling_not_reached', 'control.wake_revalidation_failed',
+      'control.doctor_report_unavailable', 'control.illegal_transition',
+      'control.recovery_revalidation_failed',
     ],
   }],
 ]);
@@ -187,7 +191,7 @@ function transitionTarget(prefix, state, command) {
     if (command === 'open_control_channel' && state === 'closed') return 'diagnostic_only';
     if (command === 'open_control_channel' && state === 'diagnostic_only') return 'work_admitting';
     if (command === 'open_control_channel' && state === 'work_admitting') return 'work_admitting';
-    if (command === 'close_control_channel') return 'closed';
+    if (command === 'close_control_channel') return state === 'work_admitting' ? 'diagnostic_only' : 'closed';
     if (command === 'submit_control_command' && ['diagnostic_only', 'work_admitting'].includes(state)) return state;
   }
   if (prefix === 'TR-CPWRITER-') {
@@ -199,7 +203,7 @@ function transitionTarget(prefix, state, command) {
     if (state === 'supervised' && ['unexpected_exit', 'qualifying_failure'].includes(command)) return 'backoff';
     if (state === 'supervised' && command === 'restart_ceiling_reached') return 'circuit_open';
     if (state === 'supervised' && ['wake_revalidate', 'emit_doctor_report'].includes(command)) {
-      return command === 'wake_revalidate' ? 'recovering' : 'supervised';
+      return command === 'wake_revalidate' ? 'wake_revalidating' : 'supervised';
     }
     if (state === 'backoff' && ['unexpected_exit', 'backoff_elapsed', 'emit_doctor_report'].includes(command)) {
       if (command === 'backoff_elapsed') return 'supervised';
@@ -212,6 +216,14 @@ function transitionTarget(prefix, state, command) {
       if (['unexpected_exit', 'qualifying_failure', 'restart_ceiling_reached'].includes(command)) return 'circuit_open';
       if (command === 'complete_recovery') return 'supervised';
       return 'recovering';
+    }
+    if (state === 'wake_revalidating' &&
+        ['unexpected_exit', 'qualifying_failure', 'restart_ceiling_reached', 'wake_revalidate',
+          'emit_doctor_report', 'complete_recovery'].includes(command)) {
+      if (['unexpected_exit', 'qualifying_failure'].includes(command)) return 'backoff';
+      if (command === 'restart_ceiling_reached') return 'circuit_open';
+      if (command === 'complete_recovery') return 'supervised';
+      return 'wake_revalidating';
     }
   }
   return null;

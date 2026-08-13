@@ -70,7 +70,7 @@
       "additionalProperties": false,
       "required": ["state", "automatic_restart_attempt_count", "next_restart_tick", "circuit"],
       "properties": {
-        "state": {"enum": ["supervised", "backoff", "circuit_open", "recovering"]},
+        "state": {"enum": ["supervised", "backoff", "circuit_open", "recovering", "wake_revalidating"]},
         "automatic_restart_attempt_count": {"type": "integer", "minimum": 0, "maximum": 3},
         "next_restart_tick": {"type": ["integer", "null"], "minimum": 0, "maximum": 1000000},
         "circuit": {
