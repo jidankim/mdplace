@@ -238,6 +238,8 @@ function doctorCodes(profile, doctor) {
 function agentStateCodes(profile, agentState, doctor, report, contents) {
   const codes = [];
   const supervision = agentState?.supervision_state;
+  const suspensionBinding = agentState?.work_admission_suspension;
+  const suspensionReceipt = report?.work_admission_suspension_receipt;
   const wakeObservationDigest = agentState?.wake_revalidation === undefined
     ? null : sha256(canonicalJson(agentState.wake_revalidation));
   if (agentState?.persistent_agent_id !== profile?.persistent_agent_id ||
@@ -259,16 +261,17 @@ function agentStateCodes(profile, agentState, doctor, report, contents) {
   if (supervision?.state === 'wake_revalidating' &&
       (supervision.next_restart_tick !== null || supervision.circuit?.state !== 'closed' ||
        agentState?.control_channel_state !== 'diagnostic_only' ||
-       agentState?.owner_recovery_authorization !== null ||
-       agentState?.work_admission_suspension?.receipt_id !==
-         report?.work_admission_suspension_receipt?.receipt_id ||
-       agentState?.work_admission_suspension?.signature_digest !==
-         report?.work_admission_suspension_receipt?.signature_digest ||
-       agentState?.work_admission_suspension?.control_channel_version !==
-         report?.work_admission_suspension_receipt?.control_channel_version ||
-       agentState?.work_admission_suspension?.wake_observation_digest !== wakeObservationDigest ||
-       report?.work_admission_suspension_receipt?.wake_observation_digest !== wakeObservationDigest)) {
+       agentState?.owner_recovery_authorization !== null || suspensionBinding === null ||
+       suspensionBinding?.wake_observation_digest !== wakeObservationDigest ||
+       suspensionReceipt?.wake_observation_digest !== wakeObservationDigest)) {
     codes.push('control.lifecycle_wake_invalid');
+  }
+  if (suspensionReceipt !== null &&
+      (suspensionBinding === null || suspensionBinding?.receipt_id !== suspensionReceipt?.receipt_id ||
+       suspensionBinding?.signature_digest !== suspensionReceipt?.signature_digest ||
+       suspensionBinding?.control_channel_version !== suspensionReceipt?.control_channel_version ||
+       suspensionBinding?.wake_observation_digest !== suspensionReceipt?.wake_observation_digest)) {
+    codes.push('control.lifecycle_work_admission_suspension_invalid');
   }
   if (supervision?.circuit?.state === 'open' &&
       !['circuit_open', 'recovering'].includes(supervision?.state)) {

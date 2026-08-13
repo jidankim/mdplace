@@ -387,6 +387,59 @@ test('work-admission suspension receipt is authenticated and cross-bound', async
     assert.ok((await checkControlPlaneLifecycle(copiedPackage)).codes
       .includes('control.lifecycle_work_admission_suspension_invalid'));
   }
+
+  const agentMutations = [
+    (binding) => {
+      binding.receipt_id = 'control-channel-work-admission-suspended:tampered-001';
+    },
+    (binding) => {
+      binding.signature_digest = '0'.repeat(64);
+    },
+    (binding) => {
+      binding.control_channel_version = 2;
+    },
+    (binding) => {
+      binding.wake_observation_digest = '0'.repeat(64);
+    },
+  ];
+  for (const mutate of agentMutations) {
+    const copiedPackage = await copyCommittedPackage();
+    const changedAgent = await readPackageJson(copiedPackage, 'contracts/control-plane/agent-state.json');
+    mutate(changedAgent.work_admission_suspension);
+    await writePackageJson(copiedPackage, 'contracts/control-plane/agent-state.json', changedAgent);
+    assert.ok((await checkControlPlaneLifecycle(copiedPackage)).codes
+      .includes('control.lifecycle_work_admission_suspension_invalid'));
+  }
+
+  const missingBindingPackage = await copyCommittedPackage();
+  const missingBindingAgent = await readPackageJson(
+    missingBindingPackage, 'contracts/control-plane/agent-state.json',
+  );
+  missingBindingAgent.work_admission_suspension = null;
+  await writePackageJson(
+    missingBindingPackage, 'contracts/control-plane/agent-state.json', missingBindingAgent,
+  );
+  assert.ok((await checkControlPlaneLifecycle(missingBindingPackage)).codes
+    .includes('control.lifecycle_work_admission_suspension_invalid'));
+
+  const reboundPackage = await copyCommittedPackage();
+  const reboundReport = await readPackageJson(
+    reboundPackage, 'conformance/evidence/control-plane-lifecycle-report.json',
+  );
+  reboundReport.work_admission_suspension_receipt.receipt_id =
+    'control-channel-work-admission-suspended:wake-002';
+  Object.assign(
+    reboundReport.work_admission_suspension_receipt,
+    signControlPlaneReceipt(
+      'control_channel_work_admission_suspended',
+      workAdmissionSuspensionReceiptFields(reboundReport.work_admission_suspension_receipt),
+    ),
+  );
+  await writePackageJson(
+    reboundPackage, 'conformance/evidence/control-plane-lifecycle-report.json', reboundReport,
+  );
+  assert.ok((await checkControlPlaneLifecycle(reboundPackage)).codes
+    .includes('control.lifecycle_work_admission_suspension_invalid'));
 });
 
 test('public validator rejects lifecycle boundary mutations with granular codes', async () => {
