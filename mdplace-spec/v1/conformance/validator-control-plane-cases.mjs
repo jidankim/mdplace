@@ -266,6 +266,25 @@ test('CLI validates exactly 25 stateful control-plane scenarios', () => {
   assert.ok(controlPlaneResults.every(({verdict}) => verdict === 'pass'));
 });
 
+test('Control Channel independently denies unauthenticated and nonlocal clients', async () => {
+  const fixture = JSON.parse(await readFile(new URL(
+    './scenarios/control-plane/unauthenticated-nonlocal-control-denied.json', import.meta.url,
+  )));
+  const variants = [
+    (subject) => { subject.document.initial.control_channel.local_transport = true; },
+    (subject) => { subject.document.initial.control_channel.same_user_authenticated = true; },
+  ];
+
+  for (const makeIndependentDenial of variants) {
+    const subject = structuredClone(fixture.subject);
+    makeIndependentDenial(subject);
+    const observed = await observeControlPlaneScenario(subject, packageRoot);
+    assert.equal(observed.verdict, 'fail');
+    assert.deepEqual(observed.codes, ['control.authentication_denied']);
+    assert.deepEqual(observed.filesystem_effects, ['none']);
+  }
+});
+
 test('control-plane state schemas reject undeclared ambient authority', async () => {
   const journal = JSON.parse(await readFile(new URL('../contracts/control-plane/work-journal.json', import.meta.url)));
   journal.ambient_semantic_authority = 'inferred';
@@ -1409,6 +1428,7 @@ test('recovery exhaustion commits an authenticated terminal failure', async () =
     const acquiredTick = (count + 1) * 400;
     Object.assign(currentLease, {
       receipt_id: 'lease-receipt:current-001', work_version: currentVersion,
+      lease_id: initial.work.lease_id,
       journal_sequence: currentSequence, acquired_tick: acquiredTick,
       expires_tick: acquiredTick + 300, started_tick: null, status: 'active',
     });
@@ -1513,6 +1533,7 @@ test('recovery exhaustion commits an authenticated terminal failure', async () =
     work: structuredClone(retryHistoryFixture.subject.document.initial.work),
     prior_lease_receipts: structuredClone(retryHistoryFixture.subject.document.initial.prior_lease_receipts),
     prior_retry_receipts: structuredClone(retryHistoryFixture.subject.document.initial.prior_retry_receipts),
+    prior_recovery_receipts: [],
   });
   const retryInitial = retryExhausted.document.initial;
   retryInitial.work.lease_status = 'active';
@@ -2090,6 +2111,10 @@ test('acknowledgement and Scheduler observations reject pre-acquisition and expi
   for (const receipt of recoveryInitial.prior_lease_receipts) {
     receipt.journal_sequence += 1;
     Object.assign(receipt, signControlPlaneReceipt('work_lease', leaseFields(receipt)));
+  }
+  for (const receipt of recoveryInitial.prior_recovery_receipts) {
+    receipt.journal_sequence += 1;
+    Object.assign(receipt, signControlPlaneReceipt('work_recovery', recoveryFields(receipt)));
   }
   authenticateScenarioHead(recoveryInitial);
   recovery.subject.document.action.expected_journal_head_sequence = recoveryInitial.journal_head_sequence;

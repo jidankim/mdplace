@@ -23,10 +23,10 @@
         "writer_epoch": 1,
         "journal_available": true,
         "semantic_dependency_available": true,
-        "journal_head_sequence": 3,
+        "journal_head_sequence": 5,
         "work": {
           "work_id": "work:001",
-          "work_version": 3,
+          "work_version": 5,
           "state": "executing",
           "idempotency_key": "idempotency:work-001",
           "input_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
@@ -38,10 +38,10 @@
           "resume_count": 0,
           "resume_ceiling": 1,
           "retry_eligible_tick": null,
-          "recovery_interruption_count": 0,
+          "recovery_interruption_count": 1,
           "lease_status": "active",
-          "lease_acquired_tick": 1,
-          "lease_expires_tick": 301,
+          "lease_acquired_tick": 400,
+          "lease_expires_tick": 700,
           "completion_receipt": null,
           "cancellation_receipt": null,
           "resume_receipt": null,
@@ -84,14 +84,14 @@
         "dependency_state_digest": "c289e61ad636413a47b06ff09a505fd15701b9302e0fe955557e4b7b45ad4111",
         "active_work_count": 0,
         "max_concurrent_work": 8,
-        "journal_head_digest": "ed41de491930711b74eabc190bf354eb4d90cf53afe345333ca2a2e688d8d0f3",
+        "journal_head_digest": "b29d1990148ae366613e266026fbfd5b3878e14db6f32b4d9322a34e49db956a",
         "active_lease_ids": [],
         "scheduler_state_digest": "6974ab1c0f4e5f5cfbb45d9756a8756121a07522cf16a73e07b08dc281ea1c43",
         "prior_lease_receipts": [
           {
-            "receipt_id": "lease-receipt:attempt-1",
+            "receipt_id": "lease-receipt:prior-1",
             "receipt_kind": "lease",
-            "lease_id": "lease:001",
+            "lease_id": "lease:prior-1",
             "work_id": "work:001",
             "work_version": 2,
             "journal_sequence": 2,
@@ -102,38 +102,56 @@
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "efdac3b83bd27b926e5ca8729ad7497109c0ca7bb4f2205b7e585f8b413978ab",
+            "signature_digest": "9fae857de66ee4a382d9d70e3db8aec7654d89a2e62662830152775fdb43a6fc",
             "authenticated": true,
             "started_tick": null
           },
           {
-            "receipt_id": "lease-receipt:start-1",
-            "receipt_kind": "start",
+            "receipt_id": "lease-receipt:attempt-2",
+            "receipt_kind": "lease",
             "lease_id": "lease:001",
             "work_id": "work:001",
-            "work_version": 3,
-            "journal_sequence": 3,
+            "work_version": 4,
+            "journal_sequence": 4,
             "owner_agent_id": "agent:primary-001",
-            "acquired_tick": 1,
-            "expires_tick": 301,
+            "acquired_tick": 400,
+            "expires_tick": 700,
             "status": "active",
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "f74db24f561c79eac5afb74d8352a5e862e11c91f94b6b25c32e813d14f2dd60",
+            "signature_digest": "cfb27234fd79b49c4534a21976ac45fe0beb754f91283272000685cfbc8d918d",
             "authenticated": true,
-            "started_tick": 1
+            "started_tick": null
+          },
+          {
+            "receipt_id": "lease-receipt:start-2",
+            "receipt_kind": "start",
+            "lease_id": "lease:001",
+            "work_id": "work:001",
+            "work_version": 5,
+            "journal_sequence": 5,
+            "owner_agent_id": "agent:primary-001",
+            "acquired_tick": 400,
+            "expires_tick": 700,
+            "status": "active",
+            "signature_scheme": "hmac-sha256",
+            "signing_key_id": "signer-key:primary-001",
+            "signer_agent_id": "agent:primary-001",
+            "signature_digest": "2556cda45c20f13fb09b76c6f3b9997e0c7901ee8e7e7ab3a3f33806ae9bfe93",
+            "authenticated": true,
+            "started_tick": 400
           }
         ],
         "journal_head_receipt": {
           "receipt_id": "journal-head-receipt:vault-001",
           "journal_id": "journal:vault-001",
-          "head_sequence": 3,
-          "head_digest": "ed41de491930711b74eabc190bf354eb4d90cf53afe345333ca2a2e688d8d0f3",
+          "head_sequence": 5,
+          "head_digest": "b29d1990148ae366613e266026fbfd5b3878e14db6f32b4d9322a34e49db956a",
           "signature_scheme": "hmac-sha256",
           "signing_key_id": "signer-key:primary-001",
           "signer_agent_id": "agent:primary-001",
-          "signature_digest": "2a48772806fe759017fadad6c7bad9d624d33c4fcce38252b62867e8222ee58e",
+          "signature_digest": "ee520e59fff127f87b50465ee15f35e2ebdeab91e2d2ad7b5d58ec8cde450c5a",
           "authenticated": true
         },
         "dependency_state_receipt": {
@@ -153,7 +171,30 @@
           "authenticated": true
         },
         "prior_retry_receipts": [],
-        "prior_recovery_receipts": [],
+        "prior_recovery_receipts": [
+          {
+            "receipt_id": "recovery-receipt:prior-1",
+            "receipt_kind": "recovery",
+            "lease_id": "lease:prior-1",
+            "work_id": "work:001",
+            "work_version": 3,
+            "journal_sequence": 3,
+            "prior_state": "leased",
+            "prior_retry_count": 0,
+            "recovery_interruption_count": 1,
+            "resulting_retry_count": 0,
+            "recovery_tick": 301,
+            "recovery_lease_status": "expired",
+            "recovery_decision": "requeue",
+            "selected_retry_delay_ticks": null,
+            "resulting_state": "queued",
+            "signature_scheme": "hmac-sha256",
+            "signing_key_id": "signer-key:primary-001",
+            "signer_agent_id": "agent:primary-001",
+            "signature_digest": "36f8e1d3ec74feeccb06cf46f19c21a28b788cc43c5054c78aacd10670833981",
+            "authenticated": true
+          }
+        ],
         "vault_id": "vault:001",
         "journal_prefix_receipt": {
           "receipt_id": "journal-prefix-receipt:vault-001",
@@ -169,13 +210,13 @@
         },
         "scheduler_active_lease_receipts": [],
         "semantic_state_version": 1,
-        "scheduler_observed_tick": 301
+        "scheduler_observed_tick": 700
       },
       "action": {
         "kind": "recover",
         "actor_role": "mdplace_agent",
         "work_id": "work:001",
-        "expected_work_version": 3,
+        "expected_work_version": 5,
         "lease_id": "lease:001",
         "idempotency_key": null,
         "proposed_work_input_digest": null,
@@ -183,12 +224,12 @@
         "command_version": null,
         "command_vault_id": null,
         "candidate_agent_id": null,
-        "interruption_count": 1,
+        "interruption_count": 2,
         "semantic_write_requested": true,
         "authority_source": "child_work",
-        "expected_journal_head_sequence": 3,
+        "expected_journal_head_sequence": 5,
         "expected_writer_epoch": 1,
-        "recovery_tick": 301,
+        "recovery_tick": 700,
         "writer_lock_receipt": {
           "lock_id": "writer-lock:vault-001",
           "prior_epoch": 1,
@@ -294,9 +335,9 @@
             "authenticated": true
           }
         ],
-        "current_tick": 301,
+        "current_tick": 700,
         "expected_dependency_state_digest": "c289e61ad636413a47b06ff09a505fd15701b9302e0fe955557e4b7b45ad4111",
-        "expected_journal_head_digest": "ed41de491930711b74eabc190bf354eb4d90cf53afe345333ca2a2e688d8d0f3",
+        "expected_journal_head_digest": "b29d1990148ae366613e266026fbfd5b3878e14db6f32b4d9322a34e49db956a",
         "expected_scheduler_state_digest": null,
         "vault_owner_receipt": null,
         "completion_output_digest": null
@@ -320,7 +361,7 @@
       "deny control-plane semantic write"
     ],
     "receipts": [
-      "WorkRecoveryReceipt:work:001:1"
+      "WorkRecoveryReceipt:work:001:2"
     ],
     "filesystem_effects": [
       "append durable Work Recovery record"
