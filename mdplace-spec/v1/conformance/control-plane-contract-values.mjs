@@ -2,6 +2,7 @@ import {canonicalJson} from './semantic-kernel-core.mjs';
 
 export const controlPlaneLimits = Object.freeze({
   maxJournalSequence: 500,
+  maxConcurrentWork: 8,
   maxTick: 1_000_000,
   leaseDurationTicks: 300,
   maxLeaseExpiryTick: 1_000_300,

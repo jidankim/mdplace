@@ -382,6 +382,27 @@ function workJournalStateValid(journal) {
     const work = workById.get(receipt.work_id);
     return work === undefined || receipt.work_version > work.work_version;
   })) return false;
+  let journalObservedTick = 0;
+  const activeLeases = new Map();
+  for (const receipt of orderedReceipts) {
+    const work = workById.get(receipt.work_id);
+    const event = publicLifecycleEvent(work, receipt, orderedReceipts);
+    const observedTick = event.kind === 'lease' ? event.acquiredTick : event.observedTick;
+    if (Number.isInteger(observedTick)) {
+      if (observedTick < journalObservedTick) return false;
+      journalObservedTick = observedTick;
+      for (const [leaseId, lease] of activeLeases) {
+        if (lease.expiresTick <= observedTick) activeLeases.delete(leaseId);
+      }
+    }
+    if (event.kind === 'lease') {
+      if (activeLeases.size >= controlPlaneLimits.maxConcurrentWork) return false;
+      activeLeases.set(event.leaseId, event);
+    } else if (['retry', 'recovery', 'cancellation', 'completion'].includes(event.kind) &&
+        event.leaseId !== null) {
+      activeLeases.delete(event.leaseId);
+    }
+  }
   return journal.work_items.every((work) => {
     const workReceipts = orderedReceipts.filter((receipt) => receipt.work_id === work.work_id);
     if (!workReceiptChainIsValid(work, workReceipts, journal)) return false;

@@ -1055,6 +1055,55 @@ test('stateful dependency and Scheduler snapshots are derived from durable Work 
   assert.deepEqual((await observeControlPlaneScenario(reversedPrefixSuffix.subject, packageRoot)).codes,
     ['control.lease_history_invalid']);
 
+  const overlappingPrefix = JSON.parse(await readFile(new URL(
+    './scenarios/control-plane/in-flight-work-recovers-agent-crash.json', import.meta.url,
+  )));
+  const overlappingInitial = overlappingPrefix.subject.document.initial;
+  const overlappingAction = overlappingPrefix.subject.document.action;
+  const overlappingPrefixReceipt = overlappingInitial.journal_prefix_receipt;
+  Object.assign(overlappingPrefixReceipt, {
+    head_sequence: 8, head_digest: '8'.repeat(64),
+    active_leases: Array.from({length: 8}, (_, index) => ({
+      lease_id: `lease:prefix-overlap-${index + 1}`,
+      work_id: `work:prefix-overlap-${index + 1}`, work_version: 1,
+      owner_agent_id: overlappingInitial.persistent_agent_id,
+      acquired_tick: 100, expires_tick: 400, status: 'active',
+    })),
+  });
+  Object.assign(overlappingPrefixReceipt, signControlPlaneReceipt(
+    'work_journal_prefix', journalPrefixFields(overlappingPrefixReceipt),
+  ));
+  const overlappingEnqueue = overlappingInitial.work.enqueue_receipt;
+  Object.assign(overlappingEnqueue, {
+    base_head_sequence: 8, base_head_digest: overlappingPrefixReceipt.head_digest,
+    journal_sequence: 9,
+  });
+  Object.assign(overlappingEnqueue, signControlPlaneReceipt('work_enqueue', [
+    overlappingEnqueue.receipt_id, overlappingEnqueue.work_id, overlappingEnqueue.work_version,
+    overlappingEnqueue.idempotency_key, overlappingEnqueue.input_digest,
+    overlappingEnqueue.base_head_sequence, overlappingEnqueue.base_head_digest,
+    overlappingEnqueue.journal_sequence,
+  ]));
+  for (const receipt of overlappingInitial.prior_lease_receipts) {
+    Object.assign(receipt, {
+      journal_sequence: receipt.journal_sequence + 8,
+      acquired_tick: 100, expires_tick: 400,
+      started_tick: receipt.receipt_kind === 'start' ? 100 : null,
+    });
+    Object.assign(receipt, signControlPlaneReceipt('work_lease', leaseFields(receipt)));
+  }
+  Object.assign(overlappingInitial.work, {lease_acquired_tick: 100, lease_expires_tick: 400});
+  authenticateScenarioHead(overlappingInitial);
+  Object.assign(overlappingAction, {
+    expected_journal_head_sequence: overlappingInitial.journal_head_sequence,
+    expected_journal_head_digest: overlappingInitial.journal_head_digest,
+    recovery_tick: 400, current_tick: 400,
+  });
+  authenticateScenarioScheduler(overlappingInitial, overlappingAction.recovery_tick);
+  overlappingAction.expected_scheduler_state_digest = overlappingInitial.scheduler_state_digest;
+  assert.deepEqual((await observeControlPlaneScenario(overlappingPrefix.subject, packageRoot)).codes,
+    ['control.lease_history_invalid']);
+
   const futurePrefixLease = structuredClone(fixture.subject);
   const futureInitial = futurePrefixLease.document.initial;
   const futureAction = futurePrefixLease.document.action;
@@ -2540,6 +2589,89 @@ test('Work Journal derives exact lease and recovery state from authenticated lif
   const reversedAttemptReport = await buildValidationReport(reversedAttemptRoot);
   assert.ok(reversedAttemptReport.checks.find(({id}) => id === 'control-plane-contract').codes
     .includes('control.work_journal_state_invalid'));
+
+  const reversedJournalRoot = await copyCommittedPackage();
+  const reversedJournalPath = `${reversedJournalRoot}/contracts/control-plane/work-journal.json`;
+  const reversedJournal = JSON.parse(await readFile(reversedJournalPath));
+  const firstWork = reversedJournal.work_items[0];
+  const firstLease = authenticateJournalRecord({
+    receipt_id: 'receipt:lease-global-first-001', receipt_kind: 'lease', journal_sequence: 2,
+    work_id: firstWork.work_id, work_version: 2, lease_id: 'lease:global-first-001',
+    state: 'leased', operation_digest: '4'.repeat(64),
+    semantic_state_digest: firstWork.dependencies[0].digest,
+    owner_agent_id: 'agent:primary-001', acquired_tick: 100, expires_tick: 400,
+    lease_status: 'active',
+  });
+  Object.assign(firstWork, {
+    work_version: 2, state: 'leased',
+    lease: {
+      lease_id: firstLease.lease_id, work_id: firstWork.work_id, work_version: 2,
+      owner_agent_id: firstLease.owner_agent_id, acquired_tick: firstLease.acquired_tick,
+      expires_tick: firstLease.expires_tick, status: 'active',
+    },
+  });
+  reversedJournal.receipts.push(firstLease);
+  const secondWork = structuredClone(firstWork);
+  Object.assign(secondWork, {
+    work_id: 'work:002', work_version: 2, idempotency_key: 'idempotency:work-002',
+    input_digest: 'e'.repeat(64),
+  });
+  const secondEnqueue = {
+    ...structuredClone(secondWork.enqueue_receipt),
+    receipt_id: 'enqueue-receipt:002', work_id: secondWork.work_id,
+    idempotency_key: secondWork.idempotency_key, input_digest: secondWork.input_digest,
+    base_head_sequence: 2, base_head_digest: workJournalHeadDigest(reversedJournal.receipts),
+    journal_sequence: 3,
+  };
+  Object.assign(secondEnqueue, signControlPlaneReceipt('work_enqueue', [
+    secondEnqueue.receipt_id, secondEnqueue.work_id, secondEnqueue.work_version,
+    secondEnqueue.idempotency_key, secondEnqueue.input_digest,
+    secondEnqueue.base_head_sequence, secondEnqueue.base_head_digest,
+    secondEnqueue.journal_sequence,
+  ]));
+  secondWork.enqueue_receipt = secondEnqueue;
+  const secondLease = authenticateJournalRecord({
+    receipt_id: 'receipt:lease-global-second-001', receipt_kind: 'lease', journal_sequence: 4,
+    work_id: secondWork.work_id, work_version: 2, lease_id: 'lease:global-second-001',
+    state: 'leased', operation_digest: '6'.repeat(64),
+    semantic_state_digest: secondWork.dependencies[0].digest,
+    owner_agent_id: 'agent:primary-001', acquired_tick: 1, expires_tick: 301,
+    lease_status: 'active',
+  });
+  secondWork.lease = {
+    lease_id: secondLease.lease_id, work_id: secondWork.work_id, work_version: 2,
+    owner_agent_id: secondLease.owner_agent_id, acquired_tick: secondLease.acquired_tick,
+    expires_tick: secondLease.expires_tick, status: 'active',
+  };
+  reversedJournal.work_items.push(secondWork);
+  reversedJournal.receipts.push(authenticateJournalRecord({
+    receipt_id: secondEnqueue.receipt_id, receipt_kind: 'enqueue', journal_sequence: 3,
+    work_id: secondWork.work_id, work_version: 1, lease_id: null, state: 'queued',
+    operation_digest: '5'.repeat(64), semantic_state_digest: secondWork.dependencies[0].digest,
+  }), secondLease);
+  reversedJournal.head_sequence = 4;
+  reversedJournal.head_digest = workJournalHeadDigest(reversedJournal.receipts);
+  const reversedJournalSchedulerPath =
+    `${reversedJournalRoot}/contracts/control-plane/scheduler-state.json`;
+  const reversedJournalScheduler = JSON.parse(await readFile(reversedJournalSchedulerPath));
+  Object.assign(reversedJournalScheduler, {
+    journal_head_sequence: reversedJournal.head_sequence,
+    journal_head_digest: reversedJournal.head_digest,
+    observation_tick: 100, eligible_queue: [], active_leases: [
+      {...firstWork.lease}, {...secondWork.lease},
+    ],
+  });
+  await Promise.all([
+    writeFile(reversedJournalPath, `${JSON.stringify(reversedJournal, null, 2)}\n`),
+    writeFile(reversedJournalSchedulerPath, `${JSON.stringify(reversedJournalScheduler, null, 2)}\n`),
+  ]);
+  const reversedJournalReport = await buildValidationReport(reversedJournalRoot);
+  const reversedJournalCheck = reversedJournalReport.checks.find(
+    ({id}) => id === 'control-plane-contract',
+  );
+  assert.ok(reversedJournalCheck.codes.includes('control.work_journal_state_invalid'));
+  assert.equal(reversedJournalCheck.codes.includes('control.scheduler_state_invalid'), false);
+  assert.equal(reversedJournalReport.checks.find(({id}) => id === 'schema-instances').verdict, 'pass');
 
   const retrying = await executingJournal();
   retrying.journal.receipts.push(authenticateJournalRecord({

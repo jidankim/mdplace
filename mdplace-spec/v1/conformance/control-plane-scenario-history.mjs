@@ -131,6 +131,10 @@ function replayScenarioLifecycle(initial) {
   const prefixLastObservedTick = prefix.active_leases.reduce(
     (latest, lease) => Math.max(latest, lease.acquired_tick), 0,
   );
+  const prefixLeaseIntervals = prefix.active_leases.map((lease) => ({
+    acquiredTick: lease.acquired_tick,
+    expiresTick: lease.expires_tick,
+  }));
   const prefixLeasesAreValid = prefix.active_leases.every((lease) =>
     lease.owner_agent_id === initial.persistent_agent_id && lease.status === 'active' &&
     lease.expires_tick > lease.acquired_tick &&
@@ -160,6 +164,8 @@ function replayScenarioLifecycle(initial) {
       recoveryCeiling: controlPlaneLimits.recoveryInterruptionCeiling,
       latestDispatchTick: controlPlaneLimits.latestDispatchTick,
       initialObservedTick: prefixLastObservedTick,
+      initialActiveLeases: prefixLeaseIntervals,
+      maxConcurrentWork: controlPlaneLimits.maxConcurrentWork,
       reservedLeaseIds: prefixLeaseIds,
     }) : null;
 
@@ -201,6 +207,8 @@ function replayScenarioLifecycle(initial) {
     recoveryCeiling: controlPlaneLimits.recoveryInterruptionCeiling,
     latestDispatchTick: controlPlaneLimits.latestDispatchTick,
     initialObservedTick: prefixLastObservedTick,
+    initialActiveLeases: prefixLeaseIntervals,
+    maxConcurrentWork: controlPlaneLimits.maxConcurrentWork,
     reservedLeaseIds: prefixLeaseIds,
   });
 }

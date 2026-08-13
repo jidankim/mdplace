@@ -30,6 +30,9 @@ function advanceLifecycle(current, event, limits) {
           event.expiresTick - event.acquiredTick > limits.leaseDurationTicks ||
           event.acquiredTick < current.lastObservedTick ||
           event.acquiredTick > limits.latestDispatchTick ||
+          (limits.initialActiveLeases ?? []).filter((lease) =>
+            lease.acquiredTick <= event.acquiredTick &&
+            event.acquiredTick < lease.expiresTick).length >= (limits.maxConcurrentWork ?? Infinity) ||
           (current.state === 'retry_wait' && event.acquiredTick < current.retryEligibleTick)) return null;
       return {...current, state: 'leased', version: event.version, retryEligibleTick: null,
         lease: event, start: null, endedLeaseId: null, lastObservedTick: event.acquiredTick,
