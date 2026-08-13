@@ -1,0 +1,1198 @@
+{
+  "$schema": "../schemas/transition-table.schema.json",
+  "schema_id": "mdplace.transition-table/v1",
+  "table_id": "TRANS-CP-WORK-QUEUE",
+  "lifecycle": "durable Work Item queue ownership",
+  "version": "1.0.0",
+  "states": [
+    "absent",
+    "queued",
+    "leased",
+    "executing",
+    "terminal"
+  ],
+  "commands": [
+    "enqueue_work",
+    "dispatch_work",
+    "acknowledge_work",
+    "complete_work",
+    "recover_work"
+  ],
+  "transitions": [
+    {
+      "transition_id": "TR-CPWORK-001",
+      "command_or_event": "enqueue_work",
+      "from_state": "absent",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "work_submitter"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "Work Journal is available",
+        "idempotency key is new"
+      ],
+      "base_references": [
+        "exact current Work Journal head sequence and digest",
+        "idempotency key and input digest"
+      ],
+      "emitted_records": [
+        "EnqueueReceipt"
+      ],
+      "filesystem_effects": [
+        "append durable Work Journal record"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current Work Journal head sequence and digest",
+          "idempotency key and input digest"
+        ],
+        "retry_result": "return the committed EnqueueReceipt for the exact binding"
+      },
+      "terminal_state": "queued",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Read the committed EnqueueReceipt after interruption; a later exact replay returns it without creating a second Work Item."
+    },
+    {
+      "transition_id": "TR-CPWORK-002",
+      "command_or_event": "dispatch_work",
+      "from_state": "absent",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "scheduler"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "dispatch_work is not legal from absent"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "absent",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPWORK-003",
+      "command_or_event": "acknowledge_work",
+      "from_state": "absent",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "acknowledge_work is not legal from absent"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "absent",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPWORK-004",
+      "command_or_event": "complete_work",
+      "from_state": "absent",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "complete_work is not legal from absent"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "absent",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPWORK-005",
+      "command_or_event": "recover_work",
+      "from_state": "absent",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "recover_work is not legal from absent"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "absent",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPWORK-006",
+      "command_or_event": "enqueue_work",
+      "from_state": "queued",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "work_submitter"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "Work Journal is available",
+        "idempotency key binds the exact same committed Work Item input digest and authenticated EnqueueReceipt"
+      ],
+      "base_references": [
+        "original pre-enqueue Work Journal head sequence and digest bound by the EnqueueReceipt",
+        "idempotency key and input digest"
+      ],
+      "emitted_records": [
+        "EnqueueReceipt"
+      ],
+      "filesystem_effects": [
+        "none; return the original authenticated EnqueueReceipt"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "original pre-enqueue Work Journal head sequence and digest bound by the EnqueueReceipt",
+          "idempotency key and input digest"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "queued",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Read the committed EnqueueReceipt; retrying the exact binding returns it without creating a second Work Item."
+    },
+    {
+      "transition_id": "TR-CPWORK-007",
+      "command_or_event": "dispatch_work",
+      "from_state": "queued",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "scheduler"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "Scheduler and Agent are ready with the current retained writer and ordered readiness receipts",
+        "Work Journal and semantic dependencies are available through the current local authenticated Control Channel",
+        "Work Item is eligible at the current tick",
+        "digest-bound active-lease inventory has concurrency capacity",
+        "a 300-tick lease expiry and the next journal sequence remain inside their closed domains"
+      ],
+      "base_references": [
+        "validator-authenticated exact Work Journal head sequence and digest",
+        "exact Work Item version and validator-authenticated dependency-state digest",
+        "exact Scheduler active-lease snapshot digest",
+        "current Agent writer epoch, retained-writer receipt, and readiness chain"
+      ],
+      "emitted_records": [
+        "WorkLeaseReceipt"
+      ],
+      "filesystem_effects": [
+        "append bounded Work Lease before dequeue acknowledgement"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "validator-authenticated exact Work Journal head sequence and digest",
+          "exact Work Item version and validator-authenticated dependency-state digest",
+          "exact Scheduler active-lease snapshot digest",
+          "current Agent writer epoch, retained-writer receipt, and readiness chain"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "leased",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Return the durable WorkLeaseReceipt; requeue only after its exact lease expires."
+    },
+    {
+      "transition_id": "TR-CPWORK-008",
+      "command_or_event": "acknowledge_work",
+      "from_state": "queued",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "acknowledge_work is not legal from queued"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "queued",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPWORK-009",
+      "command_or_event": "complete_work",
+      "from_state": "queued",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "complete_work is not legal from queued"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "queued",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPWORK-010",
+      "command_or_event": "recover_work",
+      "from_state": "queued",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "recover_work is not legal from queued"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "queued",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPWORK-011",
+      "command_or_event": "enqueue_work",
+      "from_state": "leased",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "work_submitter"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "Work Journal is available",
+        "idempotency key binds the exact same committed Work Item input digest and authenticated EnqueueReceipt"
+      ],
+      "base_references": [
+        "original pre-enqueue Work Journal head sequence and digest bound by the EnqueueReceipt",
+        "idempotency key and input digest"
+      ],
+      "emitted_records": [
+        "EnqueueReceipt"
+      ],
+      "filesystem_effects": [
+        "none; return the original authenticated EnqueueReceipt"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "original pre-enqueue Work Journal head sequence and digest bound by the EnqueueReceipt",
+          "idempotency key and input digest"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "leased",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Read the committed EnqueueReceipt; retrying the exact binding returns it without creating a second Work Item."
+    },
+    {
+      "transition_id": "TR-CPWORK-012",
+      "command_or_event": "dispatch_work",
+      "from_state": "leased",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "scheduler"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "dispatch_work is not legal from leased"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "leased",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPWORK-013",
+      "command_or_event": "acknowledge_work",
+      "from_state": "leased",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact active Work Lease is held by the persistent mdplace Agent"
+      ],
+      "base_references": [
+        "exact Work Item version",
+        "exact Work Lease identity and expiry"
+      ],
+      "emitted_records": [
+        "ExecutionReceipt"
+      ],
+      "filesystem_effects": [
+        "append execution acknowledgement"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact Work Item version",
+          "exact Work Lease identity and expiry"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "executing",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Reconcile the exact Work Lease and ExecutionReceipt without assigning a second owner."
+    },
+    {
+      "transition_id": "TR-CPWORK-014",
+      "command_or_event": "complete_work",
+      "from_state": "leased",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "complete_work is not legal from leased"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "leased",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPWORK-015",
+      "command_or_event": "recover_work",
+      "from_state": "leased",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "Exclusive Writer Lock receipt is current",
+        "Work Lease is expired",
+        "recovery interruption budget remains"
+      ],
+      "base_references": [
+        "exact Work Journal head",
+        "exact Work Item and Work Lease versions",
+        "versioned semantic dependency digests"
+      ],
+      "emitted_records": [
+        "WorkRecoveryReceipt"
+      ],
+      "filesystem_effects": [
+        "append bounded Work Recovery decision"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact Work Journal head",
+          "exact Work Item and Work Lease versions",
+          "versioned semantic dependency digests"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "queued",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Repeat only from the same digest-bound observations; unknown completion blocks rather than replaying work."
+    },
+    {
+      "transition_id": "TR-CPWORK-016",
+      "command_or_event": "enqueue_work",
+      "from_state": "executing",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "work_submitter"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "Work Journal is available",
+        "idempotency key binds the exact same committed Work Item input digest and authenticated EnqueueReceipt"
+      ],
+      "base_references": [
+        "original pre-enqueue Work Journal head sequence and digest bound by the EnqueueReceipt",
+        "idempotency key and input digest"
+      ],
+      "emitted_records": [
+        "EnqueueReceipt"
+      ],
+      "filesystem_effects": [
+        "none; return the original authenticated EnqueueReceipt"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "original pre-enqueue Work Journal head sequence and digest bound by the EnqueueReceipt",
+          "idempotency key and input digest"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "executing",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Read the committed EnqueueReceipt; retrying the exact binding returns it without creating a second Work Item."
+    },
+    {
+      "transition_id": "TR-CPWORK-017",
+      "command_or_event": "dispatch_work",
+      "from_state": "executing",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "scheduler"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "dispatch_work is not legal from executing"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "executing",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPWORK-018",
+      "command_or_event": "acknowledge_work",
+      "from_state": "executing",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "acknowledge_work is not legal from executing"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "executing",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPWORK-019",
+      "command_or_event": "complete_work",
+      "from_state": "executing",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "authenticated completion receipt binds exact work, lease, version, output, journal head, and signer"
+      ],
+      "base_references": [
+        "exact Work Item version",
+        "exact active Work Lease",
+        "exact Work Journal head"
+      ],
+      "emitted_records": [
+        "CompletionReceipt"
+      ],
+      "filesystem_effects": [
+        "append terminal Work Item result"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact Work Item version",
+          "exact active Work Lease",
+          "exact Work Journal head"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "terminal",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Validate and preserve the authenticated terminal receipt; never repeat completed work."
+    },
+    {
+      "transition_id": "TR-CPWORK-020",
+      "command_or_event": "recover_work",
+      "from_state": "executing",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "Exclusive Writer Lock receipt is current",
+        "Work Lease is expired",
+        "recovery interruption budget remains"
+      ],
+      "base_references": [
+        "exact Work Journal head",
+        "exact Work Item and Work Lease versions",
+        "versioned semantic dependency digests"
+      ],
+      "emitted_records": [
+        "WorkRecoveryReceipt"
+      ],
+      "filesystem_effects": [
+        "append bounded Work Recovery decision"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact Work Journal head",
+          "exact Work Item and Work Lease versions",
+          "versioned semantic dependency digests"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "retry_wait",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Repeat only from the same digest-bound observations; unknown completion blocks rather than replaying work."
+    },
+    {
+      "transition_id": "TR-CPWORK-021",
+      "command_or_event": "enqueue_work",
+      "from_state": "terminal",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "work_submitter"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "Work Journal is available",
+        "idempotency key binds the exact same committed Work Item input digest and authenticated EnqueueReceipt"
+      ],
+      "base_references": [
+        "original pre-enqueue Work Journal head sequence and digest bound by the EnqueueReceipt",
+        "idempotency key and input digest"
+      ],
+      "emitted_records": [
+        "EnqueueReceipt"
+      ],
+      "filesystem_effects": [
+        "none; return the original authenticated EnqueueReceipt"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "original pre-enqueue Work Journal head sequence and digest bound by the EnqueueReceipt",
+          "idempotency key and input digest"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "terminal",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Read the committed EnqueueReceipt; retrying the exact binding returns it without creating a second Work Item."
+    },
+    {
+      "transition_id": "TR-CPWORK-022",
+      "command_or_event": "dispatch_work",
+      "from_state": "terminal",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "scheduler"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "dispatch_work is not legal from terminal"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "terminal",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPWORK-023",
+      "command_or_event": "acknowledge_work",
+      "from_state": "terminal",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "acknowledge_work is not legal from terminal"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "terminal",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPWORK-024",
+      "command_or_event": "complete_work",
+      "from_state": "terminal",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "stored success receipt authenticates the original Work Item version, active Work Lease, Work Journal head, idempotency key, output digest, and completion tick",
+        "request repeats that exact original binding"
+      ],
+      "base_references": [
+        "original Work Item version",
+        "original active Work Lease",
+        "original Work Journal head"
+      ],
+      "emitted_records": [
+        "CompletionReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "original Work Item version",
+          "original active Work Lease",
+          "original Work Journal head",
+          "output digest",
+          "completion tick"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "terminal",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Validate and return the original authenticated completion receipt without appending or repeating work."
+    },
+    {
+      "transition_id": "TR-CPWORK-025",
+      "command_or_event": "recover_work",
+      "from_state": "terminal",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "recover_work is not legal from terminal"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "terminal",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    }
+  ]
+}

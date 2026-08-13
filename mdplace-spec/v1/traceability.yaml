@@ -17,6 +17,18 @@
       "use": "input_without_reopening"
     },
     {
+      "decision_id": "DEC-026",
+      "url": "https://github.com/jidankim/mdplace/issues/26#issuecomment-5187140948",
+      "status": "accepted",
+      "use": "input_without_reopening"
+    },
+    {
+      "decision_id": "DEC-028",
+      "url": "https://github.com/jidankim/mdplace/issues/28#issuecomment-5196131324",
+      "status": "accepted",
+      "use": "input_without_reopening"
+    },
+    {
       "decision_id": "DEC-008",
       "url": "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093",
       "status": "accepted",
@@ -26,106 +38,290 @@
   "records": [
     {
       "requirement_id": "REQ-PKG-001",
-      "decision_ids": ["DEC-010"],
-      "canonical_terms": ["Normative Material", "Informative Material", "Specification Package"],
-      "normative_anchors": ["normative/package-contract.md#req-pkg-001-authority-is-explicit-and-one-way"],
-      "schema_or_transition_refs": ["contracts/schemas/package-manifest.schema.json"],
-      "positive_fixture_ids": ["FIX-PKG-POS-001"],
-      "negative_fixture_ids": ["FIX-PKG-NEG-001"],
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Normative Material",
+        "Informative Material",
+        "Specification Package"
+      ],
+      "normative_anchors": [
+        "normative/package-contract.md#req-pkg-001-authority-is-explicit-and-one-way"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/package-manifest.schema.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-PKG-POS-001"
+      ],
+      "negative_fixture_ids": [
+        "FIX-PKG-NEG-001"
+      ],
       "acceptance_gate": "Every listed artifact has exactly one authority and conformance is derived exclusively from normative artifacts.",
       "scope": "foundation",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/traceability-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/traceability-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-PKG-002",
-      "decision_ids": ["DEC-010"],
-      "canonical_terms": ["Specification Package", "Traceability Record"],
-      "normative_anchors": ["normative/package-contract.md#req-pkg-002-version-identity-is-stable"],
-      "schema_or_transition_refs": ["contracts/schemas/package-manifest.schema.json", "contracts/schemas/validation-report.schema.json"],
-      "positive_fixture_ids": ["FIX-PKG-POS-001", "FIX-PKG-POS-003", "FIX-PKG-BND-001"],
-      "negative_fixture_ids": ["FIX-PKG-BND-002", "FIX-PKG-BND-003", "FIX-PKG-NEG-004", "FIX-PKG-NEG-011"],
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Specification Package",
+        "Traceability Record"
+      ],
+      "normative_anchors": [
+        "normative/package-contract.md#req-pkg-002-version-identity-is-stable"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/package-manifest.schema.json",
+        "contracts/schemas/validation-report.schema.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-PKG-POS-001",
+        "FIX-PKG-POS-003",
+        "FIX-PKG-BND-001"
+      ],
+      "negative_fixture_ids": [
+        "FIX-PKG-BND-002",
+        "FIX-PKG-BND-003",
+        "FIX-PKG-NEG-004",
+        "FIX-PKG-NEG-011"
+      ],
       "acceptance_gate": "Series, release version, lifecycle state, validator version, normative digest, and conformance-pack digest are explicit and version-bound.",
       "scope": "foundation",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/version-amendment-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/version-amendment-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-PKG-003",
-      "decision_ids": ["DEC-010"],
-      "canonical_terms": ["Specification Package", "Package Amendment", "Conformance Fixture", "Traceability Record"],
-      "normative_anchors": ["normative/package-contract.md#req-pkg-003-released-content-is-immutable"],
-      "schema_or_transition_refs": ["contracts/schemas/version-amendment-report.schema.json", "contracts/transitions/package-lifecycle.json"],
-      "positive_fixture_ids": ["FIX-PKG-POS-003", "FIX-PKG-POS-005", "FIX-PKG-REC-001"],
-      "negative_fixture_ids": ["FIX-PKG-NEG-004", "FIX-PKG-NEG-009", "FIX-PKG-NEG-011", "FIX-PKG-NEG-012", "FIX-PKG-ILLEGAL-001"],
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Specification Package",
+        "Package Amendment",
+        "Conformance Fixture",
+        "Traceability Record"
+      ],
+      "normative_anchors": [
+        "normative/package-contract.md#req-pkg-003-released-content-is-immutable"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/version-amendment-report.schema.json",
+        "contracts/transitions/package-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-PKG-POS-003",
+        "FIX-PKG-POS-005",
+        "FIX-PKG-REC-001"
+      ],
+      "negative_fixture_ids": [
+        "FIX-PKG-NEG-004",
+        "FIX-PKG-NEG-009",
+        "FIX-PKG-NEG-011",
+        "FIX-PKG-NEG-012",
+        "FIX-PKG-ILLEGAL-001"
+      ],
       "acceptance_gate": "In-place release mutation and downgrade are denied; a change requires a strictly greater version, new path, and unchanged observed source digest.",
       "scope": "foundation",
-      "evidence_refs": ["conformance/evidence/version-amendment-report.json", "conformance/evidence/recovery-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/version-amendment-report.json",
+        "conformance/evidence/recovery-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-PKG-004",
-      "decision_ids": ["DEC-010"],
-      "canonical_terms": ["Specification Package", "Package Amendment", "Traceability Record"],
-      "normative_anchors": ["normative/package-contract.md#req-pkg-004-requirement-identifiers-are-unique-and-permanent"],
-      "schema_or_transition_refs": ["contracts/schemas/requirements.schema.json", "contracts/schemas/traceability.schema.json"],
-      "positive_fixture_ids": ["FIX-PKG-POS-001", "FIX-PKG-POS-003", "FIX-PKG-POS-006"],
-      "negative_fixture_ids": ["FIX-PKG-NEG-003", "FIX-PKG-NEG-007", "FIX-PKG-NEG-011", "FIX-PKG-NEG-015"],
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Specification Package",
+        "Package Amendment",
+        "Traceability Record"
+      ],
+      "normative_anchors": [
+        "normative/package-contract.md#req-pkg-004-requirement-identifiers-are-unique-and-permanent"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/requirements.schema.json",
+        "contracts/schemas/traceability.schema.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-PKG-POS-001",
+        "FIX-PKG-POS-003",
+        "FIX-PKG-POS-006"
+      ],
+      "negative_fixture_ids": [
+        "FIX-PKG-NEG-003",
+        "FIX-PKG-NEG-007",
+        "FIX-PKG-NEG-011",
+        "FIX-PKG-NEG-015"
+      ],
       "acceptance_gate": "Requirement identifiers match the shared stable format; amendments compare bound catalogs and exactly mark changed and new identifiers without removal or reassignment.",
       "scope": "foundation",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/version-amendment-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/version-amendment-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-PKG-005",
-      "decision_ids": ["DEC-010"],
-      "canonical_terms": ["Specification Package", "Traceability Record"],
-      "normative_anchors": ["normative/package-contract.md#req-pkg-005-vocabulary-is-canonical"],
-      "schema_or_transition_refs": ["contracts/schemas/requirements.schema.json", "contracts/schemas/traceability.schema.json"],
-      "positive_fixture_ids": ["FIX-PKG-POS-001"],
-      "negative_fixture_ids": ["FIX-PKG-NEG-006"],
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Specification Package",
+        "Traceability Record"
+      ],
+      "normative_anchors": [
+        "normative/package-contract.md#req-pkg-005-vocabulary-is-canonical"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/requirements.schema.json",
+        "contracts/schemas/traceability.schema.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-PKG-POS-001"
+      ],
+      "negative_fixture_ids": [
+        "FIX-PKG-NEG-006"
+      ],
       "acceptance_gate": "Every named canonical term resolves to CONTEXT.md and no avoided synonym is accepted.",
       "scope": "foundation",
-      "evidence_refs": ["conformance/evidence/validation-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-PKG-006",
-      "decision_ids": ["DEC-010"],
-      "canonical_terms": ["Specification Package", "Conformance Fixture"],
-      "normative_anchors": ["normative/package-contract.md#req-pkg-006-structured-contracts-are-closed"],
-      "schema_or_transition_refs": ["contracts/schemas/package-manifest.schema.json", "contracts/schemas/conformance-fixture.schema.json", "contracts/schemas/transition-table.schema.json"],
-      "positive_fixture_ids": ["FIX-PKG-POS-001", "FIX-PKG-BND-001"],
-      "negative_fixture_ids": ["FIX-PKG-NEG-001", "FIX-PKG-NEG-002", "FIX-PKG-NEG-013", "FIX-PKG-BND-002", "FIX-PKG-BND-003"],
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Specification Package",
+        "Conformance Fixture"
+      ],
+      "normative_anchors": [
+        "normative/package-contract.md#req-pkg-006-structured-contracts-are-closed"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/package-manifest.schema.json",
+        "contracts/schemas/conformance-fixture.schema.json",
+        "contracts/schemas/transition-table.schema.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-PKG-POS-001",
+        "FIX-PKG-BND-001"
+      ],
+      "negative_fixture_ids": [
+        "FIX-PKG-NEG-001",
+        "FIX-PKG-NEG-002",
+        "FIX-PKG-NEG-013",
+        "FIX-PKG-BND-002",
+        "FIX-PKG-BND-003"
+      ],
       "acceptance_gate": "Draft 2020-12 schemas reject unknown fields, enforce identifier and digest boundaries, and terminate within explicit evaluation and error budgets.",
       "scope": "foundation",
-      "evidence_refs": ["conformance/evidence/validation-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-PKG-007",
-      "decision_ids": ["DEC-010"],
-      "canonical_terms": ["Specification Package", "Conformance Fixture", "Package Amendment"],
-      "normative_anchors": ["normative/package-contract.md#req-pkg-007-lifecycle-tables-are-complete"],
-      "schema_or_transition_refs": ["contracts/schemas/transition-table.schema.json", "contracts/transitions/package-lifecycle.json"],
-      "positive_fixture_ids": ["FIX-PKG-POS-002", "FIX-PKG-POS-003", "FIX-PKG-POS-004", "FIX-PKG-POS-005"],
-      "negative_fixture_ids": ["FIX-PKG-NEG-002", "FIX-PKG-NEG-005", "FIX-PKG-NEG-009", "FIX-PKG-NEG-010", "FIX-PKG-NEG-011", "FIX-PKG-NEG-012", "FIX-PKG-ILLEGAL-001", "FIX-PKG-STATE-001"],
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Specification Package",
+        "Conformance Fixture",
+        "Package Amendment"
+      ],
+      "normative_anchors": [
+        "normative/package-contract.md#req-pkg-007-lifecycle-tables-are-complete"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/transition-table.schema.json",
+        "contracts/transitions/package-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-PKG-POS-002",
+        "FIX-PKG-POS-003",
+        "FIX-PKG-POS-004",
+        "FIX-PKG-POS-005"
+      ],
+      "negative_fixture_ids": [
+        "FIX-PKG-NEG-002",
+        "FIX-PKG-NEG-005",
+        "FIX-PKG-NEG-009",
+        "FIX-PKG-NEG-010",
+        "FIX-PKG-NEG-011",
+        "FIX-PKG-NEG-012",
+        "FIX-PKG-ILLEGAL-001",
+        "FIX-PKG-STATE-001"
+      ],
       "acceptance_gate": "Each state-command pair occurs exactly once with all required transition fields and denied-row coverage.",
       "scope": "foundation",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/recovery-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/recovery-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-PKG-008",
-      "decision_ids": ["DEC-010"],
-      "canonical_terms": ["Traceability Record", "Conformance Fixture", "Specification Package"],
-      "normative_anchors": ["normative/package-contract.md#req-pkg-008-traceability-is-stable-and-total"],
-      "schema_or_transition_refs": ["contracts/schemas/requirements.schema.json", "contracts/schemas/traceability.schema.json", "contracts/schemas/traceability-report.schema.json"],
-      "positive_fixture_ids": ["FIX-PKG-POS-001"],
-      "negative_fixture_ids": ["FIX-PKG-NEG-003", "FIX-PKG-NEG-007"],
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Traceability Record",
+        "Conformance Fixture",
+        "Specification Package"
+      ],
+      "normative_anchors": [
+        "normative/package-contract.md#req-pkg-008-traceability-is-stable-and-total"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/requirements.schema.json",
+        "contracts/schemas/traceability.schema.json",
+        "contracts/schemas/traceability-report.schema.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-PKG-POS-001"
+      ],
+      "negative_fixture_ids": [
+        "FIX-PKG-NEG-003",
+        "FIX-PKG-NEG-007"
+      ],
       "acceptance_gate": "Every normative requirement has one resolving traceability record and every reference resolves.",
       "scope": "foundation",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/traceability-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/traceability-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-PKG-009",
-      "decision_ids": ["DEC-010"],
-      "canonical_terms": ["Conformance Fixture", "Specification Package"],
-      "normative_anchors": ["normative/package-contract.md#req-pkg-009-conformance-observes-public-effects"],
-      "schema_or_transition_refs": ["contracts/schemas/conformance-manifest.schema.json", "contracts/schemas/conformance-fixture.schema.json", "contracts/schemas/package-state-observation.schema.json"],
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Conformance Fixture",
+        "Specification Package"
+      ],
+      "normative_anchors": [
+        "normative/package-contract.md#req-pkg-009-conformance-observes-public-effects"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/conformance-manifest.schema.json",
+        "contracts/schemas/conformance-fixture.schema.json",
+        "contracts/schemas/package-state-observation.schema.json"
+      ],
       "positive_fixture_ids": [
         "FIX-PKG-POS-002",
         "FIX-PKG-POS-004",
@@ -145,295 +341,1420 @@
       ],
       "acceptance_gate": "Required fixtures bind observable lifecycle state and command evidence, while release assets bind specification and conformance-pack digests, validator version, independently reproduced validation, and traceability reports.",
       "scope": "foundation",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/recovery-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/recovery-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-PKG-010",
-      "decision_ids": ["DEC-010"],
-      "canonical_terms": ["Specification Package", "Normative Material", "Informative Material"],
-      "normative_anchors": ["normative/package-contract.md#req-pkg-010-package-layout-is-declared"],
-      "schema_or_transition_refs": ["contracts/schemas/package-manifest.schema.json"],
-      "positive_fixture_ids": ["FIX-PKG-POS-001", "FIX-PKG-POS-005"],
-      "negative_fixture_ids": ["FIX-PKG-NEG-001", "FIX-PKG-NEG-008", "FIX-PKG-NEG-009", "FIX-PKG-NEG-012"],
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Specification Package",
+        "Normative Material",
+        "Informative Material"
+      ],
+      "normative_anchors": [
+        "normative/package-contract.md#req-pkg-010-package-layout-is-declared"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/package-manifest.schema.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-PKG-POS-001",
+        "FIX-PKG-POS-005"
+      ],
+      "negative_fixture_ids": [
+        "FIX-PKG-NEG-001",
+        "FIX-PKG-NEG-008",
+        "FIX-PKG-NEG-009",
+        "FIX-PKG-NEG-012"
+      ],
       "acceptance_gate": "The manifest declares every final release slot and distinguishes candidate foundation contents.",
       "scope": "foundation",
-      "evidence_refs": ["conformance/evidence/validation-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-PKG-011",
-      "decision_ids": ["DEC-010"],
-      "canonical_terms": ["Specification Package", "Normative Material"],
-      "normative_anchors": ["normative/package-contract.md#req-pkg-011-release-authority-is-non-ambiguous"],
-      "schema_or_transition_refs": ["contracts/schemas/transition-table.schema.json", "contracts/transitions/package-lifecycle.json"],
-      "positive_fixture_ids": ["FIX-PKG-POS-004", "FIX-PKG-POS-005"],
-      "negative_fixture_ids": ["FIX-PKG-NEG-005", "FIX-PKG-NEG-012", "FIX-PKG-AUTH-001"],
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Specification Package",
+        "Normative Material"
+      ],
+      "normative_anchors": [
+        "normative/package-contract.md#req-pkg-011-release-authority-is-non-ambiguous"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/transition-table.schema.json",
+        "contracts/transitions/package-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-PKG-POS-004",
+        "FIX-PKG-POS-005"
+      ],
+      "negative_fixture_ids": [
+        "FIX-PKG-NEG-005",
+        "FIX-PKG-NEG-012",
+        "FIX-PKG-AUTH-001"
+      ],
       "acceptance_gate": "Vault-owner and independent-technical approvals bind one digest to different canonical authenticated human principals and cannot be inferred or substituted.",
       "scope": "foundation",
-      "evidence_refs": ["conformance/evidence/validation-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-PKG-012",
-      "decision_ids": ["DEC-010"],
-      "canonical_terms": ["mdplace Agent", "Semantic Kernel", "Control Channel", "Vault Mutation Gate", "Capture Adapter", "Placement Evaluation", "Taxonomy Evolution Cycle", "Folder Projection"],
-      "normative_anchors": ["normative/package-contract.md#req-pkg-012-the-package-is-specification-only"],
-      "schema_or_transition_refs": ["contracts/schemas/package-manifest.schema.json"],
-      "positive_fixture_ids": ["FIX-PKG-POS-001", "FIX-PKG-REC-001"],
-      "negative_fixture_ids": ["FIX-PKG-NEG-008"],
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "mdplace Agent",
+        "Semantic Kernel",
+        "Control Channel",
+        "Vault Mutation Gate",
+        "Capture Adapter",
+        "Placement Evaluation",
+        "Taxonomy Evolution Cycle",
+        "Folder Projection"
+      ],
+      "normative_anchors": [
+        "normative/package-contract.md#req-pkg-012-the-package-is-specification-only"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/package-manifest.schema.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-PKG-POS-001",
+        "FIX-PKG-REC-001"
+      ],
+      "negative_fixture_ids": [
+        "FIX-PKG-NEG-008"
+      ],
       "acceptance_gate": "Only declared specification artifacts and the exact conformance executable inventory exist; no production boundary is implemented or invoked.",
       "scope": "foundation",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/recovery-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/recovery-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-VAL-001",
-      "decision_ids": ["DEC-010"],
-      "canonical_terms": ["Validator Extension", "Evidence Envelope", "Claim Manifest", "Specification Package"],
-      "normative_anchors": ["normative/validator-evidence-contract.md#req-val-001-validator-extensions-are-closed-and-version-bound"],
-      "schema_or_transition_refs": ["contracts/schemas/validator-extension-registry.schema.json", "contracts/validator-extensions.json"],
-      "positive_fixture_ids": ["FIX-VAL-POS-001"],
-      "negative_fixture_ids": ["FIX-VAL-NEG-002", "FIX-VAL-AUTH-001"],
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Validator Extension",
+        "Evidence Envelope",
+        "Claim Manifest",
+        "Specification Package"
+      ],
+      "normative_anchors": [
+        "normative/validator-evidence-contract.md#req-val-001-validator-extensions-are-closed-and-version-bound"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/validator-extension-registry.schema.json",
+        "contracts/validator-extensions.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-VAL-POS-001"
+      ],
+      "negative_fixture_ids": [
+        "FIX-VAL-NEG-002",
+        "FIX-VAL-AUTH-001"
+      ],
       "acceptance_gate": "Only registered extension identifiers and their exact version-bound subject schemas are evaluated; ambient or undeclared validators are denied.",
       "scope": "validator-evidence",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/envelopes/validator-evidence-reference.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/envelopes/validator-evidence-reference.json"
+      ]
     },
     {
       "requirement_id": "REQ-VAL-002",
-      "decision_ids": ["DEC-010"],
-      "canonical_terms": ["Validator Extension", "Evidence Envelope", "Claim Manifest", "Specification Package"],
-      "normative_anchors": ["normative/validator-evidence-contract.md#req-val-002-every-validation-artifact-shares-one-immutable-version-binding"],
-      "schema_or_transition_refs": ["contracts/schemas/validator-invocation.schema.json", "contracts/schemas/evidence-envelope.schema.json", "contracts/schemas/claim-manifest.schema.json", "contracts/schemas/evidence-recovery-report.schema.json"],
-      "positive_fixture_ids": ["FIX-VAL-POS-001", "FIX-VAL-REC-001"],
-      "negative_fixture_ids": ["FIX-VAL-STATE-001", "FIX-VAL-STATE-002", "FIX-VAL-AUTH-001", "FIX-VAL-REC-002", "FIX-VAL-NEG-004"],
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Validator Extension",
+        "Evidence Envelope",
+        "Claim Manifest",
+        "Specification Package"
+      ],
+      "normative_anchors": [
+        "normative/validator-evidence-contract.md#req-val-002-every-validation-artifact-shares-one-immutable-version-binding"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/validator-invocation.schema.json",
+        "contracts/schemas/evidence-envelope.schema.json",
+        "contracts/schemas/claim-manifest.schema.json",
+        "contracts/schemas/evidence-recovery-report.schema.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-VAL-POS-001",
+        "FIX-VAL-REC-001"
+      ],
+      "negative_fixture_ids": [
+        "FIX-VAL-STATE-001",
+        "FIX-VAL-STATE-002",
+        "FIX-VAL-AUTH-001",
+        "FIX-VAL-REC-002",
+        "FIX-VAL-NEG-004"
+      ],
       "acceptance_gate": "Invocations, envelopes, claims, artifacts, receipts, recovery reports, and verdicts bind the current package and validator versions and recomputed artifact digests.",
       "scope": "validator-evidence",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/evidence-recovery-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/evidence-recovery-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-VAL-003",
-      "decision_ids": ["DEC-010"],
-      "canonical_terms": ["Evidence Envelope", "Validator Extension", "Conformance Verdict"],
-      "normative_anchors": ["normative/validator-evidence-contract.md#req-val-003-evidence-envelopes-are-deterministic-and-complete"],
-      "schema_or_transition_refs": ["contracts/schemas/evidence-envelope.schema.json"],
-      "positive_fixture_ids": ["FIX-VAL-POS-001", "FIX-PKG-BND-001"],
-      "negative_fixture_ids": ["FIX-PKG-BND-002", "FIX-PKG-BND-003", "FIX-VAL-NEG-003", "FIX-VAL-NEG-005", "FIX-VAL-NEG-006"],
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Evidence Envelope",
+        "Validator Extension",
+        "Conformance Verdict"
+      ],
+      "normative_anchors": [
+        "normative/validator-evidence-contract.md#req-val-003-evidence-envelopes-are-deterministic-and-complete"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/evidence-envelope.schema.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-VAL-POS-001",
+        "FIX-PKG-BND-001"
+      ],
+      "negative_fixture_ids": [
+        "FIX-PKG-BND-002",
+        "FIX-PKG-BND-003",
+        "FIX-VAL-NEG-003",
+        "FIX-VAL-NEG-005",
+        "FIX-VAL-NEG-006"
+      ],
       "acceptance_gate": "Every envelope explicitly carries its requirement, subject, ordered digests and verified receipt bindings, execution context, and verdict with contiguous ordinals.",
       "scope": "validator-evidence",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/envelopes/validator-evidence-reference.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/envelopes/validator-evidence-reference.json"
+      ]
     },
     {
       "requirement_id": "REQ-VAL-004",
-      "decision_ids": ["DEC-010"],
-      "canonical_terms": ["Claim Manifest", "Conformance Profile", "Evidence Envelope", "Conformance Verdict"],
-      "normative_anchors": ["normative/validator-evidence-contract.md#req-val-004-claim-manifests-bind-one-claim-to-required-evidence"],
-      "schema_or_transition_refs": ["contracts/schemas/claim-manifest.schema.json", "contracts/schemas/claims-and-evidence.schema.json", "claims-and-evidence.yaml"],
-      "positive_fixture_ids": ["FIX-VAL-POS-002", "FIX-VAL-POS-003"],
-      "negative_fixture_ids": ["FIX-VAL-NEG-001", "FIX-VAL-NEG-002", "FIX-VAL-STATE-002"],
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Claim Manifest",
+        "Conformance Profile",
+        "Evidence Envelope",
+        "Conformance Verdict"
+      ],
+      "normative_anchors": [
+        "normative/validator-evidence-contract.md#req-val-004-claim-manifests-bind-one-claim-to-required-evidence"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/claim-manifest.schema.json",
+        "contracts/schemas/claims-and-evidence.schema.json",
+        "claims-and-evidence.yaml"
+      ],
+      "positive_fixture_ids": [
+        "FIX-VAL-POS-002",
+        "FIX-VAL-POS-003"
+      ],
+      "negative_fixture_ids": [
+        "FIX-VAL-NEG-001",
+        "FIX-VAL-NEG-002",
+        "FIX-VAL-STATE-002"
+      ],
       "acceptance_gate": "Each of the eight isolated profiles has one closed manifest and independent digest binding from claim and requirement to evidence and verdict.",
       "scope": "validator-evidence",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "claims-and-evidence.yaml"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "claims-and-evidence.yaml"
+      ]
     },
     {
       "requirement_id": "REQ-VAL-005",
-      "decision_ids": ["DEC-010"],
-      "canonical_terms": ["Conformance Verdict", "Claim Manifest", "Evidence Envelope"],
-      "normative_anchors": ["normative/validator-evidence-contract.md#req-val-005-verdict-aggregation-denies-absent-mandatory-proof"],
-      "schema_or_transition_refs": ["contracts/schemas/verdict-table.schema.json", "contracts/verdicts/validator-verdicts.json", "contracts/schemas/claim-manifest.schema.json"],
-      "positive_fixture_ids": ["FIX-VAL-POS-001", "FIX-VAL-POS-002", "FIX-VAL-POS-003", "FIX-VAL-REC-001"],
-      "negative_fixture_ids": ["FIX-VAL-NEG-001", "FIX-VAL-NEG-003", "FIX-VAL-NEG-004", "FIX-VAL-STATE-001", "FIX-VAL-STATE-002", "FIX-VAL-REC-002", "FIX-VAL-REC-003", "FIX-VAL-ILLEGAL-003", "FIX-VAL-ILLEGAL-004", "FIX-VAL-ILLEGAL-005"],
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Conformance Verdict",
+        "Claim Manifest",
+        "Evidence Envelope"
+      ],
+      "normative_anchors": [
+        "normative/validator-evidence-contract.md#req-val-005-verdict-aggregation-denies-absent-mandatory-proof"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/verdict-table.schema.json",
+        "contracts/verdicts/validator-verdicts.json",
+        "contracts/schemas/claim-manifest.schema.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-VAL-POS-001",
+        "FIX-VAL-POS-002",
+        "FIX-VAL-POS-003",
+        "FIX-VAL-REC-001"
+      ],
+      "negative_fixture_ids": [
+        "FIX-VAL-NEG-001",
+        "FIX-VAL-NEG-003",
+        "FIX-VAL-NEG-004",
+        "FIX-VAL-STATE-001",
+        "FIX-VAL-STATE-002",
+        "FIX-VAL-REC-002",
+        "FIX-VAL-REC-003",
+        "FIX-VAL-ILLEGAL-003",
+        "FIX-VAL-ILLEGAL-004",
+        "FIX-VAL-ILLEGAL-005"
+      ],
       "acceptance_gate": "Pass requires complete current mandatory proof; fail, unsupported, and inconclusive retain distinct non-pass semantics under the complete verdict table.",
       "scope": "validator-evidence",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/evidence-recovery-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/evidence-recovery-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-VAL-006",
-      "decision_ids": ["DEC-010"],
-      "canonical_terms": ["Evidence Envelope", "Claim Manifest", "Conformance Verdict", "Validator Extension"],
-      "normative_anchors": ["normative/validator-evidence-contract.md#req-val-006-readback-and-recovery-preserve-non-pass-results"],
-      "schema_or_transition_refs": ["contracts/schemas/evidence-recovery-report.schema.json", "contracts/schemas/evidence-transition-attempt.schema.json", "contracts/transitions/evidence-lifecycle.json"],
-      "positive_fixture_ids": ["FIX-VAL-REC-001"],
-      "negative_fixture_ids": ["FIX-VAL-STATE-001", "FIX-VAL-STATE-002", "FIX-VAL-REC-002", "FIX-VAL-REC-003", "FIX-VAL-ILLEGAL-001", "FIX-VAL-ILLEGAL-002", "FIX-VAL-ILLEGAL-003", "FIX-VAL-ILLEGAL-004", "FIX-VAL-ILLEGAL-005", "FIX-VAL-NEG-005", "FIX-VAL-NEG-006"],
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Evidence Envelope",
+        "Claim Manifest",
+        "Conformance Verdict",
+        "Validator Extension"
+      ],
+      "normative_anchors": [
+        "normative/validator-evidence-contract.md#req-val-006-readback-and-recovery-preserve-non-pass-results"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/evidence-recovery-report.schema.json",
+        "contracts/schemas/evidence-transition-attempt.schema.json",
+        "contracts/transitions/evidence-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-VAL-REC-001"
+      ],
+      "negative_fixture_ids": [
+        "FIX-VAL-STATE-001",
+        "FIX-VAL-STATE-002",
+        "FIX-VAL-REC-002",
+        "FIX-VAL-REC-003",
+        "FIX-VAL-ILLEGAL-001",
+        "FIX-VAL-ILLEGAL-002",
+        "FIX-VAL-ILLEGAL-003",
+        "FIX-VAL-ILLEGAL-004",
+        "FIX-VAL-ILLEGAL-005",
+        "FIX-VAL-NEG-005",
+        "FIX-VAL-NEG-006"
+      ],
       "acceptance_gate": "Readback recomputes every binding and fail, unsupported, or inconclusive remains effective until fresh mandatory evidence reopens evaluation through the complete lifecycle.",
       "scope": "validator-evidence",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/evidence-recovery-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/evidence-recovery-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-VAL-007",
-      "decision_ids": ["DEC-010"],
-      "canonical_terms": ["Specification Package", "Conformance Fixture", "mdplace Agent", "Semantic Kernel", "Control Channel", "Vault Mutation Gate", "Capture Adapter", "Placement Evaluation", "Taxonomy Evolution Cycle", "Folder Projection", "Intelligence Adapter", "Placement Automation Permission", "Automation Grant"],
-      "normative_anchors": ["normative/validator-evidence-contract.md#req-val-007-validator-evidence-artifacts-are-specification-only"],
-      "schema_or_transition_refs": ["contracts/schemas/conformance-fixture.schema.json", "contracts/transitions/evidence-lifecycle.json"],
-      "positive_fixture_ids": ["FIX-VAL-POS-001", "FIX-VAL-POS-002", "FIX-VAL-REC-001"],
-      "negative_fixture_ids": ["FIX-PKG-NEG-008", "FIX-VAL-AUTH-001", "FIX-VAL-ILLEGAL-001", "FIX-VAL-ILLEGAL-002", "FIX-VAL-ILLEGAL-003", "FIX-VAL-ILLEGAL-004"],
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Specification Package",
+        "Conformance Fixture",
+        "mdplace Agent",
+        "Semantic Kernel",
+        "Control Channel",
+        "Vault Mutation Gate",
+        "Capture Adapter",
+        "Placement Evaluation",
+        "Taxonomy Evolution Cycle",
+        "Folder Projection",
+        "Intelligence Adapter",
+        "Placement Automation Permission",
+        "Automation Grant"
+      ],
+      "normative_anchors": [
+        "normative/validator-evidence-contract.md#req-val-007-validator-evidence-artifacts-are-specification-only"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/conformance-fixture.schema.json",
+        "contracts/transitions/evidence-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-VAL-POS-001",
+        "FIX-VAL-POS-002",
+        "FIX-VAL-REC-001"
+      ],
+      "negative_fixture_ids": [
+        "FIX-PKG-NEG-008",
+        "FIX-VAL-AUTH-001",
+        "FIX-VAL-ILLEGAL-001",
+        "FIX-VAL-ILLEGAL-002",
+        "FIX-VAL-ILLEGAL-003",
+        "FIX-VAL-ILLEGAL-004"
+      ],
       "acceptance_gate": "Only specification, schemas, fixtures, validator assertions, traceability, and evidence artifacts are added; no production mdplace boundary is implemented or invoked.",
       "scope": "validator-evidence",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/evidence-recovery-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/evidence-recovery-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-SK-001",
-      "decision_ids": ["DEC-002"],
-      "canonical_terms": ["Semantic Kernel", "Specification Package"],
-      "normative_anchors": ["normative/semantic-kernel-contract.md#req-sk-001-the-canonical-operation-envelope-is-closed"],
-      "schema_or_transition_refs": ["contracts/schemas/semantic-operation.schema.json", "contracts/schemas/semantic-operation-kind-registry.schema.json", "contracts/schemas/semantic-authority-registry.schema.json", "contracts/schemas/semantic-receipt.schema.json", "contracts/semantic-operation-kinds.json", "contracts/semantic-authorities.json"],
-      "positive_fixture_ids": ["FIX-SK-POS-001", "FIX-SK-POS-010"],
-      "negative_fixture_ids": ["FIX-SK-NEG-003", "FIX-SK-NEG-004", "FIX-SK-NEG-005", "FIX-SK-NEG-006", "FIX-SK-NEG-007"],
+      "decision_ids": [
+        "DEC-002"
+      ],
+      "canonical_terms": [
+        "Semantic Kernel",
+        "Specification Package"
+      ],
+      "normative_anchors": [
+        "normative/semantic-kernel-contract.md#req-sk-001-the-canonical-operation-envelope-is-closed"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/semantic-operation.schema.json",
+        "contracts/schemas/semantic-operation-kind-registry.schema.json",
+        "contracts/schemas/semantic-authority-registry.schema.json",
+        "contracts/schemas/semantic-receipt.schema.json",
+        "contracts/semantic-operation-kinds.json",
+        "contracts/semantic-authorities.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-SK-POS-001",
+        "FIX-SK-POS-010"
+      ],
+      "negative_fixture_ids": [
+        "FIX-SK-NEG-003",
+        "FIX-SK-NEG-004",
+        "FIX-SK-NEG-005",
+        "FIX-SK-NEG-006",
+        "FIX-SK-NEG-007"
+      ],
       "acceptance_gate": "Stable REQ-SK identifiers and canonical vocabulary define every accepted append and replay record as one digest-bound immutable OperationCommit with identity, version, exact authority, bases, ordering, typed independently versioned events, idempotency, preconditions, and closure receipt; malformed, torn, noncanonical, unsupported, unknown, and digest-mismatched records are rejected atomically.",
       "scope": "semantic-kernel",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/semantic-kernel-recovery-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/semantic-kernel-recovery-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-SK-002",
-      "decision_ids": ["DEC-002"],
-      "canonical_terms": ["Semantic Kernel", "mdplace Agent", "Control Channel"],
-      "normative_anchors": ["normative/semantic-kernel-contract.md#req-sk-002-compare-and-append-is-serialized-and-fail-closed"],
-      "schema_or_transition_refs": ["contracts/schemas/semantic-operation.schema.json", "contracts/schemas/semantic-kernel-scenario.schema.json", "contracts/schemas/semantic-authority-registry.schema.json", "contracts/schemas/semantic-receipt.schema.json", "contracts/transitions/semantic-kernel-lifecycle.json", "contracts/semantic-authorities.json"],
-      "positive_fixture_ids": ["FIX-SK-POS-001", "FIX-SK-POS-002", "FIX-SK-POS-004", "FIX-SK-REC-001", "FIX-SK-REC-002"],
-      "negative_fixture_ids": ["FIX-SK-STATE-001", "FIX-SK-NEG-001", "FIX-SK-NEG-002", "FIX-SK-NEG-009", "FIX-SK-AUTH-001", "FIX-SK-ILLEGAL-001", "FIX-SK-ILLEGAL-002"],
+      "decision_ids": [
+        "DEC-002"
+      ],
+      "canonical_terms": [
+        "Semantic Kernel",
+        "mdplace Agent",
+        "Control Channel"
+      ],
+      "normative_anchors": [
+        "normative/semantic-kernel-contract.md#req-sk-002-compare-and-append-is-serialized-and-fail-closed"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/semantic-operation.schema.json",
+        "contracts/schemas/semantic-kernel-scenario.schema.json",
+        "contracts/schemas/semantic-authority-registry.schema.json",
+        "contracts/schemas/semantic-receipt.schema.json",
+        "contracts/transitions/semantic-kernel-lifecycle.json",
+        "contracts/semantic-authorities.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-SK-POS-001",
+        "FIX-SK-POS-002",
+        "FIX-SK-POS-004",
+        "FIX-SK-REC-001",
+        "FIX-SK-REC-002"
+      ],
+      "negative_fixture_ids": [
+        "FIX-SK-STATE-001",
+        "FIX-SK-NEG-001",
+        "FIX-SK-NEG-002",
+        "FIX-SK-NEG-009",
+        "FIX-SK-AUTH-001",
+        "FIX-SK-ILLEGAL-001",
+        "FIX-SK-ILLEGAL-002"
+      ],
       "acceptance_gate": "A closed scenario and operation schema, package-bound exact-tuple capability registry, and complete lifecycle table ensure an authorized exact-base command with a recomputed command digest, unique idempotency material, and a new operation identity against complete history emits one immutable canonical operation and receipt; stale, duplicate, incompatible, unauthorized, noncontiguous, failed-precondition, or illegal input emits one deterministic rejection and no semantic write.",
       "scope": "semantic-kernel",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/semantic-kernel-recovery-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/semantic-kernel-recovery-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-SK-003",
-      "decision_ids": ["DEC-002"],
-      "canonical_terms": ["Semantic Kernel", "Folder Projection", "Specification Package"],
-      "normative_anchors": ["normative/semantic-kernel-contract.md#req-sk-003-replay-snapshots-ordering-and-views-are-deterministic"],
-      "schema_or_transition_refs": ["contracts/schemas/semantic-operation.schema.json", "contracts/schemas/semantic-kernel-scenario.schema.json", "contracts/transitions/semantic-kernel-lifecycle.json"],
-      "positive_fixture_ids": ["FIX-SK-POS-002", "FIX-SK-POS-005", "FIX-SK-POS-006", "FIX-SK-POS-007", "FIX-SK-POS-010"],
-      "negative_fixture_ids": ["FIX-SK-STATE-002", "FIX-SK-NEG-007", "FIX-SK-NEG-008", "FIX-SK-NEG-010", "FIX-SK-ILLEGAL-001", "FIX-SK-ILLEGAL-002"],
+      "decision_ids": [
+        "DEC-002"
+      ],
+      "canonical_terms": [
+        "Semantic Kernel",
+        "Folder Projection",
+        "Specification Package"
+      ],
+      "normative_anchors": [
+        "normative/semantic-kernel-contract.md#req-sk-003-replay-snapshots-ordering-and-views-are-deterministic"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/semantic-operation.schema.json",
+        "contracts/schemas/semantic-kernel-scenario.schema.json",
+        "contracts/transitions/semantic-kernel-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-SK-POS-002",
+        "FIX-SK-POS-005",
+        "FIX-SK-POS-006",
+        "FIX-SK-POS-007",
+        "FIX-SK-POS-010"
+      ],
+      "negative_fixture_ids": [
+        "FIX-SK-STATE-002",
+        "FIX-SK-NEG-007",
+        "FIX-SK-NEG-008",
+        "FIX-SK-NEG-010",
+        "FIX-SK-ILLEGAL-001",
+        "FIX-SK-ILLEGAL-002"
+      ],
       "acceptance_gate": "Exactly 30 manifest scenarios prove atomic ordered-event replay, operation fixity, legal and illegal removal, full replay and valid-snapshot suffix equivalence, stable ordering, recognized forward-compatible no-op behavior, and disposable view rebuild only from canonical history.",
       "scope": "semantic-kernel",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/semantic-kernel-recovery-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/semantic-kernel-recovery-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-SK-004",
-      "decision_ids": ["DEC-002"],
-      "canonical_terms": ["Conformance Fixture", "Semantic Kernel", "Specification Package"],
-      "normative_anchors": ["normative/semantic-kernel-contract.md#req-sk-004-stateful-fixtures-observe-complete-closure-outcomes"],
-      "schema_or_transition_refs": ["contracts/schemas/conformance-fixture.schema.json", "contracts/schemas/conformance-manifest.schema.json", "contracts/schemas/semantic-kernel-scenario.schema.json"],
-      "positive_fixture_ids": ["FIX-SK-POS-001", "FIX-SK-POS-002", "FIX-SK-REC-001"],
-      "negative_fixture_ids": ["FIX-SK-NEG-001", "FIX-SK-NEG-003", "FIX-SK-NEG-004", "FIX-SK-NEG-005", "FIX-SK-NEG-008", "FIX-SK-NEG-009", "FIX-SK-NEG-010", "FIX-SK-STATE-001", "FIX-SK-AUTH-001", "FIX-SK-ILLEGAL-001"],
+      "decision_ids": [
+        "DEC-002"
+      ],
+      "canonical_terms": [
+        "Conformance Fixture",
+        "Semantic Kernel",
+        "Specification Package"
+      ],
+      "normative_anchors": [
+        "normative/semantic-kernel-contract.md#req-sk-004-stateful-fixtures-observe-complete-closure-outcomes"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/conformance-fixture.schema.json",
+        "contracts/schemas/conformance-manifest.schema.json",
+        "contracts/schemas/semantic-kernel-scenario.schema.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-SK-POS-001",
+        "FIX-SK-POS-002",
+        "FIX-SK-REC-001"
+      ],
+      "negative_fixture_ids": [
+        "FIX-SK-NEG-001",
+        "FIX-SK-NEG-003",
+        "FIX-SK-NEG-004",
+        "FIX-SK-NEG-005",
+        "FIX-SK-NEG-008",
+        "FIX-SK-NEG-009",
+        "FIX-SK-NEG-010",
+        "FIX-SK-STATE-001",
+        "FIX-SK-AUTH-001",
+        "FIX-SK-ILLEGAL-001"
+      ],
       "acceptance_gate": "Exactly 30 manifest-owned stateful scenarios are classified by ID, path, subject kind, or schema with all four paired, cover every required class including removal, and expose accepted or rejected closure, canonical record or none, receipts, semantic state, snapshots or replay, rebuilt views, filesystem effects, terminal state, and illegal transitions.",
       "scope": "semantic-kernel",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/semantic-kernel-recovery-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/semantic-kernel-recovery-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-SK-005",
-      "decision_ids": ["DEC-002"],
-      "canonical_terms": ["Conformance Fixture", "Traceability Record", "Specification Package"],
-      "normative_anchors": ["normative/semantic-kernel-contract.md#req-sk-005-validation-and-evidence-bind-public-behavior"],
-      "schema_or_transition_refs": ["contracts/schemas/semantic-kernel-recovery-report.schema.json", "contracts/schemas/semantic-receipt.schema.json", "contracts/transitions/semantic-kernel-lifecycle.json"],
-      "positive_fixture_ids": ["FIX-SK-POS-001", "FIX-SK-POS-005", "FIX-SK-POS-007", "FIX-SK-REC-002"],
-      "negative_fixture_ids": ["FIX-SK-NEG-001", "FIX-SK-NEG-005", "FIX-SK-NEG-008", "FIX-SK-NEG-009"],
+      "decision_ids": [
+        "DEC-002"
+      ],
+      "canonical_terms": [
+        "Conformance Fixture",
+        "Traceability Record",
+        "Specification Package"
+      ],
+      "normative_anchors": [
+        "normative/semantic-kernel-contract.md#req-sk-005-validation-and-evidence-bind-public-behavior"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/semantic-kernel-recovery-report.schema.json",
+        "contracts/schemas/semantic-receipt.schema.json",
+        "contracts/transitions/semantic-kernel-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-SK-POS-001",
+        "FIX-SK-POS-005",
+        "FIX-SK-POS-007",
+        "FIX-SK-REC-002"
+      ],
+      "negative_fixture_ids": [
+        "FIX-SK-NEG-001",
+        "FIX-SK-NEG-005",
+        "FIX-SK-NEG-008",
+        "FIX-SK-NEG-009"
+      ],
       "acceptance_gate": "The validator checks public schemas, closed receipts, lifecycle behavior, ordering, idempotency, replay, snapshots, rebuild, recovery, authority denials, traceability, and fixture/result-bound machine evidence without private implementation assertions.",
       "scope": "semantic-kernel",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/traceability-report.json", "conformance/evidence/semantic-kernel-recovery-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/traceability-report.json",
+        "conformance/evidence/semantic-kernel-recovery-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-SK-006",
-      "decision_ids": ["DEC-002"],
-      "canonical_terms": ["Semantic Kernel", "Folder Projection", "Intelligence Adapter", "Capture Adapter"],
-      "normative_anchors": ["normative/semantic-kernel-contract.md#req-sk-006-the-accepted-reconciliation-remains-an-input"],
-      "schema_or_transition_refs": ["contracts/schemas/semantic-operation.schema.json", "contracts/transitions/semantic-kernel-lifecycle.json"],
-      "positive_fixture_ids": ["FIX-SK-POS-001"],
-      "negative_fixture_ids": ["FIX-SK-NEG-003"],
+      "decision_ids": [
+        "DEC-002"
+      ],
+      "canonical_terms": [
+        "Semantic Kernel",
+        "Folder Projection",
+        "Intelligence Adapter",
+        "Capture Adapter"
+      ],
+      "normative_anchors": [
+        "normative/semantic-kernel-contract.md#req-sk-006-the-accepted-reconciliation-remains-an-input"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/semantic-operation.schema.json",
+        "contracts/transitions/semantic-kernel-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-SK-POS-001"
+      ],
+      "negative_fixture_ids": [
+        "FIX-SK-NEG-003"
+      ],
       "acceptance_gate": "Every Semantic Kernel requirement binds the exact accepted issue #2 decision as input_without_reopening and none restores a deprecated authority or persistence model.",
       "scope": "semantic-kernel",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/semantic-kernel-recovery-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/semantic-kernel-recovery-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-SK-007",
-      "decision_ids": ["DEC-002"],
-      "canonical_terms": ["Specification Package", "Conformance Fixture", "mdplace Agent", "Semantic Kernel", "Control Channel", "Vault Mutation Gate", "Capture Adapter", "Folder Projection", "Intelligence Adapter"],
-      "normative_anchors": ["normative/semantic-kernel-contract.md#req-sk-007-artifacts-are-specification-and-conformance-only"],
-      "schema_or_transition_refs": ["contracts/schemas/conformance-fixture.schema.json", "contracts/schemas/semantic-authority-registry.schema.json", "contracts/schemas/semantic-kernel-scenario.schema.json", "contracts/semantic-authorities.json"],
-      "positive_fixture_ids": ["FIX-SK-POS-007"],
-      "negative_fixture_ids": ["FIX-SK-AUTH-001", "FIX-SK-AUTH-002", "FIX-SK-AUTH-003", "FIX-SK-AUTH-004", "FIX-SK-AUTH-005", "FIX-SK-AUTH-006"],
+      "decision_ids": [
+        "DEC-002"
+      ],
+      "canonical_terms": [
+        "Specification Package",
+        "Conformance Fixture",
+        "mdplace Agent",
+        "Semantic Kernel",
+        "Control Channel",
+        "Vault Mutation Gate",
+        "Capture Adapter",
+        "Folder Projection",
+        "Intelligence Adapter"
+      ],
+      "normative_anchors": [
+        "normative/semantic-kernel-contract.md#req-sk-007-artifacts-are-specification-and-conformance-only"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/conformance-fixture.schema.json",
+        "contracts/schemas/semantic-authority-registry.schema.json",
+        "contracts/schemas/semantic-kernel-scenario.schema.json",
+        "contracts/semantic-authorities.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-SK-POS-007"
+      ],
+      "negative_fixture_ids": [
+        "FIX-SK-AUTH-001",
+        "FIX-SK-AUTH-002",
+        "FIX-SK-AUTH-003",
+        "FIX-SK-AUTH-004",
+        "FIX-SK-AUTH-005",
+        "FIX-SK-AUTH-006"
+      ],
       "acceptance_gate": "Only specification, schemas, registries, fixtures, conformance-only observers, traceability, and evidence are added; no production mdplace boundary or vault mutation is implemented or invoked.",
       "scope": "semantic-kernel",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/semantic-kernel-recovery-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/semantic-kernel-recovery-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-CP-001",
+      "decision_ids": [
+        "DEC-026",
+        "DEC-028"
+      ],
+      "canonical_terms": [
+        "Work Journal",
+        "Scheduler",
+        "mdplace Agent",
+        "Control Channel",
+        "Control Command",
+        "Child Work Invocation",
+        "Work Recovery",
+        "Semantic Kernel",
+        "Vault Mutation Gate"
+      ],
+      "normative_anchors": [
+        "normative/control-plane-contract.md#req-cp-001-operational-state-never-establishes-semantic-truth"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/work-journal.schema.json",
+        "contracts/schemas/scheduler-state.schema.json",
+        "contracts/schemas/agent-state.schema.json",
+        "contracts/schemas/control-channel-command.schema.json",
+        "contracts/schemas/control-plane-scenario.schema.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-CP-REC-001",
+        "FIX-CP-POS-001",
+        "FIX-CP-POS-002",
+        "FIX-CP-REC-004",
+        "FIX-CP-REC-005",
+        "FIX-CP-POS-006",
+        "FIX-CP-POS-007"
+      ],
+      "negative_fixture_ids": [
+        "FIX-CP-AUTH-001",
+        "FIX-CP-AUTH-004",
+        "FIX-CP-AUTH-005"
+      ],
+      "acceptance_gate": "Every control-plane document declares no semantic authority, attempted operational semantic writes are denied, and every stateful scenario exposes the unchanged Semantic Kernel state digest.",
+      "scope": "control-plane",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/control-plane-recovery-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-CP-002",
+      "decision_ids": [
+        "DEC-026",
+        "DEC-028"
+      ],
+      "canonical_terms": [
+        "Work Journal",
+        "Scheduler",
+        "Work Item",
+        "Work Lease",
+        "Child Work Invocation"
+      ],
+      "normative_anchors": [
+        "normative/control-plane-contract.md#req-cp-002-work-journal-and-scheduler-records-are-closed-durable-and-bounded"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/work-journal.schema.json",
+        "contracts/schemas/scheduler-state.schema.json",
+        "contracts/transitions/work-queue-lifecycle.json",
+        "contracts/transitions/retry-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-CP-REC-001",
+        "FIX-CP-POS-001",
+        "FIX-CP-REC-002",
+        "FIX-CP-POS-002",
+        "FIX-CP-BND-001",
+        "FIX-CP-POS-006"
+      ],
+      "negative_fixture_ids": [
+        "FIX-CP-ILLEGAL-001",
+        "FIX-CP-NEG-001"
+      ],
+      "acceptance_gate": "Closed Work Journal and Scheduler documents enforce exact identities, versions, digests, dependencies, ownership, receipts, concurrency, child-process, attempt, retry, wall-time, output, lease, and recovery budgets; dequeue acknowledgement follows a durable Work Lease receipt.",
+      "scope": "control-plane",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/control-plane-recovery-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-CP-003",
+      "decision_ids": [
+        "DEC-026",
+        "DEC-028"
+      ],
+      "canonical_terms": [
+        "Work Journal",
+        "Scheduler",
+        "Work Item",
+        "Work Lease",
+        "Work Recovery"
+      ],
+      "normative_anchors": [
+        "normative/control-plane-contract.md#req-cp-003-queue-retry-cancellation-and-resume-are-version-bound"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/transitions/work-queue-lifecycle.json",
+        "contracts/transitions/retry-lifecycle.json",
+        "contracts/transitions/cancellation-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-CP-POS-002",
+        "FIX-CP-BND-001",
+        "FIX-CP-POS-003",
+        "FIX-CP-POS-004",
+        "FIX-CP-POS-005",
+        "FIX-CP-POS-006"
+      ],
+      "negative_fixture_ids": [
+        "FIX-CP-ILLEGAL-001",
+        "FIX-CP-NEG-001",
+        "FIX-CP-STATE-001",
+        "FIX-CP-STATE-002"
+      ],
+      "acceptance_gate": "Complete queue, retry, and cancellation matrices and stateful fixtures prove exact-version ownership, retry ceilings, durable cancellation, bounded owner-authorized resume, idempotent enqueue, and deterministic stale or illegal rejection.",
+      "scope": "control-plane",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/control-plane-recovery-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-CP-004",
+      "decision_ids": [
+        "DEC-026",
+        "DEC-028"
+      ],
+      "canonical_terms": [
+        "mdplace Agent",
+        "Readiness Gate",
+        "Exclusive Writer Lock",
+        "Work Journal",
+        "Semantic Kernel",
+        "Control Channel",
+        "Work Recovery"
+      ],
+      "normative_anchors": [
+        "normative/control-plane-contract.md#req-cp-004-one-persistent-mdplace-agent-becomes-ready-in-strict-order"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/agent-state.schema.json",
+        "contracts/transitions/agent-lifecycle.json",
+        "contracts/transitions/readiness-lifecycle.json",
+        "contracts/transitions/exclusive-writer-lifecycle.json",
+        "contracts/schemas/launchagent-supervision-profile.schema.json",
+        "contracts/schemas/control-plane-doctor-report.schema.json",
+        "contracts/schemas/control-plane-lifecycle-report.schema.json",
+        "contracts/control-plane/launchagent-supervision-profile.json",
+        "contracts/transitions/control-channel-lifecycle.json",
+        "contracts/transitions/launchagent-supervision-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-CP-REC-004",
+        "FIX-CP-REC-005",
+        "FIX-CP-REC-006",
+        "FIX-CP-POS-008"
+      ],
+      "negative_fixture_ids": [
+        "FIX-CP-AUTH-001",
+        "FIX-CP-AUTH-002",
+        "FIX-CP-AUTH-003",
+        "FIX-CP-AUTH-005"
+      ],
+      "acceptance_gate": "Closed Agent state, supervision profile, and complete Agent, readiness, writer, channel, and LaunchAgent supervision matrices prove six ordered readiness gates, diagnostic-only blocked access, bounded restart backoff, wake lock/filesystem/drift revalidation, a durable persistent circuit breaker, exact owner-approved recovery, retained exclusive ownership, and denial of a competing Agent.",
+      "scope": "control-plane",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/control-plane-recovery-report.json",
+        "conformance/evidence/control-plane-doctor-report.json",
+        "conformance/evidence/control-plane-lifecycle-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-CP-005",
+      "decision_ids": [
+        "DEC-026",
+        "DEC-028"
+      ],
+      "canonical_terms": [
+        "Control Channel",
+        "Control Command",
+        "mdplace Agent",
+        "Semantic Kernel",
+        "Vault Mutation Gate"
+      ],
+      "normative_anchors": [
+        "normative/control-plane-contract.md#req-cp-005-the-control-channel-is-local-authenticated-bounded-and-stale-safe"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/control-channel-command.schema.json",
+        "contracts/schemas/control-plane-doctor-report.schema.json",
+        "contracts/transitions/control-channel-lifecycle.json",
+        "contracts/transitions/readiness-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-CP-POS-007"
+      ],
+      "negative_fixture_ids": [
+        "FIX-CP-STATE-003",
+        "FIX-CP-AUTH-004"
+      ],
+      "acceptance_gate": "A closed Control Command and complete Control Channel matrix enforce Unix-domain transport, diagnostic-only versus work-admitting modes, same-user peer credentials, vault scope, protocol and base versions, size, time, response, and concurrency limits; blocked status and doctor remain observable while every work-taking command remains denied and no downstream authority is granted.",
+      "scope": "control-plane",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/control-plane-recovery-report.json",
+        "conformance/evidence/control-plane-doctor-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-CP-006",
+      "decision_ids": [
+        "DEC-026",
+        "DEC-028"
+      ],
+      "canonical_terms": [
+        "Child Work Invocation",
+        "Intelligence Adapter",
+        "Processing Policy",
+        "Work Item",
+        "Work Recovery",
+        "Semantic Kernel",
+        "Vault Mutation Gate"
+      ],
+      "normative_anchors": [
+        "normative/control-plane-contract.md#req-cp-006-child-work-is-isolated-and-disposable"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/work-journal.schema.json",
+        "contracts/schemas/control-plane-scenario.schema.json",
+        "contracts/schemas/child-work-invocation.schema.json",
+        "contracts/control-plane/child-work-invocation.json",
+        "contracts/control-plane/recovery-matrix.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-CHILD-POS-001",
+        "FIX-CP-POS-004",
+        "FIX-CP-REC-005",
+        "FIX-CP-REC-006"
+      ],
+      "negative_fixture_ids": [
+        "FIX-CHILD-AUTH-001",
+        "FIX-CHILD-AUTH-002",
+        "FIX-CHILD-AUTH-003"
+      ],
+      "acceptance_gate": "Fixtures and recovery evidence terminate child failure or attempted authority use, accept only schema-valid non-authoritative output with a completion receipt, and expose no vault, shell, arbitrary network, semantic-writer, or mutation capability.",
+      "scope": "control-plane",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/control-plane-recovery-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-CP-007",
+      "decision_ids": [
+        "DEC-026",
+        "DEC-028"
+      ],
+      "canonical_terms": [
+        "Work Recovery",
+        "Work Journal",
+        "Work Item",
+        "Work Lease",
+        "Exclusive Writer Lock",
+        "Semantic Kernel",
+        "Vault Mutation Gate"
+      ],
+      "normative_anchors": [
+        "normative/control-plane-contract.md#req-cp-007-work-recovery-is-default-deny-and-receipt-driven"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/control-plane-recovery-matrix.schema.json",
+        "contracts/schemas/control-plane-recovery-report.schema.json",
+        "contracts/schemas/control-plane-doctor-report.schema.json",
+        "contracts/schemas/control-plane-lifecycle-report.schema.json",
+        "contracts/control-plane/recovery-matrix.json",
+        "contracts/transitions/launchagent-supervision-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-CP-REC-001",
+        "FIX-CP-REC-002",
+        "FIX-CP-REC-003",
+        "FIX-CP-REC-004",
+        "FIX-CP-REC-005",
+        "FIX-CP-REC-006"
+      ],
+      "negative_fixture_ids": [
+        "FIX-CP-ILLEGAL-001",
+        "FIX-CP-STATE-001",
+        "FIX-CP-STATE-002"
+      ],
+      "acceptance_gate": "The closed recovery matrix and digest-bound reports prove committed enqueue, leased and in-flight recovery, terminal non-repetition, durable cancellation, repeated-interruption bounds, unknown-completion blocking, bounded supervisor recovery, durable doctor evidence, exact owner recovery approval, and exact receipt and base validation.",
+      "scope": "control-plane",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/control-plane-recovery-report.json",
+        "conformance/evidence/control-plane-doctor-report.json",
+        "conformance/evidence/control-plane-lifecycle-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-CP-008",
+      "decision_ids": [
+        "DEC-026",
+        "DEC-028"
+      ],
+      "canonical_terms": [
+        "Conformance Fixture",
+        "Traceability Record",
+        "Specification Package",
+        "Work Journal",
+        "Scheduler",
+        "mdplace Agent",
+        "Control Channel",
+        "Work Recovery"
+      ],
+      "normative_anchors": [
+        "normative/control-plane-contract.md#req-cp-008-exactly-twenty-five-stateful-scenarios-prove-the-public-boundary"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/conformance-fixture.schema.json",
+        "contracts/schemas/conformance-manifest.schema.json",
+        "contracts/schemas/control-plane-scenario.schema.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-CP-POS-001",
+        "FIX-CP-POS-002",
+        "FIX-CP-POS-003",
+        "FIX-CP-POS-004",
+        "FIX-CP-POS-005",
+        "FIX-CP-POS-006",
+        "FIX-CP-POS-007",
+        "FIX-CP-POS-008",
+        "FIX-CP-BND-001",
+        "FIX-CP-REC-001",
+        "FIX-CP-REC-002",
+        "FIX-CP-REC-003",
+        "FIX-CP-REC-004",
+        "FIX-CP-REC-005",
+        "FIX-CP-REC-006"
+      ],
+      "negative_fixture_ids": [
+        "FIX-CP-ILLEGAL-001",
+        "FIX-CP-NEG-001",
+        "FIX-CP-STATE-001",
+        "FIX-CP-STATE-002",
+        "FIX-CP-STATE-003",
+        "FIX-CP-AUTH-001",
+        "FIX-CP-AUTH-002",
+        "FIX-CP-AUTH-003",
+        "FIX-CP-AUTH-004",
+        "FIX-CP-AUTH-005"
+      ],
+      "acceptance_gate": "Exactly 25 manifest-owned CP-001 through CP-025 scenarios cover every required positive, negative, boundary, stale, authority, illegal, cancellation, restart, resume, and crash/recovery behavior through public inputs, outputs, operations, receipts, filesystem effects, terminal state, and illegal-transition status.",
+      "scope": "control-plane",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/traceability-report.json",
+        "conformance/evidence/control-plane-recovery-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-CP-009",
+      "decision_ids": [
+        "DEC-026",
+        "DEC-028"
+      ],
+      "canonical_terms": [
+        "mdplace Agent",
+        "Work Journal",
+        "Scheduler",
+        "Control Channel",
+        "Child Work Invocation",
+        "Exclusive Writer Lock"
+      ],
+      "normative_anchors": [
+        "normative/control-plane-contract.md#req-cp-009-accepted-component-and-lifecycle-decisions-remain-inputs"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/agent-state.schema.json",
+        "contracts/schemas/control-channel-command.schema.json",
+        "contracts/transitions/agent-lifecycle.json",
+        "contracts/schemas/launchagent-supervision-profile.schema.json",
+        "contracts/schemas/control-plane-doctor-report.schema.json",
+        "contracts/schemas/control-plane-lifecycle-report.schema.json",
+        "contracts/transitions/launchagent-supervision-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-CP-REC-001",
+        "FIX-CP-POS-008"
+      ],
+      "negative_fixture_ids": [
+        "FIX-CP-AUTH-004",
+        "FIX-CP-AUTH-005"
+      ],
+      "acceptance_gate": "Every control-plane requirement traces to both accepted decisions as input_without_reopening and preserves their one-Agent, local diagnostic/work-admission Control Channel, isolated-child, bounded LaunchAgent backoff, wake revalidation, persistent circuit breaker, doctor-guided owner recovery, startup, and writer boundaries.",
+      "scope": "control-plane",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/control-plane-recovery-report.json",
+        "conformance/evidence/control-plane-doctor-report.json",
+        "conformance/evidence/control-plane-lifecycle-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-CP-010",
+      "decision_ids": [
+        "DEC-026",
+        "DEC-028"
+      ],
+      "canonical_terms": [
+        "Specification Package",
+        "Normative Material",
+        "Conformance Fixture",
+        "Work Journal",
+        "Scheduler",
+        "mdplace Agent",
+        "Control Channel",
+        "Semantic Kernel",
+        "Vault Mutation Gate"
+      ],
+      "normative_anchors": [
+        "normative/control-plane-contract.md#req-cp-010-this-package-contains-no-production-control-plane"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/control-plane-scenario.schema.json",
+        "contracts/schemas/control-plane-recovery-report.schema.json",
+        "contracts/transitions/exclusive-writer-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-CP-REC-001",
+        "FIX-CP-POS-007",
+        "FIX-CP-POS-008"
+      ],
+      "negative_fixture_ids": [
+        "FIX-CP-AUTH-001",
+        "FIX-CP-AUTH-002",
+        "FIX-CP-AUTH-003",
+        "FIX-CP-AUTH-004",
+        "FIX-CP-AUTH-005"
+      ],
+      "acceptance_gate": "Only specification and conformance artifacts are present; validation opens no socket, starts no Agent or Child Work Invocation, acquires no vault lock, appends no semantic operation, and mutates no vault.",
+      "scope": "control-plane",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/control-plane-recovery-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-CPP-001",
-      "decision_ids": ["DEC-008"],
-      "canonical_terms": ["Processing Policy", "Source Profile", "Capture Source", "Capture Adapter", "Capture Candidate", "Capture Intake", "Intelligence Adapter", "Specification Package"],
-      "normative_anchors": ["normative/core-processing-policy-contract.md#req-cpp-001-stable-requirements-use-canonical-policy-vocabulary"],
-      "schema_or_transition_refs": ["contracts/schemas/processing-policy.schema.json", "contracts/schemas/source-profile.schema.json"],
-      "positive_fixture_ids": ["FIX-CPP-POS-001", "FIX-CPP-POS-002"],
-      "negative_fixture_ids": ["FIX-CPP-NEG-001", "FIX-CPP-STATE-001"],
+      "decision_ids": [
+        "DEC-008"
+      ],
+      "canonical_terms": [
+        "Processing Policy",
+        "Source Profile",
+        "Capture Source",
+        "Capture Adapter",
+        "Capture Candidate",
+        "Capture Intake",
+        "Intelligence Adapter",
+        "Specification Package"
+      ],
+      "normative_anchors": [
+        "normative/core-processing-policy-contract.md#req-cpp-001-stable-requirements-use-canonical-policy-vocabulary"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/processing-policy.schema.json",
+        "contracts/schemas/source-profile.schema.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-CPP-POS-001",
+        "FIX-CPP-POS-002"
+      ],
+      "negative_fixture_ids": [
+        "FIX-CPP-NEG-001",
+        "FIX-CPP-STATE-001"
+      ],
       "acceptance_gate": "Stable REQ-CPP identifiers use only canonical vocabulary and distinguish Processing Policy permission, Source Profile approval, compatibility evidence, and semantic authority.",
       "scope": "core-processing-policy",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/core-processing-policy-recovery-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/core-processing-policy-recovery-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-CPP-002",
-      "decision_ids": ["DEC-008"],
-      "canonical_terms": ["Processing Policy", "Source Profile", "Capture Source", "Capture Adapter", "Capture Candidate", "Placement Automation Permission", "Automation Grant"],
-      "normative_anchors": ["normative/core-processing-policy-contract.md#req-cpp-002-processing-policy-and-source-profile-contracts-are-closed-and-complete"],
-      "schema_or_transition_refs": ["contracts/processing-policy-rules.json", "contracts/schemas/processing-policy.schema.json", "contracts/schemas/source-profile.schema.json", "contracts/schemas/processing-request.schema.json", "contracts/schemas/processing-policy-receipt.schema.json", "contracts/schemas/processing-policy-scenario.schema.json", "contracts/transitions/processing-policy-lifecycle.json", "contracts/transitions/source-profile-lifecycle.json"],
-      "positive_fixture_ids": ["FIX-CPP-POS-001", "FIX-CPP-POS-002", "FIX-CPP-POS-004"],
-      "negative_fixture_ids": ["FIX-CPP-NEG-014", "FIX-CPP-ILLEGAL-001", "FIX-CPP-AUTH-005"],
+      "decision_ids": [
+        "DEC-008"
+      ],
+      "canonical_terms": [
+        "Processing Policy",
+        "Source Profile",
+        "Capture Source",
+        "Capture Adapter",
+        "Capture Candidate",
+        "Placement Automation Permission",
+        "Automation Grant"
+      ],
+      "normative_anchors": [
+        "normative/core-processing-policy-contract.md#req-cpp-002-processing-policy-and-source-profile-contracts-are-closed-and-complete"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/processing-policy-rules.json",
+        "contracts/schemas/processing-policy.schema.json",
+        "contracts/schemas/source-profile.schema.json",
+        "contracts/schemas/processing-request.schema.json",
+        "contracts/schemas/processing-policy-receipt.schema.json",
+        "contracts/schemas/processing-policy-scenario.schema.json",
+        "contracts/transitions/processing-policy-lifecycle.json",
+        "contracts/transitions/source-profile-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-CPP-POS-001",
+        "FIX-CPP-POS-002",
+        "FIX-CPP-POS-004"
+      ],
+      "negative_fixture_ids": [
+        "FIX-CPP-NEG-014",
+        "FIX-CPP-ILLEGAL-001",
+        "FIX-CPP-AUTH-005"
+      ],
       "acceptance_gate": "Closed policy, Source Profile, request, rule, receipt, scenario, lifecycle, and recovery contracts enumerate every version, grant, obligation, binding, authority, transition, and failure without ambient defaults.",
       "scope": "core-processing-policy",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/core-processing-policy-recovery-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/core-processing-policy-recovery-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-CPP-003",
-      "decision_ids": ["DEC-008"],
-      "canonical_terms": ["Processing Policy", "Source Profile", "Capture Intake", "Capture Candidate", "Intelligence Adapter"],
-      "normative_anchors": ["normative/core-processing-policy-contract.md#req-cpp-003-every-ungranted-or-stale-request-is-denied-before-effect"],
-      "schema_or_transition_refs": ["contracts/processing-policy-rules.json", "contracts/schemas/processing-request.schema.json", "contracts/schemas/processing-policy-receipt.schema.json"],
-      "positive_fixture_ids": ["FIX-CPP-BND-001"],
-      "negative_fixture_ids": ["FIX-CPP-NEG-001", "FIX-CPP-NEG-002", "FIX-CPP-NEG-003", "FIX-CPP-NEG-004", "FIX-CPP-NEG-005", "FIX-CPP-NEG-006", "FIX-CPP-NEG-007", "FIX-CPP-NEG-008", "FIX-CPP-NEG-009", "FIX-CPP-NEG-010", "FIX-CPP-NEG-011", "FIX-CPP-NEG-012", "FIX-CPP-NEG-013", "FIX-CPP-NEG-014", "FIX-CPP-AUTH-001", "FIX-CPP-AUTH-002", "FIX-CPP-AUTH-003", "FIX-CPP-AUTH-005"],
+      "decision_ids": [
+        "DEC-008"
+      ],
+      "canonical_terms": [
+        "Processing Policy",
+        "Source Profile",
+        "Capture Intake",
+        "Capture Candidate",
+        "Intelligence Adapter"
+      ],
+      "normative_anchors": [
+        "normative/core-processing-policy-contract.md#req-cpp-003-every-ungranted-or-stale-request-is-denied-before-effect"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/processing-policy-rules.json",
+        "contracts/schemas/processing-request.schema.json",
+        "contracts/schemas/processing-policy-receipt.schema.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-CPP-BND-001"
+      ],
+      "negative_fixture_ids": [
+        "FIX-CPP-NEG-001",
+        "FIX-CPP-NEG-002",
+        "FIX-CPP-NEG-003",
+        "FIX-CPP-NEG-004",
+        "FIX-CPP-NEG-005",
+        "FIX-CPP-NEG-006",
+        "FIX-CPP-NEG-007",
+        "FIX-CPP-NEG-008",
+        "FIX-CPP-NEG-009",
+        "FIX-CPP-NEG-010",
+        "FIX-CPP-NEG-011",
+        "FIX-CPP-NEG-012",
+        "FIX-CPP-NEG-013",
+        "FIX-CPP-NEG-014",
+        "FIX-CPP-AUTH-001",
+        "FIX-CPP-AUTH-002",
+        "FIX-CPP-AUTH-003",
+        "FIX-CPP-AUTH-005"
+      ],
       "acceptance_gate": "All absent, unknown, unpermitted, over-budget, over-retry, over-fallback, unredacted, retention-unproven, stale, hostile, or authority-widening requests deny before transmission, semantic operation, or filesystem effect.",
       "scope": "core-processing-policy",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/core-processing-policy-recovery-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/core-processing-policy-recovery-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-CPP-004",
-      "decision_ids": ["DEC-008"],
-      "canonical_terms": ["Processing Policy", "Placement Automation Permission", "Automation Grant", "Intelligence Adapter"],
-      "normative_anchors": ["normative/core-processing-policy-contract.md#req-cpp-004-descendant-policies-narrow-monotonically"],
-      "schema_or_transition_refs": ["contracts/processing-policy-rules.json", "contracts/schemas/processing-policy.schema.json", "contracts/schemas/processing-policy-scenario.schema.json"],
-      "positive_fixture_ids": ["FIX-CPP-POS-004", "FIX-CPP-POS-005"],
-      "negative_fixture_ids": ["FIX-CPP-PAIR_PROVIDER-001", "FIX-CPP-PAIR_PURPOSE-001", "FIX-CPP-PAIR_DISCLOSURE-001", "FIX-CPP-PAIR_ARTIFACT-001", "FIX-CPP-PAIR_DESTINATION-001", "FIX-CPP-PAIR_CREDENTIAL-001", "FIX-CPP-PAIR_BUDGET-001", "FIX-CPP-PAIR_RETRY-001", "FIX-CPP-PAIR_FALLBACK-001", "FIX-CPP-PAIR_CAPABILITY-001", "FIX-CPP-PAIR_SEMANTIC-001", "FIX-CPP-PAIR_AUTOMATION-001", "FIX-CPP-PAIR_REDACTION-001", "FIX-CPP-PAIR_RETENTION-001"],
+      "decision_ids": [
+        "DEC-008"
+      ],
+      "canonical_terms": [
+        "Processing Policy",
+        "Placement Automation Permission",
+        "Automation Grant",
+        "Intelligence Adapter"
+      ],
+      "normative_anchors": [
+        "normative/core-processing-policy-contract.md#req-cpp-004-descendant-policies-narrow-monotonically"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/processing-policy-rules.json",
+        "contracts/schemas/processing-policy.schema.json",
+        "contracts/schemas/processing-policy-scenario.schema.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-CPP-POS-004",
+        "FIX-CPP-POS-005"
+      ],
+      "negative_fixture_ids": [
+        "FIX-CPP-PAIR_PROVIDER-001",
+        "FIX-CPP-PAIR_PURPOSE-001",
+        "FIX-CPP-PAIR_DISCLOSURE-001",
+        "FIX-CPP-PAIR_ARTIFACT-001",
+        "FIX-CPP-PAIR_DESTINATION-001",
+        "FIX-CPP-PAIR_CREDENTIAL-001",
+        "FIX-CPP-PAIR_BUDGET-001",
+        "FIX-CPP-PAIR_RETRY-001",
+        "FIX-CPP-PAIR_FALLBACK-001",
+        "FIX-CPP-PAIR_CAPABILITY-001",
+        "FIX-CPP-PAIR_SEMANTIC-001",
+        "FIX-CPP-PAIR_AUTOMATION-001",
+        "FIX-CPP-PAIR_REDACTION-001",
+        "FIX-CPP-PAIR_RETENTION-001"
+      ],
       "acceptance_gate": "Canary and policy-pair fixtures prove exact parent binding, preservation or reduction of every permission dimension, and deterministic denial of each attempted widening.",
       "scope": "core-processing-policy",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/core-processing-policy-recovery-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/core-processing-policy-recovery-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-CPP-005",
-      "decision_ids": ["DEC-008"],
-      "canonical_terms": ["Source Profile", "Capture Source", "Capture Adapter", "Capture Candidate", "Capture Intake", "Processing Policy"],
-      "normative_anchors": ["normative/core-processing-policy-contract.md#req-cpp-005-source-profile-approval-and-readback-precede-intake"],
-      "schema_or_transition_refs": ["contracts/schemas/source-profile.schema.json", "contracts/schemas/processing-policy-scenario.schema.json", "contracts/transitions/source-profile-lifecycle.json"],
-      "positive_fixture_ids": ["FIX-CPP-POS-002"],
-      "negative_fixture_ids": ["FIX-CPP-ILLEGAL-001", "FIX-CPP-STATE-004", "FIX-CPP-STATE-005", "FIX-CPP-STATE-006", "FIX-CPP-STATE-007", "FIX-CPP-STATE-008", "FIX-CPP-STATE-009", "FIX-CPP-STATE-010", "FIX-CPP-AUTH-003"],
+      "decision_ids": [
+        "DEC-008"
+      ],
+      "canonical_terms": [
+        "Source Profile",
+        "Capture Source",
+        "Capture Adapter",
+        "Capture Candidate",
+        "Capture Intake",
+        "Processing Policy"
+      ],
+      "normative_anchors": [
+        "normative/core-processing-policy-contract.md#req-cpp-005-source-profile-approval-and-readback-precede-intake"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/source-profile.schema.json",
+        "contracts/schemas/processing-policy-scenario.schema.json",
+        "contracts/transitions/source-profile-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-CPP-POS-002"
+      ],
+      "negative_fixture_ids": [
+        "FIX-CPP-ILLEGAL-001",
+        "FIX-CPP-STATE-004",
+        "FIX-CPP-STATE-005",
+        "FIX-CPP-STATE-006",
+        "FIX-CPP-STATE-007",
+        "FIX-CPP-STATE-008",
+        "FIX-CPP-STATE-009",
+        "FIX-CPP-STATE-010",
+        "FIX-CPP-AUTH-003"
+      ],
       "acceptance_gate": "Every intake decision follows nondelegated vault-owner approval and exact digest readback of all Source Profile bindings; absent, stale, mismatched, revoked, or compatibility-claim-substituted binding denies intake.",
       "scope": "core-processing-policy",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/core-processing-policy-recovery-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/core-processing-policy-recovery-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-CPP-006",
-      "decision_ids": ["DEC-008"],
-      "canonical_terms": ["Conformance Fixture", "Traceability Record", "Processing Policy", "Source Profile", "Specification Package"],
-      "normative_anchors": ["normative/core-processing-policy-contract.md#req-cpp-006-fixtures-and-machine-evidence-prove-public-closure"],
-      "schema_or_transition_refs": ["contracts/schemas/conformance-fixture.schema.json", "contracts/schemas/core-processing-policy-recovery-report.schema.json", "contracts/schemas/processing-policy-receipt.schema.json", "contracts/transitions/processing-policy-lifecycle.json", "contracts/transitions/source-profile-lifecycle.json"],
-      "positive_fixture_ids": ["FIX-CPP-POS-001", "FIX-CPP-POS-002", "FIX-CPP-POS-004", "FIX-CPP-POS-005", "FIX-CPP-REC-001", "FIX-CPP-REC-002", "FIX-CPP-REC-003"],
-      "negative_fixture_ids": ["FIX-CPP-NEG-001", "FIX-CPP-STATE-001", "FIX-CPP-AUTH-001", "FIX-CPP-ILLEGAL-001", "FIX-CPP-PAIR_PROVIDER-001", "FIX-CPP-PAIR_REDACTION-001"],
+      "decision_ids": [
+        "DEC-008"
+      ],
+      "canonical_terms": [
+        "Conformance Fixture",
+        "Traceability Record",
+        "Processing Policy",
+        "Source Profile",
+        "Specification Package"
+      ],
+      "normative_anchors": [
+        "normative/core-processing-policy-contract.md#req-cpp-006-fixtures-and-machine-evidence-prove-public-closure"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/conformance-fixture.schema.json",
+        "contracts/schemas/core-processing-policy-recovery-report.schema.json",
+        "contracts/schemas/processing-policy-receipt.schema.json",
+        "contracts/transitions/processing-policy-lifecycle.json",
+        "contracts/transitions/source-profile-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-CPP-POS-001",
+        "FIX-CPP-POS-002",
+        "FIX-CPP-POS-004",
+        "FIX-CPP-POS-005",
+        "FIX-CPP-REC-001",
+        "FIX-CPP-REC-002",
+        "FIX-CPP-REC-003"
+      ],
+      "negative_fixture_ids": [
+        "FIX-CPP-NEG-001",
+        "FIX-CPP-STATE-001",
+        "FIX-CPP-AUTH-001",
+        "FIX-CPP-ILLEGAL-001",
+        "FIX-CPP-PAIR_PROVIDER-001",
+        "FIX-CPP-PAIR_REDACTION-001"
+      ],
       "acceptance_gate": "Exactly 50 fixture and result digest bindings prove public inputs, decisions, receipts, filesystem effects, boundaries, stale states, policy pairs, illegal transitions, and recovery without private assertions.",
       "scope": "core-processing-policy",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/core-processing-policy-recovery-report.json", "conformance/evidence/traceability-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/core-processing-policy-recovery-report.json",
+        "conformance/evidence/traceability-report.json"
+      ]
     },
     {
       "requirement_id": "REQ-CPP-007",
-      "decision_ids": ["DEC-008"],
-      "canonical_terms": ["Specification Package", "Conformance Fixture", "mdplace Agent", "Semantic Kernel", "Control Channel", "Vault Mutation Gate", "Capture Adapter", "Intelligence Adapter", "Folder Projection"],
-      "normative_anchors": ["normative/core-processing-policy-contract.md#req-cpp-007-issue-number-8-is-not-reopened-and-no-production-code-is-added"],
-      "schema_or_transition_refs": ["contracts/schemas/conformance-fixture.schema.json", "contracts/schemas/processing-policy-scenario.schema.json"],
-      "positive_fixture_ids": ["FIX-CPP-POS-001"],
-      "negative_fixture_ids": ["FIX-CPP-AUTH-001", "FIX-CPP-AUTH-002", "FIX-CPP-AUTH-003", "FIX-CPP-AUTH-005", "FIX-CPP-ILLEGAL-001", "FIX-CPP-PAIR_RETENTION-001"],
+      "decision_ids": [
+        "DEC-008"
+      ],
+      "canonical_terms": [
+        "Specification Package",
+        "Conformance Fixture",
+        "mdplace Agent",
+        "Semantic Kernel",
+        "Control Channel",
+        "Vault Mutation Gate",
+        "Capture Adapter",
+        "Intelligence Adapter",
+        "Folder Projection"
+      ],
+      "normative_anchors": [
+        "normative/core-processing-policy-contract.md#req-cpp-007-issue-number-8-is-not-reopened-and-no-production-code-is-added"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/conformance-fixture.schema.json",
+        "contracts/schemas/processing-policy-scenario.schema.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-CPP-POS-001"
+      ],
+      "negative_fixture_ids": [
+        "FIX-CPP-AUTH-001",
+        "FIX-CPP-AUTH-002",
+        "FIX-CPP-AUTH-003",
+        "FIX-CPP-AUTH-005",
+        "FIX-CPP-ILLEGAL-001",
+        "FIX-CPP-PAIR_RETENTION-001"
+      ],
       "acceptance_gate": "Every REQ-CPP record cites only the exact accepted issue #8 resolution as input_without_reopening and all additions remain specification and conformance artifacts with zero production or vault effects.",
       "scope": "core-processing-policy",
-      "evidence_refs": ["conformance/evidence/validation-report.json", "conformance/evidence/core-processing-policy-recovery-report.json"]
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/core-processing-policy-recovery-report.json"
+      ]
     }
   ]
 }

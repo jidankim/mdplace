@@ -1,0 +1,32 @@
+{
+  "$schema": "../schemas/scheduler-state.schema.json",
+  "schema_id": "mdplace.scheduler-state/v1",
+  "scheduler_id": "scheduler:001",
+  "agent_id": "agent:primary-001",
+  "vault_id": "vault:001",
+  "journal_head_sequence": 1,
+  "journal_head_digest": "400033c9dc6558e9d8d03b34575797b49732299eb15772612746ddac4c38280f",
+  "semantic_authority": "none",
+  "readiness": "ready",
+  "limits": {
+    "max_concurrent_work": 8,
+    "max_concurrent_child_work": 4,
+    "lease_duration_ticks": 300,
+    "max_recovery_interruptions": 2,
+    "retry_delays_ms": [
+      1000,
+      5000
+    ]
+  },
+  "eligible_queue": [
+    {
+      "work_id": "work:001",
+      "work_version": 1,
+      "priority": 4,
+      "eligible_tick": 0,
+      "input_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+  ],
+  "active_leases": [],
+  "observation_tick": 0
+}

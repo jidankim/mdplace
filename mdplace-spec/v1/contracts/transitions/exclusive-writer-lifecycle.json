@@ -1,0 +1,295 @@
+{
+  "$schema": "../schemas/transition-table.schema.json",
+  "schema_id": "mdplace.transition-table/v1",
+  "table_id": "TRANS-CP-EXCLUSIVE-WRITER",
+  "lifecycle": "per-vault Exclusive Writer Lock",
+  "version": "1.0.0",
+  "states": [
+    "unheld",
+    "held"
+  ],
+  "commands": [
+    "acquire_writer",
+    "retain_writer",
+    "release_writer"
+  ],
+  "transitions": [
+    {
+      "transition_id": "TR-CPWRITER-001",
+      "command_or_event": "acquire_writer",
+      "from_state": "unheld",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "no writer owns the per-vault operating-system lock",
+        "candidate identity equals the persistent Agent identity"
+      ],
+      "base_references": [
+        "exact prior writer epoch",
+        "vault identity"
+      ],
+      "emitted_records": [
+        "WriterLockReceipt"
+      ],
+      "filesystem_effects": [
+        "create protected per-vault writer lock"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact prior writer epoch",
+          "vault identity"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "held",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Validate the retained token and incremented epoch; deny every competing owner."
+    },
+    {
+      "transition_id": "TR-CPWRITER-002",
+      "command_or_event": "retain_writer",
+      "from_state": "unheld",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "retain_writer is not legal from unheld"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "unheld",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPWRITER-003",
+      "command_or_event": "release_writer",
+      "from_state": "unheld",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "release_writer is not legal from unheld"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "unheld",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPWRITER-004",
+      "command_or_event": "acquire_writer",
+      "from_state": "held",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "acquire_writer is not legal from held"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "held",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPWRITER-005",
+      "command_or_event": "retain_writer",
+      "from_state": "held",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "lock token, owner identity, and epoch exactly match the retained lock"
+      ],
+      "base_references": [
+        "exact writer epoch",
+        "writer token digest"
+      ],
+      "emitted_records": [
+        "WriterLockRetainedReceipt"
+      ],
+      "filesystem_effects": [
+        "retain protected per-vault writer lock"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact writer epoch",
+          "writer token digest"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "held",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "A mismatched token or epoch blocks readiness and recovery."
+    },
+    {
+      "transition_id": "TR-CPWRITER-006",
+      "command_or_event": "release_writer",
+      "from_state": "held",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "requester owns the exact lock token and Agent is not ready"
+      ],
+      "base_references": [
+        "exact writer epoch",
+        "writer token digest"
+      ],
+      "emitted_records": [
+        "WriterLockReleasedReceipt"
+      ],
+      "filesystem_effects": [
+        "release protected per-vault writer lock"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact writer epoch",
+          "writer token digest"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "unheld",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "A repeated release observes unheld and performs no additional effect."
+    }
+  ]
+}

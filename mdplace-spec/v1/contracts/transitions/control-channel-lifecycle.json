@@ -1,0 +1,597 @@
+{
+  "$schema": "../schemas/transition-table.schema.json",
+  "schema_id": "mdplace.transition-table/v1",
+  "table_id": "TRANS-CP-CONTROL-CHANNEL",
+  "lifecycle": "same-user local Control Channel",
+  "version": "1.0.0",
+  "states": [
+    "closed",
+    "diagnostic_only",
+    "work_admitting",
+    "draining"
+  ],
+  "commands": [
+    "open_control_channel",
+    "submit_control_command",
+    "close_control_channel"
+  ],
+  "transitions": [
+    {
+      "transition_id": "TR-CPCHANNEL-001",
+      "command_or_event": "open_control_channel",
+      "from_state": "closed",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "Agent is starting or blocked; readiness and Exclusive Writer Lock status may still be unknown or failed",
+        "the configured per-vault Unix-domain socket path is inside the same-user runtime directory",
+        "socket directory mode is 0700 and socket mode is 0600"
+      ],
+      "base_references": [
+        "vault identity",
+        "configured same-user runtime directory and per-vault socket path",
+        "protocol version 1.0"
+      ],
+      "emitted_records": [
+        "ControlChannelDiagnosticReceipt"
+      ],
+      "filesystem_effects": [
+        "create per-vault Unix-domain socket in diagnostic-only mode"
+      ],
+      "idempotency": {
+        "key_fields": [
+        "idempotency_key",
+        "vault identity",
+        "configured same-user runtime directory and per-vault socket path",
+        "protocol version 1.0"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "diagnostic_only",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remove an unowned stale socket and reopen diagnostic-only access from the configured same-user runtime path and vault binding without admitting work or depending on a connected peer or writer-lock success."
+    },
+    {
+      "transition_id": "TR-CPCHANNEL-002",
+      "command_or_event": "submit_control_command",
+      "from_state": "closed",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "control_client"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "submit_control_command is not legal from closed"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "closed",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPCHANNEL-003",
+      "command_or_event": "close_control_channel",
+      "from_state": "closed",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "socket is absent or already closed"
+      ],
+      "base_references": [
+        "current Control Channel version",
+        "vault identity"
+      ],
+      "emitted_records": [
+        "ControlChannelCloseReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current Control Channel version",
+          "vault identity"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "closed",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "A repeated close is harmless."
+    },
+    {
+      "transition_id": "TR-CPCHANNEL-004",
+      "command_or_event": "open_control_channel",
+      "from_state": "diagnostic_only",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "all six Readiness Gates passed in canonical order",
+        "promotion is atomic with the Agent ready commit"
+      ],
+      "base_references": [
+        "vault identity",
+        "sixth Readiness Gate receipt",
+        "current diagnostic Control Channel version"
+      ],
+      "emitted_records": [
+        "ControlChannelWorkAdmissionReceipt"
+      ],
+      "filesystem_effects": [
+        "promote Control Channel from diagnostic-only to work-admitting"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "vault identity",
+          "sixth Readiness Gate receipt",
+          "current diagnostic Control Channel version"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "work_admitting",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain diagnostic-only if any readiness binding changes before the atomic ready commit."
+    },
+    {
+      "transition_id": "TR-CPCHANNEL-005",
+      "command_or_event": "submit_control_command",
+      "from_state": "diagnostic_only",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "control_client"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "command kind is status or doctor",
+        "Unix-domain transport is local and peer credentials match the effective user",
+        "vault scope and protocol match"
+      ],
+      "base_references": [
+        "command version and idempotency key",
+        "durable blocked reason and doctor-report digest",
+        "payload digest"
+      ],
+      "emitted_records": [
+        "ControlDiagnosticReceipt"
+      ],
+      "filesystem_effects": [
+        "none; diagnostic access never admits work"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "command version and idempotency key",
+          "durable blocked reason and doctor-report digest",
+          "payload digest"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "diagnostic_only",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Return the exact blocked state and durable diagnostic evidence; reject every work-taking command."
+    },
+    {
+      "transition_id": "TR-CPCHANNEL-006",
+      "command_or_event": "close_control_channel",
+      "from_state": "diagnostic_only",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "Agent is draining, blocked, or stopping, or the socket is already absent"
+      ],
+      "base_references": [
+        "current Control Channel version",
+        "vault identity"
+      ],
+      "emitted_records": [
+        "ControlChannelCloseReceipt"
+      ],
+      "filesystem_effects": [
+        "remove per-vault Unix-domain socket"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current Control Channel version",
+          "vault identity"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "closed",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "A repeated close returns the original receipt."
+    },
+    {
+      "transition_id": "TR-CPCHANNEL-007",
+      "command_or_event": "open_control_channel",
+      "from_state": "work_admitting",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "Agent is ready and retains the Exclusive Writer Lock"
+      ],
+      "base_references": [
+        "vault identity",
+        "Agent readiness receipt",
+        "current Control Channel version"
+      ],
+      "emitted_records": [
+        "ControlChannelWorkAdmissionReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "vault identity",
+          "Agent readiness receipt",
+          "current Control Channel version"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "work_admitting",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Return the original work-admission receipt for the exact binding."
+    },
+    {
+      "transition_id": "TR-CPCHANNEL-008",
+      "command_or_event": "submit_control_command",
+      "from_state": "work_admitting",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "control_client"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "Unix-domain transport is local",
+        "peer credentials match the effective user",
+        "vault scope and protocol match",
+        "request, response, timeout, and concurrency budgets hold"
+      ],
+      "base_references": [
+        "command version and idempotency key",
+        "exact actionable Work Item or Work Journal base",
+        "payload digest"
+      ],
+      "emitted_records": [
+        "ControlCommandReceipt"
+      ],
+      "filesystem_effects": [
+        "none; owning authorities revalidate every requested effect"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "command version and idempotency key",
+          "exact actionable Work Item or Work Journal base",
+          "payload digest"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "work_admitting",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Return the original receipt for the exact request binding; reject stale, unauthenticated, nonlocal, or cross-vault commands."
+    },
+    {
+      "transition_id": "TR-CPCHANNEL-009",
+      "command_or_event": "close_control_channel",
+      "from_state": "work_admitting",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "wake revalidation is starting, or the Agent is blocked or draining",
+        "the current work-admitting channel version is bound to the suspension receipt"
+      ],
+      "base_references": [
+        "current Control Channel version",
+        "vault identity"
+      ],
+      "emitted_records": [
+        "ControlChannelWorkAdmissionSuspendedReceipt"
+      ],
+      "filesystem_effects": [
+        "atomically demote Control Channel from work-admitting to diagnostic-only"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current Control Channel version",
+          "vault identity"
+        ],
+        "retry_result": "return the original work-admission suspension receipt for the exact binding"
+      },
+      "terminal_state": "diagnostic_only",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Retain the authenticated listener in diagnostic-only mode; a later diagnostic-only close removes the socket, while successful readiness may promote it again."
+    },
+    {
+      "transition_id": "TR-CPCHANNEL-010",
+      "command_or_event": "open_control_channel",
+      "from_state": "draining",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "open_control_channel is not legal from draining"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "draining",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPCHANNEL-011",
+      "command_or_event": "submit_control_command",
+      "from_state": "draining",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "control_client"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "submit_control_command is not legal from draining"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "draining",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPCHANNEL-012",
+      "command_or_event": "close_control_channel",
+      "from_state": "draining",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "Agent is draining, blocked, or stopping, or the socket is already absent"
+      ],
+      "base_references": [
+        "current Control Channel version",
+        "vault identity"
+      ],
+      "emitted_records": [
+        "ControlChannelCloseReceipt"
+      ],
+      "filesystem_effects": [
+        "remove per-vault Unix-domain socket"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current Control Channel version",
+          "vault identity"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "closed",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "A repeated close returns the original receipt."
+    }
+  ]
+}

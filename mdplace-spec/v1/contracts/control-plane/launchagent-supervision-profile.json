@@ -1,0 +1,22 @@
+{
+  "$schema": "../schemas/launchagent-supervision-profile.schema.json",
+  "schema_id": "mdplace.launchagent-supervision-profile/v1",
+  "profile_id": "launchagent-supervision-profile:primary-001",
+  "persistent_agent_id": "agent:primary-001",
+  "vault_id": "vault:001",
+  "max_automatic_restart_attempts": 3,
+  "automatic_restart_delay_ticks": [1000, 5000, 30000],
+  "persistent_circuit_breaker": {
+    "storage": "durable_agent_state",
+    "trip_on_failure_count": 3,
+    "qualifying_failure_classes": ["unexpected_exit", "integrity_failure", "wake_revalidation_failure"],
+    "requires_owner_approval": true
+  },
+  "wake_revalidation": {
+    "checks": ["exclusive_writer", "vault_filesystem", "filesystem_drift"],
+    "work_admission_while_pending": "diagnostic_only",
+    "work_admission_after_pass": "work_admitting"
+  },
+  "lifecycle_table": "contracts/transitions/launchagent-supervision-lifecycle.json",
+  "scope": "The numeric restart schedule is a v1 conformance specialization, not an issue-28 requirement."
+}

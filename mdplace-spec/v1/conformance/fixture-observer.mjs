@@ -2,9 +2,11 @@ import {readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
+import {childWorkInvocationIsValid} from './child-work-validation.mjs';
 import {observeEvidenceExtension} from './evidence-extension.mjs';
 import {observeProcessingPolicyScenario} from './processing-policy-observer.mjs';
 import {observeSemanticKernelScenario} from './semantic-kernel-observer.mjs';
+import {observeControlPlaneScenario} from './control-plane-observer.mjs';
 import {observeTransition} from './transition-observer.mjs';
 import {authorityMatches, manifestFields, packageArtifactPathAllowed, transitionFields} from './validator-rules.mjs';
 
@@ -13,6 +15,7 @@ const operationBySchema = new Map([
   ['requirements.schema.json', 'validate stable requirement identifiers'],
   ['transition-table.schema.json', 'validate complete transition table'],
   ['traceability.schema.json', 'validate total traceability'],
+  ['child-work-invocation.schema.json', 'validate isolated Child Work Invocation'],
 ]);
 
 function isGreaterSemver(target, source) {
@@ -95,6 +98,9 @@ export async function observeFixture(fixture, packageRoot, options = {}) {
           }
           break;
         }
+        case 'child-work-invocation.schema.json':
+          if (!childWorkInvocationIsValid(document)) codes = ['control.child_completion_receipt_invalid'];
+          break;
         default:
           codes = ['fixture.unsupported_schema'];
       }
@@ -167,6 +173,8 @@ export async function observeFixture(fixture, packageRoot, options = {}) {
       return observeEvidenceExtension(fixture.subject, packageRoot);
     case 'semantic_kernel':
       return observeSemanticKernelScenario(fixture.subject, packageRoot);
+    case 'control_plane':
+      return observeControlPlaneScenario(fixture.subject, packageRoot);
     case 'processing_policy':
       return observeProcessingPolicyScenario(fixture.subject, packageRoot);
     default:

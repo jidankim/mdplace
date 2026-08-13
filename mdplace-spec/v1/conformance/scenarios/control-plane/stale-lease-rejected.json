@@ -1,0 +1,315 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-CP-STATE-002",
+  "category": "stale_state",
+  "requirement_ids": [
+    "REQ-CP-003",
+    "REQ-CP-007",
+    "REQ-CP-008"
+  ],
+  "subject": {
+    "kind": "control_plane",
+    "schema": "contracts/schemas/control-plane-scenario.schema.json",
+    "document": {
+      "schema_id": "mdplace.control-plane-scenario/v1",
+      "scenario_id": "CP-017",
+      "initial": {
+        "agent_state": "ready",
+        "persistent_agent_id": "agent:primary-001",
+        "writer_owner_agent_id": "agent:primary-001",
+        "writer_epoch": 1,
+        "journal_available": true,
+        "semantic_dependency_available": true,
+        "journal_head_sequence": 2,
+        "work": {
+          "work_id": "work:001",
+          "work_version": 2,
+          "state": "leased",
+          "idempotency_key": "idempotency:work-001",
+          "input_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "retry_count": 0,
+          "retry_ceiling": 2,
+          "lease_id": "lease:current",
+          "owner_agent_id": "agent:primary-001",
+          "cancellation_id": null,
+          "resume_count": 0,
+          "resume_ceiling": 1,
+          "retry_eligible_tick": null,
+          "recovery_interruption_count": 0,
+          "lease_status": "active",
+          "lease_acquired_tick": 1,
+          "lease_expires_tick": 301,
+          "completion_receipt": null,
+          "cancellation_receipt": null,
+          "resume_receipt": null,
+          "enqueue_receipt": {
+            "receipt_id": "enqueue-receipt:001",
+            "work_id": "work:001",
+            "work_version": 1,
+            "idempotency_key": "idempotency:work-001",
+            "input_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "base_head_sequence": 0,
+            "base_head_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "journal_sequence": 1,
+            "signature_scheme": "hmac-sha256",
+            "signing_key_id": "signer-key:primary-001",
+            "signer_agent_id": "agent:primary-001",
+            "signature_digest": "fc974383a529ee08fb70d221b020b18fe5ffeb5e9e9a175c0880a58704148dca",
+            "authenticated": true
+          },
+          "cancellation_history": [],
+          "completion_history": [],
+          "dependencies": [
+            {
+              "kind": "semantic_head",
+              "reference_id": "semantic:head-001",
+              "version": 1,
+              "digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+            }
+          ]
+        },
+        "control_channel": {
+          "state": "work_admitting",
+          "vault_id": "vault:001",
+          "protocol_version": "1.0",
+          "command_version": 1,
+          "same_user_authenticated": true,
+          "local_transport": true
+        },
+        "prior_receipts": [],
+        "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "dependency_state_digest": "c289e61ad636413a47b06ff09a505fd15701b9302e0fe955557e4b7b45ad4111",
+        "active_work_count": 1,
+        "max_concurrent_work": 8,
+        "journal_head_digest": "ad0ae94a42821d564adddb42d8c83fa56bc57339884c8475754b1b5370119911",
+        "active_lease_ids": [
+          "lease:current"
+        ],
+        "scheduler_state_digest": "74baeb359b155317ae0ea800758ba2eb8751a63596a8f12a0f97a3dd1c4ad17c",
+        "prior_lease_receipts": [
+          {
+            "receipt_id": "lease-receipt:attempt-1",
+            "receipt_kind": "lease",
+            "lease_id": "lease:current",
+            "work_id": "work:001",
+            "work_version": 2,
+            "journal_sequence": 2,
+            "owner_agent_id": "agent:primary-001",
+            "signature_scheme": "hmac-sha256",
+            "signing_key_id": "signer-key:primary-001",
+            "signer_agent_id": "agent:primary-001",
+            "signature_digest": "6a5cbfdabbc4eedece450d1b44fc55acd76f144dd54ce8294b15dcfa66243d8d",
+            "authenticated": true,
+            "acquired_tick": 1,
+            "expires_tick": 301,
+            "status": "active",
+            "started_tick": null
+          }
+        ],
+        "journal_head_receipt": {
+          "receipt_id": "journal-head-receipt:vault-001",
+          "journal_id": "journal:vault-001",
+          "head_sequence": 2,
+          "head_digest": "ad0ae94a42821d564adddb42d8c83fa56bc57339884c8475754b1b5370119911",
+          "signature_scheme": "hmac-sha256",
+          "signing_key_id": "signer-key:primary-001",
+          "signer_agent_id": "agent:primary-001",
+          "signature_digest": "f55d6613b05b607de719e438c20005fbff82ded62e5a4c5475ccce91b98f6dbf",
+          "authenticated": true
+        },
+        "dependency_state_receipt": {
+          "receipt_id": "dependency-state-receipt:vault-001",
+          "dependencies": [
+            {
+              "kind": "semantic_head",
+              "reference_id": "semantic:head-001",
+              "version": 1,
+              "digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+            }
+          ],
+          "signature_scheme": "hmac-sha256",
+          "signing_key_id": "signer-key:primary-001",
+          "signer_agent_id": "agent:primary-001",
+          "signature_digest": "fa9d267dcd2489df35f7fac9c3db98a57f46b002d016e9245bbf3bc296e0634a",
+          "authenticated": true
+        },
+        "prior_retry_receipts": [],
+        "prior_recovery_receipts": [],
+        "vault_id": "vault:001",
+        "journal_prefix_receipt": {
+          "receipt_id": "journal-prefix-receipt:vault-001",
+          "journal_id": "journal:vault-001",
+          "head_sequence": 0,
+          "head_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "signature_scheme": "hmac-sha256",
+          "signing_key_id": "signer-key:primary-001",
+          "signer_agent_id": "agent:primary-001",
+          "signature_digest": "d7ef42785146c5d0633a74c3a76d6532b9346d145bb4344a11d9b730906e002a",
+          "authenticated": true,
+          "active_leases": []
+        },
+        "scheduler_active_lease_receipts": [
+          {
+            "receipt_id": "scheduler-lease-receipt:current",
+            "vault_id": "vault:001",
+            "lease_id": "lease:current",
+            "work_id": "work:001",
+            "work_version": 2,
+            "owner_agent_id": "agent:primary-001",
+            "acquired_tick": 1,
+            "expires_tick": 301,
+            "status": "active",
+            "signature_scheme": "hmac-sha256",
+            "signing_key_id": "signer-key:primary-001",
+            "signer_agent_id": "agent:primary-001",
+            "signature_digest": "5a1a31d28f11904d39287dda997a34e217a83470ff45afe7ef4232d51179a545",
+            "authenticated": true
+          }
+        ],
+        "semantic_state_version": 1,
+        "scheduler_observed_tick": 1
+      },
+      "action": {
+        "kind": "acknowledge",
+        "actor_role": "mdplace_agent",
+        "work_id": "work:001",
+        "expected_work_version": 2,
+        "lease_id": "lease:stale",
+        "idempotency_key": null,
+        "proposed_work_input_digest": null,
+        "retryable": null,
+        "command_version": null,
+        "command_vault_id": null,
+        "candidate_agent_id": null,
+        "interruption_count": 0,
+        "semantic_write_requested": false,
+        "authority_source": "none",
+        "expected_journal_head_sequence": null,
+        "expected_writer_epoch": null,
+        "recovery_tick": null,
+        "writer_lock_receipt": null,
+        "readiness_observations": [
+          {
+            "ordinal": 1,
+            "gate": "exclusive_writer",
+            "verdict": "not_run",
+            "receipt_id": null,
+            "agent_id": null,
+            "vault_id": null,
+            "observation_digest": null,
+            "previous_receipt_digest": null,
+            "signature_scheme": null,
+            "signing_key_id": null,
+            "signer_agent_id": null,
+            "signature_digest": null,
+            "authenticated": false
+          },
+          {
+            "ordinal": 2,
+            "gate": "vault_filesystem",
+            "verdict": "not_run",
+            "receipt_id": null,
+            "agent_id": null,
+            "vault_id": null,
+            "observation_digest": null,
+            "previous_receipt_digest": null,
+            "signature_scheme": null,
+            "signing_key_id": null,
+            "signer_agent_id": null,
+            "signature_digest": null,
+            "authenticated": false
+          },
+          {
+            "ordinal": 3,
+            "gate": "semantic_kernel",
+            "verdict": "not_run",
+            "receipt_id": null,
+            "agent_id": null,
+            "vault_id": null,
+            "observation_digest": null,
+            "previous_receipt_digest": null,
+            "signature_scheme": null,
+            "signing_key_id": null,
+            "signer_agent_id": null,
+            "signature_digest": null,
+            "authenticated": false
+          },
+          {
+            "ordinal": 4,
+            "gate": "compatibility",
+            "verdict": "not_run",
+            "receipt_id": null,
+            "agent_id": null,
+            "vault_id": null,
+            "observation_digest": null,
+            "previous_receipt_digest": null,
+            "signature_scheme": null,
+            "signing_key_id": null,
+            "signer_agent_id": null,
+            "signature_digest": null,
+            "authenticated": false
+          },
+          {
+            "ordinal": 5,
+            "gate": "derived_views",
+            "verdict": "not_run",
+            "receipt_id": null,
+            "agent_id": null,
+            "vault_id": null,
+            "observation_digest": null,
+            "previous_receipt_digest": null,
+            "signature_scheme": null,
+            "signing_key_id": null,
+            "signer_agent_id": null,
+            "signature_digest": null,
+            "authenticated": false
+          },
+          {
+            "ordinal": 6,
+            "gate": "work_journal",
+            "verdict": "not_run",
+            "receipt_id": null,
+            "agent_id": null,
+            "vault_id": null,
+            "observation_digest": null,
+            "previous_receipt_digest": null,
+            "signature_scheme": null,
+            "signing_key_id": null,
+            "signer_agent_id": null,
+            "signature_digest": null,
+            "authenticated": false
+          }
+        ],
+        "current_tick": 1,
+        "expected_dependency_state_digest": null,
+        "expected_journal_head_digest": null,
+        "expected_scheduler_state_digest": null,
+        "vault_owner_receipt": null,
+        "completion_output_digest": null
+      }
+    }
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": [
+      "control.lease_stale"
+    ],
+    "outputs": [
+      "acknowledge rejected",
+      "work_state:leased",
+      "semantic_state_digest:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    ],
+    "operations": [
+      "validate control-plane command and exact bases"
+    ],
+    "receipts": [
+      "ControlPlaneRejectionReceipt:control.lease_stale"
+    ],
+    "filesystem_effects": [
+      "none"
+    ],
+    "terminal_state": "leased",
+    "illegal_transition": false
+  }
+}

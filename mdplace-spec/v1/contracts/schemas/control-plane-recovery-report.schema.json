@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:control-plane-recovery-report:v1",
+  "title": "mdplace control-plane recovery and authority evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "package_series", "release_version", "validator_version", "scenario_count", "fixture_ids", "fixture_bindings", "recovery_matrix", "transition_bindings", "claims"],
+  "properties": {
+    "$schema": {"const": "../../contracts/schemas/control-plane-recovery-report.schema.json"},
+    "schema_id": {"const": "mdplace.control-plane-recovery-report/v1"},
+    "package_series": {"const": "mdplace-spec/v1"},
+    "release_version": {"const": "1.0.0"},
+    "validator_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "scenario_count": {"const": 25},
+    "fixture_ids": {"type": "array", "minItems": 25, "maxItems": 25, "uniqueItems": true, "items": {"$ref": "#/$defs/fixtureId"}},
+    "fixture_bindings": {"type": "array", "minItems": 25, "maxItems": 25, "items": {"$ref": "#/$defs/fixtureBinding"}},
+    "recovery_matrix": {"$ref": "#/$defs/recoveryMatrix"},
+    "transition_bindings": {"type": "array", "minItems": 8, "maxItems": 8, "items": {"$ref": "#/$defs/transitionBinding"}},
+    "claims": {"$ref": "#/$defs/claims"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "fixtureId": {"type": "string", "pattern": "^FIX-CP-[A-Z][A-Z0-9_]{1,31}-[0-9]{3}$"},
+    "fixtureIds": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/fixtureId"}},
+    "fixtureBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fixture_id", "path", "fixture_sha256", "observable_result_sha256"],
+      "properties": {
+        "fixture_id": {"$ref": "#/$defs/fixtureId"},
+        "path": {"type": "string", "pattern": "^scenarios/control-plane/[a-z0-9][a-z0-9-]*\\.json$"},
+        "fixture_sha256": {"$ref": "#/$defs/digest"},
+        "observable_result_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "recoveryMatrix": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "case_ids"],
+      "properties": {
+        "path": {"const": "contracts/control-plane/recovery-matrix.json"},
+        "sha256": {"$ref": "#/$defs/digest"},
+        "case_ids": {"type": "array", "minItems": 15, "maxItems": 15, "uniqueItems": true, "items": {"type": "string", "pattern": "^RC-CP-[0-9]{3}$"}}
+      }
+    },
+    "transitionBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "denied_transition_ids"],
+      "properties": {
+        "path": {"type": "string", "pattern": "^contracts/transitions/[a-z0-9][a-z0-9-]*-lifecycle\\.json$"},
+        "sha256": {"$ref": "#/$defs/digest"},
+        "denied_transition_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^TR-[A-Z][A-Z0-9]{1,15}-[0-9]{3}$"}}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["durable_queue", "retry_cancellation_resume", "stale_and_authority_denial", "readiness_and_writer", "crash_recovery", "semantic_truth_preserved"],
+      "properties": {
+        "durable_queue": {"$ref": "#/$defs/fixtureIds"},
+        "retry_cancellation_resume": {"$ref": "#/$defs/fixtureIds"},
+        "stale_and_authority_denial": {"$ref": "#/$defs/fixtureIds"},
+        "readiness_and_writer": {"$ref": "#/$defs/fixtureIds"},
+        "crash_recovery": {"$ref": "#/$defs/fixtureIds"},
+        "semantic_truth_preserved": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["authority_sources", "fixture_ids", "semantic_state_digest"],
+          "properties": {
+            "authority_sources": {"const": ["work_journal", "scheduler", "mdplace_agent", "child_work", "control_channel", "readiness", "retry", "queue"]},
+            "fixture_ids": {"$ref": "#/$defs/fixtureIds", "minItems": 8},
+            "semantic_state_digest": {"$ref": "#/$defs/digest"}
+          }
+        }
+      }
+    }
+  }
+}

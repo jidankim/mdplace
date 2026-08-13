@@ -4,7 +4,7 @@
   "suite_id": "mdplace.package-foundation-conformance/v1",
   "package_series": "mdplace-spec/v1",
   "release_version": "1.0.0",
-  "validator_version": "1.1.0",
+  "validator_version": "1.2.0",
   "required_categories": [
     "positive",
     "negative",
@@ -1786,6 +1786,591 @@
         "filesystem_effects": true,
         "terminal_state": true,
         "illegal_transition": true
+      }
+    },
+    {
+      "fixture_id": "FIX-CP-REC-001",
+      "path": "scenarios/control-plane/durable-enqueue-survives-process-loss.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-CP-001",
+        "REQ-CP-002",
+        "REQ-CP-007",
+        "REQ-CP-008",
+        "REQ-CP-009",
+        "REQ-CP-010"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CP-POS-001",
+      "path": "scenarios/control-plane/dequeue-acknowledges-after-receipt.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-CP-001",
+        "REQ-CP-002",
+        "REQ-CP-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CP-REC-002",
+      "path": "scenarios/control-plane/leased-work-remains-recoverable.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-CP-002",
+        "REQ-CP-007",
+        "REQ-CP-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CP-POS-002",
+      "path": "scenarios/control-plane/first-retry-recorded.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-CP-001",
+        "REQ-CP-002",
+        "REQ-CP-003",
+        "REQ-CP-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CP-BND-001",
+      "path": "scenarios/control-plane/retry-ceiling-terminal-failure.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-CP-002",
+        "REQ-CP-003",
+        "REQ-CP-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CP-ILLEGAL-001",
+      "path": "scenarios/control-plane/retry-beyond-ceiling-denied.json",
+      "category": "illegal_transition",
+      "requirement_ids": [
+        "REQ-CP-002",
+        "REQ-CP-003",
+        "REQ-CP-007",
+        "REQ-CP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": true
+      }
+    },
+    {
+      "fixture_id": "FIX-CP-POS-003",
+      "path": "scenarios/control-plane/cancellation-before-dispatch-durable.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-CP-003",
+        "REQ-CP-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CP-POS-004",
+      "path": "scenarios/control-plane/cancellation-during-execution-durable.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-CP-003",
+        "REQ-CP-006",
+        "REQ-CP-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CP-REC-003",
+      "path": "scenarios/control-plane/cancelled-work-persists-restart.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-CP-007",
+        "REQ-CP-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CP-POS-005",
+      "path": "scenarios/control-plane/authorized-bounded-resume-recorded.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-CP-003",
+        "REQ-CP-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CP-REC-004",
+      "path": "scenarios/control-plane/queued-work-resumes-agent-restart.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-CP-001",
+        "REQ-CP-004",
+        "REQ-CP-007",
+        "REQ-CP-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CP-REC-005",
+      "path": "scenarios/control-plane/in-flight-work-recovers-agent-crash.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-CP-001",
+        "REQ-CP-004",
+        "REQ-CP-006",
+        "REQ-CP-007",
+        "REQ-CP-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CP-REC-006",
+      "path": "scenarios/control-plane/completed-work-not-repeated-restart.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-CP-004",
+        "REQ-CP-006",
+        "REQ-CP-007",
+        "REQ-CP-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CP-POS-006",
+      "path": "scenarios/control-plane/duplicate-enqueue-idempotent.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-CP-001",
+        "REQ-CP-002",
+        "REQ-CP-003",
+        "REQ-CP-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CP-NEG-001",
+      "path": "scenarios/control-plane/concurrent-duplicate-one-owner.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CP-002",
+        "REQ-CP-003",
+        "REQ-CP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CP-STATE-001",
+      "path": "scenarios/control-plane/stale-work-version-rejected.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-CP-003",
+        "REQ-CP-007",
+        "REQ-CP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CP-STATE-002",
+      "path": "scenarios/control-plane/stale-lease-rejected.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-CP-003",
+        "REQ-CP-007",
+        "REQ-CP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CP-STATE-003",
+      "path": "scenarios/control-plane/stale-control-command-rejected.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-CP-005",
+        "REQ-CP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CP-AUTH-001",
+      "path": "scenarios/control-plane/readiness-work-journal-unavailable.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CP-001",
+        "REQ-CP-004",
+        "REQ-CP-008",
+        "REQ-CP-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CP-AUTH-002",
+      "path": "scenarios/control-plane/readiness-semantic-dependency-unavailable.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CP-004",
+        "REQ-CP-008",
+        "REQ-CP-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CP-AUTH-003",
+      "path": "scenarios/control-plane/readiness-exclusive-writer-absent.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CP-004",
+        "REQ-CP-008",
+        "REQ-CP-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CP-POS-007",
+      "path": "scenarios/control-plane/authenticated-local-control-access.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-CP-001",
+        "REQ-CP-005",
+        "REQ-CP-008",
+        "REQ-CP-010"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CP-AUTH-004",
+      "path": "scenarios/control-plane/unauthenticated-nonlocal-control-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CP-001",
+        "REQ-CP-005",
+        "REQ-CP-008",
+        "REQ-CP-009",
+        "REQ-CP-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CP-POS-008",
+      "path": "scenarios/control-plane/persistent-agent-acquires-retains-writer.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-CP-004",
+        "REQ-CP-008",
+        "REQ-CP-009",
+        "REQ-CP-010"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CP-AUTH-005",
+      "path": "scenarios/control-plane/competing-agent-writer-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CP-001",
+        "REQ-CP-004",
+        "REQ-CP-008",
+        "REQ-CP-009",
+        "REQ-CP-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CHILD-POS-001",
+      "path": "fixtures/positive/isolated-child-work-invocation.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-CP-006"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CHILD-AUTH-001",
+      "path": "fixtures/negative/child-work-capability-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CP-006"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CHILD-AUTH-002",
+      "path": "fixtures/negative/child-work-receipt-forged.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CP-006"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CHILD-AUTH-003",
+      "path": "fixtures/negative/child-work-competing-signer.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CP-006"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
       }
     },
     {

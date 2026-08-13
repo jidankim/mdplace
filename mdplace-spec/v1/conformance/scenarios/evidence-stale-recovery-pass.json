@@ -19,12 +19,12 @@
       "package_series": "mdplace-spec/v1",
       "release_version": "1.0.0",
       "validator_id": "mdplace.package-validator",
-      "validator_version": "1.1.0",
+      "validator_version": "1.2.0",
       "claim_id": "CLAIM-RECOVERY-001",
       "claim": {
         "claim_id": "CLAIM-RECOVERY-001",
         "path": "conformance/evidence/claims/recovery-snapshot.json",
-        "sha256": "a5eb65c532612d031309574ac49ce74c65d70cdaf20ff9e8f91687e11ad68d1b"
+        "sha256": "74d596238a6577ab9ba58050f6c344e3ab6ae04b187293f289c74c6e3df7f08b"
       },
       "recorded_claim": null,
       "prior_verdict": "pass",
@@ -33,38 +33,38 @@
       "recomputed_bindings": [
         {
           "path": "conformance/evidence/claims/recovery-snapshot.json",
-          "expected_sha256": "a5eb65c532612d031309574ac49ce74c65d70cdaf20ff9e8f91687e11ad68d1b",
-          "observed_sha256": "a5eb65c532612d031309574ac49ce74c65d70cdaf20ff9e8f91687e11ad68d1b",
+          "expected_sha256": "74d596238a6577ab9ba58050f6c344e3ab6ae04b187293f289c74c6e3df7f08b",
+          "observed_sha256": "74d596238a6577ab9ba58050f6c344e3ab6ae04b187293f289c74c6e3df7f08b",
           "matches": true
         },
         {
           "path": "conformance/evidence/envelopes/validator-evidence-reference.json",
-          "expected_sha256": "48d6542b2d70d754bfe8592876c50641c7ae4e6e2544ddff1df19c0e9a85be44",
-          "observed_sha256": "48d6542b2d70d754bfe8592876c50641c7ae4e6e2544ddff1df19c0e9a85be44",
+          "expected_sha256": "b78af54d1ff81bbf860aac8ef8f5e51be94d277dca4ffee8849c60945d97e82c",
+          "observed_sha256": "b78af54d1ff81bbf860aac8ef8f5e51be94d277dca4ffee8849c60945d97e82c",
           "matches": true
         },
         {
           "path": "conformance/evidence/invocations/validator-evidence-reference.json",
-          "expected_sha256": "7a5a5d7217d261826fa750e271ab1f205ae5722ba1ac4a9b9d10232710a3d4ec",
-          "observed_sha256": "7a5a5d7217d261826fa750e271ab1f205ae5722ba1ac4a9b9d10232710a3d4ec",
+          "expected_sha256": "c1b585b5d709ada45ba4155e2fb4783d00242cd2a5b5bcd8916bb885f2b0d9e6",
+          "observed_sha256": "c1b585b5d709ada45ba4155e2fb4783d00242cd2a5b5bcd8916bb885f2b0d9e6",
           "matches": true
         },
         {
           "path": "normative/requirements.json",
-          "expected_sha256": "a09411fdaabe29bd1ac4df242a17ff5ecfb517a8c307f1245212cba67678cf5e",
-          "observed_sha256": "a09411fdaabe29bd1ac4df242a17ff5ecfb517a8c307f1245212cba67678cf5e",
+          "expected_sha256": "2ea2cade96b0c890a425a2f2d919cb5bd31846396e89f684dd2276332d1ddd0e",
+          "observed_sha256": "2ea2cade96b0c890a425a2f2d919cb5bd31846396e89f684dd2276332d1ddd0e",
           "matches": true
         },
         {
           "path": "contracts/verdicts/validator-verdicts.json",
-          "expected_sha256": "caaeba680abdc21053da0bb727c6a56cde19779a3a4aaee05e66c2ac65f56158",
-          "observed_sha256": "caaeba680abdc21053da0bb727c6a56cde19779a3a4aaee05e66c2ac65f56158",
+          "expected_sha256": "0b8835675f0c24acae0207bd4cd34f4b584d742babcefcf6addad3e88bfa1761",
+          "observed_sha256": "0b8835675f0c24acae0207bd4cd34f4b584d742babcefcf6addad3e88bfa1761",
           "matches": true
         },
         {
           "path": "claims-and-evidence.yaml",
-          "expected_sha256": "9eb04d05991b773681314646b6e85d9cf7bccc34247714e7c1978708f67db370",
-          "observed_sha256": "9eb04d05991b773681314646b6e85d9cf7bccc34247714e7c1978708f67db370",
+          "expected_sha256": "57cc759832ddeec0c783deb194d722428c6b9032434b53c7c09351c67b676c7f",
+          "observed_sha256": "57cc759832ddeec0c783deb194d722428c6b9032434b53c7c09351c67b676c7f",
           "matches": true
         },
         {
@@ -76,7 +76,7 @@
         {
           "path": "contracts/validator-extensions.json",
           "expected_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-          "observed_sha256": "1b00b497fdba947895cd890c32eddd1e7f63465b8d7be67504e636229b4c701a",
+          "observed_sha256": "79de28cb94fe805ba3d790e99075cf5a6face8809a8c2404683328bbb92d26e8",
           "matches": false
         }
       ],

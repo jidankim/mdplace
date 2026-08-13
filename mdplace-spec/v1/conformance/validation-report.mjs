@@ -5,6 +5,8 @@ import {
   checkSchemas,
   checkTransitionTable,
 } from './package-checks.mjs';
+import {checkControlPlaneContract} from './control-plane-checks.mjs';
+import {checkControlPlaneLifecycle} from './control-plane-lifecycle-checks.mjs';
 import {readPackageFile} from './safe-path.mjs';
 import {checkCoreProcessingPolicyContract} from './processing-policy-checks.mjs';
 import {checkSchemaInstances} from './schema-instances.mjs';
@@ -60,6 +62,8 @@ export async function buildValidationReport(packageRoot, options = {}) {
   checks.push(await checkSchemaInstances(packageRoot, conformance ?? {fixtures: []}));
   checks.push(await checkValidatorEvidence(packageRoot));
   checks.push(await checkSemanticKernelContract(packageRoot, manifest, conformance, traceability));
+  checks.push(await checkControlPlaneContract(packageRoot, manifest, conformance, traceability));
+  checks.push(await checkControlPlaneLifecycle(packageRoot));
   checks.push(await checkCoreProcessingPolicyContract(packageRoot, manifest, conformance, traceability));
   if (traceability !== null) {
     checks.push(await checkTraceability(

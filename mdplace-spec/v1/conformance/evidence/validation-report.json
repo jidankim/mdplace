@@ -2,9 +2,9 @@
   "schema_id": "mdplace.validation-report/v1",
   "package_series": "mdplace-spec/v1",
   "release_version": "1.0.0",
-  "validator_version": "1.1.0",
-  "normative_digest": "e07f68f0b080e58625a5b4b804752f9d17e1b76df9b7e14eaf94b69b95bbae19",
-  "conformance_digest": "8bc413a4066f7855867a422740a80274ace4106576fe754765c375e2e8ac646b",
+  "validator_version": "1.2.0",
+  "normative_digest": "72577e4ec624db31767c0b519de9a27ce2861c25725992db865f9a617a4c6e4c",
+  "conformance_digest": "39c2e5d6e443ae22d7ba67d6a911d0cdfb03ce8f48084be36a7b69d15122d139",
   "verdict": "pass",
   "checks": [
     {
@@ -64,6 +64,16 @@
     },
     {
       "id": "semantic-kernel-contract",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "control-plane-contract",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "control-plane-lifecycle",
       "verdict": "pass",
       "codes": []
     },
@@ -521,6 +531,151 @@
     },
     {
       "id": "FIX-SK-ILLEGAL-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CP-REC-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CP-POS-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CP-REC-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CP-POS-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CP-BND-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CP-ILLEGAL-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CP-POS-003",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CP-POS-004",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CP-REC-003",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CP-POS-005",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CP-REC-004",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CP-REC-005",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CP-REC-006",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CP-POS-006",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CP-NEG-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CP-STATE-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CP-STATE-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CP-STATE-003",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CP-AUTH-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CP-AUTH-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CP-AUTH-003",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CP-POS-007",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CP-AUTH-004",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CP-POS-008",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CP-AUTH-005",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CHILD-POS-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CHILD-AUTH-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CHILD-AUTH-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-CHILD-AUTH-003",
       "verdict": "pass",
       "codes": []
     },

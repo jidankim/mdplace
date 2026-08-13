@@ -1,0 +1,65 @@
+{
+  "$schema": "../../contracts/schemas/control-plane-lifecycle-report.schema.json",
+  "schema_id": "mdplace.control-plane-lifecycle-report/v1",
+  "report_id": "control-plane-lifecycle-report:primary-001",
+  "package_series": "mdplace-spec/v1",
+  "persistent_agent_id": "agent:primary-001",
+  "vault_id": "vault:001",
+  "profile_binding": {
+    "path": "contracts/control-plane/launchagent-supervision-profile.json",
+    "sha256": "3a1148c22e9e9040edeaa7306f9eca5ff8b09d1942c02112db710e2df37eb162"
+  },
+  "lifecycle_table_binding": {
+    "path": "contracts/transitions/launchagent-supervision-lifecycle.json",
+    "sha256": "c6bdaf7e0df8740f9cbe19e2563fc90830634b8d36de3145fa3156b4be506c7f"
+  },
+  "control_channel_table_binding": {
+    "path": "contracts/transitions/control-channel-lifecycle.json",
+    "sha256": "552e0f0c3a203a3b1d91c958aa44d0d101cf9554aa5261c0a4b81187857e0796"
+  },
+  "doctor_report_binding": {
+    "report_id": "control-plane-doctor-report:primary-001",
+    "path": "conformance/evidence/control-plane-doctor-report.json",
+    "sha256": "c9029d5b608ac299f328b8352920c376067deaff7b79b2961cef8b4aeb019f1f",
+    "circuit_version": 3
+  },
+  "work_admission_suspension_receipt": {
+    "receipt_id": "control-channel-work-admission-suspended:wake-001",
+    "persistent_agent_id": "agent:primary-001",
+    "vault_id": "vault:001",
+    "control_channel_version": 1,
+    "prior_mode": "work_admitting",
+    "resulting_mode": "diagnostic_only",
+    "wake_observation_digest": "432c0543d8eb6dd214874c09b36677df603cbff457b4cebce7bef8889934e464",
+    "suspension_reason": "wake_revalidation",
+    "suspended_tick": 1,
+    "idempotency_key": "idempotency:wake-suspension-001",
+    "signature_scheme": "hmac-sha256",
+    "signing_key_id": "signer-key:primary-001",
+    "signer_agent_id": "agent:primary-001",
+    "signature_digest": "875e3a9345430657d35e705304195dc411899c832c6c95ff9b5426444d5eb207",
+    "authenticated": true
+  },
+  "vault_owner_recovery_approval": {
+    "receipt_id": "vault-owner-recovery-approval:primary-001",
+    "principal_id": "person:owner-001",
+    "vault_id": "vault:001",
+    "persistent_agent_id": "agent:primary-001",
+    "doctor_report_id": "control-plane-doctor-report:primary-001",
+    "doctor_report_digest": "c9029d5b608ac299f328b8352920c376067deaff7b79b2961cef8b4aeb019f1f",
+    "circuit_version": 3,
+    "selected_action": "revalidate_same_agent_core",
+    "idempotency_key": "idempotency:recovery-approval-001",
+    "signature_scheme": "hmac-sha256",
+    "signing_key_id": "signer-key:vault-owner-001",
+    "signature_digest": "4c48530e7a156fca4bfc6ff0b702f144997eb230f0f5d48533e6a7944884692c",
+    "authenticated": true,
+    "signer_principal_id": "person:owner-001"
+  },
+  "work_admission_after_approval": "diagnostic_only",
+  "required_same_core_revalidation": [
+    "exclusive_writer",
+    "readiness_gate_chain",
+    "wake_revalidation"
+  ]
+}

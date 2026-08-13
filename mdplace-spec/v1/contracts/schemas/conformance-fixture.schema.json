@@ -20,6 +20,7 @@
         {"$ref": "#/$defs/digestSubject"},
         {"$ref": "#/$defs/recoverySubject"},
         {"$ref": "#/$defs/semanticKernelSubject"},
+        {"$ref": "#/$defs/controlPlaneSubject"},
         {"$ref": "#/$defs/processingPolicySubject"}
       ]
     },
@@ -240,6 +241,16 @@
         "kind": {"const": "semantic_kernel"},
         "schema": {"const": "contracts/schemas/semantic-kernel-scenario.schema.json"},
         "document": {"description": "Closed stateful scenario validated against subject.schema before observation."}
+      }
+    },
+    "controlPlaneSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "schema", "document"],
+      "properties": {
+        "kind": {"const": "control_plane"},
+        "schema": {"const": "contracts/schemas/control-plane-scenario.schema.json"},
+        "document": {"description": "Closed control-plane scenario validated against subject.schema before observation."}
       }
     },
     "processingPolicySubject": {

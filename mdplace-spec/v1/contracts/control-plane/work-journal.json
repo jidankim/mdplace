@@ -1,0 +1,87 @@
+{
+  "$schema": "../schemas/work-journal.schema.json",
+  "schema_id": "mdplace.work-journal/v1",
+  "journal_id": "journal:vault-001",
+  "vault_id": "vault:001",
+  "head_sequence": 1,
+  "head_digest": "400033c9dc6558e9d8d03b34575797b49732299eb15772612746ddac4c38280f",
+  "semantic_authority": "none",
+  "limits": {
+    "max_total_attempts": 3,
+    "retry_delays_ms": [
+      1000,
+      5000
+    ],
+    "max_recovery_interruptions": 2,
+    "max_resume_count": 1,
+    "lease_duration_ticks": 300
+  },
+  "work_items": [
+    {
+      "work_id": "work:001",
+      "work_kind": "placement_evaluation",
+      "work_version": 1,
+      "state": "queued",
+      "idempotency_key": "idempotency:work-001",
+      "input_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "dependencies": [
+        {
+          "kind": "semantic_head",
+          "reference_id": "semantic:head-001",
+          "version": 1,
+          "digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        }
+      ],
+      "budget": {
+        "max_attempts": 3,
+        "wall_time_ms": 900000,
+        "max_output_bytes": 10485760,
+        "max_child_processes": 1
+      },
+      "retry_count": 0,
+      "retry_eligible_tick": null,
+      "recovery_interruption_count": 0,
+      "rejection_count": 0,
+      "lease": null,
+      "cancellation": null,
+      "result": null,
+      "enqueue_receipt": {
+        "receipt_id": "enqueue-receipt:001",
+        "work_id": "work:001",
+        "work_version": 1,
+        "idempotency_key": "idempotency:work-001",
+        "input_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "base_head_sequence": 0,
+        "base_head_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "journal_sequence": 1,
+        "signature_scheme": "hmac-sha256",
+        "signing_key_id": "signer-key:primary-001",
+        "signer_agent_id": "agent:primary-001",
+        "signature_digest": "fc974383a529ee08fb70d221b020b18fe5ffeb5e9e9a175c0880a58704148dca",
+        "authenticated": true
+      },
+      "resume_count": 0,
+      "resume_receipt": null,
+      "cancellation_history": [],
+      "completion_history": []
+    }
+  ],
+  "receipts": [
+    {
+      "receipt_id": "enqueue-receipt:001",
+      "receipt_kind": "enqueue",
+      "journal_sequence": 1,
+      "work_id": "work:001",
+      "work_version": 1,
+      "lease_id": null,
+      "state": "queued",
+      "operation_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "signature_scheme": "hmac-sha256",
+      "signing_key_id": "signer-key:primary-001",
+      "signer_agent_id": "agent:primary-001",
+      "signature_digest": "5f820313b6521b249bb2e5ab01a2c6afe11401fe16d3b5cce744448afc4fb859",
+      "authenticated": true
+    }
+  ]
+}

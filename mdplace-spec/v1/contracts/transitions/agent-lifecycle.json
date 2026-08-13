@@ -1,0 +1,1153 @@
+{
+  "$schema": "../schemas/transition-table.schema.json",
+  "schema_id": "mdplace.transition-table/v1",
+  "table_id": "TRANS-CP-AGENT",
+  "lifecycle": "persistent per-vault mdplace Agent",
+  "version": "1.0.0",
+  "states": [
+    "stopped",
+    "starting",
+    "recovering",
+    "ready",
+    "draining",
+    "blocked"
+  ],
+  "commands": [
+    "start_agent",
+    "crash_agent",
+    "recover_agent",
+    "stop_agent"
+  ],
+  "transitions": [
+    {
+      "transition_id": "TR-CPAGENT-001",
+      "command_or_event": "start_agent",
+      "from_state": "stopped",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "launchd_supervisor"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "LaunchAgent has selected the persistent vault Agent identity"
+      ],
+      "base_references": [
+        "vault identity",
+        "persistent Agent identity"
+      ],
+      "emitted_records": [
+        "AgentStartReceipt"
+      ],
+      "filesystem_effects": [
+        "start one Agent core without opening the Control Channel"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "vault identity",
+          "persistent Agent identity"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "starting",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "The supervisor may restart the same persistent identity; readiness remains fail-closed."
+    },
+    {
+      "transition_id": "TR-CPAGENT-002",
+      "command_or_event": "crash_agent",
+      "from_state": "stopped",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "operating_system"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "crash_agent is not legal from stopped"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "stopped",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPAGENT-003",
+      "command_or_event": "recover_agent",
+      "from_state": "stopped",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "recover_agent is not legal from stopped"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "stopped",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPAGENT-004",
+      "command_or_event": "stop_agent",
+      "from_state": "stopped",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "launchd_supervisor"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "LaunchAgent requested bounded shutdown"
+      ],
+      "base_references": [
+        "current Agent lifecycle version",
+        "current writer epoch and Work Journal head"
+      ],
+      "emitted_records": [
+        "AgentStopReceipt"
+      ],
+      "filesystem_effects": [
+        "close Control Channel",
+        "drain in-flight work",
+        "release Exclusive Writer Lock"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current Agent lifecycle version",
+          "current writer epoch and Work Journal head"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "stopped",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "A process loss during draining enters recovery; a completed stop remains stopped."
+    },
+    {
+      "transition_id": "TR-CPAGENT-005",
+      "command_or_event": "start_agent",
+      "from_state": "starting",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "launchd_supervisor"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "start_agent is not legal from starting"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "starting",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPAGENT-006",
+      "command_or_event": "crash_agent",
+      "from_state": "starting",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "operating_system"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "the operating system observed process loss"
+      ],
+      "base_references": [
+        "last durable Agent state",
+        "last Work Journal head and writer epoch"
+      ],
+      "emitted_records": [
+        "AgentCrashObservation"
+      ],
+      "filesystem_effects": [
+        "release process-owned capabilities; preserve durable Work Journal state"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "last durable Agent state",
+          "last Work Journal head and writer epoch"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "recovering",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Start recovery with a new exact writer lock receipt and reconcile before becoming ready."
+    },
+    {
+      "transition_id": "TR-CPAGENT-007",
+      "command_or_event": "recover_agent",
+      "from_state": "starting",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "recover_agent is not legal from starting"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "starting",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPAGENT-008",
+      "command_or_event": "stop_agent",
+      "from_state": "starting",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "launchd_supervisor"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "LaunchAgent requested bounded shutdown"
+      ],
+      "base_references": [
+        "current Agent lifecycle version",
+        "current writer epoch and Work Journal head"
+      ],
+      "emitted_records": [
+        "AgentStopReceipt"
+      ],
+      "filesystem_effects": [
+        "close Control Channel",
+        "drain in-flight work",
+        "release Exclusive Writer Lock"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current Agent lifecycle version",
+          "current writer epoch and Work Journal head"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "stopped",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "A process loss during draining enters recovery; a completed stop remains stopped."
+    },
+    {
+      "transition_id": "TR-CPAGENT-009",
+      "command_or_event": "start_agent",
+      "from_state": "recovering",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "launchd_supervisor"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "start_agent is not legal from recovering"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "recovering",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPAGENT-010",
+      "command_or_event": "crash_agent",
+      "from_state": "recovering",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "operating_system"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "the operating system observed process loss"
+      ],
+      "base_references": [
+        "last durable Agent state",
+        "last Work Journal head and writer epoch"
+      ],
+      "emitted_records": [
+        "AgentCrashObservation"
+      ],
+      "filesystem_effects": [
+        "release process-owned capabilities; preserve durable Work Journal state"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "last durable Agent state",
+          "last Work Journal head and writer epoch"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "recovering",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Start recovery with a new exact writer lock receipt and reconcile before becoming ready."
+    },
+    {
+      "transition_id": "TR-CPAGENT-011",
+      "command_or_event": "recover_agent",
+      "from_state": "recovering",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "new Exclusive Writer Lock receipt is current",
+        "recovery observations and interruption budgets validate"
+      ],
+      "base_references": [
+        "exact writer epoch",
+        "exact Work Journal head",
+        "exact Semantic Kernel dependency"
+      ],
+      "emitted_records": [
+        "AgentRecoveryReceipt"
+      ],
+      "filesystem_effects": [
+        "reconcile durable work and rebuild disposable views"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact writer epoch",
+          "exact Work Journal head",
+          "exact Semantic Kernel dependency"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "starting",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain blocked on a stale base, competing writer, failed gate, or unknown completion."
+    },
+    {
+      "transition_id": "TR-CPAGENT-012",
+      "command_or_event": "stop_agent",
+      "from_state": "recovering",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "launchd_supervisor"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "LaunchAgent requested bounded shutdown"
+      ],
+      "base_references": [
+        "current Agent lifecycle version",
+        "current writer epoch and Work Journal head"
+      ],
+      "emitted_records": [
+        "AgentStopReceipt"
+      ],
+      "filesystem_effects": [
+        "close Control Channel",
+        "drain in-flight work",
+        "release Exclusive Writer Lock"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current Agent lifecycle version",
+          "current writer epoch and Work Journal head"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "stopped",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "A process loss during draining enters recovery; a completed stop remains stopped."
+    },
+    {
+      "transition_id": "TR-CPAGENT-013",
+      "command_or_event": "start_agent",
+      "from_state": "ready",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "launchd_supervisor"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "start_agent is not legal from ready"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "ready",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPAGENT-014",
+      "command_or_event": "crash_agent",
+      "from_state": "ready",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "operating_system"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "the operating system observed process loss"
+      ],
+      "base_references": [
+        "last durable Agent state",
+        "last Work Journal head and writer epoch"
+      ],
+      "emitted_records": [
+        "AgentCrashObservation"
+      ],
+      "filesystem_effects": [
+        "release process-owned capabilities; preserve durable Work Journal state"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "last durable Agent state",
+          "last Work Journal head and writer epoch"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "recovering",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Start recovery with a new exact writer lock receipt and reconcile before becoming ready."
+    },
+    {
+      "transition_id": "TR-CPAGENT-015",
+      "command_or_event": "recover_agent",
+      "from_state": "ready",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "recover_agent is not legal from ready"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "ready",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPAGENT-016",
+      "command_or_event": "stop_agent",
+      "from_state": "ready",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "launchd_supervisor"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "LaunchAgent requested bounded shutdown"
+      ],
+      "base_references": [
+        "current Agent lifecycle version",
+        "current writer epoch and Work Journal head"
+      ],
+      "emitted_records": [
+        "AgentStopReceipt"
+      ],
+      "filesystem_effects": [
+        "close Control Channel",
+        "drain in-flight work",
+        "release Exclusive Writer Lock"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current Agent lifecycle version",
+          "current writer epoch and Work Journal head"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "draining",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "A process loss during draining enters recovery; a completed stop remains stopped."
+    },
+    {
+      "transition_id": "TR-CPAGENT-017",
+      "command_or_event": "start_agent",
+      "from_state": "draining",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "launchd_supervisor"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "start_agent is not legal from draining"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "draining",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPAGENT-018",
+      "command_or_event": "crash_agent",
+      "from_state": "draining",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "operating_system"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "the operating system observed process loss"
+      ],
+      "base_references": [
+        "last durable Agent state",
+        "last Work Journal head and writer epoch"
+      ],
+      "emitted_records": [
+        "AgentCrashObservation"
+      ],
+      "filesystem_effects": [
+        "release process-owned capabilities; preserve durable Work Journal state"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "last durable Agent state",
+          "last Work Journal head and writer epoch"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "recovering",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Start recovery with a new exact writer lock receipt and reconcile before becoming ready."
+    },
+    {
+      "transition_id": "TR-CPAGENT-019",
+      "command_or_event": "recover_agent",
+      "from_state": "draining",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "recover_agent is not legal from draining"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "draining",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPAGENT-020",
+      "command_or_event": "stop_agent",
+      "from_state": "draining",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "launchd_supervisor"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "LaunchAgent requested bounded shutdown"
+      ],
+      "base_references": [
+        "current Agent lifecycle version",
+        "current writer epoch and Work Journal head"
+      ],
+      "emitted_records": [
+        "AgentStopReceipt"
+      ],
+      "filesystem_effects": [
+        "close Control Channel",
+        "drain in-flight work",
+        "release Exclusive Writer Lock"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current Agent lifecycle version",
+          "current writer epoch and Work Journal head"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "stopped",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "A process loss during draining enters recovery; a completed stop remains stopped."
+    },
+    {
+      "transition_id": "TR-CPAGENT-021",
+      "command_or_event": "start_agent",
+      "from_state": "blocked",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "launchd_supervisor"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "start_agent is not legal from blocked"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "blocked",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPAGENT-022",
+      "command_or_event": "crash_agent",
+      "from_state": "blocked",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "operating_system"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "crash_agent is not legal from blocked"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "blocked",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPAGENT-023",
+      "command_or_event": "recover_agent",
+      "from_state": "blocked",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "the durable supervision state is recovering rather than circuit_open",
+        "if a persistent circuit was open, the exact vault-owner recovery approval has already produced OwnerRecoveryAuthorizationReceipt",
+        "new Exclusive Writer Lock receipt is current",
+        "recovery observations and interruption budgets validate"
+      ],
+      "base_references": [
+        "persistent Agent supervision state and circuit version",
+        "exact ControlPlaneDoctorReport and OwnerRecoveryAuthorizationReceipt when circuit recovery applies",
+        "exact writer epoch",
+        "exact Work Journal head",
+        "exact Semantic Kernel dependency"
+      ],
+      "emitted_records": [
+        "AgentRecoveryReceipt"
+      ],
+      "filesystem_effects": [
+        "reconcile durable work and rebuild disposable views"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "persistent Agent supervision state and circuit version",
+          "exact ControlPlaneDoctorReport and OwnerRecoveryAuthorizationReceipt when circuit recovery applies",
+          "exact writer epoch",
+          "exact Work Journal head",
+          "exact Semantic Kernel dependency"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "starting",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "A circuit-open Agent remains blocked and diagnostic-only until an exact doctor-bound vault-owner approval; otherwise reacquire the writer and repeat all six readiness gates."
+    },
+    {
+      "transition_id": "TR-CPAGENT-024",
+      "command_or_event": "stop_agent",
+      "from_state": "blocked",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "launchd_supervisor"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "LaunchAgent requested bounded shutdown"
+      ],
+      "base_references": [
+        "current Agent lifecycle version",
+        "current writer epoch and Work Journal head"
+      ],
+      "emitted_records": [
+        "AgentStopReceipt"
+      ],
+      "filesystem_effects": [
+        "close Control Channel",
+        "drain in-flight work",
+        "release Exclusive Writer Lock"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current Agent lifecycle version",
+          "current writer epoch and Work Journal head"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "stopped",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "A process loss during draining enters recovery; a completed stop remains stopped."
+    }
+  ]
+}

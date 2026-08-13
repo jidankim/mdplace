@@ -1,0 +1,435 @@
+{
+  "$schema": "../schemas/transition-table.schema.json",
+  "schema_id": "mdplace.transition-table/v1",
+  "table_id": "TRANS-CP-RETRY",
+  "lifecycle": "bounded Work Item retry",
+  "version": "1.0.0",
+  "states": [
+    "executing",
+    "retry_wait",
+    "failed"
+  ],
+  "commands": [
+    "record_retry",
+    "record_terminal_failure",
+    "retry_work"
+  ],
+  "transitions": [
+    {
+      "transition_id": "TR-CPRETRY-001",
+      "command_or_event": "record_retry",
+      "from_state": "executing",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "failure is retryable",
+        "retry count is below the ceiling"
+      ],
+      "base_references": [
+        "exact Work Item version and Work Lease",
+        "retry count and retry delay schedule"
+      ],
+      "emitted_records": [
+        "RetryReceipt"
+      ],
+      "filesystem_effects": [
+        "append retry count and durable eligibility tick"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact Work Item version and Work Lease",
+          "retry count and retry delay schedule"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "retry_wait",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Resume only at or after the recorded eligibility tick and never exceed the retry ceiling."
+    },
+    {
+      "transition_id": "TR-CPRETRY-002",
+      "command_or_event": "record_terminal_failure",
+      "from_state": "executing",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "failure is not retryable or retry count equals the ceiling"
+      ],
+      "base_references": [
+        "exact Work Item version and Work Lease",
+        "retry count and retry ceiling"
+      ],
+      "emitted_records": [
+        "TerminalFailureReceipt"
+      ],
+      "filesystem_effects": [
+        "append authenticated terminal failure"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact Work Item version and Work Lease",
+          "retry count and retry ceiling"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "failed",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the terminal receipt; later retry requests are denied."
+    },
+    {
+      "transition_id": "TR-CPRETRY-003",
+      "command_or_event": "retry_work",
+      "from_state": "executing",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "scheduler"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "retry_work is not legal from executing"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "executing",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPRETRY-004",
+      "command_or_event": "record_retry",
+      "from_state": "retry_wait",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "record_retry is not legal from retry_wait"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "retry_wait",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPRETRY-005",
+      "command_or_event": "record_terminal_failure",
+      "from_state": "retry_wait",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "record_terminal_failure is not legal from retry_wait"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "retry_wait",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPRETRY-006",
+      "command_or_event": "retry_work",
+      "from_state": "retry_wait",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "scheduler"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "retry eligibility tick has arrived",
+        "retry count is within the ceiling",
+        "Scheduler budget has capacity"
+      ],
+      "base_references": [
+        "exact Work Item version",
+        "durable retry eligibility tick",
+        "versioned dependency digests"
+      ],
+      "emitted_records": [
+        "WorkLeaseReceipt"
+      ],
+      "filesystem_effects": [
+        "append a new bounded Work Lease"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact Work Item version",
+          "durable retry eligibility tick",
+          "versioned dependency digests"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "leased",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Use the new exact lease receipt or retain retry_wait until another eligible dispatch."
+    },
+    {
+      "transition_id": "TR-CPRETRY-007",
+      "command_or_event": "record_retry",
+      "from_state": "failed",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "record_retry is not legal from failed"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "failed",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPRETRY-008",
+      "command_or_event": "record_terminal_failure",
+      "from_state": "failed",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "record_terminal_failure is not legal from failed"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "failed",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPRETRY-009",
+      "command_or_event": "retry_work",
+      "from_state": "failed",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "scheduler"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "retry_work is not legal from failed"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "failed",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    }
+  ]
+}

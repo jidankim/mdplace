@@ -1,0 +1,539 @@
+{
+  "$schema": "../schemas/control-plane-recovery-matrix.schema.json",
+  "schema_id": "mdplace.control-plane-recovery-matrix/v1",
+  "matrix_id": "RECOVERY-CP-001",
+  "version": "1.0.0",
+  "semantic_authority": "none",
+  "rows": [
+    {
+      "case_id": "RC-CP-001",
+      "interruption_point": "before_enqueue_commit",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "absence of EnqueueReceipt for the idempotency key",
+        "exact Work Journal head sequence and digest"
+      ],
+      "preconditions": [
+        "current retained writer receipt binds the persistent Agent and exact next epoch"
+      ],
+      "base_references": [
+        "idempotency key and input digest",
+        "exact Work Journal head"
+      ],
+      "emitted_records": [
+        "WorkRecoveryDenied"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "deny with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Deny acceptance because no durable Work Item exists; an exact future enqueue may create version one.",
+      "default_decision": "deny"
+    },
+    {
+      "case_id": "RC-CP-002",
+      "interruption_point": "after_enqueue_commit",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "authenticated EnqueueReceipt",
+        "exact committed Work Item version and input digest"
+      ],
+      "preconditions": [
+        "enqueue receipt sequence is at or below the exact Work Journal head"
+      ],
+      "base_references": [
+        "exact Work Journal head",
+        "exact Work Item identity, version, idempotency key, and input digest"
+      ],
+      "emitted_records": [
+        "WorkRecoveryReceipt"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "resume with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Preserve the single queued Work Item and return the original EnqueueReceipt.",
+      "default_decision": "resume"
+    },
+    {
+      "case_id": "RC-CP-003",
+      "interruption_point": "after_lease_receipt_before_ack",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "authenticated WorkLeaseReceipt",
+        "lease owner, version, acquired tick, expiry tick, and status"
+      ],
+      "preconditions": [
+        "lease remains active and its duration is at most 300 ticks"
+      ],
+      "base_references": [
+        "exact Work Journal head",
+        "exact Work Item version",
+        "exact active Work Lease"
+      ],
+      "emitted_records": [
+        "WorkRecoveryReceipt"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "preserve with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Preserve the single lease and return its receipt; do not create a second owner.",
+      "default_decision": "preserve"
+    },
+    {
+      "case_id": "RC-CP-004",
+      "interruption_point": "after_dequeue_ack_before_execution",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "WorkLeaseReceipt",
+        "durable expiry observation"
+      ],
+      "preconditions": [
+        "lease identity and work version match",
+        "lease is expired at the recovery tick",
+        "next recovery interruption count is at most two"
+      ],
+      "base_references": [
+        "exact Work Journal head",
+        "exact Work Item version",
+        "exact expired Work Lease"
+      ],
+      "emitted_records": [
+        "WorkRecoveryReceipt"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "requeue with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Append one WorkRecoveryReceipt and requeue without acknowledging a second owner.",
+      "default_decision": "requeue"
+    },
+    {
+      "case_id": "RC-CP-005",
+      "interruption_point": "during_execution_without_completion_receipt",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "absence of authenticated completion receipt",
+        "exact retry and recovery interruption counts"
+      ],
+      "preconditions": [
+        "lease is expired",
+        "next recovery interruption count equals current count plus one and is at most two",
+        "one retry remains and its derived eligibility tick is within the closed scheduling horizon"
+      ],
+      "base_references": [
+        "exact Work Journal head",
+        "exact executing Work Item version",
+        "exact Work Lease",
+        "versioned semantic dependency digests"
+      ],
+      "emitted_records": [
+        "WorkRecoveryReceipt"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "requeue with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Consume one recovery interruption and one retry, record an eligibility tick, and never claim completion.",
+      "default_decision": "requeue"
+    },
+    {
+      "case_id": "RC-CP-006",
+      "interruption_point": "after_completion_receipt_before_terminal_record",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "authenticated CompletionReceipt",
+        "bound output digest and signer identity"
+      ],
+      "preconditions": [
+        "receipt signature binds exact work, version, lease, journal sequence, outcome, output, and persistent Agent"
+      ],
+      "base_references": [
+        "exact Work Journal head",
+        "exact Work Item version and Work Lease",
+        "authenticated completion receipt"
+      ],
+      "emitted_records": [
+        "WorkRecoveryReceipt"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "preserve with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Finalize and preserve the authenticated result without repeating child or parent work.",
+      "default_decision": "preserve"
+    },
+    {
+      "case_id": "RC-CP-007",
+      "interruption_point": "after_cancellation_receipt_before_child_stop",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "CancellationReceipt",
+        "active Child Work Invocation identity when present"
+      ],
+      "preconditions": [
+        "cancellation binds the exact Work Item version"
+      ],
+      "base_references": [
+        "exact Work Journal head",
+        "exact Work Item and cancellation versions",
+        "current child capability receipt"
+      ],
+      "emitted_records": [
+        "WorkRecoveryReceipt"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "preserve with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Preserve cancellation and revoke the exact child capability without accepting child output.",
+      "default_decision": "preserve"
+    },
+    {
+      "case_id": "RC-CP-008",
+      "interruption_point": "restart_with_cancelled_work",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "CancellationReceipt",
+        "durable resume count and ceiling"
+      ],
+      "preconditions": [
+        "new retained writer receipt is current",
+        "all six Readiness Gates pass in order"
+      ],
+      "base_references": [
+        "exact writer epoch",
+        "exact Work Journal head",
+        "exact cancelled Work Item version"
+      ],
+      "emitted_records": [
+        "WorkRecoveryReceipt"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "preserve with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Keep work cancelled after restart until one separately authenticated resume.",
+      "default_decision": "preserve"
+    },
+    {
+      "case_id": "RC-CP-009",
+      "interruption_point": "repeated_interruption_with_budget",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "ordered WorkRecoveryReceipts",
+        "current recovery interruption count"
+      ],
+      "preconditions": [
+        "next interruption count equals current count plus one",
+        "next count is below or equal to two",
+        "for interrupted execution one retry remains and its derived eligibility tick is within the closed scheduling horizon"
+      ],
+      "base_references": [
+        "exact Work Journal head",
+        "exact Work Item and expired lease",
+        "recovery receipt chain"
+      ],
+      "emitted_records": [
+        "WorkRecoveryReceipt"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "requeue with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Append one recovery receipt and preserve one Work Item identity.",
+      "default_decision": "requeue"
+    },
+    {
+      "case_id": "RC-CP-010",
+      "interruption_point": "recovery_or_retry_budget_exhausted",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "ordered WorkRecoveryReceipts",
+        "exact recovery interruption and retry counts",
+        "exact recovery tick and derived retry delay"
+      ],
+      "preconditions": [
+        "another interruption would exceed the recovery ceiling, or interrupted execution has exhausted retry budget, or its derived eligibility tick exceeds the closed scheduling horizon"
+      ],
+      "base_references": [
+        "exact Work Journal head",
+        "exact Work Item version",
+        "complete recovery receipt chain"
+      ],
+      "emitted_records": [
+        "WorkRecoveryReceipt",
+        "CompletionReceipt"
+      ],
+      "filesystem_effects": [
+        "append durable Work Recovery record",
+        "append durable terminal completion record"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "fail with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Append an authenticated failed WorkRecoveryReceipt followed immediately by the exact applicable CompletionReceipt and deny further recovery retries.",
+      "default_decision": "fail"
+    },
+    {
+      "case_id": "RC-CP-011",
+      "interruption_point": "unknown_mutation_completion",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "exact mutation plan and preconditions",
+        "filesystem identities, hashes, and mutation receipts"
+      ],
+      "preconditions": [
+        "observations cannot prove applied or unapplied state exactly"
+      ],
+      "base_references": [
+        "exact Work Journal head",
+        "exact Work Item and mutation-plan versions",
+        "current filesystem observations"
+      ],
+      "emitted_records": [
+        "WorkRecoveryBlocked"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "block with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Block for explicit Vault Mutation Gate reconciliation; never retry or overwrite blindly.",
+      "default_decision": "block"
+    },
+    {
+      "case_id": "RC-CP-012",
+      "interruption_point": "exclusive_writer_lost",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "writer owner, epoch, and token digest",
+        "competing or absent operating-system lock observation"
+      ],
+      "preconditions": [
+        "no current retained writer receipt binds the persistent Agent"
+      ],
+      "base_references": [
+        "exact prior writer epoch",
+        "observed lock owner and token digest"
+      ],
+      "emitted_records": [
+        "WorkRecoveryBlocked"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "block with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Block all claims until a new exclusive writer receipt is acquired and validated.",
+      "default_decision": "block"
+    },
+    {
+      "case_id": "RC-CP-013",
+      "interruption_point": "work_journal_unavailable",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "Work Journal availability receipt",
+        "protected journal path and vault binding"
+      ],
+      "preconditions": [
+        "Work Journal cannot be read and reconciled"
+      ],
+      "base_references": [
+        "vault identity",
+        "expected Work Journal identity and path"
+      ],
+      "emitted_records": [
+        "WorkRecoveryBlocked"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "block with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Publish blocked readiness, keep the Control Channel closed, and accept no work.",
+      "default_decision": "block"
+    },
+    {
+      "case_id": "RC-CP-014",
+      "interruption_point": "stale_work_or_lease_base",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "observed Work Item version",
+        "observed Work Lease identity and status"
+      ],
+      "preconditions": [
+        "either work version or lease identity differs from the requested recovery base"
+      ],
+      "base_references": [
+        "requested and current Work Item versions",
+        "requested and current Work Lease identities"
+      ],
+      "emitted_records": [
+        "WorkRecoveryDenied"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "deny with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Deny stale recovery without changing journal, retry, or semantic state.",
+      "default_decision": "deny"
+    },
+    {
+      "case_id": "RC-CP-015",
+      "interruption_point": "child_output_without_completion_receipt",
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "durable_observations": [
+        "schema-valid child output digest",
+        "absence or invalidity of authenticated completion receipt"
+      ],
+      "preconditions": [
+        "child output alone has no authority and cannot prove completion"
+      ],
+      "base_references": [
+        "exact Child Work Invocation and Work Item versions",
+        "expected completion-receipt binding"
+      ],
+      "emitted_records": [
+        "WorkRecoveryDenied"
+      ],
+      "filesystem_effects": [
+        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+      ],
+      "idempotency": "The same recovery identity and exact observations return the original receipt.",
+      "terminal_result": "deny with unchanged semantic truth",
+      "failure_result": "control.recovery_precondition_failed; state unchanged",
+      "recovery": "Reject the output as completion evidence, destroy the child process, and retain recoverable work.",
+      "default_decision": "deny"
+    }
+  ]
+}

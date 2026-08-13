@@ -6,11 +6,11 @@
   "package_series": "mdplace-spec/v1",
   "release_version": "2.0.0",
   "validator_id": "mdplace.package-validator",
-  "validator_version": "1.1.0",
+  "validator_version": "1.2.0",
   "invocation": {
     "invocation_id": "invocation:validator-evidence-reference",
     "path": "conformance/evidence/invocations/validator-evidence-reference.json",
-    "sha256": "87de658f3437aa0c0363fcb9485d256baa536894fbcad3ce09749267fe741c68"
+    "sha256": "c1b585b5d709ada45ba4155e2fb4783d00242cd2a5b5bcd8916bb885f2b0d9e6"
   },
   "requirement_id": "REQ-VAL-002",
   "subject": {
@@ -24,7 +24,7 @@
       "ordinal": 0,
       "label": "requirements",
       "path": "normative/requirements.json",
-      "sha256": "ee3a8663aca573648fbf99d8a673f45c5ffd232374e2c574670742b8ff1a5394"
+      "sha256": "2ea2cade96b0c890a425a2f2d919cb5bd31846396e89f684dd2276332d1ddd0e"
     }
   ],
   "output_digests": [
@@ -32,7 +32,7 @@
       "ordinal": 0,
       "label": "claim_index",
       "path": "claims-and-evidence.yaml",
-      "sha256": "9eb04d05991b773681314646b6e85d9cf7bccc34247714e7c1978708f67db370"
+      "sha256": "57cc759832ddeec0c783deb194d722428c6b9032434b53c7c09351c67b676c7f"
     }
   ],
   "receipts": [
@@ -41,7 +41,7 @@
       "receipt_id": "receipt:stale-claim-proof",
       "receipt_type": "EvidenceValidationReceipt",
       "path": "contracts/validator-extensions.json",
-      "sha256": "1b00b497fdba947895cd890c32eddd1e7f63465b8d7be67504e636229b4c701a"
+      "sha256": "79de28cb94fe805ba3d790e99075cf5a6face8809a8c2404683328bbb92d26e8"
     }
   ],
   "artifact_digests": [
@@ -49,7 +49,7 @@
       "ordinal": 0,
       "label": "extension_registry",
       "path": "contracts/validator-extensions.json",
-      "sha256": "1b00b497fdba947895cd890c32eddd1e7f63465b8d7be67504e636229b4c701a"
+      "sha256": "79de28cb94fe805ba3d790e99075cf5a6face8809a8c2404683328bbb92d26e8"
     }
   ],
   "execution_context": {

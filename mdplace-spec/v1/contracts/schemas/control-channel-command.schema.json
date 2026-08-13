@@ -1,0 +1,176 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:control-channel-command:v1",
+  "title": "mdplace local authenticated Control Command",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "protocol_version", "transport", "socket_directory_mode", "socket_mode", "vault_id", "request_id", "command_id", "command_kind", "command_version", "idempotency_key", "payload", "payload_digest", "peer", "base_references", "limits", "semantic_authority"],
+  "properties": {
+    "$schema": {"const": "../schemas/control-channel-command.schema.json"},
+    "schema_id": {"const": "mdplace.control-channel-command/v1"},
+    "protocol_version": {"const": "1.0"},
+    "transport": {"const": "unix_domain_socket"},
+    "socket_directory_mode": {"const": "0700"},
+    "socket_mode": {"const": "0600"},
+    "vault_id": {"type": "string", "pattern": "^vault:[a-z0-9-]{3,64}$"},
+    "request_id": {"type": "string", "pattern": "^request:[a-z0-9-]{3,64}$"},
+    "command_id": {"type": "string", "pattern": "^control-command:[a-z0-9-]{3,64}$"},
+    "command_kind": {"enum": ["status", "doctor", "enqueue", "cancel", "resume", "shutdown"]},
+    "command_version": {"const": 1},
+    "idempotency_key": {"type": "string", "pattern": "^idempotency:[a-z0-9-]{3,64}$"},
+    "payload": {"oneOf": [
+      {"$ref": "#/$defs/statusPayload"},
+      {"$ref": "#/$defs/doctorPayload"},
+      {"$ref": "#/$defs/enqueuePayload"},
+      {"$ref": "#/$defs/cancelPayload"},
+      {"$ref": "#/$defs/resumePayload"},
+      {"$ref": "#/$defs/shutdownPayload"}
+    ]},
+    "payload_digest": {"$ref": "#/$defs/digest", "description": "SHA-256 of canonical JSON over command_kind, command_version, idempotency_key, the closed command payload, and ordered base_references."},
+    "peer": {"$ref": "#/$defs/peer"},
+    "base_references": {"type": "array", "maxItems": 16, "uniqueItems": true, "items": {"$ref": "#/$defs/baseReference"}},
+    "limits": {"$ref": "#/$defs/limits"},
+    "semantic_authority": {"const": "none"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"command_kind": {"enum": ["cancel", "resume"]}}, "required": ["command_kind"]},
+      "then": {"properties": {"base_references": {"minItems": 1, "maxItems": 1, "contains": {"properties": {"kind": {"const": "work_item"}}}, "minContains": 1, "maxContains": 1}}}
+    },
+    {
+      "if": {"properties": {"command_kind": {"const": "enqueue"}}, "required": ["command_kind"]},
+      "then": {"properties": {"base_references": {"minItems": 1, "maxItems": 1, "contains": {"properties": {"kind": {"const": "work_journal"}}}, "minContains": 1, "maxContains": 1}}}
+    },
+    {
+      "if": {"properties": {"command_kind": {"enum": ["status", "doctor", "shutdown"]}}, "required": ["command_kind"]},
+      "then": {"properties": {"base_references": {"maxItems": 0}}}
+    },
+    {
+      "if": {"properties": {"command_kind": {"const": "status"}}, "required": ["command_kind"]},
+      "then": {"properties": {"payload": {"$ref": "#/$defs/statusPayload"}}}
+    },
+    {
+      "if": {"properties": {"command_kind": {"const": "doctor"}}, "required": ["command_kind"]},
+      "then": {"properties": {"payload": {"$ref": "#/$defs/doctorPayload"}}}
+    },
+    {
+      "if": {"properties": {"command_kind": {"const": "enqueue"}}, "required": ["command_kind"]},
+      "then": {"properties": {"payload": {"$ref": "#/$defs/enqueuePayload"}}}
+    },
+    {
+      "if": {"properties": {"command_kind": {"const": "cancel"}}, "required": ["command_kind"]},
+      "then": {"properties": {"payload": {"$ref": "#/$defs/cancelPayload"}}}
+    },
+    {
+      "if": {"properties": {"command_kind": {"const": "resume"}}, "required": ["command_kind"]},
+      "then": {"properties": {"payload": {"$ref": "#/$defs/resumePayload"}}}
+    },
+    {
+      "if": {"properties": {"command_kind": {"const": "shutdown"}}, "required": ["command_kind"]},
+      "then": {"properties": {"payload": {"$ref": "#/$defs/shutdownPayload"}}}
+    }
+  ],
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "statusPayload": {"type": "object", "additionalProperties": false, "maxProperties": 0},
+    "doctorPayload": {
+      "type": "object", "additionalProperties": false, "required": ["scope"],
+      "properties": {"scope": {"enum": ["control_plane", "full"]}}
+    },
+    "dependency": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "reference_id", "version", "digest"],
+      "properties": {
+        "kind": {"enum": ["work_item", "semantic_head", "mutation_plan"]},
+        "reference_id": {"type": "string", "pattern": "^(work|semantic|plan):[a-z0-9-]{3,64}$"},
+        "version": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "workBudget": {
+      "type": "object", "additionalProperties": false,
+      "required": ["max_attempts", "wall_time_ms", "max_output_bytes", "max_child_processes"],
+      "properties": {
+        "max_attempts": {"type": "integer", "minimum": 1, "maximum": 3},
+        "wall_time_ms": {"type": "integer", "minimum": 1, "maximum": 900000},
+        "max_output_bytes": {"type": "integer", "minimum": 1, "maximum": 10485760},
+        "max_child_processes": {"type": "integer", "minimum": 0, "maximum": 1}
+      }
+    },
+    "enqueuePayload": {
+      "type": "object", "additionalProperties": false,
+      "required": ["work_id", "work_kind", "input_digest", "dependencies", "budget"],
+      "properties": {
+        "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
+        "work_kind": {"enum": ["capture_promotion", "placement_evaluation", "taxonomy_evolution", "view_rebuild", "intelligence_adapter", "folder_projection"]},
+        "input_digest": {"$ref": "#/$defs/digest"},
+        "dependencies": {"type": "array", "maxItems": 32, "uniqueItems": true, "items": {"$ref": "#/$defs/dependency"}},
+        "budget": {"$ref": "#/$defs/workBudget"}
+      }
+    },
+    "cancelPayload": {
+      "type": "object", "additionalProperties": false,
+      "required": ["work_id", "expected_work_version", "lease_id", "reason_code"],
+      "properties": {
+        "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
+        "expected_work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "lease_id": {"type": ["string", "null"], "pattern": "^lease:[a-z0-9-]{3,64}$"},
+        "reason_code": {"const": "user_requested"}
+      }
+    },
+    "resumePayload": {
+      "type": "object", "additionalProperties": false,
+      "required": ["work_id", "expected_work_version", "lease_id"],
+      "properties": {
+        "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
+        "expected_work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "lease_id": {"type": "null"}
+      }
+    },
+    "shutdownPayload": {
+      "type": "object", "additionalProperties": false, "required": ["mode"],
+      "properties": {"mode": {"const": "graceful"}}
+    },
+    "peer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["effective_uid", "peer_uid", "peer_credentials_verified", "local_transport", "vault_scope"],
+      "properties": {
+        "effective_uid": {"type": "integer", "minimum": 1, "maximum": 2147483647},
+        "peer_uid": {"type": "integer", "minimum": 1, "maximum": 2147483647},
+        "peer_credentials_verified": {"type": "boolean"},
+        "local_transport": {"type": "boolean"},
+        "vault_scope": {"type": "string", "pattern": "^vault:[a-z0-9-]{3,64}$"}
+      }
+    },
+    "baseReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "reference_id", "version", "digest"],
+      "properties": {
+        "kind": {"enum": ["work_item", "work_journal", "semantic_head", "policy", "mutation_plan"]},
+        "reference_id": {"type": "string"},
+        "version": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "digest": {"$ref": "#/$defs/digest"}
+      },
+      "allOf": [
+        {"if": {"properties": {"kind": {"const": "work_item"}}}, "then": {"properties": {"reference_id": {"pattern": "^work:[a-z0-9-]{3,64}$"}}}},
+        {"if": {"properties": {"kind": {"const": "work_journal"}}}, "then": {"properties": {"reference_id": {"pattern": "^journal:[a-z0-9-]{3,64}$"}}}},
+        {"if": {"properties": {"kind": {"const": "semantic_head"}}}, "then": {"properties": {"reference_id": {"pattern": "^semantic:[a-z0-9-]{3,64}$"}}}},
+        {"if": {"properties": {"kind": {"const": "policy"}}}, "then": {"properties": {"reference_id": {"pattern": "^policy:[a-z0-9-]{3,64}$"}}}},
+        {"if": {"properties": {"kind": {"const": "mutation_plan"}}}, "then": {"properties": {"reference_id": {"pattern": "^plan:[a-z0-9-]{3,64}$"}}}}
+      ]
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["request_bytes", "response_bytes", "timeout_ms", "concurrency"],
+      "properties": {
+        "request_bytes": {"type": "integer", "minimum": 1, "maximum": 65536},
+        "response_bytes": {"type": "integer", "minimum": 1, "maximum": 1048576},
+        "timeout_ms": {"type": "integer", "minimum": 1, "maximum": 5000},
+        "concurrency": {"type": "integer", "minimum": 1, "maximum": 8}
+      }
+    }
+  }
+}

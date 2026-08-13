@@ -8,12 +8,48 @@ mdplace governs the semantic placement of Markdown notes while keeping content, 
 The persistent local authority for one vault that coordinates capture processing, semantic decisions, derived views, and authorized filesystem materialization.
 _Avoid_: daemon, service, worker
 
+**Work Journal**:
+The protected, durable, non-semantic record of accepted Work Items, queue ownership, Work Leases, budgets, retries, cancellation, resumability, operational receipts, and recovery decisions for one vault. Its state may schedule or recover work but never establishes semantic truth.
+_Avoid_: Semantic ledger, in-memory queue, source of truth
+
+**Scheduler**:
+The logical mdplace Agent component that selects eligible Work Items from the Work Journal under versioned dependency, concurrency, lease, retry, and resource budgets. It cannot accept placement, change taxonomy, append semantic operations, or authorize vault mutation.
+_Avoid_: Worker service, semantic orchestrator, message broker
+
+**Work Item**:
+A stable, versioned unit of operational intent recorded in the Work Journal with exact input bindings, dependencies, idempotency material, bounded budgets, and one durable lifecycle state. It carries no semantic authority.
+_Avoid_: Job truth, queue message, semantic operation
+
+**Work Lease**:
+A bounded, version-bound ownership receipt granting one mdplace Agent instance exclusive permission to execute one Work Item until acknowledgement, cancellation, expiry, or recovery. A Work Lease never grants semantic or filesystem authority.
+_Avoid_: Permanent ownership, semantic lock, advisory claim
+
+**Exclusive Writer Lock**:
+The per-vault operating-system lock that permits exactly one background or foreground mdplace Agent core to become ready and coordinate canonical or physical writers. Holding it is necessary for readiness but does not itself authorize a semantic append or vault mutation.
+_Avoid_: Semantic authority, distributed lock, second writer
+
+**Readiness Gate**:
+A fail-closed startup or wake integrity check whose durable result states whether the mdplace Agent may accept work. The six ordered gates are the Exclusive Writer Lock, vault and filesystem profile, canonical Semantic Kernel state, executable and schema compatibility, derived-view recovery, and Work Journal reconciliation. After all six pass, the Agent atomically promotes its authenticated diagnostic-only Control Channel to work-admitting mode.
+_Avoid_: Liveness probe, optimistic startup, warning-only check
+
+**Control Command**:
+A bounded, versioned, same-user request sent by a Control Client over the Control Channel and bound to one vault, idempotency key, exact base references, and authenticated peer. Transport authentication admits the request only; the owning authority revalidates every requested effect.
+_Avoid_: Network request, privileged socket message, semantic operation
+
+**Child Work Invocation**:
+One fresh, capability-restricted Intelligence Adapter process launched for a single Work Item with an exact Processing Envelope, schema, scratch boundary, credential reference, endpoint allowlist, and resource budget. It produces only non-authoritative output and is destroyed after the invocation.
+_Avoid_: Persistent adapter, plugin service, semantic worker
+
+**Work Recovery**:
+Default-deny reconciliation of interrupted operational work from exact Work Journal versions, Work Leases, receipts, budgets, filesystem observations, and canonical dependency references. Unknown completion is blocked or escalated rather than retried blindly.
+_Avoid_: Best-effort retry, state guess, semantic replay
+
 **Semantic Kernel**:
 The sole authority that validates commands and appends canonical semantic operations for a vault, whether hosted by the background mdplace Agent or foreground recovery mode.
 _Avoid_: direct ledger writer, database writer
 
 **Control Channel**:
-The same-user, per-vault, operating-system-local path through which a Control Client sends commands to the mdplace Agent.
+The same-user, per-vault, operating-system-local path through which a Control Client sends commands to the mdplace Agent. Its diagnostic-only mode exposes authenticated status and doctor results while accepting no work; work-affecting commands require work-admitting mode after readiness.
 _Avoid_: network API, loopback service, remote control endpoint
 
 **Vault Mutation Gate**:

@@ -1,0 +1,320 @@
+{
+  "$schema": "../schemas/transition-table.schema.json",
+  "schema_id": "mdplace.transition-table/v1",
+  "table_id": "TRANS-CP-READINESS",
+  "lifecycle": "ordered fail-closed Agent readiness",
+  "version": "1.0.0",
+  "states": [
+    "starting",
+    "ready",
+    "blocked"
+  ],
+  "commands": [
+    "evaluate_readiness",
+    "dependency_lost"
+  ],
+  "transitions": [
+    {
+      "transition_id": "TR-CPREADY-001",
+      "command_or_event": "evaluate_readiness",
+      "from_state": "starting",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "Control Channel is diagnostic-only before startup",
+        "all six Readiness Gates pass in canonical order with authenticated receipts"
+      ],
+      "base_references": [
+        "current writer lock receipt",
+        "vault and filesystem profile",
+        "Semantic Kernel head",
+        "compatibility versions",
+        "derived-view recovery receipt",
+        "Work Journal head",
+        "diagnostic Control Channel receipt"
+      ],
+      "emitted_records": [
+        "ReadinessReceipt"
+      ],
+      "filesystem_effects": [
+        "promote Control Channel from diagnostic-only to work-admitting"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current writer lock receipt",
+          "vault and filesystem profile",
+          "Semantic Kernel head",
+          "compatibility versions",
+          "derived-view recovery receipt",
+          "Work Journal head",
+          "diagnostic Control Channel receipt"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "ready",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain blocked at the first failed gate; repeat the full ordered evaluation after repair."
+    },
+    {
+      "transition_id": "TR-CPREADY-002",
+      "command_or_event": "dependency_lost",
+      "from_state": "starting",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "a readiness dependency is unavailable or its bound version changed"
+      ],
+      "base_references": [
+        "current readiness receipt",
+        "changed dependency identity and version"
+      ],
+      "emitted_records": [
+        "ReadinessBlockedReceipt"
+      ],
+      "filesystem_effects": [
+        "demote Control Channel to diagnostic-only and stop dispatch"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current readiness receipt",
+          "changed dependency identity and version"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "blocked",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Publish the durable blocked reason over diagnostic-only status and doctor; run all six gates again after repair."
+    },
+    {
+      "transition_id": "TR-CPREADY-003",
+      "command_or_event": "evaluate_readiness",
+      "from_state": "ready",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "evaluate_readiness is not legal from ready"
+      ],
+      "base_references": [
+        "exact current lifecycle state and version"
+      ],
+      "emitted_records": [
+        "ControlPlaneTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "exact current lifecycle state and version"
+        ],
+        "retry_result": "return the original denial"
+      },
+      "terminal_state": "ready",
+      "failure_result": {
+        "code": "control.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+    },
+    {
+      "transition_id": "TR-CPREADY-004",
+      "command_or_event": "dependency_lost",
+      "from_state": "ready",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "a readiness dependency is unavailable or its bound version changed"
+      ],
+      "base_references": [
+        "current readiness receipt",
+        "changed dependency identity and version"
+      ],
+      "emitted_records": [
+        "ReadinessBlockedReceipt"
+      ],
+      "filesystem_effects": [
+        "demote Control Channel to diagnostic-only and stop dispatch"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current readiness receipt",
+          "changed dependency identity and version"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "blocked",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Publish the durable blocked reason over diagnostic-only status and doctor; run all six gates again after repair."
+    },
+    {
+      "transition_id": "TR-CPREADY-005",
+      "command_or_event": "evaluate_readiness",
+      "from_state": "blocked",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "Control Channel remains diagnostic-only while blocked",
+        "all six Readiness Gates pass in canonical order with authenticated receipts"
+      ],
+      "base_references": [
+        "current writer lock receipt",
+        "vault and filesystem profile",
+        "Semantic Kernel head",
+        "compatibility versions",
+        "derived-view recovery receipt",
+        "Work Journal head",
+        "diagnostic Control Channel receipt"
+      ],
+      "emitted_records": [
+        "ReadinessReceipt"
+      ],
+      "filesystem_effects": [
+        "promote Control Channel from diagnostic-only to work-admitting"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current writer lock receipt",
+          "vault and filesystem profile",
+          "Semantic Kernel head",
+          "compatibility versions",
+          "derived-view recovery receipt",
+          "Work Journal head",
+          "diagnostic Control Channel receipt"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "ready",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain blocked at the first failed gate; repeat the full ordered evaluation after repair."
+    },
+    {
+      "transition_id": "TR-CPREADY-006",
+      "command_or_event": "dependency_lost",
+      "from_state": "blocked",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "a readiness dependency is unavailable or its bound version changed"
+      ],
+      "base_references": [
+        "current readiness receipt",
+        "changed dependency identity and version"
+      ],
+      "emitted_records": [
+        "ReadinessBlockedReceipt"
+      ],
+      "filesystem_effects": [
+        "demote Control Channel to diagnostic-only and stop dispatch"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "idempotency_key",
+          "current readiness receipt",
+          "changed dependency identity and version"
+        ],
+        "retry_result": "return the original durable receipt for the exact binding"
+      },
+      "terminal_state": "blocked",
+      "failure_result": {
+        "code": "control.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ControlPlaneTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Publish the durable blocked reason over diagnostic-only status and doctor; run all six gates again after repair."
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:control-plane-lifecycle-report:v1",
+  "title": "mdplace supervised Agent lifecycle evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "report_id", "package_series", "persistent_agent_id", "vault_id", "profile_binding", "lifecycle_table_binding", "control_channel_table_binding", "doctor_report_binding", "work_admission_suspension_receipt", "vault_owner_recovery_approval", "work_admission_after_approval", "required_same_core_revalidation"],
+  "properties": {
+    "$schema": {"const": "../../contracts/schemas/control-plane-lifecycle-report.schema.json"},
+    "schema_id": {"const": "mdplace.control-plane-lifecycle-report/v1"},
+    "report_id": {"type": "string", "pattern": "^control-plane-lifecycle-report:[a-z0-9-]{3,64}$"},
+    "package_series": {"const": "mdplace-spec/v1"},
+    "persistent_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
+    "vault_id": {"type": "string", "pattern": "^vault:[a-z0-9-]{3,64}$"},
+    "profile_binding": {"$ref": "#/$defs/profileBinding"},
+    "lifecycle_table_binding": {"$ref": "#/$defs/lifecycleTableBinding"},
+    "control_channel_table_binding": {"$ref": "#/$defs/controlChannelTableBinding"},
+    "doctor_report_binding": {"$ref": "#/$defs/doctorReportBinding"},
+    "work_admission_suspension_receipt": {"$ref": "#/$defs/workAdmissionSuspensionReceipt"},
+    "vault_owner_recovery_approval": {"$ref": "#/$defs/vaultOwnerRecoveryApprovalReceipt"},
+    "work_admission_after_approval": {"const": "diagnostic_only"},
+    "required_same_core_revalidation": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "prefixItems": [
+        {"const": "exclusive_writer"},
+        {"const": "readiness_gate_chain"},
+        {"const": "wake_revalidation"}
+      ],
+      "items": false
+    }
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "profileBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"const": "contracts/control-plane/launchagent-supervision-profile.json"},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "lifecycleTableBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"const": "contracts/transitions/launchagent-supervision-lifecycle.json"},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "controlChannelTableBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"const": "contracts/transitions/control-channel-lifecycle.json"},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "doctorReportBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["report_id", "path", "sha256", "circuit_version"],
+      "properties": {
+        "report_id": {"type": "string", "pattern": "^control-plane-doctor-report:[a-z0-9-]{3,64}$"},
+        "path": {"const": "conformance/evidence/control-plane-doctor-report.json"},
+        "sha256": {"$ref": "#/$defs/digest"},
+        "circuit_version": {"type": "integer", "minimum": 1, "maximum": 1000000}
+      }
+    },
+    "workAdmissionSuspensionReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["receipt_id", "persistent_agent_id", "vault_id", "control_channel_version", "prior_mode", "resulting_mode", "wake_observation_digest", "suspension_reason", "suspended_tick", "idempotency_key", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
+      "properties": {
+        "receipt_id": {"type": "string", "pattern": "^control-channel-work-admission-suspended:[a-z0-9-]{3,64}$"},
+        "persistent_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
+        "vault_id": {"type": "string", "pattern": "^vault:[a-z0-9-]{3,64}$"},
+        "control_channel_version": {"const": 1},
+        "prior_mode": {"const": "work_admitting"},
+        "resulting_mode": {"const": "diagnostic_only"},
+        "wake_observation_digest": {"$ref": "#/$defs/digest"},
+        "suspension_reason": {"const": "wake_revalidation"},
+        "suspended_tick": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "idempotency_key": {"type": "string", "pattern": "^idempotency:[a-z0-9-]{3,64}$"},
+        "signature_scheme": {"const": "hmac-sha256"},
+        "signing_key_id": {"const": "signer-key:primary-001"},
+        "signer_agent_id": {"const": "agent:primary-001"},
+        "signature_digest": {"$ref": "#/$defs/digest"},
+        "authenticated": {"const": true}
+      }
+    },
+    "vaultOwnerRecoveryApprovalReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["receipt_id", "principal_id", "vault_id", "persistent_agent_id", "doctor_report_id", "doctor_report_digest", "circuit_version", "selected_action", "idempotency_key", "signature_scheme", "signing_key_id", "signer_principal_id", "signature_digest", "authenticated"],
+      "properties": {
+        "receipt_id": {"type": "string", "pattern": "^vault-owner-recovery-approval:[a-z0-9-]{3,64}$"},
+        "principal_id": {"const": "person:owner-001"},
+        "vault_id": {"type": "string", "pattern": "^vault:[a-z0-9-]{3,64}$"},
+        "persistent_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
+        "doctor_report_id": {"type": "string", "pattern": "^control-plane-doctor-report:[a-z0-9-]{3,64}$"},
+        "doctor_report_digest": {"$ref": "#/$defs/digest"},
+        "circuit_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "selected_action": {"const": "revalidate_same_agent_core"},
+        "idempotency_key": {"type": "string", "pattern": "^idempotency:[a-z0-9-]{3,64}$"},
+        "signature_scheme": {"const": "hmac-sha256"},
+        "signing_key_id": {"const": "signer-key:vault-owner-001"},
+        "signer_principal_id": {"const": "person:owner-001"},
+        "signature_digest": {"$ref": "#/$defs/digest"},
+        "authenticated": {"const": true}
+      }
+    }
+  }
+}
