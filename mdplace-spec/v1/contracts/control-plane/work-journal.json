@@ -4,7 +4,7 @@
   "journal_id": "journal:vault-001",
   "vault_id": "vault:001",
   "head_sequence": 1,
-  "head_digest": "051df522e314383d199a81b48158b211dabee015d7bf2b4361388b814ac80a09",
+  "head_digest": "da6147c64c68623fe8c706384cd2cc4190ee4c2b17597ff54e91c1bcea86190a",
   "semantic_authority": "none",
   "limits": {
     "max_total_attempts": 3,
@@ -41,6 +41,7 @@
       "retry_count": 0,
       "retry_eligible_tick": null,
       "recovery_interruption_count": 0,
+      "rejection_count": 0,
       "lease": null,
       "cancellation": null,
       "result": null,
@@ -75,7 +76,12 @@
       "lease_id": null,
       "state": "queued",
       "operation_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
-      "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "signature_scheme": "hmac-sha256",
+      "signing_key_id": "signer-key:primary-001",
+      "signer_agent_id": "agent:primary-001",
+      "signature_digest": "6968e898d231e676aed39a2ad2df3971d249fc7037d289b3d878984713a4d30e",
+      "authenticated": true
     }
   ]
 }

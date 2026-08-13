@@ -48,11 +48,14 @@
             "outcome": "cancelled",
             "output_digest": null,
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "125103bbf7ca3d9cf13f0d1e3376271cf7884c3bdc70cb9e026a8ab5f4a84afe",
+            "signature_digest": "172b7cb959a256497a2e4afdf9778d9dac1f38872e61262a1c69aeafaae66ded",
             "authenticated": true,
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
-            "code": "control.cancelled"
+            "code": "control.cancelled",
+            "failure_retryable": null,
+            "failure_observed_tick": null,
+            "selected_retry_delay_ticks": null
           },
           "cancellation_receipt": {
             "receipt_id": "cancellation-receipt:001",
@@ -146,11 +149,14 @@
               "outcome": "cancelled",
               "output_digest": null,
               "signer_agent_id": "agent:primary-001",
-              "signature_digest": "125103bbf7ca3d9cf13f0d1e3376271cf7884c3bdc70cb9e026a8ab5f4a84afe",
+              "signature_digest": "172b7cb959a256497a2e4afdf9778d9dac1f38872e61262a1c69aeafaae66ded",
               "authenticated": true,
               "signature_scheme": "hmac-sha256",
               "signing_key_id": "signer-key:primary-001",
-              "code": "control.cancelled"
+              "code": "control.cancelled",
+              "failure_retryable": null,
+              "failure_observed_tick": null,
+              "selected_retry_delay_ticks": null
             }
           ]
         },

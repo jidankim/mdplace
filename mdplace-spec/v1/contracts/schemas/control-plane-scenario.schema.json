@@ -16,7 +16,7 @@
     "completionReceipt": {
       "type": ["object", "null"],
       "additionalProperties": false,
-      "required": ["receipt_id", "work_id", "work_version", "lease_id", "journal_sequence", "outcome", "output_digest", "code", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
+      "required": ["receipt_id", "work_id", "work_version", "lease_id", "journal_sequence", "outcome", "output_digest", "code", "failure_retryable", "failure_observed_tick", "selected_retry_delay_ticks", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
       "properties": {
         "receipt_id": {"type": "string", "pattern": "^receipt:[a-z0-9-]{3,64}$"},
         "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
@@ -26,6 +26,9 @@
         "outcome": {"enum": ["succeeded", "failed", "cancelled"]},
         "output_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
         "code": {"enum": ["control.cancelled", "control.execution_failed", "control.recovery_ceiling_exceeded", "control.retry_ceiling_exceeded", "control.retry_tick_overflow", null]},
+        "failure_retryable": {"type": ["boolean", "null"]},
+        "failure_observed_tick": {"type": ["integer", "null"], "minimum": 0, "maximum": 1000000},
+        "selected_retry_delay_ticks": {"type": ["integer", "null"], "minimum": 1, "maximum": 5000},
         "signature_scheme": {"const": "hmac-sha256"},
         "signing_key_id": {"const": "signer-key:primary-001"},
         "signer_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
@@ -78,14 +81,18 @@
     "resumeReceipt": {
       "type": ["object", "null"],
       "additionalProperties": false,
-      "required": ["receipt_id", "work_id", "cancelled_work_version", "resumed_work_version", "idempotency_key", "cancellation_receipt_id", "resume_count", "journal_sequence", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
+      "required": ["receipt_id", "work_id", "cancelled_work_version", "resumed_work_version", "idempotency_key", "vault_owner_receipt", "cancellation_receipt_id", "cancellation_receipt_signature_digest", "cancellation_completion_receipt_id", "cancellation_completion_signature_digest", "resume_count", "journal_sequence", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
       "properties": {
         "receipt_id": {"type": "string", "pattern": "^resume-receipt:[a-z0-9-]{3,64}$"},
         "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
         "cancelled_work_version": {"type": "integer", "minimum": 1, "maximum": 999999},
         "resumed_work_version": {"type": "integer", "minimum": 2, "maximum": 1000000},
         "idempotency_key": {"type": "string", "pattern": "^idempotency:[a-z0-9-]{3,64}$"},
+        "vault_owner_receipt": {"$ref": "#/$defs/vaultOwnerReceipt"},
         "cancellation_receipt_id": {"type": "string", "pattern": "^cancellation-receipt:[a-z0-9-]{3,64}$"},
+        "cancellation_receipt_signature_digest": {"$ref": "#/$defs/digest"},
+        "cancellation_completion_receipt_id": {"type": "string", "pattern": "^receipt:[a-z0-9-]{3,64}$"},
+        "cancellation_completion_signature_digest": {"$ref": "#/$defs/digest"},
         "resume_count": {"const": 1},
         "journal_sequence": {"type": "integer", "minimum": 1, "maximum": 1000000},
         "signature_scheme": {"const": "hmac-sha256"},
@@ -344,7 +351,7 @@
         },
         {
           "if": {"properties": {"kind": {"const": "resume"}}},
-          "then": {"properties": {"idempotency_key": {"type": "string"}, "vault_owner_receipt": {"not": {"type": "null"}}}}
+          "then": {"properties": {"idempotency_key": {"type": "string"}, "lease_id": {"type": "null"}, "vault_owner_receipt": {"not": {"type": "null"}}}}
         },
         {
           "if": {"properties": {"kind": {"const": "cancel"}}},

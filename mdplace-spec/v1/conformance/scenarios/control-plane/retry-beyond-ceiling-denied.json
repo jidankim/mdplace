@@ -50,11 +50,14 @@
             "outcome": "failed",
             "output_digest": null,
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "dd3d1aca3b76e12b23633c27db388281506e46dfa5ad2c314ac140f3a205b524",
+            "signature_digest": "ac39a9a01b284dd04ec64062e78039e8c3cb169cf785e1727081dd5072be8849",
             "authenticated": true,
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
-            "code": "control.retry_ceiling_exceeded"
+            "code": "control.retry_ceiling_exceeded",
+            "failure_retryable": true,
+            "failure_observed_tick": 1,
+            "selected_retry_delay_ticks": null
           },
           "cancellation_receipt": null,
           "resume_receipt": null,
@@ -84,11 +87,14 @@
               "outcome": "failed",
               "output_digest": null,
               "signer_agent_id": "agent:primary-001",
-              "signature_digest": "dd3d1aca3b76e12b23633c27db388281506e46dfa5ad2c314ac140f3a205b524",
+              "signature_digest": "ac39a9a01b284dd04ec64062e78039e8c3cb169cf785e1727081dd5072be8849",
               "authenticated": true,
               "signature_scheme": "hmac-sha256",
               "signing_key_id": "signer-key:primary-001",
-              "code": "control.retry_ceiling_exceeded"
+              "code": "control.retry_ceiling_exceeded",
+              "failure_retryable": true,
+              "failure_observed_tick": 1,
+              "selected_retry_delay_ticks": null
             }
           ]
         },

@@ -121,7 +121,10 @@ function journalEnqueueFields(receipt) {
 
 function journalResumeFields(receipt) {
   return [receipt.receipt_id, receipt.work_id, receipt.cancelled_work_version,
-    receipt.resumed_work_version, receipt.idempotency_key, receipt.cancellation_receipt_id,
+    receipt.resumed_work_version, receipt.idempotency_key,
+    receipt.vault_owner_receipt.receipt_id, receipt.vault_owner_receipt.signature_digest,
+    receipt.cancellation_receipt_id, receipt.cancellation_receipt_signature_digest,
+    receipt.cancellation_completion_receipt_id, receipt.cancellation_completion_signature_digest,
     receipt.resume_count, receipt.journal_sequence];
 }
 
@@ -211,6 +214,155 @@ function record(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
+const journalRecordDetailFields = [
+  'owner_agent_id', 'acquired_tick', 'expires_tick', 'lease_status', 'started_tick',
+  'retry_count', 'failure_retryable', 'failure_observed_tick', 'selected_retry_delay_ticks',
+  'retry_eligible_tick', 'recovery_interruption_count', 'resulting_retry_count',
+  'recovery_tick', 'recovery_decision', 'rejection_code',
+];
+
+const journalRecordDetailsByKind = new Map([
+  ['enqueue', []],
+  ['lease', ['owner_agent_id', 'acquired_tick', 'expires_tick', 'lease_status']],
+  ['start', ['owner_agent_id', 'started_tick']],
+  ['retry', ['retry_count', 'failure_retryable', 'failure_observed_tick',
+    'selected_retry_delay_ticks', 'retry_eligible_tick']],
+  ['cancellation', []],
+  ['resume', []],
+  ['completion', []],
+  ['rejection', ['rejection_code']],
+  ['recovery', ['recovery_interruption_count', 'resulting_retry_count',
+    'recovery_tick', 'recovery_decision']],
+]);
+
+function journalRecordFields(receipt) {
+  return [receipt.receipt_id, receipt.receipt_kind, receipt.journal_sequence,
+    receipt.work_id, receipt.work_version, receipt.lease_id ?? '', receipt.state,
+    receipt.operation_digest, receipt.semantic_state_digest,
+    ...journalRecordDetailFields.map((field) => receipt[field] ?? '')];
+}
+
+function journalRecordIsAuthenticated(receipt) {
+  const allowedDetails = journalRecordDetailsByKind.get(receipt.receipt_kind);
+  return allowedDetails !== undefined &&
+    journalRecordDetailFields.every((field) => allowedDetails.includes(field) || receipt[field] === undefined) &&
+    verifyControlPlaneReceipt('work_journal_record', journalRecordFields(receipt), receipt);
+}
+
+function workReceiptChainIsValid(work, receipts, journal) {
+  const semanticDependency = work.dependencies.find(({kind}) => kind === 'semantic_head');
+  if (receipts.length === 0 || receipts.some((receipt) =>
+    receipt.semantic_state_digest !== receipts[0].semantic_state_digest) ||
+    (semanticDependency !== undefined && receipts[0].semantic_state_digest !== semanticDependency.digest)) return false;
+  let state = 'absent';
+  let version = 0;
+  let retryCount = 0;
+  let recoveryCount = 0;
+  let rejectionCount = 0;
+  let currentLeaseId = null;
+  let currentLeaseReceipt = null;
+  for (const receipt of receipts) {
+    if (!journalRecordIsAuthenticated(receipt)) return false;
+    switch (receipt.receipt_kind) {
+      case 'enqueue':
+        if (state !== 'absent' || receipt.work_version !== 1 || receipt.state !== 'queued' ||
+            receipt.lease_id !== null) return false;
+        state = 'queued'; version = 1;
+        break;
+      case 'lease':
+        if (!['queued', 'retry_wait'].includes(state) || receipt.work_version !== version + 1 ||
+            receipt.state !== 'leased' || typeof receipt.lease_id !== 'string' ||
+            receipt.owner_agent_id !== 'agent:primary-001' || receipt.lease_status !== 'active' ||
+            receipt.expires_tick <= receipt.acquired_tick ||
+            receipt.expires_tick - receipt.acquired_tick > journal.limits.lease_duration_ticks) return false;
+        state = 'leased'; version = receipt.work_version; currentLeaseId = receipt.lease_id;
+        currentLeaseReceipt = receipt;
+        break;
+      case 'start':
+        if (state !== 'leased' || receipt.work_version !== version + 1 || receipt.state !== 'executing' ||
+            receipt.lease_id !== currentLeaseId || receipt.owner_agent_id !== 'agent:primary-001') return false;
+        state = 'executing'; version = receipt.work_version;
+        break;
+      case 'retry': {
+        const expectedDelay = journal.limits.retry_delays_ms[retryCount];
+        if (state !== 'executing' || receipt.work_version !== version + 1 || receipt.state !== 'retry_wait' ||
+            receipt.lease_id !== null || receipt.retry_count !== retryCount + 1 ||
+            receipt.failure_retryable !== true || receipt.selected_retry_delay_ticks !== expectedDelay ||
+            receipt.retry_eligible_tick !== receipt.failure_observed_tick + expectedDelay ||
+            receipt.retry_eligible_tick > 999700) return false;
+        state = 'retry_wait'; version = receipt.work_version; retryCount = receipt.retry_count;
+        currentLeaseId = null;
+        currentLeaseReceipt = null;
+        break;
+      }
+      case 'cancellation': {
+        const cancellation = work.cancellation_history.find(({receipt_id: id}) => id === receipt.receipt_id);
+        const applicableLease = ['leased', 'executing'].includes(state) ? currentLeaseId : null;
+        if (!['queued', 'leased', 'executing', 'retry_wait'].includes(state) ||
+            receipt.work_version !== version + 1 || receipt.state !== 'cancelled' ||
+            receipt.lease_id !== applicableLease || cancellation?.work_version !== receipt.work_version ||
+            cancellation.vault_owner_receipt.lease_id !== applicableLease) return false;
+        state = 'cancelled'; version = receipt.work_version; currentLeaseId = applicableLease;
+        break;
+      }
+      case 'completion': {
+        const completion = work.completion_history.find(({receipt_id: id}) => id === receipt.receipt_id);
+        if (completion === undefined || receipt.state !== completion.outcome ||
+            receipt.lease_id !== completion.lease_id) return false;
+        if (state === 'cancelled') {
+          if (receipt.work_version !== version || completion.outcome !== 'cancelled' ||
+              receipt.lease_id !== currentLeaseId) return false;
+        } else {
+          if (state !== 'executing' || receipt.work_version !== version + 1 ||
+              !['succeeded', 'failed'].includes(completion.outcome) ||
+              receipt.lease_id !== currentLeaseId) return false;
+          state = completion.outcome; version = receipt.work_version;
+        }
+        break;
+      }
+      case 'resume': {
+        const resume = work.resume_receipt;
+        if (state !== 'cancelled' || receipt.work_version !== version + 1 || receipt.state !== 'queued' ||
+            receipt.lease_id !== null || resume?.receipt_id !== receipt.receipt_id ||
+            resume.resumed_work_version !== receipt.work_version) return false;
+        state = 'queued'; version = receipt.work_version; currentLeaseId = null;
+        currentLeaseReceipt = null;
+        break;
+      }
+      case 'recovery': {
+        if (!['leased', 'executing'].includes(state) || receipt.work_version !== version + 1 ||
+            receipt.lease_id !== currentLeaseId || receipt.recovery_interruption_count !== recoveryCount + 1 ||
+            receipt.resulting_retry_count < retryCount || receipt.recovery_tick < currentLeaseReceipt.expires_tick) return false;
+        const decisionStateValid = receipt.recovery_decision === 'fail'
+          ? receipt.state === 'failed'
+          : receipt.recovery_decision === 'requeue'
+            ? ['queued', 'retry_wait'].includes(receipt.state)
+            : receipt.state === state;
+        if (!decisionStateValid) return false;
+        state = receipt.state; version = receipt.work_version;
+        retryCount = receipt.resulting_retry_count; recoveryCount = receipt.recovery_interruption_count;
+        if (!['leased', 'executing'].includes(state)) {
+          currentLeaseId = null;
+          currentLeaseReceipt = null;
+        }
+        break;
+      }
+      case 'rejection':
+        if (state === 'absent' || receipt.work_version !== version || receipt.state !== 'rejected' ||
+            receipt.lease_id !== null) return false;
+        rejectionCount += 1;
+        break;
+      default:
+        return false;
+    }
+  }
+  const currentLeaseMatches = ['leased', 'executing'].includes(state)
+    ? work.lease?.lease_id === currentLeaseId : work.lease === null;
+  return state === work.state && version === work.work_version && retryCount === work.retry_count &&
+    recoveryCount === work.recovery_interruption_count && rejectionCount === work.rejection_count &&
+    currentLeaseMatches;
+}
+
 function workJournalStateValid(journal) {
   if (!Array.isArray(journal?.work_items) || !Array.isArray(journal?.receipts)) return false;
   if (journal.work_items.some((work) => !record(work)) || journal.receipts.some((receipt) => !record(receipt))) return false;
@@ -231,6 +383,8 @@ function workJournalStateValid(journal) {
     return work === undefined || receipt.work_version > work.work_version;
   })) return false;
   return journal.work_items.every((work) => {
+    const workReceipts = orderedReceipts.filter((receipt) => receipt.work_id === work.work_id);
+    if (!workReceiptChainIsValid(work, workReceipts, journal)) return false;
     const enqueueReceipt = work.enqueue_receipt;
     const matchingEnqueueReceipt = journal.receipts.find((receipt) =>
       receipt.receipt_id === enqueueReceipt?.receipt_id);
@@ -271,7 +425,7 @@ function workJournalStateValid(journal) {
         const authorization = cancellation.vault_owner_receipt;
         return record(authorization) && cancellation.work_id === work.work_id && cancellation.idempotency_key === work.idempotency_key &&
           cancellation.work_version <= work.work_version && cancellation.journal_sequence <= journal.head_sequence &&
-          cancellation.resume_count === index && cancellation.resume_count < cancellation.resume_ceiling &&
+          cancellation.resume_count === index && cancellation.resume_count <= cancellation.resume_ceiling &&
           cancellation.resume_ceiling === journal.limits.max_resume_count &&
           cancellation.requested_by === authorization.principal_id && authorization.vault_id === journal.vault_id &&
           authorization.action_kind === 'cancel' && authorization.work_id === work.work_id &&
@@ -293,15 +447,26 @@ function workJournalStateValid(journal) {
         resumeReceipt.cancelled_work_version === cancellations[0].work_version &&
         resumeReceipt.resumed_work_version === cancellations[0].work_version + 1 &&
         resumeReceipt.resumed_work_version <= work.work_version &&
+        resumeReceipt.vault_owner_receipt.action_kind === 'resume' &&
+        resumeReceipt.vault_owner_receipt.work_id === work.work_id &&
+        resumeReceipt.vault_owner_receipt.work_version === resumeReceipt.cancelled_work_version &&
+        resumeReceipt.vault_owner_receipt.lease_id === null &&
+        resumeReceipt.vault_owner_receipt.idempotency_key === work.idempotency_key &&
         resumeReceipt.cancellation_receipt_id === cancellations[0].receipt_id &&
+        resumeReceipt.cancellation_receipt_signature_digest === cancellations[0].signature_digest &&
+        resumeReceipt.cancellation_completion_receipt_id === completions[0]?.receipt_id &&
+        resumeReceipt.cancellation_completion_signature_digest === completions[0]?.signature_digest &&
         resumeReceipt.resume_count === cancellations[0].resume_count + 1 &&
-        resumeReceipt.journal_sequence > cancellations[0].journal_sequence &&
+        completions[0]?.journal_sequence === cancellations[0].journal_sequence + 1 &&
+        resumeReceipt.journal_sequence === completions[0].journal_sequence + 1 &&
         resumeReceipt.journal_sequence <= journal.head_sequence &&
         matchingResumeReceipt?.receipt_kind === 'resume' &&
         matchingResumeReceipt.journal_sequence === resumeReceipt.journal_sequence &&
         matchingResumeReceipt.work_id === work.work_id &&
         matchingResumeReceipt.work_version === resumeReceipt.resumed_work_version &&
         matchingResumeReceipt.state === 'queued' &&
+        verifyControlPlaneReceipt('vault_owner_authorization',
+          journalVaultOwnerFields(resumeReceipt.vault_owner_receipt), resumeReceipt.vault_owner_receipt) &&
         verifyControlPlaneReceipt('work_resume', journalResumeFields(resumeReceipt), resumeReceipt);
     const completionValid = completions.every((completion) => {
       const matching = journal.receipts.find((receipt) => receipt.receipt_id === completion.receipt_id);
@@ -318,20 +483,28 @@ function workJournalStateValid(journal) {
           retryCount: work.retry_count, retryCeiling: journal.limits.max_total_attempts - 1,
           recoveryInterruptionCount: work.recovery_interruption_count,
           recoveryCeiling: journal.limits.max_recovery_interruptions,
+          retryDelays: journal.limits.retry_delays_ms,
+          latestDispatchTick: 999700,
         }) && matching?.receipt_kind === 'completion' && matching.journal_sequence === completion.journal_sequence &&
         matching.work_id === work.work_id && matching.work_version === completion.work_version &&
         matching.lease_id === completion.lease_id && matching.state === completion.outcome &&
         (completion.outcome !== 'cancelled' || completion.journal_sequence === cancellation?.journal_sequence + 1) &&
-        ((completion.outcome === 'cancelled' && completion.lease_id === null) ||
-          (typeof completion.lease_id === 'string' && matchingLease?.lease_id === completion.lease_id)) &&
+        (completion.outcome === 'cancelled'
+          ? completion.lease_id === cancellation?.vault_owner_receipt.lease_id &&
+            (completion.lease_id === null || matchingLease?.lease_id === completion.lease_id)
+          : typeof completion.lease_id === 'string' && matchingLease?.lease_id === completion.lease_id) &&
         verifyControlPlaneReceipt('work_completion', [
           completion.receipt_id, work.work_id, completion.work_version, completion.lease_id ?? '',
           completion.journal_sequence, completion.outcome, completion.output_digest ?? '', completion.code ?? '',
+          completion.failure_retryable ?? '', completion.failure_observed_tick ?? '',
+          completion.selected_retry_delay_ticks ?? '',
         ], completion);
     });
     const cancellationCompletionsValid = cancellations.every((cancellation) =>
       completions.some((completion) => completion.work_version === cancellation.work_version &&
         completion.outcome === 'cancelled' && completion.journal_sequence === cancellation.journal_sequence + 1));
+    const completionInventoryValid = completions.length === cancellations.length +
+      (terminal && work.state !== 'cancelled' ? 1 : 0);
     const resultValid = terminal
       ? result !== null && result.outcome === work.state && result.work_version === work.work_version &&
         canonicalJson(completions.at(-1)) === canonicalJson(result)
@@ -345,7 +518,7 @@ function workJournalStateValid(journal) {
       ...completions.map(({receipt_id: id}) => id)].sort();
     const lifecycleRecordsExact = sameOrder(lifecycleReceiptIds, embeddedReceiptIds);
     return enqueueValid && leaseValid && retryValid && cancellationValid && resumeValid && completionValid &&
-      cancellationCompletionsValid && resultValid && lifecycleRecordsExact &&
+      cancellationCompletionsValid && completionInventoryValid && resultValid && lifecycleRecordsExact &&
       work.recovery_interruption_count <= journal.limits.max_recovery_interruptions;
   });
 }
@@ -417,6 +590,7 @@ function controlCommandStateValid(command, journal) {
         command_kind: command.command_kind,
         command_version: command.command_version,
         idempotency_key: command.idempotency_key,
+        payload: command.payload,
         base_references: command.base_references,
       })) return false;
   const expectedBaseKind = ['cancel', 'resume'].includes(command.command_kind) ? 'work_item'
@@ -430,11 +604,21 @@ function controlCommandStateValid(command, journal) {
     const replayWork = journal?.work_items?.find(({idempotency_key: key}) => key === command.idempotency_key);
     const expectedSequence = replayWork?.enqueue_receipt?.base_head_sequence ?? journal?.head_sequence;
     const expectedDigest = replayWork?.enqueue_receipt?.base_head_digest ?? journal?.head_digest;
-    return base.reference_id === journal?.journal_id && base.version === expectedSequence &&
-      base.digest === expectedDigest;
+    const payloadMatchesReplay = replayWork === undefined ||
+      command.payload.work_id === replayWork.work_id && command.payload.work_kind === replayWork.work_kind &&
+      command.payload.input_digest === replayWork.input_digest &&
+      canonicalJson(command.payload.dependencies) === canonicalJson(replayWork.dependencies) &&
+      canonicalJson(command.payload.budget) === canonicalJson(replayWork.budget);
+    return payloadMatchesReplay && base.reference_id === journal?.journal_id &&
+      base.version === expectedSequence && base.digest === expectedDigest;
   }
   const work = journal?.work_items?.find(({work_id: id}) => id === base.reference_id);
-  return work !== undefined && base.version === work.work_version && base.digest === canonicalDigest(work);
+  const applicableLease = ['leased', 'executing'].includes(work?.state) ? work.lease?.lease_id ?? null : null;
+  const expectedLease = command.command_kind === 'resume' ? null : applicableLease;
+  return work !== undefined && command.payload.work_id === work.work_id &&
+    command.payload.expected_work_version === work.work_version && command.payload.lease_id === expectedLease &&
+    (command.command_kind !== 'resume' || work.state === 'cancelled') &&
+    base.version === work.work_version && base.digest === canonicalDigest(work);
 }
 
 const scenarioCategories = new Set([
