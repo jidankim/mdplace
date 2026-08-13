@@ -104,6 +104,7 @@ export function scenarioLifecycleIsValid(initial) {
     prefix.active_leases.length <= prefix.head_sequence &&
     new Set(prefixLeaseIds).size === prefixLeaseIds.length &&
     new Set(prefixWorkIds).size === prefixWorkIds.length &&
+    (work === null || !prefixWorkIds.includes(work.work_id)) &&
     verifyControlPlaneReceipt(
       'work_journal_prefix', journalPrefixReceiptFields(prefix), prefix, initial.persistent_agent_id,
     );

@@ -5,6 +5,7 @@ import {
   cancellationReceiptFields as cancellationFields,
   completionReceiptFields as completionFields,
   controlPlaneLimits,
+  controlPlaneSemanticHead,
   enqueueReceiptFields as enqueueFields,
   readinessGateReceiptFields as readinessFields,
   resumeReceiptFields as resumeFields,
@@ -68,9 +69,11 @@ function dependencyStateIsAuthenticated(initial) {
   const workDependenciesAreExact = initial.work === null ||
     canonicalJson(initial.work.dependencies) === canonicalJson(receipt.dependencies);
   return semanticDependencies.length === 1 &&
-    semanticDependencies[0].reference_id === 'semantic:head-001' &&
-    semanticDependencies[0].version === initial.semantic_state_version &&
-    semanticDependencies[0].digest === initial.semantic_state_digest &&
+    semanticDependencies[0].reference_id === controlPlaneSemanticHead.referenceId &&
+    semanticDependencies[0].version === controlPlaneSemanticHead.version &&
+    semanticDependencies[0].digest === controlPlaneSemanticHead.digest &&
+    initial.semantic_state_version === controlPlaneSemanticHead.version &&
+    initial.semantic_state_digest === controlPlaneSemanticHead.digest &&
     workDependenciesAreExact &&
     digestCanonical(receipt.dependencies) === initial.dependency_state_digest &&
     verifyControlPlaneReceipt('dependency_state', dependencyStateFields(receipt), receipt, initial.persistent_agent_id);
@@ -291,7 +294,6 @@ function schedulerSnapshotIsConsistent(initial, requiredObservationTick = initia
   const receipts = initial.scheduler_active_lease_receipts;
   const receiptLeaseIds = receipts.map(({lease_id: id}) => id);
   const prefixLeases = initial.journal_prefix_receipt.active_leases.filter((lease) =>
-    lease.work_id !== initial.work?.work_id &&
     lease.acquired_tick <= initial.scheduler_observed_tick &&
     initial.scheduler_observed_tick < lease.expires_tick);
   const activeWorkLease = ['leased', 'executing'].includes(initial.work?.state) &&
@@ -1071,7 +1073,10 @@ export async function observeControlPlaneScenario(subject, packageRoot) {
   if (!journalHeadIsAuthenticated(initial)) return rejected(initial, action, 'control.journal_evidence_invalid', {terminal: 'blocked'});
   if (!dependencyStateIsAuthenticated(initial)) return rejected(initial, action, 'control.dependency_evidence_invalid', {terminal: 'blocked'});
   if (!leaseHistoryIsValid(initial)) return rejected(initial, action, 'control.lease_history_invalid', {terminal: 'blocked'});
-  if (!schedulerSnapshotIsConsistent(initial)) {
+  const schedulerTick = action.kind === 'recover' ? action.recovery_tick
+    : ['dispatch', 'acknowledge', 'complete_work', 'fail', 'retry', 'cancel'].includes(action.kind)
+      ? action.current_tick : initial.scheduler_observed_tick;
+  if (!schedulerSnapshotIsConsistent(initial, schedulerTick)) {
     return rejected(initial, action, 'control.scheduler_base_stale', {terminal: 'blocked'});
   }
   if (!workStateIsConsistent(initial.work)) return rejected(initial, action, 'control.work_state_invalid');

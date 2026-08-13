@@ -23,7 +23,7 @@ const deniedTransitions = new Map([
     'TR-CPWORK-002', 'TR-CPWORK-003', 'TR-CPWORK-004', 'TR-CPWORK-005',
     'TR-CPWORK-008', 'TR-CPWORK-009', 'TR-CPWORK-010', 'TR-CPWORK-012',
     'TR-CPWORK-014', 'TR-CPWORK-017', 'TR-CPWORK-018', 'TR-CPWORK-022',
-    'TR-CPWORK-023', 'TR-CPWORK-024', 'TR-CPWORK-025',
+    'TR-CPWORK-023', 'TR-CPWORK-025',
   ]],
   ['contracts/transitions/retry-lifecycle.json', [
     'TR-CPRETRY-003', 'TR-CPRETRY-004', 'TR-CPRETRY-005',

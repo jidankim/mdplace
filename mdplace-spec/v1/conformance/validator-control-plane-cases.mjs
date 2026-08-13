@@ -600,6 +600,9 @@ test('retry timing and lease freshness reject early or stale mutations', async (
   const failureFixture = JSON.parse(await readFile(new URL('./scenarios/control-plane/first-retry-recorded.json', import.meta.url)));
   const staleFailure = structuredClone(failureFixture.subject);
   staleFailure.document.action.current_tick = staleFailure.document.initial.work.lease_expires_tick;
+  authenticateScenarioScheduler(staleFailure.document.initial, staleFailure.document.action.current_tick);
+  staleFailure.document.action.expected_scheduler_state_digest =
+    staleFailure.document.initial.scheduler_state_digest;
   const failureResult = await observeControlPlaneScenario(staleFailure, packageRoot);
   assert.deepEqual(failureResult.codes, ['control.lease_stale']);
 
@@ -766,6 +769,42 @@ test('stateful dependency and Scheduler snapshots are derived from durable Work 
     ]));
   assert.deepEqual((await observeControlPlaneScenario(relabelledVersion, packageRoot)).codes,
     ['control.dependency_evidence_invalid']);
+
+  const relabelledHead = structuredClone(fixture.subject);
+  relabelledHead.document.initial.semantic_state_digest = 'a'.repeat(64);
+  relabelledHead.document.initial.work.dependencies[0].digest = 'a'.repeat(64);
+  relabelledHead.document.initial.dependency_state_receipt.dependencies[0].digest = 'a'.repeat(64);
+  const relabelledHeadDigest = createHash('sha256').update(canonicalJson(
+    relabelledHead.document.initial.dependency_state_receipt.dependencies,
+  )).digest('hex');
+  relabelledHead.document.initial.dependency_state_digest = relabelledHeadDigest;
+  relabelledHead.document.action.expected_dependency_state_digest = relabelledHeadDigest;
+  Object.assign(relabelledHead.document.initial.dependency_state_receipt,
+    signControlPlaneReceipt('dependency_state', [
+      relabelledHead.document.initial.dependency_state_receipt.receipt_id, relabelledHeadDigest,
+    ]));
+  assert.deepEqual((await observeControlPlaneScenario(relabelledHead, packageRoot)).codes,
+    ['schema.constraint']);
+
+  const prefixCollision = structuredClone(fixture.subject);
+  const prefix = prefixCollision.document.initial.journal_prefix_receipt;
+  Object.assign(prefix, {head_sequence: 1, head_digest: 'f'.repeat(64), active_leases: [{
+    lease_id: 'lease:prior-001', work_id: prefixCollision.document.initial.work.work_id,
+    work_version: 1, owner_agent_id: prefixCollision.document.initial.persistent_agent_id,
+    acquired_tick: 1, expires_tick: 301, status: 'active',
+  }]});
+  Object.assign(prefix, signControlPlaneReceipt('work_journal_prefix', journalPrefixFields(prefix)));
+  const enqueue = prefixCollision.document.initial.work.enqueue_receipt;
+  Object.assign(enqueue, {base_head_sequence: 1, base_head_digest: prefix.head_digest, journal_sequence: 2});
+  Object.assign(enqueue, signControlPlaneReceipt('work_enqueue', [
+    enqueue.receipt_id, enqueue.work_id, enqueue.work_version, enqueue.idempotency_key,
+    enqueue.input_digest, enqueue.base_head_sequence, enqueue.base_head_digest, enqueue.journal_sequence,
+  ]));
+  authenticateScenarioHead(prefixCollision.document.initial);
+  prefixCollision.document.action.expected_journal_head_sequence = prefixCollision.document.initial.journal_head_sequence;
+  prefixCollision.document.action.expected_journal_head_digest = prefixCollision.document.initial.journal_head_digest;
+  assert.deepEqual((await observeControlPlaneScenario(prefixCollision, packageRoot)).codes,
+    ['control.lease_history_invalid']);
 
   const phantomLease = structuredClone(fixture.subject);
   const phantomReceipt = {
@@ -1047,6 +1086,8 @@ test('recovery exhaustion commits an authenticated terminal failure', async () =
       recovery_tick: currentLease.expires_tick,
       interruption_count: count + 1,
     });
+    authenticateScenarioScheduler(initial, action.recovery_tick);
+    action.expected_scheduler_state_digest = initial.scheduler_state_digest;
   }
 
   const recoveryExhausted = structuredClone(fixture.subject);
@@ -1082,6 +1123,8 @@ test('recovery exhaustion commits an authenticated terminal failure', async () =
     recovery_tick: retryInitial.work.lease_expires_tick,
     interruption_count: 1,
   });
+  authenticateScenarioScheduler(retryInitial, retryExhausted.document.action.recovery_tick);
+  retryExhausted.document.action.expected_scheduler_state_digest = retryInitial.scheduler_state_digest;
   const retryResult = await observeControlPlaneScenario(retryExhausted, packageRoot);
   assert.equal(retryResult.verdict, 'pass');
   assert.equal(retryResult.terminal_state, 'failed');
@@ -1179,6 +1222,11 @@ test('idempotent cancellation and readiness lifecycle observations match their m
   )));
   expiryBoundary.subject.document.action.current_tick =
     expiryBoundary.subject.document.initial.work.lease_expires_tick;
+  authenticateScenarioScheduler(
+    expiryBoundary.subject.document.initial, expiryBoundary.subject.document.action.current_tick,
+  );
+  expiryBoundary.subject.document.action.expected_scheduler_state_digest =
+    expiryBoundary.subject.document.initial.scheduler_state_digest;
   authenticateVaultOwnerAction(expiryBoundary.subject);
   assert.deepEqual((await observeControlPlaneScenario(expiryBoundary.subject, packageRoot)).codes,
     ['control.lease_stale']);
@@ -1465,12 +1513,12 @@ test('cancellation accepts exactly two remaining journal slots and rejects one',
     action.expected_journal_head_sequence = initial.journal_head_sequence;
     action.expected_journal_head_digest = initial.journal_head_digest;
   }
-  installPrefix(19998);
+  installPrefix(498);
   const accepted = await observeControlPlaneScenario(boundary, packageRoot);
   assert.equal(accepted.verdict, 'pass');
   assert.equal(accepted.terminal_state, 'cancelled');
 
-  installPrefix(19999);
+  installPrefix(499);
   assert.deepEqual((await observeControlPlaneScenario(boundary, packageRoot)).codes,
     ['control.journal_capacity_exhausted']);
 });
@@ -1505,6 +1553,11 @@ test('complete_work records one authenticated success and rejects stale executio
   for (const [code, mutate] of mutations) {
     const subject = structuredClone(fixture.subject);
     mutate(subject);
+    if (subject.document.action.current_tick !== subject.document.initial.scheduler_observed_tick) {
+      authenticateScenarioScheduler(subject.document.initial, subject.document.action.current_tick);
+      subject.document.action.expected_scheduler_state_digest =
+        subject.document.initial.scheduler_state_digest;
+    }
     assert.deepEqual((await observeControlPlaneScenario(subject, packageRoot)).codes, [code]);
   }
 
@@ -1547,6 +1600,9 @@ test('acknowledgement and Scheduler observations reject pre-acquisition and expi
   )));
   acknowledgement.subject.document.action.lease_id = acknowledgement.subject.document.initial.work.lease_id;
   acknowledgement.subject.document.action.current_tick = 0;
+  authenticateScenarioScheduler(acknowledgement.subject.document.initial, 0);
+  acknowledgement.subject.document.action.expected_scheduler_state_digest =
+    acknowledgement.subject.document.initial.scheduler_state_digest;
   assert.deepEqual((await observeControlPlaneScenario(acknowledgement.subject, packageRoot)).codes,
     ['control.lease_stale']);
 
@@ -1572,6 +1628,54 @@ test('acknowledgement and Scheduler observations reject pre-acquisition and expi
   initial.scheduler_state_digest = schedulerStateDigest(initial.active_lease_ids);
   action.expected_scheduler_state_digest = initial.scheduler_state_digest;
   assert.deepEqual((await observeControlPlaneScenario(dispatchFixture.subject, packageRoot)).codes,
+    ['control.scheduler_base_stale']);
+
+  const cancellation = JSON.parse(await readFile(new URL(
+    './scenarios/control-plane/cancellation-during-execution-durable.json', import.meta.url,
+  )));
+  authenticateScenarioScheduler(cancellation.subject.document.initial, 301);
+  assert.deepEqual((await observeControlPlaneScenario(cancellation.subject, packageRoot)).codes,
+    ['control.scheduler_base_stale']);
+
+  const recovery = JSON.parse(await readFile(new URL(
+    './scenarios/control-plane/in-flight-work-recovers-agent-crash.json', import.meta.url,
+  )));
+  const recoveryInitial = recovery.subject.document.initial;
+  Object.assign(recoveryInitial.journal_prefix_receipt, {
+    head_sequence: 1, head_digest: 'f'.repeat(64), active_leases: [{
+    lease_id: 'lease:prefix-001', work_id: 'work:prefix-001', work_version: 1,
+    owner_agent_id: recoveryInitial.persistent_agent_id,
+    acquired_tick: 1, expires_tick: 1000, status: 'active',
+  }],
+  });
+  Object.assign(recoveryInitial.journal_prefix_receipt, signControlPlaneReceipt(
+    'work_journal_prefix', journalPrefixFields(recoveryInitial.journal_prefix_receipt),
+  ));
+  Object.assign(recoveryInitial.work.enqueue_receipt, {
+    base_head_sequence: 1, base_head_digest: recoveryInitial.journal_prefix_receipt.head_digest,
+    journal_sequence: 2,
+  });
+  Object.assign(recoveryInitial.work.enqueue_receipt, signControlPlaneReceipt(
+    'work_enqueue', [
+      recoveryInitial.work.enqueue_receipt.receipt_id,
+      recoveryInitial.work.enqueue_receipt.work_id,
+      recoveryInitial.work.enqueue_receipt.work_version,
+      recoveryInitial.work.enqueue_receipt.idempotency_key,
+      recoveryInitial.work.enqueue_receipt.input_digest,
+      recoveryInitial.work.enqueue_receipt.base_head_sequence,
+      recoveryInitial.work.enqueue_receipt.base_head_digest,
+      recoveryInitial.work.enqueue_receipt.journal_sequence,
+    ],
+  ));
+  for (const receipt of recoveryInitial.prior_lease_receipts) {
+    receipt.journal_sequence += 1;
+    Object.assign(receipt, signControlPlaneReceipt('work_lease', leaseFields(receipt)));
+  }
+  authenticateScenarioHead(recoveryInitial);
+  recovery.subject.document.action.expected_journal_head_sequence = recoveryInitial.journal_head_sequence;
+  recovery.subject.document.action.expected_journal_head_digest = recoveryInitial.journal_head_digest;
+  authenticateScenarioScheduler(recoveryInitial, 1000);
+  assert.deepEqual((await observeControlPlaneScenario(recovery.subject, packageRoot)).codes,
     ['control.scheduler_base_stale']);
 });
 
@@ -1953,8 +2057,8 @@ test('Work Journal derives exact lease and recovery state from authenticated lif
   authenticateJournalRecord(revokedRow);
   await writeControlPlaneState(executingRecovery.temporaryRoot, revokedRecovery);
   const revokedReport = await buildValidationReport(executingRecovery.temporaryRoot);
-  assert.equal(revokedReport.checks.find(({id}) => id === 'control-plane-contract').codes
-    .includes('control.work_journal_state_invalid'), false);
+  assert.ok(revokedReport.checks.find(({id}) => id === 'control-plane-contract').codes
+    .includes('control.work_journal_state_invalid'));
 
   const prematureFailureRoot = await copyCommittedPackage();
   const prematureJournal = JSON.parse(await readFile(
@@ -2292,6 +2396,43 @@ test('Work Journal head sequence and digest bind one contiguous receipt chain', 
     .includes('control.work_journal_state_invalid'));
 });
 
+test('Work Journal public boundary represents exactly 500 authenticated receipts', async () => {
+  const temporaryRoot = await copyCommittedPackage();
+  const journal = JSON.parse(await readFile(
+    `${temporaryRoot}/contracts/control-plane/work-journal.json`,
+  ));
+  const work = journal.work_items[0];
+  for (let sequence = 2; sequence <= 500; sequence += 1) {
+    journal.receipts.push(authenticateJournalRecord({
+      receipt_id: `receipt:rejection-${sequence}`, receipt_kind: 'rejection', journal_sequence: sequence,
+      work_id: work.work_id, work_version: work.work_version, lease_id: null, state: 'rejected',
+      operation_digest: 'a'.repeat(64), semantic_state_digest: work.dependencies[0].digest,
+      rejection_code: 'control.precondition_failed',
+    }));
+  }
+  work.rejection_count = 499;
+  await writeControlPlaneState(temporaryRoot, journal);
+  const report = await buildValidationReport(temporaryRoot);
+  const controlCodes = report.checks.find(({id}) => id === 'control-plane-contract').codes;
+  assert.equal(controlCodes.includes('resourceLimit'), false);
+  assert.equal(controlCodes.includes('schema.constraint'), false);
+  assert.equal(controlCodes.includes('control.work_journal_state_invalid'), false);
+  assert.equal(controlCodes.includes('control.scheduler_state_invalid'), false);
+});
+
+test('Work Journal requires the independently anchored semantic head', async () => {
+  const temporaryRoot = await copyCommittedPackage();
+  const journal = JSON.parse(await readFile(
+    `${temporaryRoot}/contracts/control-plane/work-journal.json`,
+  ));
+  journal.work_items[0].dependencies = [];
+  await writeControlPlaneState(temporaryRoot, journal);
+  const report = await buildValidationReport(temporaryRoot);
+  const controlCodes = report.checks.find(({id}) => id === 'control-plane-contract').codes;
+  assert.ok(controlCodes.includes('schema.constraint'));
+  assert.ok(controlCodes.includes('control.work_journal_state_invalid'));
+});
+
 test('Work Journal rejects every orphan lifecycle record kind', async () => {
   const orphanRows = [
     ['enqueue-receipt:orphan-001', 'enqueue', 'queued', {}],
@@ -2380,10 +2521,10 @@ test('dispatch and journal append reject arithmetic beyond their closed domains'
     ['control.lease_tick_overflow']);
 
   const failureFixture = JSON.parse(await readFile(new URL('./scenarios/control-plane/retry-ceiling-terminal-failure.json', import.meta.url)));
-  failureFixture.subject.document.initial.journal_head_sequence = 20001;
+  failureFixture.subject.document.initial.journal_head_sequence = 501;
   failureFixture.subject.document.initial.journal_head_digest = 'f'.repeat(64);
   Object.assign(failureFixture.subject.document.initial.journal_head_receipt, {
-    head_sequence: 20001, head_digest: 'f'.repeat(64),
+    head_sequence: 501, head_digest: 'f'.repeat(64),
   });
   Object.assign(failureFixture.subject.document.initial.journal_head_receipt, signControlPlaneReceipt(
     'work_journal_head', journalHeadFields(failureFixture.subject.document.initial.journal_head_receipt),
@@ -2394,15 +2535,15 @@ test('dispatch and journal append reject arithmetic beyond their closed domains'
   const recoveryFixture = JSON.parse(await readFile(new URL('./scenarios/control-plane/in-flight-work-recovers-agent-crash.json', import.meta.url)));
   const recoveryInitial = recoveryFixture.subject.document.initial;
   recoveryFixture.subject.document.action.recovery_tick = 999000;
-  recoveryInitial.journal_head_sequence = 20001;
+  recoveryInitial.journal_head_sequence = 501;
   recoveryInitial.journal_head_digest = 'f'.repeat(64);
   Object.assign(recoveryInitial.journal_head_receipt, {
-    head_sequence: 20001, head_digest: 'f'.repeat(64),
+    head_sequence: 501, head_digest: 'f'.repeat(64),
   });
   Object.assign(recoveryInitial.journal_head_receipt, signControlPlaneReceipt(
     'work_journal_head', journalHeadFields(recoveryInitial.journal_head_receipt),
   ));
-  recoveryFixture.subject.document.action.expected_journal_head_sequence = 20001;
+  recoveryFixture.subject.document.action.expected_journal_head_sequence = 501;
   recoveryFixture.subject.document.action.expected_journal_head_digest = 'f'.repeat(64);
   assert.deepEqual((await observeControlPlaneScenario(recoveryFixture.subject, packageRoot)).codes,
     ['schema.constraint']);

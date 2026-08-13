@@ -348,7 +348,7 @@
           "none"
         ]
       },
-      "recovery": "Return the durable WorkLeaseReceipt; requeue only after its exact lease expires or is revoked."
+      "recovery": "Return the durable WorkLeaseReceipt; requeue only after its exact lease expires."
     },
     {
       "transition_id": "TR-CPWORK-008",
@@ -685,7 +685,7 @@
       },
       "preconditions": [
         "Exclusive Writer Lock receipt is current",
-        "Work Lease is expired or revoked",
+        "Work Lease is expired",
         "recovery interruption budget remains"
       ],
       "base_references": [
@@ -923,7 +923,7 @@
       },
       "preconditions": [
         "Exclusive Writer Lock receipt is current",
-        "Work Lease is expired or revoked",
+        "Work Lease is expired",
         "recovery interruption budget remains"
       ],
       "base_references": [
@@ -1101,7 +1101,7 @@
       "transition_id": "TR-CPWORK-024",
       "command_or_event": "complete_work",
       "from_state": "terminal",
-      "allowed": false,
+      "allowed": true,
       "actor_authority": {
         "roles": [
           "mdplace_agent"
@@ -1111,13 +1111,16 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "complete_work is not legal from terminal"
+        "stored success receipt authenticates the original Work Item version, active Work Lease, Work Journal head, idempotency key, output digest, and completion tick",
+        "request repeats that exact original binding"
       ],
       "base_references": [
-        "exact current lifecycle state and version"
+        "original Work Item version",
+        "original active Work Lease",
+        "original Work Journal head"
       ],
       "emitted_records": [
-        "ControlPlaneTransitionDenied"
+        "CompletionReceipt"
       ],
       "filesystem_effects": [
         "none"
@@ -1125,13 +1128,17 @@
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "exact current lifecycle state and version"
+          "original Work Item version",
+          "original active Work Lease",
+          "original Work Journal head",
+          "output digest",
+          "completion tick"
         ],
-        "retry_result": "return the original denial"
+        "retry_result": "return the original durable receipt for the exact binding"
       },
       "terminal_state": "terminal",
       "failure_result": {
-        "code": "control.illegal_transition",
+        "code": "control.precondition_failed",
         "state_effect": "unchanged",
         "emitted_records": [
           "ControlPlaneTransitionDenied"
@@ -1140,7 +1147,7 @@
           "none"
         ]
       },
-      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+      "recovery": "Validate and return the original authenticated completion receipt without appending or repeating work."
     },
     {
       "transition_id": "TR-CPWORK-025",

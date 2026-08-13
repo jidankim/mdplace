@@ -1,7 +1,7 @@
 import {canonicalJson} from './semantic-kernel-core.mjs';
 
 export const controlPlaneLimits = Object.freeze({
-  maxJournalSequence: 20_000,
+  maxJournalSequence: 500,
   maxTick: 1_000_000,
   leaseDurationTicks: 300,
   maxLeaseExpiryTick: 1_000_300,
@@ -11,6 +11,12 @@ export const controlPlaneLimits = Object.freeze({
   maxRecoveryInterruptionCount: 3,
   resumeCeiling: 1,
   latestDispatchTick: 999_700,
+});
+
+export const controlPlaneSemanticHead = Object.freeze({
+  referenceId: 'semantic:head-001',
+  version: 1,
+  digest: 'd'.repeat(64),
 });
 
 export function completionReceiptFields(receipt) {

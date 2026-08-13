@@ -7,6 +7,7 @@ import {
   cancellationReceiptFields,
   completionReceiptFields,
   controlPlaneLimits,
+  controlPlaneSemanticHead,
   enqueueReceiptFields,
   readinessGateReceiptFields,
   resumeReceiptFields,
@@ -42,7 +43,7 @@ const transitionPaths = [
 const transitionInventories = new Map([
   ['contracts/transitions/work-queue-lifecycle.json', {
     prefix: 'TR-CPWORK-',
-    rowsDigest: 'd420537c8a4b7d15ebd116e29d3ece0efbe01c4451bc1c771b14ba000f42ac0f',
+    rowsDigest: '3fdce087b29043c00761314b2d3a3c1f0601d6b8e3d978291667c417e5cc4f6f',
     states: ['absent', 'queued', 'leased', 'executing', 'terminal'],
     commands: ['enqueue_work', 'dispatch_work', 'acknowledge_work', 'complete_work', 'recover_work'],
   }],
@@ -104,7 +105,7 @@ const recoveryInventory = [
   terminal_result: `${decision} with unchanged semantic truth`,
   failure_result: 'control.recovery_precondition_failed; state unchanged',
 }));
-const recoveryRowsDigest = '616cf4e18befc360b0822d9b642c87b863c5e5d03d9b24f742547aa3227c0de8';
+const recoveryRowsDigest = 'a7fd9f38bb1111ded47b4dc9b11c8acd60475684439ad0c28a4b094617d5e7a3';
 
 function canonicalDigest(value) {
   return createHash('sha256').update(canonicalJson(value)).digest('hex');
@@ -129,6 +130,7 @@ function transitionTarget(prefix, state, command) {
     if (state === 'queued' && command === 'dispatch_work') return 'leased';
     if (state === 'leased' && command === 'acknowledge_work') return 'executing';
     if (state === 'executing' && command === 'complete_work') return 'terminal';
+    if (state === 'terminal' && command === 'complete_work') return 'terminal';
     if (command === 'recover_work' && state === 'leased') return 'queued';
     if (command === 'recover_work' && state === 'executing') return 'retry_wait';
   }
@@ -233,10 +235,15 @@ function journalRecordIsAuthenticated(receipt) {
 }
 
 function workReceiptChainIsValid(work, receipts, journal) {
-  const semanticDependency = work.dependencies.find(({kind}) => kind === 'semantic_head');
+  const semanticDependencies = work.dependencies.filter(({kind}) => kind === 'semantic_head');
+  const semanticDependency = semanticDependencies[0];
   if (receipts.length === 0 || receipts.some((receipt) =>
     receipt.semantic_state_digest !== receipts[0].semantic_state_digest) ||
-    (semanticDependency !== undefined && receipts[0].semantic_state_digest !== semanticDependency.digest)) return false;
+    semanticDependencies.length !== 1 ||
+    semanticDependency.reference_id !== controlPlaneSemanticHead.referenceId ||
+    semanticDependency.version !== controlPlaneSemanticHead.version ||
+    semanticDependency.digest !== controlPlaneSemanticHead.digest ||
+    receipts[0].semantic_state_digest !== controlPlaneSemanticHead.digest) return false;
   let state = 'absent';
   let version = 0;
   let retryCount = 0;
@@ -358,7 +365,7 @@ function workReceiptChainIsValid(work, receipts, journal) {
       case 'recovery': {
         if (!['leased', 'executing'].includes(state) || receipt.work_version !== version + 1 ||
             receipt.lease_id !== currentLeaseId || receipt.recovery_interruption_count !== recoveryCount + 1 ||
-            !['revoked', 'expired'].includes(receipt.recovery_lease_status) ||
+            receipt.recovery_lease_status !== 'expired' ||
             !['requeue', 'fail'].includes(receipt.recovery_decision) ||
             receipt.recovery_tick < (state === 'executing'
               ? currentStartReceipt.started_tick : currentLeaseReceipt.acquired_tick) ||
