@@ -297,8 +297,22 @@ function workReceiptChainIsValid(work, receipts, journal) {
       }
       case 'completion': {
         const completion = work.completion_history.find(({receipt_id: id}) => id === receipt.receipt_id);
+        const cancellation = work.cancellation_history.find(
+          ({work_version: cancellationVersion}) => cancellationVersion === receipt.work_version,
+        );
+        const baseSequence = state === 'cancelled'
+          ? cancellation?.journal_sequence - 1
+          : state === 'failed' && failedRecovery !== null
+            ? failedRecovery.journal_sequence - 1 : receipt.journal_sequence - 1;
+        const baseDigest = Number.isInteger(baseSequence)
+          ? canonicalDigest([...journal.receipts]
+            .filter(({journal_sequence: sequence}) => sequence <= baseSequence)
+            .sort((left, right) => left.journal_sequence - right.journal_sequence)) : null;
         if (completion === undefined || receipt.state !== completion.outcome ||
-            receipt.lease_id !== completion.lease_id) return false;
+            receipt.lease_id !== completion.lease_id ||
+            completion.idempotency_key !== work.idempotency_key ||
+            completion.base_head_sequence !== baseSequence ||
+            completion.base_head_digest !== baseDigest) return false;
         if (['cancelled', 'failed'].includes(state)) {
           if (receipt.work_version !== version || completion.outcome !== state ||
               receipt.lease_id !== currentLeaseId) return false;
@@ -567,6 +581,7 @@ function workJournalStateValid(journal) {
         completion.failure_observed_tick >= matchingLeaseReceipt.acquired_tick &&
         completion.failure_observed_tick < matchingLeaseReceipt.expires_tick;
       return completion.work_id === work.work_id && completion.work_version <= work.work_version &&
+        completion.idempotency_key === work.idempotency_key &&
         completion.journal_sequence <= journal.head_sequence &&
         controlPlaneOutcomeFieldsAreValid(completion, {
           retryCount: work.retry_count, retryCeiling: journal.limits.max_total_attempts - 1,
@@ -620,7 +635,8 @@ function schedulerStateValid(scheduler, journal, agent) {
   const journalWork = Array.isArray(journal?.work_items) ? journal.work_items : [];
   const expectedQueuedWork = journalWork.filter(({state}) => ['queued', 'retry_wait'].includes(state));
   const expectedActiveWork = journalWork.filter(({state, lease}) =>
-    ['leased', 'executing'].includes(state) && lease?.status === 'active');
+    ['leased', 'executing'].includes(state) && lease?.status === 'active' &&
+    lease.acquired_tick <= scheduler.observation_tick && scheduler.observation_tick < lease.expires_tick);
   const queueMatchesJournal = scheduler.eligible_queue.length === expectedQueuedWork.length &&
     scheduler.eligible_queue.every((entry) => expectedQueuedWork.some((work) =>
       entry.work_id === work.work_id && entry.work_version === work.work_version &&
@@ -635,11 +651,13 @@ function schedulerStateValid(scheduler, journal, agent) {
     journal?.vault_id === agent?.vault_id && scheduler.readiness === agent?.state &&
     scheduler.journal_head_sequence === journal?.head_sequence &&
     scheduler.journal_head_digest === journal?.head_digest &&
+    Number.isInteger(scheduler.observation_tick) &&
     !duplicate(queuedIds) && !duplicate(leasedIds) && !duplicate(leasedWorkIds) &&
     scheduler.active_leases.length <= scheduler.limits.max_concurrent_work &&
     queueMatchesJournal && leasesMatchJournal && queuedIds.every((id) => !leasedWorkIds.includes(id)) &&
     scheduler.active_leases.every((lease) =>
       lease.status === 'active' && lease.expires_tick > lease.acquired_tick &&
+      lease.acquired_tick <= scheduler.observation_tick && scheduler.observation_tick < lease.expires_tick &&
       lease.expires_tick - lease.acquired_tick <= scheduler.limits.lease_duration_ticks);
 }
 

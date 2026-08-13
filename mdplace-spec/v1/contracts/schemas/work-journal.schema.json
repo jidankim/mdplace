@@ -147,13 +147,16 @@
     "result": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["outcome", "receipt_id", "work_id", "work_version", "lease_id", "journal_sequence", "completion_tick", "output_digest", "code", "failure_retryable", "failure_observed_tick", "selected_retry_delay_ticks", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
+      "required": ["outcome", "receipt_id", "work_id", "work_version", "lease_id", "idempotency_key", "base_head_sequence", "base_head_digest", "journal_sequence", "completion_tick", "output_digest", "code", "failure_retryable", "failure_observed_tick", "selected_retry_delay_ticks", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
       "properties": {
         "outcome": {"enum": ["succeeded", "failed", "cancelled"]},
         "receipt_id": {"type": "string", "pattern": "^receipt:[a-z0-9-]{3,64}$"},
         "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
         "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
         "lease_id": {"type": ["string", "null"], "pattern": "^lease:[a-z0-9-]{3,64}$"},
+        "idempotency_key": {"type": "string", "pattern": "^idempotency:[a-z0-9-]{3,64}$"},
+        "base_head_sequence": {"type": "integer", "minimum": 0, "maximum": 19999},
+        "base_head_digest": {"$ref": "#/$defs/digest"},
         "journal_sequence": {"type": "integer", "minimum": 1, "maximum": 20000},
         "completion_tick": {"type": "integer", "minimum": 0, "maximum": 1000000},
         "output_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},

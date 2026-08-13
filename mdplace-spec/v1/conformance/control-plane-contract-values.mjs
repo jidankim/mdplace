@@ -1,3 +1,5 @@
+import {canonicalJson} from './semantic-kernel-core.mjs';
+
 export const controlPlaneLimits = Object.freeze({
   maxJournalSequence: 20_000,
   maxTick: 1_000_000,
@@ -14,6 +16,7 @@ export const controlPlaneLimits = Object.freeze({
 export function completionReceiptFields(receipt) {
   return [
     receipt.receipt_id, receipt.work_id, receipt.work_version, receipt.lease_id ?? '',
+    receipt.idempotency_key, receipt.base_head_sequence, receipt.base_head_digest,
     receipt.journal_sequence, receipt.completion_tick, receipt.outcome,
     receipt.output_digest ?? '', receipt.code ?? '',
     receipt.failure_retryable ?? '', receipt.failure_observed_tick ?? '',
@@ -22,7 +25,10 @@ export function completionReceiptFields(receipt) {
 }
 
 export function journalPrefixReceiptFields(receipt) {
-  return [receipt.receipt_id, receipt.journal_id, receipt.head_sequence, receipt.head_digest];
+  return [
+    receipt.receipt_id, receipt.journal_id, receipt.head_sequence, receipt.head_digest,
+    canonicalJson(receipt.active_leases),
+  ];
 }
 
 export function schedulerLeaseReceiptFields(receipt) {

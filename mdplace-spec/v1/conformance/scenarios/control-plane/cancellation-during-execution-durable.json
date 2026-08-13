@@ -163,8 +163,9 @@
           "signature_scheme": "hmac-sha256",
           "signing_key_id": "signer-key:primary-001",
           "signer_agent_id": "agent:primary-001",
-          "signature_digest": "0435d123364b4850ef3d367b2e6038b9a6965da387bf7c2779d3d054f8884eb8",
-          "authenticated": true
+          "signature_digest": "d7ef42785146c5d0633a74c3a76d6532b9346d145bb4344a11d9b730906e002a",
+          "authenticated": true,
+          "active_leases": []
         },
         "scheduler_active_lease_receipts": [
           {
@@ -183,7 +184,9 @@
             "signature_digest": "eb015d828b3a9d9e22c8a07740d8c9908ff4b3f04606987754dc90f5b765e9a2",
             "authenticated": true
           }
-        ]
+        ],
+        "semantic_state_version": 1,
+        "scheduler_observed_tick": 2
       },
       "action": {
         "kind": "cancel",

@@ -54,8 +54,37 @@ function schedulerLeaseFields(receipt) {
     receipt.expires_tick, receipt.status];
 }
 
+function authenticateScenarioScheduler(initial, observationTick) {
+  initial.scheduler_observed_tick = observationTick;
+  const prefixLeases = initial.journal_prefix_receipt.active_leases.filter((lease) =>
+    lease.work_id !== initial.work?.work_id && lease.acquired_tick <= observationTick &&
+    observationTick < lease.expires_tick);
+  const currentLease = ['leased', 'executing'].includes(initial.work?.state) &&
+    initial.work.lease_status === 'active' && initial.work.lease_acquired_tick <= observationTick &&
+    observationTick < initial.work.lease_expires_tick ? [{
+      lease_id: initial.work.lease_id, work_id: initial.work.work_id,
+      work_version: initial.work.work_version, owner_agent_id: initial.work.owner_agent_id,
+      acquired_tick: initial.work.lease_acquired_tick,
+      expires_tick: initial.work.lease_expires_tick, status: 'active',
+    }] : [];
+  initial.scheduler_active_lease_receipts = [...prefixLeases, ...currentLease].map((lease) => {
+    const receipt = {
+      receipt_id: `scheduler-lease-receipt:${lease.lease_id.slice(6)}`,
+      vault_id: initial.vault_id,
+      ...lease,
+    };
+    return {...receipt, ...signControlPlaneReceipt(
+      'scheduler_active_lease', schedulerLeaseFields(receipt),
+    )};
+  });
+  initial.active_lease_ids = initial.scheduler_active_lease_receipts.map(({lease_id: id}) => id);
+  initial.active_work_count = initial.active_lease_ids.length;
+  initial.scheduler_state_digest = schedulerStateDigest(initial.active_lease_ids);
+}
+
 function journalPrefixFields(receipt) {
-  return [receipt.receipt_id, receipt.journal_id, receipt.head_sequence, receipt.head_digest];
+  return [receipt.receipt_id, receipt.journal_id, receipt.head_sequence, receipt.head_digest,
+    canonicalJson(receipt.active_leases)];
 }
 
 function journalCancellationFields(cancellation) {
@@ -113,6 +142,7 @@ function retryFields(receipt) {
 
 function completionFields(receipt) {
   return [receipt.receipt_id, receipt.work_id, receipt.work_version, receipt.lease_id ?? '',
+    receipt.idempotency_key, receipt.base_head_sequence, receipt.base_head_digest,
     receipt.journal_sequence, receipt.completion_tick, receipt.outcome,
     receipt.output_digest ?? '', receipt.code ?? '',
     receipt.failure_retryable ?? '', receipt.failure_observed_tick ?? '',
@@ -166,6 +196,9 @@ async function writeControlPlaneState(temporaryRoot, journal) {
   const scheduler = JSON.parse(await readFile(schedulerPath));
   scheduler.journal_head_sequence = journal.head_sequence;
   scheduler.journal_head_digest = journal.head_digest;
+  scheduler.observation_tick = ['leased', 'executing'].includes(work.state)
+    ? work.lease.acquired_tick
+    : 0;
   scheduler.eligible_queue = ['queued', 'retry_wait'].includes(work.state) ? [{
     work_id: work.work_id,
     work_version: work.work_version,
@@ -584,6 +617,7 @@ test('retry timing and lease freshness reject early or stale mutations', async (
     retry_eligible_tick: 1001,
     lease_id: null, lease_status: null, lease_acquired_tick: null, lease_expires_tick: null,
     owner_agent_id: null};
+  authenticateScenarioScheduler(initial, 1000);
   initial.journal_head_sequence = 4;
   authenticateScenarioHead(initial);
   Object.assign(action, {kind: 'retry', actor_role: 'scheduler', expected_work_version: 4,
@@ -602,11 +636,17 @@ test('retry timing and lease freshness reject early or stale mutations', async (
     state: 'retry_wait', retry_eligible_tick: historyInitial.prior_retry_receipts.at(-1).retry_eligible_tick,
     lease_id: null, lease_status: null, lease_acquired_tick: null, lease_expires_tick: null,
     owner_agent_id: null};
+  secondInitial.scheduler_observed_tick = secondInitial.work.retry_eligible_tick;
+  secondInitial.active_lease_ids = [];
+  secondInitial.active_work_count = 0;
+  secondInitial.scheduler_active_lease_receipts = [];
+  secondInitial.scheduler_state_digest = schedulerStateDigest([]);
   secondInitial.journal_head_sequence = 7;
   authenticateScenarioHead(secondInitial);
   Object.assign(secondRetry.document.action, {kind: 'retry', actor_role: 'scheduler',
     expected_work_version: 7, expected_journal_head_sequence: 7,
     expected_journal_head_digest: secondInitial.journal_head_digest,
+    expected_scheduler_state_digest: secondInitial.scheduler_state_digest,
     lease_id: 'lease:retry-002', current_tick: secondInitial.work.retry_eligible_tick});
   const secondRetryResult = await observeControlPlaneScenario(secondRetry, packageRoot);
   assert.equal(secondRetryResult.verdict, 'pass');
@@ -654,6 +694,30 @@ test('dispatch revalidates current journal writer readiness dependency and capac
           )};
         });
       subject.document.initial.active_work_count = 8;
+      const prefix = subject.document.initial.journal_prefix_receipt;
+      prefix.head_sequence = 8;
+      prefix.head_digest = 'f'.repeat(64);
+      prefix.active_leases = subject.document.initial.scheduler_active_lease_receipts.map((receipt) => ({
+        lease_id: receipt.lease_id, work_id: receipt.work_id, work_version: receipt.work_version,
+        owner_agent_id: receipt.owner_agent_id, acquired_tick: receipt.acquired_tick,
+        expires_tick: receipt.expires_tick, status: receipt.status,
+      }));
+      Object.assign(prefix, signControlPlaneReceipt(
+        'work_journal_prefix', journalPrefixFields(prefix),
+      ));
+      const enqueue = subject.document.initial.work.enqueue_receipt;
+      Object.assign(enqueue, {
+        base_head_sequence: prefix.head_sequence, base_head_digest: prefix.head_digest,
+        journal_sequence: prefix.head_sequence + 1,
+      });
+      Object.assign(enqueue, signControlPlaneReceipt('work_enqueue', [
+        enqueue.receipt_id, enqueue.work_id, enqueue.work_version, enqueue.idempotency_key,
+        enqueue.input_digest, enqueue.base_head_sequence, enqueue.base_head_digest,
+        enqueue.journal_sequence,
+      ]));
+      authenticateScenarioHead(subject.document.initial);
+      subject.document.action.expected_journal_head_sequence = subject.document.initial.journal_head_sequence;
+      subject.document.action.expected_journal_head_digest = subject.document.initial.journal_head_digest;
       subject.document.initial.scheduler_state_digest = schedulerStateDigest(subject.document.initial.active_lease_ids);
       subject.document.action.expected_scheduler_state_digest = subject.document.initial.scheduler_state_digest;
     }],
@@ -688,8 +752,34 @@ test('stateful dependency and Scheduler snapshots are derived from durable Work 
   assert.deepEqual((await observeControlPlaneScenario(forgedDependency, packageRoot)).codes,
     ['control.dependency_evidence_invalid']);
 
+  const relabelledVersion = structuredClone(fixture.subject);
+  relabelledVersion.document.initial.work.dependencies[0].version = 2;
+  relabelledVersion.document.initial.dependency_state_receipt.dependencies[0].version = 2;
+  const relabelledDigest = createHash('sha256').update(canonicalJson(
+    relabelledVersion.document.initial.dependency_state_receipt.dependencies,
+  )).digest('hex');
+  relabelledVersion.document.initial.dependency_state_digest = relabelledDigest;
+  relabelledVersion.document.action.expected_dependency_state_digest = relabelledDigest;
+  Object.assign(relabelledVersion.document.initial.dependency_state_receipt,
+    signControlPlaneReceipt('dependency_state', [
+      relabelledVersion.document.initial.dependency_state_receipt.receipt_id, relabelledDigest,
+    ]));
+  assert.deepEqual((await observeControlPlaneScenario(relabelledVersion, packageRoot)).codes,
+    ['control.dependency_evidence_invalid']);
+
   const phantomLease = structuredClone(fixture.subject);
-  phantomLease.document.initial.active_lease_ids.push('lease:phantom-001');
+  const phantomReceipt = {
+    receipt_id: 'scheduler-lease-receipt:phantom-001',
+    vault_id: phantomLease.document.initial.vault_id, lease_id: 'lease:phantom-001',
+    work_id: 'work:phantom-001', work_version: 1,
+    owner_agent_id: phantomLease.document.initial.persistent_agent_id,
+    acquired_tick: 1, expires_tick: 301, status: 'active',
+  };
+  Object.assign(phantomReceipt, signControlPlaneReceipt(
+    'scheduler_active_lease', schedulerLeaseFields(phantomReceipt),
+  ));
+  phantomLease.document.initial.active_lease_ids.push(phantomReceipt.lease_id);
+  phantomLease.document.initial.scheduler_active_lease_receipts.push(phantomReceipt);
   phantomLease.document.initial.active_work_count += 1;
   phantomLease.document.initial.scheduler_state_digest = schedulerStateDigest(
     phantomLease.document.initial.active_lease_ids,
@@ -1417,6 +1507,72 @@ test('complete_work records one authenticated success and rejects stale executio
     mutate(subject);
     assert.deepEqual((await observeControlPlaneScenario(subject, packageRoot)).codes, [code]);
   }
+
+  const replay = structuredClone(fixture.subject);
+  const replayInitial = replay.document.initial;
+  const originalLease = replayInitial.work.lease_id;
+  const completion = {
+    receipt_id: 'receipt:succeeded-001-v4', work_id: replayInitial.work.work_id,
+    work_version: 4, lease_id: originalLease,
+    idempotency_key: replayInitial.work.idempotency_key,
+    base_head_sequence: replayInitial.journal_head_sequence,
+    base_head_digest: replayInitial.journal_head_digest,
+    journal_sequence: replayInitial.journal_head_sequence + 1, completion_tick: 2,
+    outcome: 'succeeded', output_digest: 'e'.repeat(64), code: null,
+    failure_retryable: null, failure_observed_tick: null, selected_retry_delay_ticks: null,
+  };
+  Object.assign(completion, signControlPlaneReceipt(
+    'work_completion', completionFields(completion),
+  ));
+  Object.assign(replayInitial.work, {
+    work_version: 4, state: 'succeeded', lease_id: null, lease_status: null,
+    lease_acquired_tick: null, lease_expires_tick: null, owner_agent_id: null,
+    completion_receipt: completion, completion_history: [completion],
+  });
+  replayInitial.active_lease_ids = [];
+  replayInitial.active_work_count = 0;
+  replayInitial.scheduler_active_lease_receipts = [];
+  replayInitial.scheduler_state_digest = schedulerStateDigest([]);
+  replay.document.action.expected_scheduler_state_digest = replayInitial.scheduler_state_digest;
+  authenticateScenarioHead(replayInitial);
+  const replayResult = await observeControlPlaneScenario(replay, packageRoot);
+  assert.equal(replayResult.verdict, 'pass');
+  assert.equal(replayResult.outputs.includes('completion idempotent'), true);
+  assert.deepEqual(replayResult.filesystem_effects, ['none']);
+});
+
+test('acknowledgement and Scheduler observations reject pre-acquisition and expired leases', async () => {
+  const acknowledgement = JSON.parse(await readFile(new URL(
+    './scenarios/control-plane/stale-lease-rejected.json', import.meta.url,
+  )));
+  acknowledgement.subject.document.action.lease_id = acknowledgement.subject.document.initial.work.lease_id;
+  acknowledgement.subject.document.action.current_tick = 0;
+  assert.deepEqual((await observeControlPlaneScenario(acknowledgement.subject, packageRoot)).codes,
+    ['control.lease_stale']);
+
+  const dispatchFixture = JSON.parse(await readFile(new URL(
+    './scenarios/control-plane/dequeue-acknowledges-after-receipt.json', import.meta.url,
+  )));
+  const {action, initial} = dispatchFixture.subject.document;
+  action.current_tick = 302;
+  initial.scheduler_observed_tick = 302;
+  initial.active_lease_ids = Array.from({length: 8}, (_, index) => `lease:expired-${index + 1}`);
+  initial.active_work_count = 8;
+  initial.scheduler_active_lease_receipts = initial.active_lease_ids.map((leaseId, index) => {
+    const receipt = {
+      receipt_id: `scheduler-lease-receipt:expired-${index + 1}`,
+      vault_id: initial.vault_id, lease_id: leaseId, work_id: `work:expired-${index + 1}`,
+      work_version: 1, owner_agent_id: initial.persistent_agent_id,
+      acquired_tick: 1, expires_tick: 301, status: 'active',
+    };
+    return {...receipt, ...signControlPlaneReceipt(
+      'scheduler_active_lease', schedulerLeaseFields(receipt),
+    )};
+  });
+  initial.scheduler_state_digest = schedulerStateDigest(initial.active_lease_ids);
+  action.expected_scheduler_state_digest = initial.scheduler_state_digest;
+  assert.deepEqual((await observeControlPlaneScenario(dispatchFixture.subject, packageRoot)).codes,
+    ['control.scheduler_base_stale']);
 });
 
 test('keyed readiness and completion verification rejects recomputed forgeries', async () => {
@@ -1473,11 +1629,11 @@ test('Work Journal completion binds outcome fields and one unique durable comple
     journal.head_sequence = 4;
     Object.assign(work, {state: 'failed', work_version: 4});
     work.result = {outcome: 'failed', receipt_id: 'receipt:failed-001', work_version: 4,
-      work_id: work.work_id, lease_id: 'lease:001', journal_sequence: 4, output_digest: null,
+      work_id: work.work_id, lease_id: 'lease:001', idempotency_key: work.idempotency_key,
+      base_head_sequence: 3, base_head_digest: null,
+      journal_sequence: 4, completion_tick: 2, output_digest: null,
       code: 'control.execution_failed', failure_retryable: false, failure_observed_tick: 2,
       selected_retry_delay_ticks: null};
-    Object.assign(work.result, signControlPlaneReceipt('work_completion', completionFields(work.result)));
-    work.completion_history = [work.result];
     journal.receipts.push(authenticateJournalRecord({receipt_id: 'receipt:lease-001', receipt_kind: 'lease',
       journal_sequence: 2, work_id: work.work_id, work_version: 2,
       lease_id: work.result.lease_id, state: 'leased', operation_digest: 'b'.repeat(64),
@@ -1487,6 +1643,9 @@ test('Work Journal completion binds outcome fields and one unique durable comple
       journal_sequence: 3, work_id: work.work_id, work_version: 3,
       lease_id: work.result.lease_id, state: 'executing', operation_digest: 'e'.repeat(64),
       semantic_state_digest: 'd'.repeat(64), owner_agent_id: 'agent:primary-001', started_tick: 1}));
+    work.result.base_head_digest = workJournalHeadDigest(journal.receipts);
+    Object.assign(work.result, signControlPlaneReceipt('work_completion', completionFields(work.result)));
+    work.completion_history = [work.result];
     journal.receipts.push(authenticateJournalRecord({receipt_id: work.result.receipt_id, receipt_kind: 'completion',
       journal_sequence: 4, work_id: work.work_id, work_version: work.work_version,
       lease_id: work.result.lease_id,
@@ -1515,7 +1674,9 @@ test('Work Journal completion binds outcome fields and one unique durable comple
   authenticateJournalRecord(validOverflow.journal.receipts[2]);
   validOverflow.journal.head_digest = workJournalHeadDigest(validOverflow.journal.receipts);
   Object.assign(validOverflow.work.result, {code: 'control.retry_tick_overflow',
-    failure_retryable: true, failure_observed_tick: 999000, selected_retry_delay_ticks: 1000});
+    base_head_digest: workJournalHeadDigest(validOverflow.journal.receipts.slice(0, 3)),
+    completion_tick: 999000, failure_retryable: true, failure_observed_tick: 999000,
+    selected_retry_delay_ticks: 1000});
   Object.assign(validOverflow.work.result, signControlPlaneReceipt(
     'work_completion', completionFields(validOverflow.work.result),
   ));
@@ -1639,7 +1800,9 @@ test('Work Journal completion binds outcome fields and one unique durable comple
     'work_journal_cancellation', journalCancellationFields(cancelled.work.cancellation),
   ));
   Object.assign(cancelled.work.result, {outcome: 'cancelled', receipt_id: 'receipt:cancelled-001',
-    work_version: 4, journal_sequence: 5, output_digest: null, code: 'control.cancelled',
+    work_version: 4, idempotency_key: cancelled.work.idempotency_key,
+    base_head_sequence: 3, base_head_digest: workJournalHeadDigest(cancelled.journal.receipts.slice(0, 3)),
+    journal_sequence: 5, completion_tick: 1, output_digest: null, code: 'control.cancelled',
     failure_retryable: null, failure_observed_tick: null, selected_retry_delay_ticks: null});
   Object.assign(cancelled.work.result, signControlPlaneReceipt('work_completion', completionFields(cancelled.work.result)));
   cancelled.journal.receipts.pop();
@@ -1800,7 +1963,9 @@ test('Work Journal derives exact lease and recovery state from authenticated lif
   const prematureWork = prematureJournal.work_items[0];
   const prematureCompletion = {
     receipt_id: 'receipt:failed-premature-001', work_id: prematureWork.work_id,
-    work_version: 3, lease_id: 'lease:premature-001', journal_sequence: 4,
+    work_version: 3, lease_id: 'lease:premature-001', idempotency_key: prematureWork.idempotency_key,
+    base_head_sequence: 2, base_head_digest: workJournalHeadDigest(prematureJournal.receipts),
+    journal_sequence: 4, completion_tick: 300,
     outcome: 'failed', output_digest: null, code: 'control.execution_failed',
     failure_retryable: false, failure_observed_tick: 300, selected_retry_delay_ticks: null,
   };
@@ -1839,7 +2004,9 @@ test('Work Journal derives exact lease and recovery state from authenticated lif
   const overflowRecovery = await executingJournal();
   const overflowCompletion = {
     receipt_id: 'receipt:failed-overflow-001', work_id: overflowRecovery.work.work_id,
-    work_version: 4, lease_id: 'lease:001', journal_sequence: 5,
+    work_version: 4, lease_id: 'lease:001', idempotency_key: overflowRecovery.work.idempotency_key,
+    base_head_sequence: 3, base_head_digest: workJournalHeadDigest(overflowRecovery.journal.receipts),
+    journal_sequence: 5, completion_tick: 999000,
     outcome: 'failed', output_digest: null, code: 'control.retry_tick_overflow',
     failure_retryable: true, failure_observed_tick: 999000, selected_retry_delay_ticks: 1000,
   };
@@ -1902,7 +2069,10 @@ test('Work Journal derives exact lease and recovery state from authenticated lif
   }
   const terminalCompletion = {
     receipt_id: 'receipt:failed-recovery-001', work_id: terminalWork.work_id,
-    work_version: 7, lease_id: 'lease:003', journal_sequence: 8,
+    work_version: 7, lease_id: 'lease:003', idempotency_key: terminalWork.idempotency_key,
+    base_head_sequence: 6,
+    base_head_digest: workJournalHeadDigest(terminalJournal.receipts.slice(0, 6)),
+    journal_sequence: 8, completion_tick: 300,
     outcome: 'failed', output_digest: null, code: 'control.recovery_ceiling_exceeded',
     failure_retryable: null, failure_observed_tick: null, selected_retry_delay_ticks: null,
   };
@@ -1951,7 +2121,9 @@ test('Work Journal authenticates and correlates bounded resume history', async (
   work.cancellation_history = [work.cancellation];
   const cancellationCompletion = {
     receipt_id: 'receipt:cancelled-001', work_id: work.work_id, work_version: 2,
-    lease_id: null, journal_sequence: 3, outcome: 'cancelled', output_digest: null,
+    lease_id: null, idempotency_key: work.idempotency_key,
+    base_head_sequence: 1, base_head_digest: workJournalHeadDigest(journal.receipts),
+    journal_sequence: 3, completion_tick: 1, outcome: 'cancelled', output_digest: null,
     code: 'control.cancelled', failure_retryable: null, failure_observed_tick: null,
     selected_retry_delay_ticks: null,
   };
@@ -2027,7 +2199,9 @@ test('Work Journal authenticates and correlates bounded resume history', async (
   ));
   const laterCompletion = {
     receipt_id: 'receipt:cancelled-001-v4', work_id: recancelWork.work_id, work_version: 4,
-    lease_id: null, journal_sequence: 6, outcome: 'cancelled', output_digest: null,
+    lease_id: null, idempotency_key: recancelWork.idempotency_key,
+    base_head_sequence: 4, base_head_digest: workJournalHeadDigest(recancelJournal.receipts),
+    journal_sequence: 6, completion_tick: 1, outcome: 'cancelled', output_digest: null,
     code: 'control.cancelled', failure_retryable: null, failure_observed_tick: null,
     selected_retry_delay_ticks: null,
   };
@@ -2171,6 +2345,7 @@ test('retry eligibility arithmetic remains within the closed tick range', async 
   }
   authenticateScenarioHead(subject.document.initial);
   subject.document.action.current_tick = 999997;
+  authenticateScenarioScheduler(subject.document.initial, subject.document.action.current_tick);
   const observed = await observeControlPlaneScenario(subject, packageRoot);
   assert.equal(observed.verdict, 'pass');
   assert.equal(observed.terminal_state, 'failed');
@@ -2190,6 +2365,7 @@ test('retry eligibility arithmetic remains within the closed tick range', async 
   }
   authenticateScenarioHead(horizon.subject.document.initial);
   horizon.subject.document.action.current_tick = 998701;
+  authenticateScenarioScheduler(horizon.subject.document.initial, horizon.subject.document.action.current_tick);
   const horizonResult = await observeControlPlaneScenario(horizon.subject, packageRoot);
   assert.equal(horizonResult.verdict, 'pass');
   assert.equal(horizonResult.terminal_state, 'failed');
@@ -2199,34 +2375,35 @@ test('retry eligibility arithmetic remains within the closed tick range', async 
 test('dispatch and journal append reject arithmetic beyond their closed domains', async () => {
   const dispatchFixture = JSON.parse(await readFile(new URL('./scenarios/control-plane/dequeue-acknowledges-after-receipt.json', import.meta.url)));
   dispatchFixture.subject.document.action.current_tick = 1000000;
+  dispatchFixture.subject.document.initial.scheduler_observed_tick = 1000000;
   assert.deepEqual((await observeControlPlaneScenario(dispatchFixture.subject, packageRoot)).codes,
     ['control.lease_tick_overflow']);
 
   const failureFixture = JSON.parse(await readFile(new URL('./scenarios/control-plane/retry-ceiling-terminal-failure.json', import.meta.url)));
-  failureFixture.subject.document.initial.journal_head_sequence = 1000000;
+  failureFixture.subject.document.initial.journal_head_sequence = 20001;
   failureFixture.subject.document.initial.journal_head_digest = 'f'.repeat(64);
   Object.assign(failureFixture.subject.document.initial.journal_head_receipt, {
-    head_sequence: 1000000, head_digest: 'f'.repeat(64),
+    head_sequence: 20001, head_digest: 'f'.repeat(64),
   });
   Object.assign(failureFixture.subject.document.initial.journal_head_receipt, signControlPlaneReceipt(
     'work_journal_head', journalHeadFields(failureFixture.subject.document.initial.journal_head_receipt),
   ));
   assert.deepEqual((await observeControlPlaneScenario(failureFixture.subject, packageRoot)).codes,
-    ['control.lease_history_invalid']);
+    ['schema.constraint']);
 
   const recoveryFixture = JSON.parse(await readFile(new URL('./scenarios/control-plane/in-flight-work-recovers-agent-crash.json', import.meta.url)));
   const recoveryInitial = recoveryFixture.subject.document.initial;
   recoveryFixture.subject.document.action.recovery_tick = 999000;
-  recoveryInitial.journal_head_sequence = 999999;
+  recoveryInitial.journal_head_sequence = 20001;
   recoveryInitial.journal_head_digest = 'f'.repeat(64);
   Object.assign(recoveryInitial.journal_head_receipt, {
-    head_sequence: 999999, head_digest: 'f'.repeat(64),
+    head_sequence: 20001, head_digest: 'f'.repeat(64),
   });
   Object.assign(recoveryInitial.journal_head_receipt, signControlPlaneReceipt(
     'work_journal_head', journalHeadFields(recoveryInitial.journal_head_receipt),
   ));
-  recoveryFixture.subject.document.action.expected_journal_head_sequence = 999999;
+  recoveryFixture.subject.document.action.expected_journal_head_sequence = 20001;
   recoveryFixture.subject.document.action.expected_journal_head_digest = 'f'.repeat(64);
   assert.deepEqual((await observeControlPlaneScenario(recoveryFixture.subject, packageRoot)).codes,
-    ['control.lease_history_invalid']);
+    ['schema.constraint']);
 });

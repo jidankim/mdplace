@@ -36,151 +36,151 @@
     {
       "fixture_id": "FIX-CP-REC-001",
       "path": "scenarios/control-plane/durable-enqueue-survives-process-loss.json",
-      "fixture_sha256": "7fd9e4defe20343c662de2eceb8595245d5608572157bcb211f17ab508738482",
+      "fixture_sha256": "3ee878dfaa9c72fdc5392054a289352e2e4c10362cd3abfa124d753c91a38c96",
       "observable_result_sha256": "8b6a55856e8e46cbe2f7695d179abfce229f3357611901ca9f259ab2be4b06c7"
     },
     {
       "fixture_id": "FIX-CP-POS-001",
       "path": "scenarios/control-plane/dequeue-acknowledges-after-receipt.json",
-      "fixture_sha256": "f8bd748dfa18f2a7e444d5fe26e11a331c3779669c80cd7bd68f3df6cf4daada",
+      "fixture_sha256": "a92a6319738d781fe25d89f385e586383d5992785818471da4df797dcff604bd",
       "observable_result_sha256": "f0521a55079c147cd2c188b571aa27035867489a5f3afdc8640e07fec1aa4f0d"
     },
     {
       "fixture_id": "FIX-CP-REC-002",
       "path": "scenarios/control-plane/leased-work-remains-recoverable.json",
-      "fixture_sha256": "5441000e1ed99bf8f10208084bee0a47f67551dfd75642a63bacdbb123c9aae9",
+      "fixture_sha256": "e55dfa3748da140d65fd80fef40b30ac27ba06f824b6a382cbeac256b578e610",
       "observable_result_sha256": "188dd1ea4e854f66f87e263e136b383ef1cf2a17792bf44aa3a215436bf7859e"
     },
     {
       "fixture_id": "FIX-CP-POS-002",
       "path": "scenarios/control-plane/first-retry-recorded.json",
-      "fixture_sha256": "82b8d3ba79b7051bbab751bce2aa067f2d8569fc83e91dba763d3f78328a3c00",
+      "fixture_sha256": "0bc29a0496486ed5e2d50c5aca2af59a41e31a65f75370c569408880e649bb02",
       "observable_result_sha256": "997b20265a51ffb4e46f81627f529c7182eb8297bde09dc8c2141486e12d32d9"
     },
     {
       "fixture_id": "FIX-CP-BND-001",
       "path": "scenarios/control-plane/retry-ceiling-terminal-failure.json",
-      "fixture_sha256": "caa9053178c45d721912ba1795604e5fd4885f3d6ff7dcb05dacb0f675c359a0",
+      "fixture_sha256": "80f0a1ea7dc30ceeb99805d1e66e4ab28ab1f074f3cf65d0cf589b8fde2ad3b9",
       "observable_result_sha256": "0dcbfe24389c4d4d19e506874aa4cec594a3813965562889b4a522bb32fb5870"
     },
     {
       "fixture_id": "FIX-CP-ILLEGAL-001",
       "path": "scenarios/control-plane/retry-beyond-ceiling-denied.json",
-      "fixture_sha256": "e0710f93ab84e24a225dd595722f99ace0fd6e5799c9bef902bbb680739dd8cf",
+      "fixture_sha256": "7ecc14e5c9b46c344cce7c0ca18f2a6aa83d1b8904dbe20636d827e82f8cbdfd",
       "observable_result_sha256": "9744415332db50464f08faac3e7da35de99332bab34e1e042d018f977d7a038f"
     },
     {
       "fixture_id": "FIX-CP-POS-003",
       "path": "scenarios/control-plane/cancellation-before-dispatch-durable.json",
-      "fixture_sha256": "45cb389d3c0571d3cd0ac953cfdede73ae3f5cd30b2e6aeb0672e3173b1a4454",
+      "fixture_sha256": "3e873e46203eea2db99362b315e94df59daed4c2e6fa0a2169610b181a7015e4",
       "observable_result_sha256": "38ce51caad7084c1b87618412597727b4061cf2a41ca65181210cd9f58f161a9"
     },
     {
       "fixture_id": "FIX-CP-POS-004",
       "path": "scenarios/control-plane/cancellation-during-execution-durable.json",
-      "fixture_sha256": "d8e4f54d99c073cdcfdc287f2ea8b2daa9252087a301eb3ef92ce4f1ec2c2c56",
+      "fixture_sha256": "cc398256f471a4eefc963dc84b3c6dfb8a91f52e10aa70b58d61fe1428af4bfc",
       "observable_result_sha256": "606e4dd379737102edc2f8765a1d70f7a277faa4993b72350029bc8dea59fbd5"
     },
     {
       "fixture_id": "FIX-CP-REC-003",
       "path": "scenarios/control-plane/cancelled-work-persists-restart.json",
-      "fixture_sha256": "25022a2e69a3fe99c4c4f094f615a89e41c8d53543016c0756ace7a19b2fe981",
+      "fixture_sha256": "1069ddae94e28ed86aac79bc1b18d75243039876292f011a3189486ab09c9aaf",
       "observable_result_sha256": "7c0a3524aa8e06d24a599738049772aa4e38f921a06ffeca8f6ce472f83b3347"
     },
     {
       "fixture_id": "FIX-CP-POS-005",
       "path": "scenarios/control-plane/authorized-bounded-resume-recorded.json",
-      "fixture_sha256": "16acd0965fee6dd7e93cc7b8cae531fc78e5b0f6d2bd73b0cd9e5dda4835ba82",
+      "fixture_sha256": "0f7f6b24845a1f4fce6f1cc28cb17fd062b9e97c20d9b257d8c30c74fdc595af",
       "observable_result_sha256": "68fd0b0245230c9bb4904de12f781628439d3c25486ea6b1d77d4e1d1ae13656"
     },
     {
       "fixture_id": "FIX-CP-REC-004",
       "path": "scenarios/control-plane/queued-work-resumes-agent-restart.json",
-      "fixture_sha256": "b0732a4b5d25767149d83bb400eda8c229d409b9f80a365eb93bca9ea9c1b76b",
+      "fixture_sha256": "e97c23efab7fb90156342cffdb97f1b27d24a7188bb65107c16197f386817d95",
       "observable_result_sha256": "58033c9e33deb7d6fe17b3d6252f59d0b80e3d89b1abe49c1a4641d1592c6c43"
     },
     {
       "fixture_id": "FIX-CP-REC-005",
       "path": "scenarios/control-plane/in-flight-work-recovers-agent-crash.json",
-      "fixture_sha256": "090e548d7b97cfc8a22739f02a29345d5f37812eaccc280962fda595e162a052",
+      "fixture_sha256": "8ba7b0c8f92b468ab8b95af5abc2e526df6449194a71efb2e81231bfffd510de",
       "observable_result_sha256": "4e6ebdd57d1ee970d2bfa1169a7d022b56a140c02a82b5184731dc5440b70638"
     },
     {
       "fixture_id": "FIX-CP-REC-006",
       "path": "scenarios/control-plane/completed-work-not-repeated-restart.json",
-      "fixture_sha256": "192293a4ca95b6bbb1d0f5fd34d528083772db33433062c68f5ae80d669a26ca",
+      "fixture_sha256": "705921882ede027a3b6e9f6df69ca460155ad1cf288e91184b48d4af7ce737ed",
       "observable_result_sha256": "32d71f9600247084cf01edeee2630c82a5caf5028766d4523f941acfcd400016"
     },
     {
       "fixture_id": "FIX-CP-POS-006",
       "path": "scenarios/control-plane/duplicate-enqueue-idempotent.json",
-      "fixture_sha256": "99b83d0c20b6e90a2b6ad0a7f6b964aba3ca274dd006e94a0319df34a7575243",
+      "fixture_sha256": "2ab8992999b4c94046c2cc7f2835951ed3e2b22f988293ab4f0ffc4542c9c5ab",
       "observable_result_sha256": "f0d1d29f765b32ff611e753cc7a869ed88d7a066f685a17934b7a4b0d838b0a7"
     },
     {
       "fixture_id": "FIX-CP-NEG-001",
       "path": "scenarios/control-plane/concurrent-duplicate-one-owner.json",
-      "fixture_sha256": "99621f1f30f70e3ded3a21c2b7e16b8614d3bc7fb2dc0ab7410ed8586a3c4459",
+      "fixture_sha256": "417527c68db867471d243245502c4a73f6babaaa27ff2c6419e8980fac61891e",
       "observable_result_sha256": "ed4670f99e53441f258bb7a24e5e46a54f9496ee86e49223e95a3a61ba3ad49e"
     },
     {
       "fixture_id": "FIX-CP-STATE-001",
       "path": "scenarios/control-plane/stale-work-version-rejected.json",
-      "fixture_sha256": "6a5a7a373d027c457e7733709c4b69506bdc824bad57884729d08ba2acfd9559",
+      "fixture_sha256": "59b989e98ff47f7b5cc7f79816b9f6c06ee6fe51163923c32cdbb33bcd8fb14f",
       "observable_result_sha256": "478d24a53aaf20268e716f59b270f8156dd9dd5ecf1c3416009b3d5d9f6f28b2"
     },
     {
       "fixture_id": "FIX-CP-STATE-002",
       "path": "scenarios/control-plane/stale-lease-rejected.json",
-      "fixture_sha256": "55e50fd8ca4a4cf711ac32f39fb93d89fdc2595abac852f5dee100c8383f6997",
+      "fixture_sha256": "76fb76e36b243e4b2e1ac1aca7a1b2c14b326626f21e8ed0928785620f972d8f",
       "observable_result_sha256": "20250447883932b53bc98d410f21a9fde05ee92c4cf58149e6ec99c1455fce51"
     },
     {
       "fixture_id": "FIX-CP-STATE-003",
       "path": "scenarios/control-plane/stale-control-command-rejected.json",
-      "fixture_sha256": "d6a5720bd6f4b10accc345f3b9352e77d8c569d6ad321f1abc53cbbb5465f3bb",
+      "fixture_sha256": "aaf711d7849f30142d9f0813efd52b11ba394cc6ee7ec5455be381f3bdc3442a",
       "observable_result_sha256": "c4076a2a0b710711f25269c2e8f184f3c2b3a3d05572f91b7f01d4ecb8da9577"
     },
     {
       "fixture_id": "FIX-CP-AUTH-001",
       "path": "scenarios/control-plane/readiness-work-journal-unavailable.json",
-      "fixture_sha256": "d9b5972aa5113d5e1cc76b7e954b1d812d839a5c4e00357ac108c74fc3214ac7",
+      "fixture_sha256": "70d65655e3bedc5e4d1a9032cac4af5e84b9bbad8fea13e47a55b7b0cfc5b974",
       "observable_result_sha256": "5643b8847a183efef6192d9b0678968bf3406b2248c83190dc3501bc3bf08796"
     },
     {
       "fixture_id": "FIX-CP-AUTH-002",
       "path": "scenarios/control-plane/readiness-semantic-dependency-unavailable.json",
-      "fixture_sha256": "c502734fc872578f959842624adce7e00f4436869d059763128380b00ddee94e",
+      "fixture_sha256": "db9e61259bb73a85cfdd840928c9ffb5f3d5855d13a5793ccca57226b7e06c49",
       "observable_result_sha256": "bd8857c5282de5299fdfa8e854e15c747e31b46ac97c7fb9e56e2b546102dff6"
     },
     {
       "fixture_id": "FIX-CP-AUTH-003",
       "path": "scenarios/control-plane/readiness-exclusive-writer-absent.json",
-      "fixture_sha256": "3978c52a6e0f450af8384fad021edb8fe4f585f63c987eaa124ba2f3f08061ec",
+      "fixture_sha256": "510b498da2ad1bd03015b6a9548ddc4475ef2f8820339f3fdda781664791a127",
       "observable_result_sha256": "d9e7c6a5bbf71e22ed269b9304470dfcc1dc96fe76ff6d2255d76196b110f5d4"
     },
     {
       "fixture_id": "FIX-CP-POS-007",
       "path": "scenarios/control-plane/authenticated-local-control-access.json",
-      "fixture_sha256": "7047655485ee4fa31037375133788ccc66eaa0454effefa1f196ae113442c808",
+      "fixture_sha256": "b851b810528397afb7397061589a1967fc259e8d92ae0c8372b85ed058c2bbbe",
       "observable_result_sha256": "c0f40c41009d487ddb348c431bc505f5b851ec956e294a14605e6423d633ca7a"
     },
     {
       "fixture_id": "FIX-CP-AUTH-004",
       "path": "scenarios/control-plane/unauthenticated-nonlocal-control-denied.json",
-      "fixture_sha256": "87e4881aec8639f95d7bfa45e5c0a007e702e25aca5e7d3e5302172b1410ecde",
+      "fixture_sha256": "84c1704fd580c0c94b75a2e01affc615d42b4ec6a0c376af1e4daab0f482e498",
       "observable_result_sha256": "21a5ba15720e8923de9899b1578b50ff8e5e00d63511021e136de2ac5deba3b2"
     },
     {
       "fixture_id": "FIX-CP-POS-008",
       "path": "scenarios/control-plane/persistent-agent-acquires-retains-writer.json",
-      "fixture_sha256": "176229a106ec2085c7a4e6a9909f5b688ec2da0bc5118775ecdfac7109449ed0",
+      "fixture_sha256": "2357f3206cae12cc5ace6e94d253f7eccf7fa2403d7517aac577c155cb2bfd2f",
       "observable_result_sha256": "a83fa6a02d4e0bf6f24bda3af3a4fdd685ed53c8fceb93e22ffde61478c29d9e"
     },
     {
       "fixture_id": "FIX-CP-AUTH-005",
       "path": "scenarios/control-plane/competing-agent-writer-denied.json",
-      "fixture_sha256": "c522957f896eddf6c838b90d7483675be188c8964a5a7cfd854be6f0adce2d88",
+      "fixture_sha256": "63f43a64798c5e7fc61a353e75555d751f5d88bbeedf8c4c5147e3364496cb2f",
       "observable_result_sha256": "b5944b29d350b159e968a72680a0fe26c856de1f33e5aa24aa13c1f1d6c5826b"
     }
   ],

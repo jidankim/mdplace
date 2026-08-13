@@ -53,7 +53,14 @@ function lifecycleRecords(initial) {
 }
 
 export function scenarioLifecycleDigest(initial) {
-  const receipts = lifecycleRecords(initial).map(({receipt}) => receipt);
+  return scenarioLifecycleDigestAtSequence(initial, initial.journal_head_sequence);
+}
+
+export function scenarioLifecycleDigestAtSequence(initial, sequence) {
+  if (sequence < initial.journal_prefix_receipt.head_sequence) return null;
+  const receipts = lifecycleRecords(initial)
+    .filter(({receipt}) => receipt.journal_sequence <= sequence)
+    .map(({receipt}) => receipt);
   if (receipts.length === 0) return initial.journal_prefix_receipt.head_digest;
   return createHash('sha256').update(canonicalJson({
     prefix_head_sequence: initial.journal_prefix_receipt.head_sequence,
@@ -91,7 +98,12 @@ export function scenarioLifecycleIsValid(initial) {
   const work = initial.work;
   const records = lifecycleRecords(initial);
   const prefix = initial.journal_prefix_receipt;
+  const prefixLeaseIds = prefix.active_leases.map(({lease_id: id}) => id);
+  const prefixWorkIds = prefix.active_leases.map(({work_id: id}) => id);
   const prefixIsAuthenticated = prefix.journal_id === `journal:${initial.vault_id.replace(':', '-')}` &&
+    prefix.active_leases.length <= prefix.head_sequence &&
+    new Set(prefixLeaseIds).size === prefixLeaseIds.length &&
+    new Set(prefixWorkIds).size === prefixWorkIds.length &&
     verifyControlPlaneReceipt(
       'work_journal_prefix', journalPrefixReceiptFields(prefix), prefix, initial.persistent_agent_id,
     );
@@ -208,15 +220,30 @@ export function scenarioLifecycleIsValid(initial) {
         if (state === 'cancelled') {
           if (cancellation === null || receipt.outcome !== 'cancelled' ||
               receipt.work_version !== version ||
+              receipt.idempotency_key !== work.idempotency_key ||
+              receipt.base_head_sequence !== cancellation.journal_sequence - 1 ||
+              receipt.base_head_digest !== scenarioLifecycleDigestAtSequence(
+                initial, receipt.base_head_sequence,
+              ) ||
               receipt.completion_tick !== cancellation.cancellation_tick ||
               receipt.journal_sequence !== cancellation.journal_sequence + 1) return false;
         } else if (state === 'failed') {
           if (receipt.outcome !== 'failed' || receipt.work_version !== version ||
+              receipt.idempotency_key !== work.idempotency_key ||
+              receipt.base_head_sequence !== failedRecovery.journal_sequence - 1 ||
+              receipt.base_head_digest !== scenarioLifecycleDigestAtSequence(
+                initial, receipt.base_head_sequence,
+              ) ||
               receipt.completion_tick !== failedRecovery?.recovery_tick ||
               receipt.journal_sequence !== failedRecovery.journal_sequence + 1) return false;
         } else if (state === 'executing') {
           if (!['succeeded', 'failed'].includes(receipt.outcome) ||
               receipt.work_version !== version + 1 || receipt.lease_id !== lease?.lease_id ||
+              receipt.idempotency_key !== work.idempotency_key ||
+              receipt.base_head_sequence !== receipt.journal_sequence - 1 ||
+              receipt.base_head_digest !== scenarioLifecycleDigestAtSequence(
+                initial, receipt.base_head_sequence,
+              ) ||
               receipt.completion_tick < startedTick || receipt.completion_tick >= lease.expires_tick ||
               (receipt.outcome === 'failed' && receipt.completion_tick !== receipt.failure_observed_tick)) return false;
           state = receipt.outcome; version = receipt.work_version; lease = null; startedTick = null;
