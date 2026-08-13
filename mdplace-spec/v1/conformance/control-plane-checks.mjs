@@ -32,7 +32,7 @@ const transitionPaths = [
 const transitionInventories = new Map([
   ['contracts/transitions/work-queue-lifecycle.json', {
     prefix: 'TR-CPWORK-',
-    rowsDigest: 'a0d0183a254f3d54c8e73c3805c8228befa56307471e41b10f03dc5c53f399a5',
+    rowsDigest: '2f480647aa222a82ae43d4af35d676caab5955fb00825fdd6ced4d02ede9a404',
     states: ['absent', 'queued', 'leased', 'executing', 'terminal'],
     commands: ['enqueue_work', 'dispatch_work', 'acknowledge_work', 'complete_work', 'recover_work'],
   }],
@@ -44,7 +44,7 @@ const transitionInventories = new Map([
   }],
   ['contracts/transitions/cancellation-lifecycle.json', {
     prefix: 'TR-CPCANCEL-',
-    rowsDigest: 'ccf49f36b5fb89ee98f964b7715df5f6c72319dafcc74b7999fa61fccfeacb25',
+    rowsDigest: '34047fa8894cba4db4794f8b4d9624fa80f98ae423890f951462b85e6bec0d3e',
     states: ['queued', 'leased', 'executing', 'retry_wait', 'cancelled', 'succeeded', 'failed'],
     commands: ['cancel_work', 'resume_work'],
   }],
@@ -107,6 +107,18 @@ function journalCancellationFields(cancellation) {
     cancellation.resume_ceiling];
 }
 
+function journalEnqueueFields(receipt) {
+  return [receipt.receipt_id, receipt.work_id, receipt.work_version, receipt.idempotency_key,
+    receipt.input_digest, receipt.base_head_sequence, receipt.base_head_digest,
+    receipt.journal_sequence];
+}
+
+function journalResumeFields(receipt) {
+  return [receipt.receipt_id, receipt.work_id, receipt.cancelled_work_version,
+    receipt.resumed_work_version, receipt.idempotency_key, receipt.cancellation_receipt_id,
+    receipt.resume_count, receipt.journal_sequence];
+}
+
 const authorityByTransitionCommand = new Map([
   ['enqueue_work', 'work_submitter'], ['dispatch_work', 'scheduler'],
   ['acknowledge_work', 'mdplace_agent'], ['complete_work', 'mdplace_agent'], ['recover_work', 'mdplace_agent'],
@@ -136,7 +148,7 @@ function transitionTarget(prefix, state, command) {
   }
   if (prefix === 'TR-CPCANCEL-') {
     if (command === 'cancel_work' && ['queued', 'leased', 'executing', 'retry_wait', 'cancelled'].includes(state)) return 'cancelled';
-    if (state === 'cancelled' && command === 'resume_work') return 'queued';
+    if (command === 'resume_work' && ['queued', 'cancelled'].includes(state)) return 'queued';
   }
   if (prefix === 'TR-CPREADY-') {
     if (command === 'dependency_lost') return 'blocked';
@@ -213,6 +225,22 @@ function workJournalStateValid(journal) {
     return work === undefined || receipt.work_version > work.work_version;
   })) return false;
   return journal.work_items.every((work) => {
+    const enqueueReceipt = work.enqueue_receipt;
+    const matchingEnqueueReceipt = journal.receipts.find((receipt) =>
+      receipt.receipt_id === enqueueReceipt?.receipt_id);
+    const enqueueBaseReceipts = orderedReceipts.filter((receipt) =>
+      receipt.journal_sequence <= enqueueReceipt?.base_head_sequence);
+    const enqueueValid = enqueueReceipt !== null && enqueueReceipt.work_id === work.work_id &&
+      enqueueReceipt.work_version === 1 && enqueueReceipt.work_version <= work.work_version &&
+      enqueueReceipt.idempotency_key === work.idempotency_key &&
+      enqueueReceipt.input_digest === work.input_digest &&
+      enqueueReceipt.journal_sequence === enqueueReceipt.base_head_sequence + 1 &&
+      enqueueReceipt.base_head_digest === canonicalDigest(enqueueBaseReceipts) &&
+      matchingEnqueueReceipt?.receipt_kind === 'enqueue' &&
+      matchingEnqueueReceipt.journal_sequence === enqueueReceipt.journal_sequence &&
+      matchingEnqueueReceipt.work_id === work.work_id && matchingEnqueueReceipt.work_version === 1 &&
+      matchingEnqueueReceipt.state === 'queued' &&
+      verifyControlPlaneReceipt('work_enqueue', journalEnqueueFields(enqueueReceipt), enqueueReceipt);
     const leaseBound = ['leased', 'executing'].includes(work.state);
     const leaseValid = leaseBound
       ? work.lease !== null && work.lease.work_id === work.work_id &&
@@ -231,6 +259,7 @@ function workJournalStateValid(journal) {
       ? work.state !== 'cancelled'
       : cancellation.work_id === work.work_id && cancellation.idempotency_key === work.idempotency_key &&
         cancellation.work_version <= work.work_version && cancellation.journal_sequence <= journal.head_sequence &&
+        cancellation.resume_count <= work.resume_count && cancellation.resume_ceiling === journal.limits.max_resume_count &&
         (work.state !== 'cancelled' || cancellation.work_version === work.work_version) &&
         matchingCancellationReceipt?.receipt_kind === 'cancellation' &&
         matchingCancellationReceipt.journal_sequence === cancellation.journal_sequence &&
@@ -238,6 +267,25 @@ function workJournalStateValid(journal) {
         matchingCancellationReceipt.work_version === cancellation.work_version &&
         matchingCancellationReceipt.state === 'cancelled' &&
         verifyControlPlaneReceipt('work_journal_cancellation', journalCancellationFields(cancellation), cancellation);
+    const resumeReceipt = work.resume_receipt;
+    const matchingResumeReceipt = resumeReceipt === null ? null
+      : journal.receipts.find((receipt) => receipt.receipt_id === resumeReceipt.receipt_id);
+    const resumeValid = work.resume_count === 0
+      ? resumeReceipt === null
+      : resumeReceipt !== null && work.resume_count === 1 && cancellation !== null &&
+        resumeReceipt.work_id === work.work_id && resumeReceipt.idempotency_key === work.idempotency_key &&
+        resumeReceipt.cancelled_work_version === cancellation.work_version &&
+        resumeReceipt.resumed_work_version === cancellation.work_version + 1 &&
+        resumeReceipt.resumed_work_version <= work.work_version &&
+        resumeReceipt.cancellation_receipt_id === cancellation.receipt_id &&
+        resumeReceipt.journal_sequence > cancellation.journal_sequence &&
+        resumeReceipt.journal_sequence <= journal.head_sequence &&
+        matchingResumeReceipt?.receipt_kind === 'resume' &&
+        matchingResumeReceipt.journal_sequence === resumeReceipt.journal_sequence &&
+        matchingResumeReceipt.work_id === work.work_id &&
+        matchingResumeReceipt.work_version === resumeReceipt.resumed_work_version &&
+        matchingResumeReceipt.state === 'queued' &&
+        verifyControlPlaneReceipt('work_resume', journalResumeFields(resumeReceipt), resumeReceipt);
     const matchingCompletionReceipt = terminal
       ? journal.receipts.find((receipt) => receipt.receipt_id === result?.receipt_id)
       : null;
@@ -263,6 +311,8 @@ function workJournalStateValid(journal) {
         matchingCompletionReceipt.work_version === work.work_version &&
         matchingCompletionReceipt.lease_id === result.lease_id &&
         matchingCompletionReceipt.state === work.state &&
+        (result.outcome !== 'cancelled' ||
+          result.journal_sequence === cancellation?.journal_sequence + 1) &&
         ((result.outcome === 'cancelled' && result.lease_id === null) ||
           (typeof result.lease_id === 'string' && matchingLeaseReceipt?.lease_id === result.lease_id)) &&
         verifyControlPlaneReceipt('work_completion', [
@@ -270,7 +320,7 @@ function workJournalStateValid(journal) {
           result.journal_sequence, result.outcome, result.output_digest ?? '', result.code ?? '',
         ], result)
       : work.result === null;
-    return leaseValid && retryValid && cancellationValid && resultValid &&
+    return enqueueValid && leaseValid && retryValid && cancellationValid && resumeValid && resultValid &&
       work.recovery_interruption_count <= journal.limits.max_recovery_interruptions;
   });
 }
@@ -344,7 +394,7 @@ function controlCommandStateValid(command, journal) {
   if (expectedBaseKind === null) return true;
   if (!Array.isArray(command.base_references)) return false;
   const matchingBases = command.base_references.filter((base) => record(base) && base.kind === expectedBaseKind);
-  if (matchingBases.length !== 1) return false;
+  if (command.base_references.length !== 1 || matchingBases.length !== 1) return false;
   const base = matchingBases[0];
   if (expectedBaseKind === 'work_journal') {
     return base.reference_id === journal?.journal_id && base.version === journal?.head_sequence &&

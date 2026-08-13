@@ -34,22 +34,22 @@
       },
       "preconditions": [
         "Work Journal is available",
-        "idempotency key is new or binds the exact same Work Item input digest"
+        "idempotency key binds the exact same committed Work Item input digest and authenticated EnqueueReceipt"
       ],
       "base_references": [
-        "exact Work Journal head sequence and digest",
+        "original pre-enqueue Work Journal head sequence and digest bound by the EnqueueReceipt",
         "idempotency key and input digest"
       ],
       "emitted_records": [
         "EnqueueReceipt"
       ],
       "filesystem_effects": [
-        "append durable Work Journal record"
+        "none; return the original authenticated EnqueueReceipt"
       ],
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "exact Work Journal head sequence and digest",
+          "original pre-enqueue Work Journal head sequence and digest bound by the EnqueueReceipt",
           "idempotency key and input digest"
         ],
         "retry_result": "return the original durable receipt for the exact binding"

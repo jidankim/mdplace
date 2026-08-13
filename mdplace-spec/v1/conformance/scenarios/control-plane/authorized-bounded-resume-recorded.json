@@ -20,7 +20,7 @@
         "writer_epoch": 1,
         "journal_available": true,
         "semantic_dependency_available": true,
-        "journal_head_sequence": 1,
+        "journal_head_sequence": 2,
         "work": {
           "work_id": "work:001",
           "work_version": 2,
@@ -44,11 +44,11 @@
             "work_id": "work:001",
             "work_version": 2,
             "lease_id": null,
-            "journal_sequence": 1,
+            "journal_sequence": 2,
             "outcome": "cancelled",
             "output_digest": null,
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "22b76d355306badc7cee851dbfb2ef19f4fd9aab8dd537fdd6485357ed77f248",
+            "signature_digest": "125103bbf7ca3d9cf13f0d1e3376271cf7884c3bdc70cb9e026a8ab5f4a84afe",
             "authenticated": true,
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
@@ -65,10 +65,28 @@
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "d06770fcf5b95fd1177a4e072f1e8af64d7367bbeb0da6768b8725d6fe2c523e",
-            "authenticated": true
+            "signature_digest": "ca928ac19ef867c00d0230c5201ffdf3d76c3bf928fd9711f0bc7a9246b43909",
+            "authenticated": true,
+            "requested_by": "person:owner-001",
+            "resume_count": 0,
+            "resume_ceiling": 1
           },
-          "resume_receipt": null
+          "resume_receipt": null,
+          "enqueue_receipt": {
+            "receipt_id": "enqueue-receipt:001",
+            "work_id": "work:001",
+            "work_version": 1,
+            "idempotency_key": "idempotency:work-001",
+            "input_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "base_head_sequence": 0,
+            "base_head_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "journal_sequence": 1,
+            "signature_scheme": "hmac-sha256",
+            "signing_key_id": "signer-key:primary-001",
+            "signer_agent_id": "agent:primary-001",
+            "signature_digest": "fc974383a529ee08fb70d221b020b18fe5ffeb5e9e9a175c0880a58704148dca",
+            "authenticated": true
+          }
         },
         "control_channel": {
           "state": "open",
@@ -90,12 +108,12 @@
         "journal_head_receipt": {
           "receipt_id": "journal-head-receipt:vault-001",
           "journal_id": "journal:vault-001",
-          "head_sequence": 1,
+          "head_sequence": 2,
           "head_digest": "a37ec54bcef281a61afc8b70e00ac6f0a5a4e76ebc1839589090a4200d21cc10",
           "signature_scheme": "hmac-sha256",
           "signing_key_id": "signer-key:primary-001",
           "signer_agent_id": "agent:primary-001",
-          "signature_digest": "b0a9e1aaae63fdb3f0bfed49a958b73017fe3e01b98daca63826065681556f6d",
+          "signature_digest": "142dd459f84386fda81d1aa17892b1d672829bdccbc57b1ae01ee14394b7fbcf",
           "authenticated": true
         },
         "dependency_state_receipt": {
@@ -244,7 +262,21 @@
         "current_tick": 1,
         "expected_dependency_state_digest": null,
         "expected_journal_head_digest": null,
-        "expected_scheduler_state_digest": null
+        "expected_scheduler_state_digest": null,
+        "vault_owner_receipt": {
+          "receipt_id": "vault-owner-receipt:resume-001",
+          "principal_id": "person:owner-001",
+          "vault_id": "vault:001",
+          "action_kind": "resume",
+          "work_id": "work:001",
+          "work_version": 2,
+          "idempotency_key": "idempotency:work-001",
+          "signature_scheme": "hmac-sha256",
+          "signing_key_id": "signer-key:primary-001",
+          "signer_agent_id": "agent:primary-001",
+          "signature_digest": "97824c55d7d268cd4aaa35759f45d000d85ecb47f57c64eea9f78e5b8b1ffbd9",
+          "authenticated": true
+        }
       }
     }
   },

@@ -4,7 +4,7 @@
   "journal_id": "journal:vault-001",
   "vault_id": "vault:001",
   "head_sequence": 1,
-  "head_digest": "80596a53d7cf9787ef4d59b2d76d66ba05e9e13ef55496a74b583890279972e7",
+  "head_digest": "051df522e314383d199a81b48158b211dabee015d7bf2b4361388b814ac80a09",
   "semantic_authority": "none",
   "limits": {
     "max_total_attempts": 3,
@@ -43,12 +43,29 @@
       "recovery_interruption_count": 0,
       "lease": null,
       "cancellation": null,
-      "result": null
+      "result": null,
+      "enqueue_receipt": {
+        "receipt_id": "enqueue-receipt:001",
+        "work_id": "work:001",
+        "work_version": 1,
+        "idempotency_key": "idempotency:work-001",
+        "input_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "base_head_sequence": 0,
+        "base_head_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "journal_sequence": 1,
+        "signature_scheme": "hmac-sha256",
+        "signing_key_id": "signer-key:primary-001",
+        "signer_agent_id": "agent:primary-001",
+        "signature_digest": "fc974383a529ee08fb70d221b020b18fe5ffeb5e9e9a175c0880a58704148dca",
+        "authenticated": true
+      },
+      "resume_count": 0,
+      "resume_receipt": null
     }
   ],
   "receipts": [
     {
-      "receipt_id": "receipt:enqueue-001",
+      "receipt_id": "enqueue-receipt:001",
       "receipt_kind": "enqueue",
       "journal_sequence": 1,
       "work_id": "work:001",

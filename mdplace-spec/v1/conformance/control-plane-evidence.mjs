@@ -30,8 +30,8 @@ const deniedTransitions = new Map([
     'TR-CPRETRY-007', 'TR-CPRETRY-008', 'TR-CPRETRY-009',
   ]],
   ['contracts/transitions/cancellation-lifecycle.json', [
-    'TR-CPCANCEL-002', 'TR-CPCANCEL-004', 'TR-CPCANCEL-006', 'TR-CPCANCEL-008',
-    'TR-CPCANCEL-011', 'TR-CPCANCEL-012', 'TR-CPCANCEL-013', 'TR-CPCANCEL-014',
+    'TR-CPCANCEL-004', 'TR-CPCANCEL-006', 'TR-CPCANCEL-008', 'TR-CPCANCEL-011',
+    'TR-CPCANCEL-012', 'TR-CPCANCEL-013', 'TR-CPCANCEL-014',
   ]],
   ['contracts/transitions/readiness-lifecycle.json', ['TR-CPREADY-003']],
   ['contracts/transitions/agent-lifecycle.json', [

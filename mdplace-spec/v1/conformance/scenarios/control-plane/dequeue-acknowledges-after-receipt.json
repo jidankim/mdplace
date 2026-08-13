@@ -42,7 +42,22 @@
           "lease_expires_tick": null,
           "completion_receipt": null,
           "cancellation_receipt": null,
-          "resume_receipt": null
+          "resume_receipt": null,
+          "enqueue_receipt": {
+            "receipt_id": "enqueue-receipt:001",
+            "work_id": "work:001",
+            "work_version": 1,
+            "idempotency_key": "idempotency:work-001",
+            "input_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "base_head_sequence": 0,
+            "base_head_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "journal_sequence": 1,
+            "signature_scheme": "hmac-sha256",
+            "signing_key_id": "signer-key:primary-001",
+            "signer_agent_id": "agent:primary-001",
+            "signature_digest": "fc974383a529ee08fb70d221b020b18fe5ffeb5e9e9a175c0880a58704148dca",
+            "authenticated": true
+          }
         },
         "control_channel": {
           "state": "open",
@@ -230,7 +245,8 @@
         "current_tick": 1,
         "expected_dependency_state_digest": "c289e61ad636413a47b06ff09a505fd15701b9302e0fe955557e4b7b45ad4111",
         "expected_journal_head_digest": "a37ec54bcef281a61afc8b70e00ac6f0a5a4e76ebc1839589090a4200d21cc10",
-        "expected_scheduler_state_digest": "6974ab1c0f4e5f5cfbb45d9756a8756121a07522cf16a73e07b08dc281ea1c43"
+        "expected_scheduler_state_digest": "6974ab1c0f4e5f5cfbb45d9756a8756121a07522cf16a73e07b08dc281ea1c43",
+        "vault_owner_receipt": null
       }
     }
   },

@@ -36,15 +36,18 @@
     "cancellationReceipt": {
       "type": ["object", "null"],
       "additionalProperties": false,
-      "required": ["receipt_id", "cancellation_id", "work_id", "work_version", "idempotency_key", "journal_sequence", "reason_code", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
+      "required": ["receipt_id", "cancellation_id", "work_id", "work_version", "idempotency_key", "requested_by", "journal_sequence", "reason_code", "resume_count", "resume_ceiling", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
       "properties": {
         "receipt_id": {"type": "string", "pattern": "^cancellation-receipt:[a-z0-9-]{3,64}$"},
         "cancellation_id": {"type": "string", "pattern": "^cancel:[a-z0-9-]{3,64}$"},
         "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
         "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
         "idempotency_key": {"type": "string", "pattern": "^idempotency:[a-z0-9-]{3,64}$"},
+        "requested_by": {"const": "person:owner-001"},
         "journal_sequence": {"type": "integer", "minimum": 1, "maximum": 1000000},
         "reason_code": {"const": "user_requested"},
+        "resume_count": {"type": "integer", "minimum": 0, "maximum": 1},
+        "resume_ceiling": {"const": 1},
         "signature_scheme": {"const": "hmac-sha256"},
         "signing_key_id": {"const": "signer-key:primary-001"},
         "signer_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
@@ -84,6 +87,45 @@
         "cancellation_receipt_id": {"type": "string", "pattern": "^cancellation-receipt:[a-z0-9-]{3,64}$"},
         "resume_count": {"const": 1},
         "journal_sequence": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "signature_scheme": {"const": "hmac-sha256"},
+        "signing_key_id": {"const": "signer-key:primary-001"},
+        "signer_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
+        "signature_digest": {"$ref": "#/$defs/digest"},
+        "authenticated": {"const": true}
+      }
+    },
+    "enqueueReceipt": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["receipt_id", "work_id", "work_version", "idempotency_key", "input_digest", "base_head_sequence", "base_head_digest", "journal_sequence", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
+      "properties": {
+        "receipt_id": {"type": "string", "pattern": "^enqueue-receipt:[a-z0-9-]{3,64}$"},
+        "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
+        "work_version": {"const": 1},
+        "idempotency_key": {"type": "string", "pattern": "^idempotency:[a-z0-9-]{3,64}$"},
+        "input_digest": {"$ref": "#/$defs/digest"},
+        "base_head_sequence": {"type": "integer", "minimum": 0, "maximum": 999999},
+        "base_head_digest": {"$ref": "#/$defs/digest"},
+        "journal_sequence": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "signature_scheme": {"const": "hmac-sha256"},
+        "signing_key_id": {"const": "signer-key:primary-001"},
+        "signer_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
+        "signature_digest": {"$ref": "#/$defs/digest"},
+        "authenticated": {"const": true}
+      }
+    },
+    "vaultOwnerReceipt": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["receipt_id", "principal_id", "vault_id", "action_kind", "work_id", "work_version", "idempotency_key", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
+      "properties": {
+        "receipt_id": {"type": "string", "pattern": "^vault-owner-receipt:[a-z0-9-]{3,64}$"},
+        "principal_id": {"const": "person:owner-001"},
+        "vault_id": {"type": "string", "pattern": "^vault:[a-z0-9-]{3,64}$"},
+        "action_kind": {"enum": ["cancel", "resume"]},
+        "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
+        "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "idempotency_key": {"type": "string", "pattern": "^idempotency:[a-z0-9-]{3,64}$"},
         "signature_scheme": {"const": "hmac-sha256"},
         "signing_key_id": {"const": "signer-key:primary-001"},
         "signer_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
@@ -140,13 +182,14 @@
     "work": {
       "type": ["object", "null"],
       "additionalProperties": false,
-      "required": ["work_id", "work_version", "state", "idempotency_key", "input_digest", "retry_count", "retry_ceiling", "retry_eligible_tick", "recovery_interruption_count", "lease_id", "lease_status", "lease_acquired_tick", "lease_expires_tick", "owner_agent_id", "cancellation_id", "cancellation_receipt", "resume_count", "resume_ceiling", "resume_receipt", "completion_receipt"],
+      "required": ["work_id", "work_version", "state", "idempotency_key", "input_digest", "enqueue_receipt", "retry_count", "retry_ceiling", "retry_eligible_tick", "recovery_interruption_count", "lease_id", "lease_status", "lease_acquired_tick", "lease_expires_tick", "owner_agent_id", "cancellation_id", "cancellation_receipt", "resume_count", "resume_ceiling", "resume_receipt", "completion_receipt"],
       "properties": {
         "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
         "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
         "state": {"enum": ["queued", "leased", "executing", "retry_wait", "cancelled", "succeeded", "failed"]},
         "idempotency_key": {"type": "string", "pattern": "^idempotency:[a-z0-9-]{3,64}$"},
         "input_digest": {"$ref": "#/$defs/digest"},
+        "enqueue_receipt": {"$ref": "#/$defs/enqueueReceipt"},
         "retry_count": {"type": "integer", "minimum": 0, "maximum": 2},
         "retry_ceiling": {"const": 2},
         "retry_eligible_tick": {"type": ["integer", "null"], "minimum": 0, "maximum": 1000000},
@@ -260,7 +303,7 @@
     "action": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["kind", "actor_role", "work_id", "expected_work_version", "expected_journal_head_sequence", "expected_journal_head_digest", "expected_writer_epoch", "expected_dependency_state_digest", "expected_scheduler_state_digest", "lease_id", "idempotency_key", "proposed_work_input_digest", "retryable", "command_version", "command_vault_id", "candidate_agent_id", "current_tick", "recovery_tick", "interruption_count", "writer_lock_receipt", "readiness_observations", "semantic_write_requested", "authority_source"],
+      "required": ["kind", "actor_role", "work_id", "expected_work_version", "expected_journal_head_sequence", "expected_journal_head_digest", "expected_writer_epoch", "expected_dependency_state_digest", "expected_scheduler_state_digest", "lease_id", "idempotency_key", "proposed_work_input_digest", "retryable", "command_version", "command_vault_id", "candidate_agent_id", "current_tick", "recovery_tick", "interruption_count", "writer_lock_receipt", "readiness_observations", "vault_owner_receipt", "semantic_write_requested", "authority_source"],
       "properties": {
         "kind": {"enum": ["enqueue", "dispatch", "acknowledge", "fail", "retry", "cancel", "resume", "restart", "recover", "readiness_check", "control_command", "acquire_writer"]},
         "actor_role": {"enum": ["work_submitter", "scheduler", "mdplace_agent", "vault_owner", "control_client", "launchd_supervisor", "operating_system"]},
@@ -283,6 +326,7 @@
         "interruption_count": {"type": "integer", "minimum": 0, "maximum": 3},
         "writer_lock_receipt": {"$ref": "#/$defs/writerLockReceipt"},
         "readiness_observations": {"$ref": "#/$defs/readinessObservations"},
+        "vault_owner_receipt": {"$ref": "#/$defs/vaultOwnerReceipt"},
         "semantic_write_requested": {"type": "boolean"},
         "authority_source": {"enum": ["none", "work_journal", "scheduler", "mdplace_agent", "child_work", "control_channel", "readiness", "retry", "queue"]}
       },
@@ -296,7 +340,11 @@
         },
         {
           "if": {"properties": {"kind": {"const": "resume"}}},
-          "then": {"properties": {"idempotency_key": {"type": "string"}}}
+          "then": {"properties": {"idempotency_key": {"type": "string"}, "vault_owner_receipt": {"not": {"type": "null"}}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "cancel"}}},
+          "then": {"properties": {"vault_owner_receipt": {"not": {"type": "null"}}}}
         }
       ]
     }

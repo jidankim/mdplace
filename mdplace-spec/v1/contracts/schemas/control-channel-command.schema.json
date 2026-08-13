@@ -27,11 +27,15 @@
   "allOf": [
     {
       "if": {"properties": {"command_kind": {"enum": ["cancel", "resume"]}}},
-      "then": {"properties": {"base_references": {"minItems": 1, "contains": {"properties": {"kind": {"const": "work_item"}}}, "minContains": 1, "maxContains": 1}}}
+      "then": {"properties": {"base_references": {"minItems": 1, "maxItems": 1, "contains": {"properties": {"kind": {"const": "work_item"}}}, "minContains": 1, "maxContains": 1}}}
     },
     {
       "if": {"properties": {"command_kind": {"const": "enqueue"}}},
-      "then": {"properties": {"base_references": {"minItems": 1, "contains": {"properties": {"kind": {"const": "work_journal"}}}, "minContains": 1, "maxContains": 1}}}
+      "then": {"properties": {"base_references": {"minItems": 1, "maxItems": 1, "contains": {"properties": {"kind": {"const": "work_journal"}}}, "minContains": 1, "maxContains": 1}}}
+    },
+    {
+      "if": {"properties": {"command_kind": {"enum": ["status", "doctor", "shutdown"]}}},
+      "then": {"properties": {"base_references": {"maxItems": 0}}}
     }
   ],
   "$defs": {

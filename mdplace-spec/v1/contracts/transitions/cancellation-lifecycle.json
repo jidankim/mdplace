@@ -71,7 +71,7 @@
       "transition_id": "TR-CPCANCEL-002",
       "command_or_event": "resume_work",
       "from_state": "queued",
-      "allowed": false,
+      "allowed": true,
       "actor_authority": {
         "roles": [
           "vault_owner"
@@ -81,13 +81,14 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "resume_work is not legal from queued"
+        "the queued Work Item carries the authenticated original ResumeReceipt",
+        "the request repeats its exact cancelled version, cancellation receipt, idempotency key, and resume count"
       ],
       "base_references": [
-        "exact current lifecycle state and version"
+        "exact authenticated original ResumeReceipt binding"
       ],
       "emitted_records": [
-        "ControlPlaneTransitionDenied"
+        "ResumeReceipt"
       ],
       "filesystem_effects": [
         "none"
@@ -95,13 +96,13 @@
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "exact current lifecycle state and version"
+          "exact authenticated original ResumeReceipt binding"
         ],
-        "retry_result": "return the original denial"
+        "retry_result": "return the original durable receipt for the exact binding"
       },
       "terminal_state": "queued",
       "failure_result": {
-        "code": "control.illegal_transition",
+        "code": "control.precondition_failed",
         "state_effect": "unchanged",
         "emitted_records": [
           "ControlPlaneTransitionDenied"
@@ -110,7 +111,7 @@
           "none"
         ]
       },
-      "recovery": "Preserve the durable state and use a command legal from the current exact version."
+      "recovery": "Return the authenticated original ResumeReceipt without another mutation; otherwise deny."
     },
     {
       "transition_id": "TR-CPCANCEL-003",
