@@ -31,7 +31,7 @@ const transitionPaths = [
 const transitionInventories = new Map([
   ['contracts/transitions/work-queue-lifecycle.json', {
     prefix: 'TR-CPWORK-',
-    rowsDigest: '6244393da8af5fb464fc9626601242413306de7bed005077b86a8b297abe3f69',
+    rowsDigest: 'a0d0183a254f3d54c8e73c3805c8228befa56307471e41b10f03dc5c53f399a5',
     states: ['absent', 'queued', 'leased', 'executing', 'terminal'],
     commands: ['enqueue_work', 'dispatch_work', 'acknowledge_work', 'complete_work', 'recover_work'],
   }],
@@ -49,7 +49,7 @@ const transitionInventories = new Map([
   }],
   ['contracts/transitions/readiness-lifecycle.json', {
     prefix: 'TR-CPREADY-',
-    rowsDigest: 'b7e903aa00eb9a137f715054e6dc5523e3e188915a92be13498e5a00f1bfaeb9',
+    rowsDigest: 'cd2c2252d8b69246c276da19af1005e0af66b3e80617d38c41d003ffadfb8a0a',
     states: ['starting', 'ready', 'blocked'], commands: ['evaluate_readiness', 'dependency_lost'],
   }],
   ['contracts/transitions/agent-lifecycle.json', {
@@ -97,6 +97,13 @@ const recoveryRowsDigest = '32a4d35d7b661551872babf4015dd129b061b4915e5e3a64621a
 
 function canonicalDigest(value) {
   return createHash('sha256').update(canonicalJson(value)).digest('hex');
+}
+
+function journalCancellationFields(cancellation) {
+  return [cancellation.receipt_id, cancellation.cancellation_id, cancellation.work_id,
+    cancellation.work_version, cancellation.idempotency_key, cancellation.requested_by,
+    cancellation.journal_sequence, cancellation.reason_code, cancellation.resume_count,
+    cancellation.resume_ceiling];
 }
 
 const authorityByTransitionCommand = new Map([
@@ -216,6 +223,20 @@ function workJournalStateValid(journal) {
       : work.retry_eligible_tick === null;
     const terminal = ['cancelled', 'succeeded', 'failed'].includes(work.state);
     const result = work.result;
+    const cancellation = work.cancellation;
+    const matchingCancellationReceipt = cancellation === null ? null
+      : journal.receipts.find((receipt) => receipt.receipt_id === cancellation.receipt_id);
+    const cancellationValid = cancellation === null
+      ? work.state !== 'cancelled'
+      : cancellation.work_id === work.work_id && cancellation.idempotency_key === work.idempotency_key &&
+        cancellation.work_version <= work.work_version && cancellation.journal_sequence <= journal.head_sequence &&
+        (work.state !== 'cancelled' || cancellation.work_version === work.work_version) &&
+        matchingCancellationReceipt?.receipt_kind === 'cancellation' &&
+        matchingCancellationReceipt.journal_sequence === cancellation.journal_sequence &&
+        matchingCancellationReceipt.work_id === work.work_id &&
+        matchingCancellationReceipt.work_version === cancellation.work_version &&
+        matchingCancellationReceipt.state === 'cancelled' &&
+        verifyControlPlaneReceipt('work_journal_cancellation', journalCancellationFields(cancellation), cancellation);
     const matchingCompletionReceipt = terminal
       ? journal.receipts.find((receipt) => receipt.receipt_id === result?.receipt_id)
       : null;
@@ -224,9 +245,16 @@ function workJournalStateValid(journal) {
       : journal.receipts.find((receipt) => ['lease', 'start'].includes(receipt.receipt_kind) &&
         receipt.lease_id === result.lease_id && receipt.work_id === work.work_id &&
         receipt.work_version <= work.work_version && receipt.journal_sequence < result.journal_sequence);
+    const failureCodeIsApplicable = result?.code === 'control.retry_ceiling_exceeded'
+      ? work.retry_count === journal.limits.max_total_attempts - 1
+      : result?.code === 'control.recovery_ceiling_exceeded'
+        ? work.recovery_interruption_count === journal.limits.max_recovery_interruptions
+        : ['control.execution_failed', 'control.retry_tick_overflow'].includes(result?.code);
     const outcomeFieldsValid = result?.outcome === 'succeeded'
       ? typeof result.output_digest === 'string' && result.code === null
-      : result?.output_digest === null && typeof result?.code === 'string';
+      : result?.outcome === 'cancelled'
+        ? result.output_digest === null && result.code === 'control.cancelled'
+        : result?.outcome === 'failed' && result.output_digest === null && failureCodeIsApplicable;
     const resultValid = terminal
       ? work.result !== null && work.result.outcome === work.state && work.result.work_version === work.work_version &&
         work.result.journal_sequence <= journal.head_sequence &&
@@ -242,20 +270,38 @@ function workJournalStateValid(journal) {
           result.journal_sequence, result.outcome, result.output_digest ?? '', result.code ?? '',
         ], result)
       : work.result === null;
-    return leaseValid && retryValid && resultValid &&
+    return leaseValid && retryValid && cancellationValid && resultValid &&
       work.recovery_interruption_count <= journal.limits.max_recovery_interruptions;
   });
 }
 
-function schedulerStateValid(scheduler) {
+function schedulerStateValid(scheduler, journal, agent) {
   if (!Array.isArray(scheduler?.eligible_queue) || !Array.isArray(scheduler?.active_leases)) return false;
   if (scheduler.eligible_queue.some((entry) => !record(entry)) || scheduler.active_leases.some((lease) => !record(lease))) return false;
   const queuedIds = scheduler.eligible_queue.map((entry) => entry.work_id);
   const leasedIds = scheduler.active_leases.map((lease) => lease.lease_id);
   const leasedWorkIds = scheduler.active_leases.map((lease) => lease.work_id);
-  return !duplicate(queuedIds) && !duplicate(leasedIds) && !duplicate(leasedWorkIds) &&
+  const journalWork = Array.isArray(journal?.work_items) ? journal.work_items : [];
+  const expectedQueuedWork = journalWork.filter(({state}) => ['queued', 'retry_wait'].includes(state));
+  const expectedActiveWork = journalWork.filter(({state, lease}) =>
+    ['leased', 'executing'].includes(state) && lease?.status === 'active');
+  const queueMatchesJournal = scheduler.eligible_queue.length === expectedQueuedWork.length &&
+    scheduler.eligible_queue.every((entry) => expectedQueuedWork.some((work) =>
+      entry.work_id === work.work_id && entry.work_version === work.work_version &&
+      entry.input_digest === work.input_digest &&
+      entry.eligible_tick === (work.retry_eligible_tick ?? 0)));
+  const leasesMatchJournal = scheduler.active_leases.length === expectedActiveWork.length &&
+    scheduler.active_leases.every((lease) => expectedActiveWork.some((work) =>
+      lease.lease_id === work.lease.lease_id && lease.work_id === work.work_id &&
+      lease.work_version === work.work_version && lease.owner_agent_id === work.lease.owner_agent_id &&
+      lease.acquired_tick === work.lease.acquired_tick && lease.expires_tick === work.lease.expires_tick));
+  return scheduler.agent_id === agent?.persistent_agent_id && scheduler.readiness === agent?.state &&
+    scheduler.journal_head_sequence === journal?.head_sequence &&
+    scheduler.journal_head_digest === journal?.head_digest &&
+    !duplicate(queuedIds) && !duplicate(leasedIds) && !duplicate(leasedWorkIds) &&
     scheduler.active_leases.length <= scheduler.limits.max_concurrent_work &&
-    queuedIds.every((id) => !leasedWorkIds.includes(id)) && scheduler.active_leases.every((lease) =>
+    queueMatchesJournal && leasesMatchJournal && queuedIds.every((id) => !leasedWorkIds.includes(id)) &&
+    scheduler.active_leases.every((lease) =>
       lease.status === 'active' && lease.expires_tick > lease.acquired_tick &&
       lease.expires_tick - lease.acquired_tick <= scheduler.limits.lease_duration_ticks);
 }
@@ -349,7 +395,11 @@ export async function checkControlPlaneContract(packageRoot, manifest, conforman
   if (!workJournalStateValid(instances.get('contracts/control-plane/work-journal.json'))) {
     codes.push('control.work_journal_state_invalid');
   }
-  if (!schedulerStateValid(instances.get('contracts/control-plane/scheduler-state.json'))) {
+  if (!schedulerStateValid(
+    instances.get('contracts/control-plane/scheduler-state.json'),
+    instances.get('contracts/control-plane/work-journal.json'),
+    instances.get('contracts/control-plane/agent-state.json'),
+  )) {
     codes.push('control.scheduler_state_invalid');
   }
   if (!agentStateValid(instances.get('contracts/control-plane/agent-state.json'))) {

@@ -28,6 +28,17 @@ function schedulerStateDigest(activeLeaseIds, maxConcurrentWork = 8) {
   })).digest('hex');
 }
 
+function journalCancellationFields(cancellation) {
+  return [cancellation.receipt_id, cancellation.cancellation_id, cancellation.work_id,
+    cancellation.work_version, cancellation.idempotency_key, cancellation.requested_by,
+    cancellation.journal_sequence, cancellation.reason_code, cancellation.resume_count,
+    cancellation.resume_ceiling];
+}
+
+function journalHeadFields(receipt) {
+  return [receipt.receipt_id, receipt.journal_id, receipt.head_sequence, receipt.head_digest];
+}
+
 test('CLI validates exactly 25 stateful control-plane scenarios', () => {
   // Given the committed Specification Package and its control-plane conformance manifest.
   const result = spawnSync(process.execPath, [validator, packageRoot], {encoding: 'utf8'});
@@ -114,6 +125,26 @@ test('Work Journal and Scheduler reject contradictory durable ownership', async 
   const controlPlaneCheck = report.checks.find(({id}) => id === 'control-plane-contract');
   assert.ok(controlPlaneCheck.codes.includes('control.work_journal_state_invalid'));
   assert.ok(controlPlaneCheck.codes.includes('control.scheduler_state_invalid'));
+});
+
+test('Scheduler state is exactly correlated with the Agent and committed Work Journal', async () => {
+  const mutations = [
+    (scheduler) => { scheduler.journal_head_sequence += 1; },
+    (scheduler) => { scheduler.journal_head_digest = '0'.repeat(64); },
+    (scheduler) => { scheduler.eligible_queue[0].work_version += 1; },
+    (scheduler) => { scheduler.eligible_queue[0].input_digest = '0'.repeat(64); },
+    (scheduler) => { scheduler.agent_id = 'agent:competing-001'; },
+  ];
+  for (const mutate of mutations) {
+    const temporaryRoot = await copyCommittedPackage();
+    const schedulerPath = `${temporaryRoot}/contracts/control-plane/scheduler-state.json`;
+    const scheduler = JSON.parse(await readFile(schedulerPath));
+    mutate(scheduler);
+    await writeFile(schedulerPath, `${JSON.stringify(scheduler, null, 2)}\n`);
+    const report = await buildValidationReport(temporaryRoot);
+    assert.ok(report.checks.find(({id}) => id === 'control-plane-contract').codes
+      .includes('control.scheduler_state_invalid'));
+  }
 });
 
 test('actionable Control Commands require an exact durable base', async () => {
@@ -227,9 +258,17 @@ test('dispatch revalidates current journal writer readiness dependency and capac
   const mutations = [
     ['control.journal_head_stale', (subject) => { subject.document.action.expected_journal_head_sequence += 1; }],
     ['control.journal_head_stale', (subject) => { subject.document.action.expected_journal_head_digest = '0'.repeat(64); }],
+    ['control.journal_evidence_invalid', (subject) => {
+      subject.document.initial.journal_head_digest = '0'.repeat(64);
+      subject.document.action.expected_journal_head_digest = '0'.repeat(64);
+    }],
     ['control.writer_receipt_invalid', (subject) => { subject.document.action.writer_lock_receipt.signature_digest = '0'.repeat(64); }],
     ['control.readiness_sequence_invalid', (subject) => { subject.document.action.readiness_observations[0].signature_digest = '0'.repeat(64); }],
     ['control.dependency_base_stale', (subject) => { subject.document.action.expected_dependency_state_digest = '0'.repeat(64); }],
+    ['control.dependency_evidence_invalid', (subject) => {
+      subject.document.initial.dependency_state_digest = '0'.repeat(64);
+      subject.document.action.expected_dependency_state_digest = '0'.repeat(64);
+    }],
     ['control.scheduler_base_stale', (subject) => { subject.document.initial.active_work_count = 1; }],
     ['control.scheduler_base_stale', (subject) => { subject.document.action.expected_scheduler_state_digest = '0'.repeat(64); }],
     ['control.concurrency_budget_exhausted', (subject) => {
@@ -250,12 +289,16 @@ test('dispatch revalidates current journal writer readiness dependency and capac
   }
 });
 
-test('restart and recovery bind current journal dependency and local channel state', async () => {
+test('restart and recovery bind current journal and dependency state before opening the channel', async () => {
   const restartFixture = JSON.parse(await readFile(new URL('./scenarios/control-plane/queued-work-resumes-agent-restart.json', import.meta.url)));
   const staleRestart = structuredClone(restartFixture.subject);
   staleRestart.document.action.expected_dependency_state_digest = '0'.repeat(64);
   assert.deepEqual((await observeControlPlaneScenario(staleRestart, packageRoot)).codes,
     ['control.dependency_base_stale']);
+  const authenticatedClosedRestart = structuredClone(restartFixture.subject);
+  authenticatedClosedRestart.document.initial.control_channel.same_user_authenticated = true;
+  assert.deepEqual((await observeControlPlaneScenario(authenticatedClosedRestart, packageRoot)).codes,
+    ['control.control_channel_state_invalid']);
 
   const recoveryFixture = JSON.parse(await readFile(new URL('./scenarios/control-plane/in-flight-work-recovers-agent-crash.json', import.meta.url)));
   const mutations = [
@@ -263,7 +306,10 @@ test('restart and recovery bind current journal dependency and local channel sta
     ['control.dependency_base_stale', (subject) => { subject.document.action.expected_dependency_state_digest = '0'.repeat(64); }],
     ['control.journal_unavailable', (subject) => { subject.document.initial.journal_available = false; }],
     ['control.semantic_dependency_unavailable', (subject) => { subject.document.initial.semantic_dependency_available = false; }],
-    ['control.control_channel_unavailable', (subject) => { subject.document.initial.control_channel.state = 'closed'; }],
+    ['control.control_channel_state_invalid', (subject) => {
+      subject.document.initial.control_channel.state = 'open';
+      subject.document.initial.control_channel.same_user_authenticated = true;
+    }],
   ];
   for (const [code, mutate] of mutations) {
     const subject = structuredClone(recoveryFixture.subject);
@@ -283,8 +329,10 @@ test('readiness rejects a retained writer receipt from a stale epoch', async () 
   Object.assign(readyFixture.subject.document.action, {kind: 'readiness_check', actor_role: 'mdplace_agent'});
   readyFixture.subject.document.initial.agent_state = 'starting';
   readyFixture.subject.document.initial.control_channel.state = 'closed';
-  assert.deepEqual((await observeControlPlaneScenario(readyFixture.subject, packageRoot)).codes,
-    ['control.readiness_sequence_invalid']);
+  readyFixture.subject.document.initial.control_channel.same_user_authenticated = false;
+  const readyResult = await observeControlPlaneScenario(readyFixture.subject, packageRoot);
+  assert.equal(readyResult.verdict, 'pass');
+  assert.equal(readyResult.terminal_state, 'ready');
 });
 
 test('leased work requires authenticated durable lease evidence', async () => {
@@ -406,7 +454,7 @@ test('Work Journal completion binds outcome fields and one unique durable comple
     journal.head_sequence = 3;
     work.state = 'failed';
     work.result = {outcome: 'failed', receipt_id: 'receipt:failed-001', work_version: work.work_version,
-      lease_id: 'lease:001', journal_sequence: 3, output_digest: null, code: 'control.retry_ceiling_exceeded'};
+      lease_id: 'lease:001', journal_sequence: 3, output_digest: null, code: 'control.execution_failed'};
     Object.assign(work.result, signControlPlaneReceipt('work_completion', [
       work.result.receipt_id, work.work_id, work.result.work_version, work.result.lease_id,
       work.result.journal_sequence, work.result.outcome, '', work.result.code,
@@ -471,6 +519,58 @@ test('Work Journal completion binds outcome fields and one unique durable comple
   const wrongLeaseReport = await buildValidationReport(wrongLease.temporaryRoot);
   assert.ok(wrongLeaseReport.checks.find(({id}) => id === 'control-plane-contract').codes
     .includes('control.work_journal_state_invalid'));
+
+  const wrongFailure = await terminalJournal();
+  wrongFailure.work.result.code = 'control.recovery_ceiling_exceeded';
+  Object.assign(wrongFailure.work.result, signControlPlaneReceipt('work_completion', [
+    wrongFailure.work.result.receipt_id, wrongFailure.work.work_id, wrongFailure.work.result.work_version,
+    wrongFailure.work.result.lease_id, wrongFailure.work.result.journal_sequence,
+    wrongFailure.work.result.outcome, '', wrongFailure.work.result.code,
+  ]));
+  await writeFile(wrongFailure.journalPath, `${JSON.stringify(wrongFailure.journal, null, 2)}\n`);
+  const wrongFailureReport = await buildValidationReport(wrongFailure.temporaryRoot);
+  assert.ok(wrongFailureReport.checks.find(({id}) => id === 'control-plane-contract').codes
+    .includes('control.work_journal_state_invalid'));
+
+  const cancelled = await terminalJournal();
+  cancelled.journal.head_sequence = 4;
+  Object.assign(cancelled.work, {state: 'cancelled'});
+  cancelled.work.cancellation = {
+    receipt_id: 'cancellation-receipt:001', cancellation_id: 'cancel:001',
+    work_id: cancelled.work.work_id, work_version: cancelled.work.work_version,
+    idempotency_key: cancelled.work.idempotency_key, requested_by: 'person:owner-001',
+    journal_sequence: 3, reason_code: 'user_requested', resume_count: 0, resume_ceiling: 1,
+  };
+  Object.assign(cancelled.work.cancellation, signControlPlaneReceipt(
+    'work_journal_cancellation', journalCancellationFields(cancelled.work.cancellation),
+  ));
+  Object.assign(cancelled.work.result, {outcome: 'cancelled', receipt_id: 'receipt:cancelled-001',
+    journal_sequence: 4, output_digest: null, code: 'control.cancelled'});
+  Object.assign(cancelled.work.result, signControlPlaneReceipt('work_completion', [
+    cancelled.work.result.receipt_id, cancelled.work.work_id, cancelled.work.result.work_version,
+    cancelled.work.result.lease_id, cancelled.work.result.journal_sequence,
+    cancelled.work.result.outcome, '', cancelled.work.result.code,
+  ]));
+  const completionRow = cancelled.journal.receipts.at(-1);
+  Object.assign(completionRow, {receipt_id: cancelled.work.result.receipt_id,
+    journal_sequence: 4, state: 'cancelled'});
+  cancelled.journal.receipts.splice(-1, 0, {
+    receipt_id: cancelled.work.cancellation.receipt_id, receipt_kind: 'cancellation',
+    journal_sequence: 3, work_id: cancelled.work.work_id,
+    work_version: cancelled.work.work_version, lease_id: cancelled.work.result.lease_id,
+    state: 'cancelled', operation_digest: 'c'.repeat(64), semantic_state_digest: 'd'.repeat(64),
+  });
+  cancelled.journal.head_digest = workJournalHeadDigest(cancelled.journal.receipts);
+  await writeFile(cancelled.journalPath, `${JSON.stringify(cancelled.journal, null, 2)}\n`);
+  const cancelledReport = await buildValidationReport(cancelled.temporaryRoot);
+  assert.equal(cancelledReport.checks.find(({id}) => id === 'control-plane-contract').codes
+    .includes('control.work_journal_state_invalid'), false);
+
+  cancelled.work.cancellation = null;
+  await writeFile(cancelled.journalPath, `${JSON.stringify(cancelled.journal, null, 2)}\n`);
+  const missingCancellationReport = await buildValidationReport(cancelled.temporaryRoot);
+  assert.ok(missingCancellationReport.checks.find(({id}) => id === 'control-plane-contract').codes
+    .includes('control.work_journal_state_invalid'));
 });
 
 test('Work Journal head sequence and digest bind one contiguous receipt chain', async () => {
@@ -507,6 +607,12 @@ test('dispatch and journal append reject arithmetic beyond their closed domains'
   const failureFixture = JSON.parse(await readFile(new URL('./scenarios/control-plane/retry-ceiling-terminal-failure.json', import.meta.url)));
   failureFixture.subject.document.initial.journal_head_sequence = 1000000;
   failureFixture.subject.document.initial.journal_head_digest = 'f'.repeat(64);
+  Object.assign(failureFixture.subject.document.initial.journal_head_receipt, {
+    head_sequence: 1000000, head_digest: 'f'.repeat(64),
+  });
+  Object.assign(failureFixture.subject.document.initial.journal_head_receipt, signControlPlaneReceipt(
+    'work_journal_head', journalHeadFields(failureFixture.subject.document.initial.journal_head_receipt),
+  ));
   assert.deepEqual((await observeControlPlaneScenario(failureFixture.subject, packageRoot)).codes,
     ['control.journal_capacity_exhausted']);
 });

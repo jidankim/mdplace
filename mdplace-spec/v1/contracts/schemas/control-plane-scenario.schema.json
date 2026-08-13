@@ -25,7 +25,7 @@
         "journal_sequence": {"type": "integer", "minimum": 1, "maximum": 1000000},
         "outcome": {"enum": ["succeeded", "failed", "cancelled"]},
         "output_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
-        "code": {"type": ["string", "null"], "pattern": "^[a-z][a-z0-9_.-]{2,127}$"},
+        "code": {"enum": ["control.cancelled", "control.execution_failed", "control.recovery_ceiling_exceeded", "control.retry_ceiling_exceeded", "control.retry_tick_overflow", null]},
         "signature_scheme": {"const": "hmac-sha256"},
         "signing_key_id": {"const": "signer-key:primary-001"},
         "signer_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
@@ -64,6 +64,52 @@
         "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
         "journal_sequence": {"type": "integer", "minimum": 1, "maximum": 1000000},
         "owner_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
+        "signature_scheme": {"const": "hmac-sha256"},
+        "signing_key_id": {"const": "signer-key:primary-001"},
+        "signer_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
+        "signature_digest": {"$ref": "#/$defs/digest"},
+        "authenticated": {"const": true}
+      }
+    },
+    "journalHeadReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["receipt_id", "journal_id", "head_sequence", "head_digest", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
+      "properties": {
+        "receipt_id": {"type": "string", "pattern": "^journal-head-receipt:[a-z0-9-]{3,64}$"},
+        "journal_id": {"type": "string", "pattern": "^journal:[a-z0-9-]{3,64}$"},
+        "head_sequence": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "head_digest": {"$ref": "#/$defs/digest"},
+        "signature_scheme": {"const": "hmac-sha256"},
+        "signing_key_id": {"const": "signer-key:primary-001"},
+        "signer_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
+        "signature_digest": {"$ref": "#/$defs/digest"},
+        "authenticated": {"const": true}
+      }
+    },
+    "dependencyStateReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["receipt_id", "dependencies", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
+      "properties": {
+        "receipt_id": {"type": "string", "pattern": "^dependency-state-receipt:[a-z0-9-]{3,64}$"},
+        "dependencies": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind", "reference_id", "version", "digest"],
+            "properties": {
+              "kind": {"enum": ["work_item", "semantic_head", "mutation_plan"]},
+              "reference_id": {"type": "string", "pattern": "^(work|semantic|plan):[a-z0-9-]{3,64}$"},
+              "version": {"type": "integer", "minimum": 0, "maximum": 1000000},
+              "digest": {"$ref": "#/$defs/digest"}
+            }
+          }
+        },
         "signature_scheme": {"const": "hmac-sha256"},
         "signing_key_id": {"const": "signer-key:primary-001"},
         "signer_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
@@ -166,7 +212,7 @@
     "initial": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["agent_state", "persistent_agent_id", "writer_owner_agent_id", "writer_epoch", "journal_available", "semantic_dependency_available", "dependency_state_digest", "journal_head_sequence", "journal_head_digest", "active_work_count", "active_lease_ids", "max_concurrent_work", "scheduler_state_digest", "work", "control_channel", "prior_receipts", "prior_lease_receipts", "semantic_state_digest"],
+      "required": ["agent_state", "persistent_agent_id", "writer_owner_agent_id", "writer_epoch", "journal_available", "semantic_dependency_available", "dependency_state_digest", "dependency_state_receipt", "journal_head_sequence", "journal_head_digest", "journal_head_receipt", "active_work_count", "active_lease_ids", "max_concurrent_work", "scheduler_state_digest", "work", "control_channel", "prior_receipts", "prior_lease_receipts", "semantic_state_digest"],
       "properties": {
         "agent_state": {"enum": ["stopped", "starting", "recovering", "ready", "draining", "blocked", "crashed"]},
         "persistent_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
@@ -175,10 +221,12 @@
         "journal_available": {"type": "boolean"},
         "semantic_dependency_available": {"type": "boolean"},
         "dependency_state_digest": {"$ref": "#/$defs/digest"},
+        "dependency_state_receipt": {"$ref": "#/$defs/dependencyStateReceipt"},
         "active_work_count": {"type": "integer", "minimum": 0, "maximum": 8},
         "max_concurrent_work": {"const": 8},
         "journal_head_sequence": {"type": "integer", "minimum": 0, "maximum": 1000000},
         "journal_head_digest": {"$ref": "#/$defs/digest"},
+        "journal_head_receipt": {"$ref": "#/$defs/journalHeadReceipt"},
         "active_lease_ids": {"type": "array", "maxItems": 8, "uniqueItems": true, "items": {"type": "string", "pattern": "^lease:[a-z0-9-]{3,64}$"}},
         "scheduler_state_digest": {"$ref": "#/$defs/digest"},
         "work": {"$ref": "#/$defs/work"},

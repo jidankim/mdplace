@@ -45,6 +45,27 @@ function leaseFields(receipt) {
     receipt.work_version, receipt.journal_sequence, receipt.owner_agent_id];
 }
 
+function journalHeadFields(receipt) {
+  return [receipt.receipt_id, receipt.journal_id, receipt.head_sequence, receipt.head_digest];
+}
+
+function dependencyStateFields(receipt) {
+  return [receipt.receipt_id, digestCanonical(receipt.dependencies)];
+}
+
+function journalHeadIsAuthenticated(initial) {
+  const receipt = initial.journal_head_receipt;
+  return receipt.head_sequence === initial.journal_head_sequence &&
+    receipt.head_digest === initial.journal_head_digest &&
+    verifyControlPlaneReceipt('work_journal_head', journalHeadFields(receipt), receipt, initial.persistent_agent_id);
+}
+
+function dependencyStateIsAuthenticated(initial) {
+  const receipt = initial.dependency_state_receipt;
+  return digestCanonical(receipt.dependencies) === initial.dependency_state_digest &&
+    verifyControlPlaneReceipt('dependency_state', dependencyStateFields(receipt), receipt, initial.persistent_agent_id);
+}
+
 function validPriorLeaseReceipt(initial, work, leaseId, beforeSequence) {
   return typeof leaseId === 'string' && initial.prior_lease_receipts.some((prior) =>
     prior.lease_id === leaseId && prior.work_id === work.work_id &&
@@ -231,6 +252,11 @@ function controlChannelIsCurrent(initial) {
     initial.control_channel.local_transport === true;
 }
 
+function controlChannelIsClosedForStartup(initial) {
+  return initial.control_channel.state === 'closed' &&
+    initial.control_channel.same_user_authenticated === false;
+}
+
 function workStateIsConsistent(work) {
   if (work === null) return true;
   const scalarBoundsAreValid = Number.isInteger(work.work_version) && work.work_version >= 1 && work.work_version <= 1000000 &&
@@ -390,7 +416,7 @@ function fail(initial, action) {
   work.completion_receipt = completionReceiptFor(initial, work, 'failed', null, initial.work.lease_id,
     action.retryable && initial.work.retry_count < initial.work.retry_ceiling
       ? 'control.retry_tick_overflow'
-      : 'control.retry_ceiling_exceeded');
+      : action.retryable ? 'control.retry_ceiling_exceeded' : 'control.execution_failed');
   return observed(initial, action, {
     outputs: [action.retryable && initial.work.retry_count < initial.work.retry_ceiling
       ? 'retry eligibility tick overflow produced terminal failure'
@@ -462,7 +488,8 @@ function resume(initial, action) {
 }
 
 function restart(initial, action) {
-  if (!initial.journal_available || !initial.semantic_dependency_available || !controlChannelIsCurrent(initial)) return rejected(initial, action, 'control.readiness_dependency_unavailable', {terminal: 'blocked'});
+  if (!initial.journal_available || !initial.semantic_dependency_available) return rejected(initial, action, 'control.readiness_dependency_unavailable', {terminal: 'blocked'});
+  if (!controlChannelIsClosedForStartup(initial)) return rejected(initial, action, 'control.control_channel_state_invalid', {terminal: 'blocked'});
   if (initial.writer_owner_agent_id !== null) return rejected(initial, action, 'control.writer_owner_conflict', {terminal: 'blocked'});
   if (action.expected_journal_head_sequence !== initial.journal_head_sequence) return rejected(initial, action, 'control.journal_head_stale', {terminal: 'blocked'});
   if (action.expected_journal_head_digest !== initial.journal_head_digest) return rejected(initial, action, 'control.journal_head_stale', {terminal: 'blocked'});
@@ -485,7 +512,7 @@ function restart(initial, action) {
 function recover(initial, action) {
   if (!initial.journal_available) return rejected(initial, action, 'control.journal_unavailable', {terminal: 'blocked'});
   if (!initial.semantic_dependency_available) return rejected(initial, action, 'control.semantic_dependency_unavailable', {terminal: 'blocked'});
-  if (!controlChannelIsCurrent(initial)) return rejected(initial, action, 'control.control_channel_unavailable', {terminal: 'blocked'});
+  if (!controlChannelIsClosedForStartup(initial)) return rejected(initial, action, 'control.control_channel_state_invalid', {terminal: 'blocked'});
   if (initial.writer_owner_agent_id !== null) return rejected(initial, action, 'control.writer_owner_conflict', {terminal: 'blocked'});
   if (action.expected_journal_head_sequence !== initial.journal_head_sequence) return rejected(initial, action, 'control.journal_head_stale', {terminal: 'blocked'});
   if (action.expected_journal_head_digest !== initial.journal_head_digest) return rejected(initial, action, 'control.journal_head_stale', {terminal: 'blocked'});
@@ -552,12 +579,10 @@ function readinessCheck(initial, action) {
   }
   const unavailable = initial.writer_owner_agent_id !== initial.persistent_agent_id ? 'control.readiness_writer_absent'
     : !initial.semantic_dependency_available ? 'control.readiness_semantic_dependency_unavailable'
-      : !initial.journal_available ? 'control.readiness_journal_unavailable'
-        : !controlChannelIsCurrent(initial) ? 'control.readiness_control_channel_unavailable' : null;
+      : !initial.journal_available ? 'control.readiness_journal_unavailable' : null;
   const failedGate = unavailable === 'control.readiness_writer_absent' ? 'exclusive_writer'
     : unavailable === 'control.readiness_semantic_dependency_unavailable' ? 'semantic_kernel'
-      : unavailable === 'control.readiness_journal_unavailable' ? 'work_journal'
-        : unavailable === 'control.readiness_control_channel_unavailable' ? 'control_channel' : null;
+      : unavailable === 'control.readiness_journal_unavailable' ? 'work_journal' : null;
   if (unavailable !== 'control.readiness_writer_absent' && !writerReceiptIsRetained(initial, action)) {
     return rejected(initial, action, 'control.writer_receipt_invalid', {terminal: 'blocked'});
   }
@@ -602,6 +627,8 @@ export async function observeControlPlaneScenario(subject, packageRoot) {
     return {verdict: 'fail', codes: [schemaCode], outputs: ['scenario rejected'], operations: ['validate control-plane scenario'], receipts: ['ControlPlaneRejectionReceipt:schema'], filesystem_effects: ['none'], terminal_state: 'rejected', illegal_transition: false};
   }
   const {action, initial} = subject.document;
+  if (!journalHeadIsAuthenticated(initial)) return rejected(initial, action, 'control.journal_evidence_invalid', {terminal: 'blocked'});
+  if (!dependencyStateIsAuthenticated(initial)) return rejected(initial, action, 'control.dependency_evidence_invalid', {terminal: 'blocked'});
   if (!workStateIsConsistent(initial.work)) return rejected(initial, action, 'control.work_state_invalid');
   if (['leased', 'executing'].includes(initial.work?.state) &&
       !validPriorLeaseReceipt(initial, initial.work, initial.work.lease_id, initial.journal_head_sequence + 1)) {

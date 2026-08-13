@@ -28,7 +28,8 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "all seven Readiness Gates pass in canonical order with receipts"
+        "Control Channel is closed before startup",
+        "all seven Readiness Gates pass in canonical order with receipts and gate seven authenticates and opens the Control Channel"
       ],
       "base_references": [
         "current writer lock receipt",

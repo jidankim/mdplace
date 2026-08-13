@@ -316,8 +316,8 @@
         "a 300-tick lease expiry and the next journal sequence remain inside their closed domains"
       ],
       "base_references": [
-        "exact Work Journal head sequence and digest",
-        "exact Work Item version and dependency-state digest",
+        "validator-authenticated exact Work Journal head sequence and digest",
+        "exact Work Item version and validator-authenticated dependency-state digest",
         "exact Scheduler active-lease snapshot digest",
         "current Agent writer epoch, retained-writer receipt, and readiness chain"
       ],
@@ -330,8 +330,8 @@
       "idempotency": {
         "key_fields": [
           "idempotency_key",
-          "exact Work Journal head sequence and digest",
-          "exact Work Item version and dependency-state digest",
+          "validator-authenticated exact Work Journal head sequence and digest",
+          "exact Work Item version and validator-authenticated dependency-state digest",
           "exact Scheduler active-lease snapshot digest",
           "current Agent writer epoch, retained-writer receipt, and readiness chain"
         ],

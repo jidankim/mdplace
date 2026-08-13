@@ -50,11 +50,11 @@
             "outcome": "failed",
             "output_digest": null,
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "fa7f684164ca86a284c9cb9c854d93fe2f69c41b67a3507b2db7cdab16adc59b",
+            "signature_digest": "dd3d1aca3b76e12b23633c27db388281506e46dfa5ad2c314ac140f3a205b524",
             "authenticated": true,
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
-            "code": "control.failed"
+            "code": "control.retry_ceiling_exceeded"
           },
           "cancellation_receipt": null
         },
@@ -68,7 +68,7 @@
         },
         "prior_receipts": [],
         "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
-        "dependency_state_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "dependency_state_digest": "c289e61ad636413a47b06ff09a505fd15701b9302e0fe955557e4b7b45ad4111",
         "active_work_count": 0,
         "max_concurrent_work": 8,
         "journal_head_digest": "7506e731ae240001df07cacaf10c038c237edb444533b61adf424765298b0b4b",
@@ -89,7 +89,34 @@
             "signature_digest": "1ee93d1faa1e024f61771efd7071aef644c09ea43aeec5946205ef275ad80147",
             "authenticated": true
           }
-        ]
+        ],
+        "journal_head_receipt": {
+          "receipt_id": "journal-head-receipt:vault-001",
+          "journal_id": "journal:vault-001",
+          "head_sequence": 2,
+          "head_digest": "7506e731ae240001df07cacaf10c038c237edb444533b61adf424765298b0b4b",
+          "signature_scheme": "hmac-sha256",
+          "signing_key_id": "signer-key:primary-001",
+          "signer_agent_id": "agent:primary-001",
+          "signature_digest": "31e6c77e9d63f161f4304003b77087bc081dd99be652af16fc3e744fe26dcc2b",
+          "authenticated": true
+        },
+        "dependency_state_receipt": {
+          "receipt_id": "dependency-state-receipt:vault-001",
+          "dependencies": [
+            {
+              "kind": "semantic_head",
+              "reference_id": "semantic:head-001",
+              "version": 1,
+              "digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+            }
+          ],
+          "signature_scheme": "hmac-sha256",
+          "signing_key_id": "signer-key:primary-001",
+          "signer_agent_id": "agent:primary-001",
+          "signature_digest": "fa9d267dcd2489df35f7fac9c3db98a57f46b002d016e9245bbf3bc296e0634a",
+          "authenticated": true
+        }
       },
       "action": {
         "kind": "retry",
@@ -218,7 +245,7 @@
           }
         ],
         "current_tick": 1,
-        "expected_dependency_state_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "expected_dependency_state_digest": "c289e61ad636413a47b06ff09a505fd15701b9302e0fe955557e4b7b45ad4111",
         "expected_journal_head_digest": "a37ec54bcef281a61afc8b70e00ac6f0a5a4e76ebc1839589090a4200d21cc10",
         "expected_scheduler_state_digest": "6974ab1c0f4e5f5cfbb45d9756a8756121a07522cf16a73e07b08dc281ea1c43"
       }
