@@ -58,45 +58,109 @@
             "ordinal": 1,
             "gate": "exclusive_writer",
             "verdict": "pass",
-            "receipt_id": "readiness-receipt:001"
+            "receipt_id": "readiness-receipt:001",
+            "agent_id": "agent:primary-001",
+            "vault_id": "vault:001",
+            "observation_digest": "49e9157c5b99d1485a899e0e0d75c0d737d91e5f2a7b8dc575c48a1b2b6c0cbd",
+            "previous_receipt_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+            "signature_scheme": "hmac-sha256",
+            "signing_key_id": "signer-key:primary-001",
+            "signer_agent_id": "agent:primary-001",
+            "signature_digest": "ef1ddb10ac247dfb0ab99a6a9fb581f93584fa1c2cedfdbaddec8b1d8c47f311",
+            "authenticated": true
           },
           {
             "ordinal": 2,
             "gate": "vault_filesystem",
             "verdict": "pass",
-            "receipt_id": "readiness-receipt:002"
+            "receipt_id": "readiness-receipt:002",
+            "agent_id": "agent:primary-001",
+            "vault_id": "vault:001",
+            "observation_digest": "6573af4f8c27f5c3ba864ac69358fbd226894c386adc6af8c9f654d39a9c3425",
+            "previous_receipt_digest": "ef1ddb10ac247dfb0ab99a6a9fb581f93584fa1c2cedfdbaddec8b1d8c47f311",
+            "signature_scheme": "hmac-sha256",
+            "signing_key_id": "signer-key:primary-001",
+            "signer_agent_id": "agent:primary-001",
+            "signature_digest": "206022eaf9cf6ab397111b8d75b2ecdf54a78d80c89f3a7d98c3984d393525aa",
+            "authenticated": true
           },
           {
             "ordinal": 3,
             "gate": "semantic_kernel",
             "verdict": "fail",
-            "receipt_id": "readiness-receipt:003"
+            "receipt_id": "readiness-receipt:003",
+            "agent_id": "agent:primary-001",
+            "vault_id": "vault:001",
+            "observation_digest": "6adc3d0fdc35e5d7e365284797f458fd6b9e61e2a9483383457771d01bb4fa85",
+            "previous_receipt_digest": "206022eaf9cf6ab397111b8d75b2ecdf54a78d80c89f3a7d98c3984d393525aa",
+            "signature_scheme": "hmac-sha256",
+            "signing_key_id": "signer-key:primary-001",
+            "signer_agent_id": "agent:primary-001",
+            "signature_digest": "4c6c3a44652746873a233b4fd236d58c10c9910b190c9189fe32112ec13f469e",
+            "authenticated": true
           },
           {
             "ordinal": 4,
             "gate": "compatibility",
             "verdict": "not_run",
-            "receipt_id": null
+            "receipt_id": null,
+            "agent_id": null,
+            "vault_id": null,
+            "observation_digest": null,
+            "previous_receipt_digest": null,
+            "signature_scheme": null,
+            "signing_key_id": null,
+            "signer_agent_id": null,
+            "signature_digest": null,
+            "authenticated": false
           },
           {
             "ordinal": 5,
             "gate": "derived_views",
             "verdict": "not_run",
-            "receipt_id": null
+            "receipt_id": null,
+            "agent_id": null,
+            "vault_id": null,
+            "observation_digest": null,
+            "previous_receipt_digest": null,
+            "signature_scheme": null,
+            "signing_key_id": null,
+            "signer_agent_id": null,
+            "signature_digest": null,
+            "authenticated": false
           },
           {
             "ordinal": 6,
             "gate": "work_journal",
             "verdict": "not_run",
-            "receipt_id": null
+            "receipt_id": null,
+            "agent_id": null,
+            "vault_id": null,
+            "observation_digest": null,
+            "previous_receipt_digest": null,
+            "signature_scheme": null,
+            "signing_key_id": null,
+            "signer_agent_id": null,
+            "signature_digest": null,
+            "authenticated": false
           },
           {
             "ordinal": 7,
             "gate": "control_channel",
             "verdict": "not_run",
-            "receipt_id": null
+            "receipt_id": null,
+            "agent_id": null,
+            "vault_id": null,
+            "observation_digest": null,
+            "previous_receipt_digest": null,
+            "signature_scheme": null,
+            "signing_key_id": null,
+            "signer_agent_id": null,
+            "signature_digest": null,
+            "authenticated": false
           }
-        ]
+        ],
+        "current_tick": 1
       }
     }
   },

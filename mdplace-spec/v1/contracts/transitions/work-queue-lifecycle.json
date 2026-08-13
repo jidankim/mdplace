@@ -942,7 +942,7 @@
         ],
         "retry_result": "return the original durable receipt for the exact binding"
       },
-      "terminal_state": "queued",
+      "terminal_state": "retry_wait",
       "failure_result": {
         "code": "control.precondition_failed",
         "state_effect": "unchanged",

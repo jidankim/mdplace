@@ -283,7 +283,7 @@
         ],
         "retry_result": "return the original durable receipt for the exact binding"
       },
-      "terminal_state": "executing",
+      "terminal_state": "leased",
       "failure_result": {
         "code": "control.precondition_failed",
         "state_effect": "unchanged",

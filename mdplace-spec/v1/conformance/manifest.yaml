@@ -2354,6 +2354,24 @@
         "terminal_state": true,
         "illegal_transition": false
       }
+    },
+    {
+      "fixture_id": "FIX-CHILD-AUTH-003",
+      "path": "fixtures/negative/child-work-competing-signer.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CP-006"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
     }
   ]
 }

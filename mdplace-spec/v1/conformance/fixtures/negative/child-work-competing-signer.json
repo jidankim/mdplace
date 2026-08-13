@@ -1,8 +1,8 @@
 {
   "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
   "schema_id": "mdplace.conformance-fixture/v1",
-  "fixture_id": "FIX-CHILD-POS-001",
-  "category": "positive",
+  "fixture_id": "FIX-CHILD-AUTH-003",
+  "category": "authority_denial",
   "requirement_ids": [
     "REQ-CP-006"
   ],
@@ -66,7 +66,7 @@
         "lease_id": "lease:001",
         "journal_head_sequence": 3,
         "output_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
-        "signer_agent_id": "agent:primary-001",
+        "signer_agent_id": "agent:competing-001",
         "signature_digest": "96f781eab8479d603d9b56cd2fa9b15c5cc0fa9dec230a9d18ef27631a91c6c0",
         "authenticated": true,
         "signature_scheme": "hmac-sha256",
@@ -76,10 +76,12 @@
     }
   },
   "expected": {
-    "verdict": "pass",
-    "codes": [],
+    "verdict": "fail",
+    "codes": [
+      "control.child_completion_receipt_invalid"
+    ],
     "outputs": [
-      "artifact accepted"
+      "artifact rejected"
     ],
     "operations": [
       "parse boundary document",
@@ -91,7 +93,7 @@
     "filesystem_effects": [
       "none"
     ],
-    "terminal_state": "validated",
+    "terminal_state": "rejected",
     "illegal_transition": false
   }
 }

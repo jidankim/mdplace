@@ -50,8 +50,10 @@
             "outcome": "failed",
             "output_digest": null,
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "359dfaec2e54eaea6790a3d9e04e65482b77ffc311ae73eca36ceda98f06299a",
-            "authenticated": true
+            "signature_digest": "1e270b5f86d2ac3fb7470763c4c16ceac9197ff3db60b031676cae6b3cb3e000",
+            "authenticated": true,
+            "signature_scheme": "hmac-sha256",
+            "signing_key_id": "signer-key:primary-001"
           }
         },
         "control_channel": {
@@ -89,45 +91,109 @@
             "ordinal": 1,
             "gate": "exclusive_writer",
             "verdict": "not_run",
-            "receipt_id": null
+            "receipt_id": null,
+            "agent_id": null,
+            "vault_id": null,
+            "observation_digest": null,
+            "previous_receipt_digest": null,
+            "signature_scheme": null,
+            "signing_key_id": null,
+            "signer_agent_id": null,
+            "signature_digest": null,
+            "authenticated": false
           },
           {
             "ordinal": 2,
             "gate": "vault_filesystem",
             "verdict": "not_run",
-            "receipt_id": null
+            "receipt_id": null,
+            "agent_id": null,
+            "vault_id": null,
+            "observation_digest": null,
+            "previous_receipt_digest": null,
+            "signature_scheme": null,
+            "signing_key_id": null,
+            "signer_agent_id": null,
+            "signature_digest": null,
+            "authenticated": false
           },
           {
             "ordinal": 3,
             "gate": "semantic_kernel",
             "verdict": "not_run",
-            "receipt_id": null
+            "receipt_id": null,
+            "agent_id": null,
+            "vault_id": null,
+            "observation_digest": null,
+            "previous_receipt_digest": null,
+            "signature_scheme": null,
+            "signing_key_id": null,
+            "signer_agent_id": null,
+            "signature_digest": null,
+            "authenticated": false
           },
           {
             "ordinal": 4,
             "gate": "compatibility",
             "verdict": "not_run",
-            "receipt_id": null
+            "receipt_id": null,
+            "agent_id": null,
+            "vault_id": null,
+            "observation_digest": null,
+            "previous_receipt_digest": null,
+            "signature_scheme": null,
+            "signing_key_id": null,
+            "signer_agent_id": null,
+            "signature_digest": null,
+            "authenticated": false
           },
           {
             "ordinal": 5,
             "gate": "derived_views",
             "verdict": "not_run",
-            "receipt_id": null
+            "receipt_id": null,
+            "agent_id": null,
+            "vault_id": null,
+            "observation_digest": null,
+            "previous_receipt_digest": null,
+            "signature_scheme": null,
+            "signing_key_id": null,
+            "signer_agent_id": null,
+            "signature_digest": null,
+            "authenticated": false
           },
           {
             "ordinal": 6,
             "gate": "work_journal",
             "verdict": "not_run",
-            "receipt_id": null
+            "receipt_id": null,
+            "agent_id": null,
+            "vault_id": null,
+            "observation_digest": null,
+            "previous_receipt_digest": null,
+            "signature_scheme": null,
+            "signing_key_id": null,
+            "signer_agent_id": null,
+            "signature_digest": null,
+            "authenticated": false
           },
           {
             "ordinal": 7,
             "gate": "control_channel",
             "verdict": "not_run",
-            "receipt_id": null
+            "receipt_id": null,
+            "agent_id": null,
+            "vault_id": null,
+            "observation_digest": null,
+            "previous_receipt_digest": null,
+            "signature_scheme": null,
+            "signing_key_id": null,
+            "signer_agent_id": null,
+            "signature_digest": null,
+            "authenticated": false
           }
-        ]
+        ],
+        "current_tick": 1
       }
     }
   },

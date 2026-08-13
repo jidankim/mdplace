@@ -1,5 +1,6 @@
 import {checkTransitionTable} from './package-checks.mjs';
 import {childWorkInvocationIsValid} from './child-work-validation.mjs';
+import {verifyControlPlaneReceipt} from './control-plane-authentication.mjs';
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {controlPlaneEvidenceCodes} from './control-plane-evidence.mjs';
 import {readPackageFile} from './safe-path.mjs';
@@ -26,33 +27,134 @@ const transitionPaths = [
 
 const transitionInventories = new Map([
   ['contracts/transitions/work-queue-lifecycle.json', {
+    prefix: 'TR-CPWORK-',
     states: ['absent', 'queued', 'leased', 'executing', 'terminal'],
     commands: ['enqueue_work', 'dispatch_work', 'acknowledge_work', 'complete_work', 'recover_work'],
   }],
   ['contracts/transitions/retry-lifecycle.json', {
+    prefix: 'TR-CPRETRY-',
     states: ['executing', 'retry_wait', 'failed'],
     commands: ['record_retry', 'record_terminal_failure', 'retry_work'],
   }],
   ['contracts/transitions/cancellation-lifecycle.json', {
+    prefix: 'TR-CPCANCEL-',
     states: ['queued', 'leased', 'executing', 'retry_wait', 'cancelled', 'succeeded', 'failed'],
     commands: ['cancel_work', 'resume_work'],
   }],
   ['contracts/transitions/readiness-lifecycle.json', {
+    prefix: 'TR-CPREADY-',
     states: ['starting', 'ready', 'blocked'], commands: ['evaluate_readiness', 'dependency_lost'],
   }],
   ['contracts/transitions/agent-lifecycle.json', {
+    prefix: 'TR-CPAGENT-',
     states: ['stopped', 'starting', 'recovering', 'ready', 'draining', 'blocked'],
     commands: ['start_agent', 'crash_agent', 'recover_agent', 'stop_agent'],
   }],
   ['contracts/transitions/control-channel-lifecycle.json', {
+    prefix: 'TR-CPCHANNEL-',
     states: ['closed', 'open'], commands: ['open_control_channel', 'submit_control_command', 'close_control_channel'],
   }],
   ['contracts/transitions/exclusive-writer-lifecycle.json', {
+    prefix: 'TR-CPWRITER-',
     states: ['unheld', 'held'], commands: ['acquire_writer', 'retain_writer', 'release_writer'],
   }],
 ]);
 
-const recoveryCaseIds = Array.from({length: 15}, (_, index) => `RC-CP-${String(index + 1).padStart(3, '0')}`);
+const recoveryInventory = [
+  ['RC-CP-001', 'before_enqueue_commit', 'deny'],
+  ['RC-CP-002', 'after_enqueue_commit', 'resume'],
+  ['RC-CP-003', 'after_lease_receipt_before_ack', 'preserve'],
+  ['RC-CP-004', 'after_dequeue_ack_before_execution', 'requeue'],
+  ['RC-CP-005', 'during_execution_without_completion_receipt', 'requeue'],
+  ['RC-CP-006', 'after_completion_receipt_before_terminal_record', 'preserve'],
+  ['RC-CP-007', 'after_cancellation_receipt_before_child_stop', 'preserve'],
+  ['RC-CP-008', 'restart_with_cancelled_work', 'preserve'],
+  ['RC-CP-009', 'repeated_interruption_with_budget', 'requeue'],
+  ['RC-CP-010', 'repeated_interruption_exhausted', 'fail'],
+  ['RC-CP-011', 'unknown_mutation_completion', 'block'],
+  ['RC-CP-012', 'exclusive_writer_lost', 'block'],
+  ['RC-CP-013', 'work_journal_unavailable', 'block'],
+  ['RC-CP-014', 'stale_work_or_lease_base', 'deny'],
+  ['RC-CP-015', 'child_output_without_completion_receipt', 'deny'],
+].map(([caseId, interruptionPoint, decision]) => ({
+  case_id: caseId,
+  interruption_point: interruptionPoint,
+  default_decision: decision,
+  terminal_result: `${decision} with unchanged semantic truth`,
+  failure_result: 'control.recovery_precondition_failed; state unchanged',
+}));
+
+const authorityByTransitionCommand = new Map([
+  ['enqueue_work', 'work_submitter'], ['dispatch_work', 'scheduler'],
+  ['acknowledge_work', 'mdplace_agent'], ['complete_work', 'mdplace_agent'], ['recover_work', 'mdplace_agent'],
+  ['record_retry', 'mdplace_agent'], ['record_terminal_failure', 'mdplace_agent'], ['retry_work', 'scheduler'],
+  ['cancel_work', 'vault_owner'], ['resume_work', 'vault_owner'],
+  ['evaluate_readiness', 'mdplace_agent'], ['dependency_lost', 'mdplace_agent'],
+  ['start_agent', 'launchd_supervisor'], ['crash_agent', 'operating_system'],
+  ['recover_agent', 'mdplace_agent'], ['stop_agent', 'launchd_supervisor'],
+  ['open_control_channel', 'mdplace_agent'], ['submit_control_command', 'control_client'],
+  ['close_control_channel', 'mdplace_agent'], ['acquire_writer', 'mdplace_agent'],
+  ['retain_writer', 'mdplace_agent'], ['release_writer', 'mdplace_agent'],
+]);
+
+function transitionTarget(prefix, state, command) {
+  if (prefix === 'TR-CPWORK-') {
+    if (command === 'enqueue_work') return state === 'absent' ? 'queued' : state;
+    if (state === 'queued' && command === 'dispatch_work') return 'leased';
+    if (state === 'leased' && command === 'acknowledge_work') return 'executing';
+    if (state === 'executing' && command === 'complete_work') return 'terminal';
+    if (command === 'recover_work' && state === 'leased') return 'queued';
+    if (command === 'recover_work' && state === 'executing') return 'retry_wait';
+  }
+  if (prefix === 'TR-CPRETRY-') {
+    if (state === 'executing' && command === 'record_retry') return 'retry_wait';
+    if (state === 'executing' && command === 'record_terminal_failure') return 'failed';
+    if (state === 'retry_wait' && command === 'retry_work') return 'leased';
+  }
+  if (prefix === 'TR-CPCANCEL-') {
+    if (command === 'cancel_work' && ['queued', 'leased', 'executing', 'retry_wait', 'cancelled'].includes(state)) return 'cancelled';
+    if (state === 'cancelled' && command === 'resume_work') return 'queued';
+  }
+  if (prefix === 'TR-CPREADY-') {
+    if (command === 'dependency_lost') return 'blocked';
+    if (command === 'evaluate_readiness' && ['starting', 'blocked'].includes(state)) return 'ready';
+  }
+  if (prefix === 'TR-CPAGENT-') {
+    if (command === 'start_agent' && state === 'stopped') return 'starting';
+    if (command === 'crash_agent' && ['starting', 'recovering', 'ready', 'draining'].includes(state)) return 'recovering';
+    if (command === 'recover_agent' && ['recovering', 'blocked'].includes(state)) return 'starting';
+    if (command === 'stop_agent') return state === 'ready' ? 'draining' : 'stopped';
+  }
+  if (prefix === 'TR-CPCHANNEL-') {
+    if (command === 'open_control_channel') return 'open';
+    if (command === 'close_control_channel') return 'closed';
+    if (command === 'submit_control_command' && state === 'open') return 'open';
+  }
+  if (prefix === 'TR-CPWRITER-') {
+    if (state === 'unheld' && command === 'acquire_writer') return 'held';
+    if (state === 'held' && command === 'retain_writer') return 'held';
+    if (state === 'held' && command === 'release_writer') return 'unheld';
+  }
+  return null;
+}
+
+function transitionSemanticsAreExact(table, inventory) {
+  if (!Array.isArray(table.transitions) || table.transitions.length !== inventory.states.length * inventory.commands.length) return false;
+  return table.transitions.every((row, index) => {
+    const state = inventory.states[Math.floor(index / inventory.commands.length)];
+    const command = inventory.commands[index % inventory.commands.length];
+    const target = transitionTarget(inventory.prefix, state, command);
+    const allowed = target !== null;
+    return row.transition_id === `${inventory.prefix}${String(index + 1).padStart(3, '0')}` &&
+      row.from_state === state && row.command_or_event === command && row.allowed === allowed &&
+      row.terminal_state === (target ?? state) &&
+      sameOrder(row.actor_authority?.roles, [authorityByTransitionCommand.get(command)]) &&
+      row.actor_authority?.quorum === 1 && row.actor_authority?.distinct_actors === false &&
+      row.actor_authority?.delegation === 'forbidden' &&
+      row.failure_result?.code === (allowed ? 'control.precondition_failed' : 'control.illegal_transition') &&
+      row.failure_result?.state_effect === 'unchanged';
+  });
+}
 
 function sameOrder(left, right) {
   return Array.isArray(left) && left.length === right.length &&
@@ -92,11 +194,14 @@ function workJournalStateValid(journal) {
       ? Number.isInteger(work.retry_eligible_tick)
       : work.retry_eligible_tick === null;
     const terminal = ['cancelled', 'succeeded', 'failed'].includes(work.state);
+    const result = work.result;
     const resultValid = terminal
       ? work.result !== null && work.result.outcome === work.state && work.result.work_version === work.work_version &&
         work.result.journal_sequence <= journal.head_sequence &&
-        work.result.authenticated === true && typeof work.result.signer_agent_id === 'string' &&
-        work.result.signer_agent_id.startsWith('agent:')
+        verifyControlPlaneReceipt('work_completion', [
+          result.receipt_id, work.work_id, result.work_version, result.lease_id ?? '',
+          result.journal_sequence, result.outcome, result.output_digest ?? '', result.code ?? '',
+        ], result)
       : work.result === null;
     return leaseValid && retryValid && resultValid &&
       work.recovery_interruption_count <= journal.limits.max_recovery_interruptions;
@@ -121,10 +226,26 @@ function agentStateValid(agent) {
   if (!Array.isArray(agent?.readiness_gates) || agent.readiness_gates.length !== gateNames.length ||
       agent.readiness_gates.some((gate, index) => !record(gate) || gate.ordinal !== index + 1 || gate.gate !== gateNames[index])) return false;
   if (agent.state !== 'ready') return true;
-  return agent.writer_lock?.owner_agent_id === agent.persistent_agent_id && agent.writer_lock.epoch > 0 &&
+  const writer = agent.writer_lock;
+  if (writer?.owner_agent_id !== agent.persistent_agent_id || writer.epoch <= 0 || writer.prior_epoch !== writer.epoch - 1 ||
+      writer.retained !== true || typeof writer.token_digest !== 'string' ||
+      !verifyControlPlaneReceipt('writer_lock', [
+        writer.lock_id, writer.prior_epoch, writer.epoch, writer.owner_agent_id,
+        writer.token_digest, writer.retained, agent.vault_id,
+      ], writer, agent.persistent_agent_id)) return false;
+  let previousReceiptDigest = writer.signature_digest;
+  const gatesValid = agent.readiness_gates.every((gate) => {
+    const valid = gate.verdict === 'pass' && gate.agent_id === agent.persistent_agent_id && gate.vault_id === agent.vault_id &&
+      gate.previous_receipt_digest === previousReceiptDigest && verifyControlPlaneReceipt('readiness_gate', [
+        gate.receipt_id, gate.agent_id, gate.vault_id, gate.ordinal, gate.gate,
+        gate.verdict, gate.observation_digest, gate.previous_receipt_digest,
+      ], gate, agent.persistent_agent_id);
+    previousReceiptDigest = gate.signature_digest;
+    return valid;
+  });
+  return writer.owner_agent_id === agent.persistent_agent_id && writer.epoch > 0 &&
     agent.writer_lock.retained === true && typeof agent.writer_lock.token_digest === 'string' &&
-    agent.control_channel_state === 'open' && agent.readiness_gates.every((gate) =>
-      gate.verdict === 'pass' && typeof gate.receipt_id === 'string');
+    agent.control_channel_state === 'open' && gatesValid;
 }
 
 function controlCommandStateValid(command) {
@@ -180,7 +301,8 @@ export async function checkControlPlaneContract(packageRoot, manifest, conforman
     const check = checkTransitionTable(table, path);
     codes.push(...check.codes);
     const inventory = transitionInventories.get(path);
-    if (inventory === undefined || !sameOrder(table.states, inventory.states) || !sameOrder(table.commands, inventory.commands)) {
+    if (inventory === undefined || !sameOrder(table.states, inventory.states) || !sameOrder(table.commands, inventory.commands) ||
+        !transitionSemanticsAreExact(table, inventory)) {
       codes.push('control.transition_inventory_invalid');
     }
   }
@@ -202,9 +324,10 @@ export async function checkControlPlaneContract(packageRoot, manifest, conforman
   }
   const recoveryMatrix = instances.get('contracts/control-plane/recovery-matrix.json');
   const recoveryRows = Array.isArray(recoveryMatrix?.rows) ? recoveryMatrix.rows : [];
-  if (!sameOrder(recoveryRows.map((row) => row?.case_id), recoveryCaseIds) ||
-      recoveryRows.some((row) => typeof row?.terminal_result !== 'string' ||
-        !row.terminal_result.endsWith('with unchanged semantic truth'))) {
+  if (recoveryRows.length !== recoveryInventory.length || recoveryRows.some((row, index) => {
+    const expected = recoveryInventory[index];
+    return Object.entries(expected).some(([key, value]) => row?.[key] !== value);
+  })) {
     codes.push('control.recovery_inventory_invalid');
   }
 

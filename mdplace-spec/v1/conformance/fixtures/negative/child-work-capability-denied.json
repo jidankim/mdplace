@@ -17,7 +17,8 @@
         "work_id": "work:001",
         "work_version": 3,
         "lease_id": "lease:001",
-        "journal_head_sequence": 3
+        "journal_head_sequence": 3,
+        "persistent_agent_id": "agent:primary-001"
       },
       "processing_envelope": {
         "schema_id": "mdplace.placement-evaluation/v1",
@@ -66,8 +67,10 @@
         "journal_head_sequence": 3,
         "output_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
         "signer_agent_id": "agent:primary-001",
-        "signature_digest": "59aa3cbd04af112198515756905e3d68459e89b3c25cf0055a97e749ec1e1b5a",
-        "authenticated": true
+        "signature_digest": "96f781eab8479d603d9b56cd2fa9b15c5cc0fa9dec230a9d18ef27631a91c6c0",
+        "authenticated": true,
+        "signature_scheme": "hmac-sha256",
+        "signing_key_id": "signer-key:primary-001"
       },
       "process_lifecycle": "fresh_process_destroyed_after_receipt"
     }

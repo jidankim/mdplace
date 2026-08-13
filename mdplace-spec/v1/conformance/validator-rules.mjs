@@ -81,6 +81,7 @@ const conformanceExecutables = new Set([
   'conformance/control-plane-evidence.mjs',
   'conformance/control-plane-observer.mjs',
   'conformance/child-work-validation.mjs',
+  'conformance/control-plane-authentication.mjs',
   'conformance/fixture-observer.mjs',
   'conformance/semantic-kernel-authority.mjs',
   'conformance/semantic-kernel-checks.mjs',

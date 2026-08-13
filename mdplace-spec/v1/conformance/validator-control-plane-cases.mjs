@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
+import {createHmac} from 'node:crypto';
 import {readFile, unlink, writeFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import test from 'node:test';
@@ -7,6 +8,8 @@ import test from 'node:test';
 import {validateAgainstSchemaPath} from './json-schema.mjs';
 import {buildValidationReport} from './validation-report.mjs';
 import {observeControlPlaneScenario} from './control-plane-observer.mjs';
+import {childWorkInvocationIsValid} from './child-work-validation.mjs';
+import {signControlPlaneReceipt} from './control-plane-authentication.mjs';
 import {copyCommittedPackage} from './validator-test-support.mjs';
 
 const packageRoot = fileURLToPath(new URL('../', import.meta.url));
@@ -146,4 +149,102 @@ test('recovery evidence binds every validator-owned denied transition row', asyn
   const report = await buildValidationReport(temporaryRoot);
   const controlPlaneCheck = report.checks.find(({id}) => id === 'control-plane-contract');
   assert.ok(controlPlaneCheck.codes.includes('control.evidence_transition_binding_invalid'));
+});
+
+test('transition and recovery inventories pin row semantics, not only identifiers', async () => {
+  const transitionRoot = await copyCommittedPackage();
+  const transitionPath = `${transitionRoot}/contracts/transitions/retry-lifecycle.json`;
+  const transitions = JSON.parse(await readFile(transitionPath));
+  transitions.transitions.find(({transition_id: id}) => id === 'TR-CPRETRY-006').terminal_state = 'executing';
+  await writeFile(transitionPath, `${JSON.stringify(transitions, null, 2)}\n`);
+  const transitionReport = await buildValidationReport(transitionRoot);
+  assert.ok(transitionReport.checks.find(({id}) => id === 'control-plane-contract').codes
+    .includes('control.transition_inventory_invalid'));
+
+  const recoveryRoot = await copyCommittedPackage();
+  const recoveryPath = `${recoveryRoot}/contracts/control-plane/recovery-matrix.json`;
+  const recovery = JSON.parse(await readFile(recoveryPath));
+  recovery.rows.find(({case_id: id}) => id === 'RC-CP-010').default_decision = 'resume';
+  await writeFile(recoveryPath, `${JSON.stringify(recovery, null, 2)}\n`);
+  const recoveryReport = await buildValidationReport(recoveryRoot);
+  assert.ok(recoveryReport.checks.find(({id}) => id === 'control-plane-contract').codes
+    .includes('control.recovery_inventory_invalid'));
+});
+
+test('retry timing and lease freshness reject early or stale mutations', async () => {
+  const failureFixture = JSON.parse(await readFile(new URL('./scenarios/control-plane/first-retry-recorded.json', import.meta.url)));
+  const staleFailure = structuredClone(failureFixture.subject);
+  staleFailure.document.action.current_tick = staleFailure.document.initial.work.lease_expires_tick;
+  const failureResult = await observeControlPlaneScenario(staleFailure, packageRoot);
+  assert.deepEqual(failureResult.codes, ['control.lease_stale']);
+
+  const earlyRetry = structuredClone(failureFixture.subject);
+  const {initial, action} = earlyRetry.document;
+  initial.work = {...initial.work, state: 'retry_wait', retry_count: 1, retry_eligible_tick: 50,
+    lease_id: null, lease_status: null, lease_acquired_tick: null, lease_expires_tick: null,
+    owner_agent_id: null};
+  Object.assign(action, {kind: 'retry', actor_role: 'scheduler', lease_id: 'lease:retry-001', current_tick: 49});
+  const retryResult = await observeControlPlaneScenario(earlyRetry, packageRoot);
+  assert.deepEqual(retryResult.codes, ['control.retry_not_eligible']);
+});
+
+test('recovery exhaustion commits an authenticated terminal failure', async () => {
+  const fixture = JSON.parse(await readFile(new URL('./scenarios/control-plane/in-flight-work-recovers-agent-crash.json', import.meta.url)));
+
+  const recoveryExhausted = structuredClone(fixture.subject);
+  recoveryExhausted.document.initial.work.recovery_interruption_count = 2;
+  recoveryExhausted.document.action.interruption_count = 3;
+  const recoveryResult = await observeControlPlaneScenario(recoveryExhausted, packageRoot);
+  assert.equal(recoveryResult.verdict, 'pass');
+  assert.equal(recoveryResult.terminal_state, 'failed');
+  assert.equal(recoveryResult.outputs.includes('work_state:failed'), true);
+  assert.equal(recoveryResult.filesystem_effects.includes('append durable terminal failure'), true);
+  assert.equal(recoveryResult.receipts.includes('TerminalFailureReceipt:work:001'), true);
+  assert.equal(recoveryResult.codes.length, 0);
+
+  const retryExhausted = structuredClone(fixture.subject);
+  retryExhausted.document.initial.work.retry_count = 2;
+  const retryResult = await observeControlPlaneScenario(retryExhausted, packageRoot);
+  assert.equal(retryResult.verdict, 'pass');
+  assert.equal(retryResult.terminal_state, 'failed');
+});
+
+test('keyed readiness and completion verification rejects recomputed forgeries', async () => {
+  const fixture = JSON.parse(await readFile(new URL('./scenarios/control-plane/queued-work-resumes-agent-restart.json', import.meta.url)));
+  const forgedReadiness = structuredClone(fixture.subject);
+  const gate = forgedReadiness.document.action.readiness_observations[0];
+  gate.observation_digest = 'a'.repeat(64);
+  gate.signature_digest = createHmac('sha256', 'attacker-controlled-key').update([
+    'readiness_gate', gate.receipt_id, gate.agent_id, gate.vault_id, gate.ordinal,
+    gate.gate, gate.verdict, gate.observation_digest, gate.previous_receipt_digest,
+  ].join('\0')).digest('hex');
+  const readinessResult = await observeControlPlaneScenario(forgedReadiness, packageRoot);
+  assert.deepEqual(readinessResult.codes, ['control.readiness_sequence_invalid']);
+
+  const child = JSON.parse(await readFile(new URL('../contracts/control-plane/child-work-invocation.json', import.meta.url)));
+  child.completion_receipt.signer_agent_id = 'agent:competing-001';
+  assert.equal(childWorkInvocationIsValid(child), false);
+});
+
+test('Work Journal terminal results require trusted keyed authentication', async () => {
+  const temporaryRoot = await copyCommittedPackage();
+  const journalPath = `${temporaryRoot}/contracts/control-plane/work-journal.json`;
+  const journal = JSON.parse(await readFile(journalPath));
+  const work = journal.work_items[0];
+  work.state = 'failed';
+  work.result = {
+    outcome: 'failed', receipt_id: 'receipt:failed-001', work_version: work.work_version,
+    lease_id: null, journal_sequence: journal.head_sequence, output_digest: null,
+    code: 'control.retry_ceiling_exceeded',
+  };
+  Object.assign(work.result, signControlPlaneReceipt('work_completion', [
+    work.result.receipt_id, work.work_id, work.result.work_version, '',
+    work.result.journal_sequence, work.result.outcome, '', work.result.code,
+  ]));
+  work.result.signer_agent_id = 'agent:competing-001';
+  await writeFile(journalPath, `${JSON.stringify(journal, null, 2)}\n`);
+
+  const report = await buildValidationReport(temporaryRoot);
+  const controlPlaneCheck = report.checks.find(({id}) => id === 'control-plane-contract');
+  assert.ok(controlPlaneCheck.codes.includes('control.work_journal_state_invalid'));
 });

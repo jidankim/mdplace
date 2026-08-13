@@ -1,5 +1,4 @@
-import {createHash} from 'node:crypto';
-
+import {signControlPlaneReceipt, verifyControlPlaneReceipt} from './control-plane-authentication.mjs';
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 
 const authorityByAction = new Map([
@@ -22,29 +21,24 @@ const readinessGateNames = [
   'derived_views', 'work_journal', 'control_channel',
 ];
 
-function completionSignature(receipt) {
-  const fields = [
+function completionFields(receipt) {
+  return [
     receipt.receipt_id, receipt.work_id, receipt.work_version, receipt.lease_id ?? '',
-    receipt.journal_sequence, receipt.outcome, receipt.output_digest ?? '', receipt.signer_agent_id,
+    receipt.journal_sequence, receipt.outcome, receipt.output_digest ?? '',
   ];
-  return createHash('sha256').update(fields.join('\0')).digest('hex');
 }
 
-function completionReceiptFor(initial, work, outcome, outputDigest = null) {
+function completionReceiptFor(initial, work, outcome, outputDigest = null, leaseId = work.lease_id) {
   const receipt = {
     receipt_id: `receipt:${outcome}-${work.work_id.slice(5)}`,
     work_id: work.work_id,
     work_version: work.work_version,
-    lease_id: work.lease_id,
+    lease_id: leaseId,
     journal_sequence: initial.journal_head_sequence + 1,
     outcome,
     output_digest: outputDigest,
-    signer_agent_id: initial.persistent_agent_id,
-    signature_digest: '',
-    authenticated: true,
   };
-  receipt.signature_digest = completionSignature(receipt);
-  return receipt;
+  return {...receipt, ...signControlPlaneReceipt('work_completion', completionFields(receipt))};
 }
 
 function validCompletionReceipt(initial, work) {
@@ -52,28 +46,50 @@ function validCompletionReceipt(initial, work) {
   const outputIsValid = work?.state === 'succeeded'
     ? typeof receipt?.output_digest === 'string' && /^[a-f0-9]{64}$/.test(receipt.output_digest)
     : receipt?.output_digest === null;
-  return receipt !== null && receipt !== undefined && receipt.authenticated === true &&
+  return receipt !== null && receipt !== undefined &&
     receipt.work_id === work.work_id && receipt.work_version === work.work_version &&
     receipt.journal_sequence <= initial.journal_head_sequence &&
     receipt.outcome === work.state && outputIsValid && receipt.signer_agent_id === initial.persistent_agent_id &&
-    receipt.signature_digest === completionSignature(receipt);
+    verifyControlPlaneReceipt('work_completion', completionFields(receipt), receipt, initial.persistent_agent_id);
 }
 
 function writerReceiptIsCurrent(initial, action) {
   const receipt = action.writer_lock_receipt;
   return receipt !== null && receipt.prior_epoch === initial.writer_epoch &&
     receipt.epoch === initial.writer_epoch + 1 && receipt.owner_agent_id === initial.persistent_agent_id &&
-    receipt.retained === true && action.expected_writer_epoch === initial.writer_epoch;
+    receipt.retained === true && action.expected_writer_epoch === initial.writer_epoch &&
+    verifyControlPlaneReceipt('writer_lock', [
+      receipt.lock_id, receipt.prior_epoch, receipt.epoch, receipt.owner_agent_id,
+      receipt.token_digest, receipt.retained, initial.control_channel.vault_id,
+    ], receipt, initial.persistent_agent_id);
 }
 
-function readinessObservationsAreExact(observations, failedGate = null) {
+function readinessObservationsAreExact(initial, action, failedGate = null) {
+  const observations = action.readiness_observations;
   if (!Array.isArray(observations) || observations.length !== readinessGateNames.length) return false;
   const failedIndex = failedGate === null ? -1 : readinessGateNames.indexOf(failedGate);
+  let previousReceiptDigest = action.writer_lock_receipt?.signature_digest ?? initial.semantic_state_digest;
   return observations.every((observation, index) => {
     const expectedVerdict = failedIndex < 0 ? 'pass' : index < failedIndex ? 'pass' : index === failedIndex ? 'fail' : 'not_run';
     const expectedReceipt = expectedVerdict === 'not_run' ? null : `readiness-receipt:${String(index + 1).padStart(3, '0')}`;
-    return observation.ordinal === index + 1 && observation.gate === readinessGateNames[index] &&
-      observation.verdict === expectedVerdict && observation.receipt_id === expectedReceipt;
+    if (observation.ordinal !== index + 1 || observation.gate !== readinessGateNames[index] ||
+        observation.verdict !== expectedVerdict || observation.receipt_id !== expectedReceipt) return false;
+    if (expectedVerdict === 'not_run') {
+      return observation.agent_id === null && observation.vault_id === null && observation.observation_digest === null &&
+        observation.previous_receipt_digest === null && observation.signature_scheme === null &&
+        observation.signing_key_id === null && observation.signer_agent_id === null &&
+        observation.signature_digest === null && observation.authenticated === false;
+    }
+    const valid = observation.agent_id === initial.persistent_agent_id &&
+      observation.vault_id === initial.control_channel.vault_id &&
+      observation.previous_receipt_digest === previousReceiptDigest &&
+      verifyControlPlaneReceipt('readiness_gate', [
+        observation.receipt_id, observation.agent_id, observation.vault_id, observation.ordinal,
+        observation.gate, observation.verdict, observation.observation_digest,
+        observation.previous_receipt_digest,
+      ], observation, initial.persistent_agent_id);
+    previousReceiptDigest = observation.signature_digest;
+    return valid;
   });
 }
 
@@ -167,7 +183,11 @@ function dispatch(initial, action) {
   if (!['queued', 'retry_wait'].includes(initial.work.state) || action.lease_id === null) {
     return rejected(initial, action, 'control.illegal_transition', {illegal: true, terminal: initial.work.state});
   }
-  const acquiredTick = initial.journal_head_sequence;
+  if (!Number.isInteger(action.current_tick)) return rejected(initial, action, 'control.current_tick_missing', {terminal: 'blocked'});
+  if (initial.work.state === 'retry_wait' && action.current_tick < initial.work.retry_eligible_tick) {
+    return rejected(initial, action, 'control.retry_not_eligible', {terminal: 'retry_wait'});
+  }
+  const acquiredTick = action.current_tick;
   const work = {...initial.work, work_version: initial.work.work_version + 1, state: 'leased',
     retry_eligible_tick: null, lease_id: action.lease_id, lease_status: 'active',
     lease_acquired_tick: acquiredTick, lease_expires_tick: acquiredTick + 300,
@@ -184,6 +204,9 @@ function acknowledge(initial, action) {
   if (initial.work.state !== 'leased' || initial.work.lease_status !== 'active' || action.lease_id !== initial.work.lease_id) {
     return rejected(initial, action, 'control.lease_stale', {terminal: initial.work.state});
   }
+  if (!Number.isInteger(action.current_tick) || action.current_tick >= initial.work.lease_expires_tick) {
+    return rejected(initial, action, 'control.lease_stale', {terminal: initial.work.state});
+  }
   const work = {...initial.work, work_version: initial.work.work_version + 1, state: 'executing'};
   return observed(initial, action, {
     outputs: ['execution acknowledged'], operations: ['compare Work Lease', 'append execution receipt'],
@@ -193,16 +216,20 @@ function acknowledge(initial, action) {
 
 function fail(initial, action) {
   if (!exactWorkBase(initial, action)) return rejected(initial, action, 'control.work_version_stale');
-  if (initial.work.state !== 'executing' || action.lease_id !== initial.work.lease_id) {
+  if (initial.work.state !== 'executing' || action.lease_id !== initial.work.lease_id ||
+      initial.work.lease_status !== 'active' || !Number.isInteger(action.current_tick) ||
+      action.current_tick >= initial.work.lease_expires_tick) {
     return rejected(initial, action, 'control.lease_stale', {terminal: initial.work.state});
   }
   if (action.retryable && initial.work.retry_count < initial.work.retry_ceiling) {
+    const nextRetryCount = initial.work.retry_count + 1;
+    const retryDelay = nextRetryCount === 1 ? 1000 : 5000;
     const work = {...initial.work, work_version: initial.work.work_version + 1, state: 'retry_wait',
-      retry_count: initial.work.retry_count + 1, retry_eligible_tick: initial.journal_head_sequence + 1,
+      retry_count: nextRetryCount, retry_eligible_tick: action.current_tick + retryDelay,
       lease_id: null, lease_status: null, lease_acquired_tick: null, lease_expires_tick: null,
       owner_agent_id: null};
     return observed(initial, action, {
-      outputs: ['retry recorded', `retry_delay_ms:${work.retry_count === 1 ? 1000 : 5000}`],
+      outputs: ['retry recorded', `retry_delay_ms:${retryDelay}`],
       operations: ['validate failure receipt', 'consume retry budget', 'append retry record'],
       receipts: [`RetryReceipt:${work.work_id}:${work.retry_count}`], effects: ['append durable retry record'], terminal: 'retry_wait', work,
     });
@@ -210,7 +237,7 @@ function fail(initial, action) {
   const work = {...initial.work, work_version: initial.work.work_version + 1, state: 'failed',
     retry_eligible_tick: null, lease_id: null, lease_status: null, lease_acquired_tick: null,
     lease_expires_tick: null, owner_agent_id: null};
-  work.completion_receipt = completionReceiptFor(initial, work, 'failed');
+  work.completion_receipt = completionReceiptFor(initial, work, 'failed', null, initial.work.lease_id);
   return observed(initial, action, {
     outputs: ['retry ceiling produced terminal failure'],
     operations: ['validate failure receipt', 'compare retry ceiling', 'append terminal failure'],
@@ -225,11 +252,20 @@ function retry(initial, action) {
   if (!exactWorkBase(initial, action) || initial.work.state !== 'retry_wait') {
     return rejected(initial, action, 'control.illegal_transition', {illegal: true, terminal: initial.work?.state ?? 'rejected'});
   }
+  if (!Number.isInteger(action.current_tick) || action.current_tick < initial.work.retry_eligible_tick) {
+    return rejected(initial, action, 'control.retry_not_eligible', {terminal: 'retry_wait'});
+  }
   return dispatch(initial, {...action, kind: 'dispatch'});
 }
 
 function cancel(initial, action) {
   if (!exactWorkBase(initial, action)) return rejected(initial, action, 'control.work_version_stale');
+  if (initial.work.state === 'cancelled') {
+    return observed(initial, action, {
+      outputs: ['cancellation idempotent'], operations: ['compare Work Item version', 'return original cancellation receipt'],
+      receipts: [`CancellationReceipt:${initial.work.cancellation_id}`], terminal: 'cancelled',
+    });
+  }
   if (!['queued', 'leased', 'executing', 'retry_wait'].includes(initial.work.state)) {
     return rejected(initial, action, 'control.illegal_transition', {illegal: true, terminal: initial.work.state});
   }
@@ -265,7 +301,7 @@ function restart(initial, action) {
   if (initial.writer_owner_agent_id !== null) return rejected(initial, action, 'control.writer_owner_conflict', {terminal: 'blocked'});
   if (action.expected_journal_head_sequence !== initial.journal_head_sequence) return rejected(initial, action, 'control.journal_head_stale', {terminal: 'blocked'});
   if (!writerReceiptIsCurrent(initial, action)) return rejected(initial, action, 'control.writer_receipt_invalid', {terminal: 'blocked'});
-  if (!readinessObservationsAreExact(action.readiness_observations)) return rejected(initial, action, 'control.readiness_sequence_invalid', {terminal: 'blocked'});
+  if (!readinessObservationsAreExact(initial, action)) return rejected(initial, action, 'control.readiness_sequence_invalid', {terminal: 'blocked'});
   if (['succeeded', 'failed', 'cancelled'].includes(initial.work?.state) && !validCompletionReceipt(initial, initial.work)) {
     return rejected(initial, action, 'control.completion_receipt_invalid', {terminal: 'blocked'});
   }
@@ -285,7 +321,7 @@ function recover(initial, action) {
   if (initial.writer_owner_agent_id !== null) return rejected(initial, action, 'control.writer_owner_conflict', {terminal: 'blocked'});
   if (action.expected_journal_head_sequence !== initial.journal_head_sequence) return rejected(initial, action, 'control.journal_head_stale', {terminal: 'blocked'});
   if (!writerReceiptIsCurrent(initial, action)) return rejected(initial, action, 'control.writer_receipt_invalid', {terminal: 'blocked'});
-  if (!readinessObservationsAreExact(action.readiness_observations)) return rejected(initial, action, 'control.readiness_sequence_invalid', {terminal: 'blocked'});
+  if (!readinessObservationsAreExact(initial, action)) return rejected(initial, action, 'control.readiness_sequence_invalid', {terminal: 'blocked'});
   if (initial.work === null || !exactWorkBase(initial, action)) return rejected(initial, action, 'control.work_version_stale');
   if (['succeeded', 'failed', 'cancelled'].includes(initial.work.state)) {
     if (!validCompletionReceipt(initial, initial.work)) return rejected(initial, action, 'control.completion_receipt_invalid', {terminal: 'blocked'});
@@ -302,11 +338,26 @@ function recover(initial, action) {
   if (action.interruption_count !== initial.work.recovery_interruption_count + 1) {
     return rejected(initial, action, 'control.recovery_count_invalid', {terminal: 'blocked'});
   }
-  if (action.interruption_count > 2) return rejected(initial, action, 'control.recovery_ceiling_exceeded', {terminal: 'failed'});
+  const recoveryExhausted = action.interruption_count > 2;
+  const retryExhausted = initial.work.state === 'executing' && initial.work.retry_count >= initial.work.retry_ceiling;
+  if (recoveryExhausted || retryExhausted) {
+    const work = {...initial.work, work_version: initial.work.work_version + 1, state: 'failed',
+      retry_eligible_tick: null, recovery_interruption_count: Math.min(action.interruption_count, 2),
+      lease_id: null, lease_status: null, lease_acquired_tick: null, lease_expires_tick: null,
+      owner_agent_id: null};
+    work.completion_receipt = completionReceiptFor(initial, work, 'failed', null, initial.work.lease_id);
+    return observed(initial, action, {
+      outputs: [recoveryExhausted ? 'recovery interruption ceiling produced terminal failure' : 'retry ceiling produced terminal failure'],
+      operations: ['read Work Journal recovery bases', 'compare recovery and retry ceilings', 'append authenticated terminal failure'],
+      receipts: [`TerminalFailureReceipt:${work.work_id}`], effects: ['append durable terminal failure'], terminal: 'failed', work,
+    });
+  }
   const nextState = initial.work.state === 'executing' ? 'retry_wait' : 'queued';
+  const nextRetryCount = initial.work.state === 'executing' ? initial.work.retry_count + 1 : initial.work.retry_count;
+  const retryDelay = nextRetryCount === 1 ? 1000 : 5000;
   const work = {...initial.work, work_version: initial.work.work_version + 1, state: nextState,
-    retry_count: initial.work.state === 'executing' ? initial.work.retry_count + 1 : initial.work.retry_count,
-    retry_eligible_tick: initial.work.state === 'executing' ? action.recovery_tick + 1 : null,
+    retry_count: nextRetryCount,
+    retry_eligible_tick: initial.work.state === 'executing' ? action.recovery_tick + retryDelay : null,
     recovery_interruption_count: action.interruption_count,
     lease_id: null, lease_status: null, lease_acquired_tick: null, lease_expires_tick: null,
     owner_agent_id: null};
@@ -324,7 +375,7 @@ function readinessCheck(initial, action) {
   const failedGate = unavailable === 'control.readiness_writer_absent' ? 'exclusive_writer'
     : unavailable === 'control.readiness_semantic_dependency_unavailable' ? 'semantic_kernel'
       : unavailable === 'control.readiness_journal_unavailable' ? 'work_journal' : null;
-  if (!readinessObservationsAreExact(action.readiness_observations, failedGate)) {
+  if (!readinessObservationsAreExact(initial, action, failedGate)) {
     return rejected(initial, action, 'control.readiness_sequence_invalid', {terminal: 'blocked'});
   }
   if (unavailable !== null) return rejected(initial, action, unavailable, {terminal: 'blocked'});

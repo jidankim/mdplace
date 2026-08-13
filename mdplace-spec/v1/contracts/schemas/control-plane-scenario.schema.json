@@ -16,7 +16,7 @@
     "completionReceipt": {
       "type": ["object", "null"],
       "additionalProperties": false,
-      "required": ["receipt_id", "work_id", "work_version", "lease_id", "journal_sequence", "outcome", "output_digest", "signer_agent_id", "signature_digest", "authenticated"],
+      "required": ["receipt_id", "work_id", "work_version", "lease_id", "journal_sequence", "outcome", "output_digest", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
       "properties": {
         "receipt_id": {"type": "string", "pattern": "^receipt:[a-z0-9-]{3,64}$"},
         "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
@@ -25,6 +25,8 @@
         "journal_sequence": {"type": "integer", "minimum": 1, "maximum": 1000000},
         "outcome": {"enum": ["succeeded", "failed", "cancelled"]},
         "output_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "signature_scheme": {"const": "hmac-sha256"},
+        "signing_key_id": {"const": "signer-key:primary-001"},
         "signer_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
         "signature_digest": {"$ref": "#/$defs/digest"},
         "authenticated": {"type": "boolean"}
@@ -71,25 +73,39 @@
     "writerLockReceipt": {
       "type": ["object", "null"],
       "additionalProperties": false,
-      "required": ["lock_id", "prior_epoch", "epoch", "owner_agent_id", "token_digest", "retained"],
+      "required": ["lock_id", "prior_epoch", "epoch", "owner_agent_id", "token_digest", "retained", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
       "properties": {
         "lock_id": {"type": "string", "pattern": "^writer-lock:[a-z0-9-]{3,64}$"},
         "prior_epoch": {"type": "integer", "minimum": 0, "maximum": 1000000},
         "epoch": {"type": "integer", "minimum": 1, "maximum": 1000000},
         "owner_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
         "token_digest": {"$ref": "#/$defs/digest"},
-        "retained": {"const": true}
+        "retained": {"const": true},
+        "signature_scheme": {"const": "hmac-sha256"},
+        "signing_key_id": {"const": "signer-key:primary-001"},
+        "signer_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
+        "signature_digest": {"$ref": "#/$defs/digest"},
+        "authenticated": {"const": true}
       }
     },
     "readinessGate": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["ordinal", "gate", "verdict", "receipt_id"],
+      "required": ["ordinal", "gate", "verdict", "receipt_id", "agent_id", "vault_id", "observation_digest", "previous_receipt_digest", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
       "properties": {
         "ordinal": {"type": "integer", "minimum": 1, "maximum": 7},
         "gate": {"enum": ["exclusive_writer", "vault_filesystem", "semantic_kernel", "compatibility", "derived_views", "work_journal", "control_channel"]},
         "verdict": {"enum": ["pass", "fail", "not_run"]},
-        "receipt_id": {"type": ["string", "null"], "pattern": "^readiness-receipt:[a-z0-9-]{3,64}$"}
+        "receipt_id": {"type": ["string", "null"], "pattern": "^readiness-receipt:[a-z0-9-]{3,64}$"},
+        "agent_id": {"type": ["string", "null"], "pattern": "^agent:[a-z0-9-]{3,64}$"},
+        "vault_id": {"type": ["string", "null"], "pattern": "^vault:[a-z0-9-]{3,64}$"},
+        "observation_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "previous_receipt_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "signature_scheme": {"type": ["string", "null"], "enum": ["hmac-sha256", null]},
+        "signing_key_id": {"type": ["string", "null"], "enum": ["signer-key:primary-001", null]},
+        "signer_agent_id": {"type": ["string", "null"], "pattern": "^agent:[a-z0-9-]{3,64}$"},
+        "signature_digest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
+        "authenticated": {"type": "boolean"}
       }
     },
     "readinessObservations": {
@@ -128,7 +144,7 @@
     "action": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["kind", "actor_role", "work_id", "expected_work_version", "expected_journal_head_sequence", "expected_writer_epoch", "lease_id", "idempotency_key", "proposed_work_input_digest", "retryable", "command_version", "command_vault_id", "candidate_agent_id", "recovery_tick", "interruption_count", "writer_lock_receipt", "readiness_observations", "semantic_write_requested", "authority_source"],
+      "required": ["kind", "actor_role", "work_id", "expected_work_version", "expected_journal_head_sequence", "expected_writer_epoch", "lease_id", "idempotency_key", "proposed_work_input_digest", "retryable", "command_version", "command_vault_id", "candidate_agent_id", "current_tick", "recovery_tick", "interruption_count", "writer_lock_receipt", "readiness_observations", "semantic_write_requested", "authority_source"],
       "properties": {
         "kind": {"enum": ["enqueue", "dispatch", "acknowledge", "fail", "retry", "cancel", "resume", "restart", "recover", "readiness_check", "control_command", "acquire_writer"]},
         "actor_role": {"enum": ["work_submitter", "scheduler", "mdplace_agent", "vault_owner", "control_client", "launchd_supervisor", "operating_system"]},
@@ -143,6 +159,7 @@
         "command_version": {"type": ["integer", "null"], "minimum": 1, "maximum": 1000000},
         "command_vault_id": {"type": ["string", "null"], "pattern": "^vault:[a-z0-9-]{3,64}$"},
         "candidate_agent_id": {"type": ["string", "null"], "pattern": "^agent:[a-z0-9-]{3,64}$"},
+        "current_tick": {"type": ["integer", "null"], "minimum": 0, "maximum": 1000000},
         "recovery_tick": {"type": ["integer", "null"], "minimum": 0, "maximum": 1000000},
         "interruption_count": {"type": "integer", "minimum": 0, "maximum": 3},
         "writer_lock_receipt": {"$ref": "#/$defs/writerLockReceipt"},
