@@ -48,7 +48,7 @@
             "outcome": "cancelled",
             "output_digest": null,
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "41da6161617b1781860c2f7953d85833f208b1ca1c81ad67bc6e3306f2a3fd08",
+            "signature_digest": "95838611ffdeb110d2f0ebb11373b800207ff6c8b0567aff57c71f71680f106a",
             "authenticated": true,
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001"
@@ -63,7 +63,10 @@
           "local_transport": true
         },
         "prior_receipts": [],
-        "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "dependency_state_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "active_work_count": 0,
+        "max_concurrent_work": 8
       },
       "action": {
         "kind": "resume",
@@ -191,7 +194,8 @@
             "authenticated": false
           }
         ],
-        "current_tick": 1
+        "current_tick": 1,
+        "expected_dependency_state_digest": null
       }
     }
   },

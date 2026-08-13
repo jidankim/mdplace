@@ -31,7 +31,10 @@
           "local_transport": true
         },
         "prior_receipts": [],
-        "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "dependency_state_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "active_work_count": 0,
+        "max_concurrent_work": 8
       },
       "action": {
         "kind": "control_command",
@@ -159,7 +162,8 @@
             "authenticated": false
           }
         ],
-        "current_tick": 1
+        "current_tick": 1,
+        "expected_dependency_state_digest": null
       }
     }
   },

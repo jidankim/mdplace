@@ -51,7 +51,10 @@
           "local_transport": true
         },
         "prior_receipts": [],
-        "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "dependency_state_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "active_work_count": 1,
+        "max_concurrent_work": 8
       },
       "action": {
         "kind": "recover",
@@ -81,7 +84,7 @@
           "signature_scheme": "hmac-sha256",
           "signing_key_id": "signer-key:primary-001",
           "signer_agent_id": "agent:primary-001",
-          "signature_digest": "2b07f4a25e62fb98dd544ed6c4c9d3a09458e6f71ffad42c862dc1b36017c7f2",
+          "signature_digest": "35a1dc9ffa48beb5993e74e4c40378a64e50fb145506a41e2833f893ed8adef6",
           "authenticated": true
         },
         "readiness_observations": [
@@ -93,11 +96,11 @@
             "agent_id": "agent:primary-001",
             "vault_id": "vault:001",
             "observation_digest": "49e9157c5b99d1485a899e0e0d75c0d737d91e5f2a7b8dc575c48a1b2b6c0cbd",
-            "previous_receipt_digest": "2b07f4a25e62fb98dd544ed6c4c9d3a09458e6f71ffad42c862dc1b36017c7f2",
+            "previous_receipt_digest": "35a1dc9ffa48beb5993e74e4c40378a64e50fb145506a41e2833f893ed8adef6",
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "c887848ac9f58f05fb60a9ce8042488a80ca0123a2b69abf71d636f3878d71ea",
+            "signature_digest": "f19441b38c20224b358415bafc7829d0b429b399549ff5d5f7b0fbf50aa6014e",
             "authenticated": true
           },
           {
@@ -108,11 +111,11 @@
             "agent_id": "agent:primary-001",
             "vault_id": "vault:001",
             "observation_digest": "6573af4f8c27f5c3ba864ac69358fbd226894c386adc6af8c9f654d39a9c3425",
-            "previous_receipt_digest": "c887848ac9f58f05fb60a9ce8042488a80ca0123a2b69abf71d636f3878d71ea",
+            "previous_receipt_digest": "f19441b38c20224b358415bafc7829d0b429b399549ff5d5f7b0fbf50aa6014e",
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "7262666c608ef40a07c8eec9ff5a942f308aa35e35820bc17b75ca94de84563c",
+            "signature_digest": "b4d067bc0e04ae0881a50584868cd43bcf461f60fee2bcc82b9cf7b8b8c49031",
             "authenticated": true
           },
           {
@@ -123,11 +126,11 @@
             "agent_id": "agent:primary-001",
             "vault_id": "vault:001",
             "observation_digest": "4723aad27a3b119723a277ef101500960323ae7b27298d8cddf94e1b18f6f94f",
-            "previous_receipt_digest": "7262666c608ef40a07c8eec9ff5a942f308aa35e35820bc17b75ca94de84563c",
+            "previous_receipt_digest": "b4d067bc0e04ae0881a50584868cd43bcf461f60fee2bcc82b9cf7b8b8c49031",
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "62c56a63422ebc4598df89adfee69f1bdb33ba901bf9c724e05aed63c39ae6f9",
+            "signature_digest": "bf45b089ee8321fbc5cad5d8fb6c8dce9b6375f9ec468e74f4092a65a9e446a0",
             "authenticated": true
           },
           {
@@ -138,11 +141,11 @@
             "agent_id": "agent:primary-001",
             "vault_id": "vault:001",
             "observation_digest": "987cfdd77436b65a7fc1e7f6895aaebb91708bc85ba40aa52a0f362a1877b010",
-            "previous_receipt_digest": "62c56a63422ebc4598df89adfee69f1bdb33ba901bf9c724e05aed63c39ae6f9",
+            "previous_receipt_digest": "bf45b089ee8321fbc5cad5d8fb6c8dce9b6375f9ec468e74f4092a65a9e446a0",
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "160f301cabb0ffc143b429ad27dd4f1e6336de6efa6ec9c7e09e5c702d580871",
+            "signature_digest": "c5c32173b4f217b6db7557d2c31e4de3ddffc76e1c766803cc1c56f67398b59c",
             "authenticated": true
           },
           {
@@ -153,11 +156,11 @@
             "agent_id": "agent:primary-001",
             "vault_id": "vault:001",
             "observation_digest": "b19cf12759a85734858616b0714b5cf84fa5b3d8f0ac3cd0716d58f4e1e03372",
-            "previous_receipt_digest": "160f301cabb0ffc143b429ad27dd4f1e6336de6efa6ec9c7e09e5c702d580871",
+            "previous_receipt_digest": "c5c32173b4f217b6db7557d2c31e4de3ddffc76e1c766803cc1c56f67398b59c",
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "30653924b80c3778fd62622c7e61b01e240ee346c981124b818181af45f5b96a",
+            "signature_digest": "a6c1391ee066bba16e414613a136610b9c34e200e986d1b6802d2ea2b067c15f",
             "authenticated": true
           },
           {
@@ -168,11 +171,11 @@
             "agent_id": "agent:primary-001",
             "vault_id": "vault:001",
             "observation_digest": "3a43adbabeff9f26c627c1c1abaec6e7f6ff0fb7c6cbc92f9bf139e7640b2896",
-            "previous_receipt_digest": "30653924b80c3778fd62622c7e61b01e240ee346c981124b818181af45f5b96a",
+            "previous_receipt_digest": "a6c1391ee066bba16e414613a136610b9c34e200e986d1b6802d2ea2b067c15f",
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "7e567543c5c1e51a470fb2aa69accd7f8c889ce0021acf6862cc6d57f9c85d13",
+            "signature_digest": "37508e2230aa42bbe30853a4cfdceecdef42c50bbd82bfdff834084090985e76",
             "authenticated": true
           },
           {
@@ -183,15 +186,16 @@
             "agent_id": "agent:primary-001",
             "vault_id": "vault:001",
             "observation_digest": "1324bcaa87699c9ff4d404522155580f42e2d9dbda57c3aec44b0e95fea58ce6",
-            "previous_receipt_digest": "7e567543c5c1e51a470fb2aa69accd7f8c889ce0021acf6862cc6d57f9c85d13",
+            "previous_receipt_digest": "37508e2230aa42bbe30853a4cfdceecdef42c50bbd82bfdff834084090985e76",
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "4608eb22aa2b44507bd364cb3c9160acf8fdd3e0cbacc4b899685036cc9efe6e",
+            "signature_digest": "3cbf02d83fc287a6ba66edc66d305ddcca90e435bcae5c518e25ed4bf83b9202",
             "authenticated": true
           }
         ],
-        "current_tick": 301
+        "current_tick": 301,
+        "expected_dependency_state_digest": null
       }
     }
   },

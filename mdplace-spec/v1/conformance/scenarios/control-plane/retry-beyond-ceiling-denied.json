@@ -50,7 +50,7 @@
             "outcome": "failed",
             "output_digest": null,
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "1e270b5f86d2ac3fb7470763c4c16ceac9197ff3db60b031676cae6b3cb3e000",
+            "signature_digest": "cb1aaf8db4a0826585f66927d8d0c0fac831b287d7ba3a92f8d6c3f6558c03d6",
             "authenticated": true,
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001"
@@ -65,7 +65,10 @@
           "local_transport": true
         },
         "prior_receipts": [],
-        "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "dependency_state_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "active_work_count": 0,
+        "max_concurrent_work": 8
       },
       "action": {
         "kind": "retry",
@@ -193,7 +196,8 @@
             "authenticated": false
           }
         ],
-        "current_tick": 1
+        "current_tick": 1,
+        "expected_dependency_state_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
       }
     }
   },

@@ -1,9 +1,12 @@
+import {createHash} from 'node:crypto';
+
 import {checkTransitionTable} from './package-checks.mjs';
 import {childWorkInvocationIsValid} from './child-work-validation.mjs';
 import {verifyControlPlaneReceipt} from './control-plane-authentication.mjs';
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {controlPlaneEvidenceCodes} from './control-plane-evidence.mjs';
 import {readPackageFile} from './safe-path.mjs';
+import {canonicalJson} from './semantic-kernel-core.mjs';
 
 const instanceBindings = [
   ['contracts/control-plane/work-journal.json', 'contracts/schemas/work-journal.schema.json'],
@@ -28,34 +31,41 @@ const transitionPaths = [
 const transitionInventories = new Map([
   ['contracts/transitions/work-queue-lifecycle.json', {
     prefix: 'TR-CPWORK-',
+    rowsDigest: '1786540bf1b49821ffd67244ccb9a17e0d443afffda05195d8f1a4f13cc48047',
     states: ['absent', 'queued', 'leased', 'executing', 'terminal'],
     commands: ['enqueue_work', 'dispatch_work', 'acknowledge_work', 'complete_work', 'recover_work'],
   }],
   ['contracts/transitions/retry-lifecycle.json', {
     prefix: 'TR-CPRETRY-',
+    rowsDigest: '8be3a0f6cba8cb9fb0c703f0c01928675250a3a1eec26ab0fac8f65fb84578d6',
     states: ['executing', 'retry_wait', 'failed'],
     commands: ['record_retry', 'record_terminal_failure', 'retry_work'],
   }],
   ['contracts/transitions/cancellation-lifecycle.json', {
     prefix: 'TR-CPCANCEL-',
+    rowsDigest: 'ccf49f36b5fb89ee98f964b7715df5f6c72319dafcc74b7999fa61fccfeacb25',
     states: ['queued', 'leased', 'executing', 'retry_wait', 'cancelled', 'succeeded', 'failed'],
     commands: ['cancel_work', 'resume_work'],
   }],
   ['contracts/transitions/readiness-lifecycle.json', {
     prefix: 'TR-CPREADY-',
+    rowsDigest: 'b7e903aa00eb9a137f715054e6dc5523e3e188915a92be13498e5a00f1bfaeb9',
     states: ['starting', 'ready', 'blocked'], commands: ['evaluate_readiness', 'dependency_lost'],
   }],
   ['contracts/transitions/agent-lifecycle.json', {
     prefix: 'TR-CPAGENT-',
+    rowsDigest: '2e61383c92b4db87b896f9eea7e8d130ee3e916dd0abb19ee2c88aa3192ebc66',
     states: ['stopped', 'starting', 'recovering', 'ready', 'draining', 'blocked'],
     commands: ['start_agent', 'crash_agent', 'recover_agent', 'stop_agent'],
   }],
   ['contracts/transitions/control-channel-lifecycle.json', {
     prefix: 'TR-CPCHANNEL-',
+    rowsDigest: '1e658046f5c7aaeaf4e6bec507174f30a9b64158a92e7a35c3473a9a6f509f9e',
     states: ['closed', 'open'], commands: ['open_control_channel', 'submit_control_command', 'close_control_channel'],
   }],
   ['contracts/transitions/exclusive-writer-lifecycle.json', {
     prefix: 'TR-CPWRITER-',
+    rowsDigest: '4c5474dbc6b88ab2d769f08a40ab21d2101cf7e8eb8a8dbe0a0e8c0e048954cc',
     states: ['unheld', 'held'], commands: ['acquire_writer', 'retain_writer', 'release_writer'],
   }],
 ]);
@@ -83,6 +93,11 @@ const recoveryInventory = [
   terminal_result: `${decision} with unchanged semantic truth`,
   failure_result: 'control.recovery_precondition_failed; state unchanged',
 }));
+const recoveryRowsDigest = '32a4d35d7b661551872babf4015dd129b061b4915e5e3a64621a87d7434d1b84';
+
+function canonicalDigest(value) {
+  return createHash('sha256').update(canonicalJson(value)).digest('hex');
+}
 
 const authorityByTransitionCommand = new Map([
   ['enqueue_work', 'work_submitter'], ['dispatch_work', 'scheduler'],
@@ -139,7 +154,8 @@ function transitionTarget(prefix, state, command) {
 }
 
 function transitionSemanticsAreExact(table, inventory) {
-  if (!Array.isArray(table.transitions) || table.transitions.length !== inventory.states.length * inventory.commands.length) return false;
+  if (!Array.isArray(table.transitions) || table.transitions.length !== inventory.states.length * inventory.commands.length ||
+      canonicalDigest(table.transitions) !== inventory.rowsDigest) return false;
   return table.transitions.every((row, index) => {
     const state = inventory.states[Math.floor(index / inventory.commands.length)];
     const command = inventory.commands[index % inventory.commands.length];
@@ -195,9 +211,20 @@ function workJournalStateValid(journal) {
       : work.retry_eligible_tick === null;
     const terminal = ['cancelled', 'succeeded', 'failed'].includes(work.state);
     const result = work.result;
+    const matchingCompletionReceipt = terminal
+      ? journal.receipts.find((receipt) => receipt.receipt_id === result?.receipt_id)
+      : null;
+    const outcomeFieldsValid = result?.outcome === 'succeeded'
+      ? typeof result.output_digest === 'string' && result.code === null
+      : result?.output_digest === null && typeof result?.code === 'string';
     const resultValid = terminal
       ? work.result !== null && work.result.outcome === work.state && work.result.work_version === work.work_version &&
         work.result.journal_sequence <= journal.head_sequence &&
+        outcomeFieldsValid && matchingCompletionReceipt?.receipt_kind === 'completion' &&
+        matchingCompletionReceipt.journal_sequence === result.journal_sequence &&
+        matchingCompletionReceipt.work_id === work.work_id &&
+        matchingCompletionReceipt.work_version === work.work_version &&
+        matchingCompletionReceipt.state === work.state &&
         verifyControlPlaneReceipt('work_completion', [
           result.receipt_id, work.work_id, result.work_version, result.lease_id ?? '',
           result.journal_sequence, result.outcome, result.output_digest ?? '', result.code ?? '',
@@ -324,7 +351,8 @@ export async function checkControlPlaneContract(packageRoot, manifest, conforman
   }
   const recoveryMatrix = instances.get('contracts/control-plane/recovery-matrix.json');
   const recoveryRows = Array.isArray(recoveryMatrix?.rows) ? recoveryMatrix.rows : [];
-  if (recoveryRows.length !== recoveryInventory.length || recoveryRows.some((row, index) => {
+  if (recoveryRows.length !== recoveryInventory.length || canonicalDigest(recoveryRows) !== recoveryRowsDigest ||
+      recoveryRows.some((row, index) => {
     const expected = recoveryInventory[index];
     return Object.entries(expected).some(([key, value]) => row?.[key] !== value);
   })) {

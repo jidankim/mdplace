@@ -347,10 +347,10 @@
         "complete recovery receipt chain"
       ],
       "emitted_records": [
-        "WorkRecoveryReceipt"
+        "TerminalFailureReceipt"
       ],
       "filesystem_effects": [
-        "none unless an exact Vault Mutation Gate recovery contract separately authorizes reconciliation"
+        "append durable terminal failure"
       ],
       "idempotency": "The same recovery identity and exact observations return the original receipt.",
       "terminal_result": "fail with unchanged semantic truth",

@@ -409,24 +409,24 @@
       },
       "preconditions": [
         "vault owner is authenticated",
-        "exact Work Item version is current"
+        "exact cancelled Work Item version is current",
+        "the cancellation binding matches the durable original"
       ],
       "base_references": [
         "exact Work Item version",
-        "current Work Lease when present"
+        "original CancellationReceipt"
       ],
       "emitted_records": [
-        "CancellationReceipt"
+        "original CancellationReceipt"
       ],
       "filesystem_effects": [
-        "append durable cancellation",
-        "revoke active Child Work Invocation capability when present"
+        "none"
       ],
       "idempotency": {
         "key_fields": [
           "idempotency_key",
           "exact Work Item version",
-          "current Work Lease when present"
+          "original CancellationReceipt"
         ],
         "retry_result": "return the original durable receipt for the exact binding"
       },
@@ -441,7 +441,7 @@
           "none"
         ]
       },
-      "recovery": "Keep the Work Item cancelled after restart and never revive it without a separate authorized resume."
+      "recovery": "Return the original cancellation receipt without another mutation; keep the Work Item cancelled after restart and never revive it without a separate authorized resume."
     },
     {
       "transition_id": "TR-CPCANCEL-010",

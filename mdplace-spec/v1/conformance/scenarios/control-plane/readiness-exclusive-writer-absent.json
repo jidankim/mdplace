@@ -32,7 +32,10 @@
           "local_transport": true
         },
         "prior_receipts": [],
-        "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "dependency_state_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "active_work_count": 0,
+        "max_concurrent_work": 8
       },
       "action": {
         "kind": "readiness_check",
@@ -66,7 +69,7 @@
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "4d19da8137fbe0415ec5c9b398a635d64882b180b330242a2759e60c0ea6a7e8",
+            "signature_digest": "d48e2878bb201c168a54cf73c8fef23f8a4d994d8202332ced9ff4426b42b998",
             "authenticated": true
           },
           {
@@ -160,7 +163,8 @@
             "authenticated": false
           }
         ],
-        "current_tick": 1
+        "current_tick": 1,
+        "expected_dependency_state_digest": null
       }
     }
   },

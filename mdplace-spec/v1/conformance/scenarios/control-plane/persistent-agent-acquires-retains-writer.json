@@ -33,7 +33,10 @@
           "local_transport": true
         },
         "prior_receipts": [],
-        "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        "semantic_state_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "dependency_state_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "active_work_count": 0,
+        "max_concurrent_work": 8
       },
       "action": {
         "kind": "acquire_writer",
@@ -63,7 +66,7 @@
           "signature_scheme": "hmac-sha256",
           "signing_key_id": "signer-key:primary-001",
           "signer_agent_id": "agent:primary-001",
-          "signature_digest": "2e73a24033c42a495bfcf772bb510a6195bd3495bb2362fbf0c69abec3149df9",
+          "signature_digest": "808d0d436bef7c726d304f58aee78f08dd42d40df161501f8c098c47c4e18ec5",
           "authenticated": true
         },
         "readiness_observations": [
@@ -173,7 +176,8 @@
             "authenticated": false
           }
         ],
-        "current_tick": 1
+        "current_tick": 1,
+        "expected_dependency_state_digest": null
       }
     }
   },
