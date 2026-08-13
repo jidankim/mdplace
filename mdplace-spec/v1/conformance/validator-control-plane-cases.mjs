@@ -763,6 +763,49 @@ test('dispatch revalidates current journal writer readiness dependency and capac
     const observed = await observeControlPlaneScenario(subject, packageRoot);
     assert.deepEqual(observed.codes, [code]);
   }
+
+  const reusedPrefixLease = structuredClone(fixture.subject);
+  const reusedInitial = reusedPrefixLease.document.initial;
+  const reusedAction = reusedPrefixLease.document.action;
+  const prefix = reusedInitial.journal_prefix_receipt;
+  const prefixLease = {
+    lease_id: reusedAction.lease_id, work_id: 'work:other-001', work_version: 1,
+    owner_agent_id: reusedInitial.persistent_agent_id,
+    acquired_tick: 1, expires_tick: 301, status: 'active',
+  };
+  Object.assign(prefix, {head_sequence: 1, head_digest: 'f'.repeat(64), active_leases: [prefixLease]});
+  Object.assign(prefix, signControlPlaneReceipt('work_journal_prefix', journalPrefixFields(prefix)));
+  const enqueueReceipt = reusedInitial.work.enqueue_receipt;
+  Object.assign(enqueueReceipt, {
+    base_head_sequence: 1, base_head_digest: prefix.head_digest, journal_sequence: 2,
+  });
+  Object.assign(enqueueReceipt, signControlPlaneReceipt('work_enqueue', [
+    enqueueReceipt.receipt_id, enqueueReceipt.work_id, enqueueReceipt.work_version,
+    enqueueReceipt.idempotency_key, enqueueReceipt.input_digest,
+    enqueueReceipt.base_head_sequence, enqueueReceipt.base_head_digest,
+    enqueueReceipt.journal_sequence,
+  ]));
+  reusedInitial.journal_head_sequence = 2;
+  authenticateScenarioHead(reusedInitial);
+  const schedulerReceipt = {
+    receipt_id: 'scheduler-lease-receipt:reused-prefix-001',
+    vault_id: reusedInitial.vault_id, ...prefixLease,
+  };
+  Object.assign(schedulerReceipt, signControlPlaneReceipt(
+    'scheduler_active_lease', schedulerLeaseFields(schedulerReceipt),
+  ));
+  Object.assign(reusedInitial, {
+    active_lease_ids: [reusedAction.lease_id], active_work_count: 1,
+    scheduler_active_lease_receipts: [schedulerReceipt],
+    scheduler_state_digest: schedulerStateDigest([reusedAction.lease_id]),
+  });
+  Object.assign(reusedAction, {
+    expected_journal_head_sequence: reusedInitial.journal_head_sequence,
+    expected_journal_head_digest: reusedInitial.journal_head_digest,
+    expected_scheduler_state_digest: reusedInitial.scheduler_state_digest,
+  });
+  assert.deepEqual((await observeControlPlaneScenario(reusedPrefixLease, packageRoot)).codes,
+    ['control.lease_identity_conflict']);
 });
 
 test('stateful dependency and Scheduler snapshots are derived from durable Work evidence', async () => {
@@ -1135,6 +1178,29 @@ test('recovery exhaustion commits an authenticated terminal failure', async () =
     authenticateScenarioScheduler(initial, action.recovery_tick);
     action.expected_scheduler_state_digest = initial.scheduler_state_digest;
   }
+
+  const reversedAttempt = structuredClone(fixture.subject);
+  installPriorRecoveryChain(reversedAttempt, 1);
+  const reversedInitial = reversedAttempt.document.initial;
+  const reversedAction = reversedAttempt.document.action;
+  const reversedAcquisition = reversedInitial.prior_lease_receipts.at(-2);
+  const reversedStart = reversedInitial.prior_lease_receipts.at(-1);
+  Object.assign(reversedAcquisition, {acquired_tick: 0, expires_tick: 300});
+  Object.assign(reversedAcquisition, signControlPlaneReceipt(
+    'work_lease', leaseFields(reversedAcquisition),
+  ));
+  Object.assign(reversedStart, {acquired_tick: 0, expires_tick: 300, started_tick: 0});
+  Object.assign(reversedStart, signControlPlaneReceipt('work_lease', leaseFields(reversedStart)));
+  Object.assign(reversedInitial.work, {lease_acquired_tick: 0, lease_expires_tick: 300});
+  authenticateScenarioHead(reversedInitial);
+  Object.assign(reversedAction, {
+    expected_journal_head_digest: reversedInitial.journal_head_digest,
+    recovery_tick: 300,
+  });
+  authenticateScenarioScheduler(reversedInitial, reversedAction.recovery_tick);
+  reversedAction.expected_scheduler_state_digest = reversedInitial.scheduler_state_digest;
+  assert.deepEqual((await observeControlPlaneScenario(reversedAttempt, packageRoot)).codes,
+    ['control.lease_history_invalid']);
 
   const recoveryExhausted = structuredClone(fixture.subject);
   installPriorRecoveryChain(recoveryExhausted, 2);
@@ -2189,6 +2255,54 @@ test('Work Journal derives exact lease and recovery state from authenticated lif
   const recoveryReport = await buildValidationReport(executingRecovery.temporaryRoot);
   assert.equal(recoveryReport.checks.find(({id}) => id === 'control-plane-contract').codes
     .includes('control.work_journal_state_invalid'), false);
+
+  const reversedAttemptRoot = await copyCommittedPackage();
+  const reversedAttemptPath = `${reversedAttemptRoot}/contracts/control-plane/work-journal.json`;
+  const reversedAttemptJournal = JSON.parse(await readFile(reversedAttemptPath));
+  const reversedAttemptWork = reversedAttemptJournal.work_items[0];
+  reversedAttemptJournal.receipts.push(
+    authenticateJournalRecord({
+      receipt_id: 'receipt:lease-before-recovery-001', receipt_kind: 'lease', journal_sequence: 2,
+      work_id: reversedAttemptWork.work_id, work_version: 2, lease_id: 'lease:before-recovery-001',
+      state: 'leased', operation_digest: '4'.repeat(64),
+      semantic_state_digest: reversedAttemptWork.dependencies[0].digest,
+      owner_agent_id: 'agent:primary-001', acquired_tick: 100, expires_tick: 400,
+      lease_status: 'active',
+    }),
+    authenticateJournalRecord({
+      receipt_id: 'receipt:recovery-before-reversal-001', receipt_kind: 'recovery', journal_sequence: 3,
+      work_id: reversedAttemptWork.work_id, work_version: 3, lease_id: 'lease:before-recovery-001',
+      state: 'queued', operation_digest: '5'.repeat(64),
+      semantic_state_digest: reversedAttemptWork.dependencies[0].digest,
+      recovery_interruption_count: 1, resulting_retry_count: 0, recovery_tick: 400,
+      recovery_lease_status: 'expired', recovery_decision: 'requeue',
+      selected_retry_delay_ticks: null, retry_eligible_tick: null,
+    }),
+    authenticateJournalRecord({
+      receipt_id: 'receipt:lease-after-recovery-001', receipt_kind: 'lease', journal_sequence: 4,
+      work_id: reversedAttemptWork.work_id, work_version: 4, lease_id: 'lease:after-recovery-001',
+      state: 'leased', operation_digest: '6'.repeat(64),
+      semantic_state_digest: reversedAttemptWork.dependencies[0].digest,
+      owner_agent_id: 'agent:primary-001', acquired_tick: 0, expires_tick: 300,
+      lease_status: 'active',
+    }),
+  );
+  Object.assign(reversedAttemptWork, {
+    work_version: 4, state: 'leased', recovery_interruption_count: 1,
+    lease: {
+      lease_id: 'lease:after-recovery-001', work_id: reversedAttemptWork.work_id,
+      work_version: 4, owner_agent_id: 'agent:primary-001', acquired_tick: 0,
+      expires_tick: 300, status: 'active',
+    },
+  });
+  await writeControlPlaneState(reversedAttemptRoot, reversedAttemptJournal);
+  const reversedSchedulerPath = `${reversedAttemptRoot}/contracts/control-plane/scheduler-state.json`;
+  const reversedScheduler = JSON.parse(await readFile(reversedSchedulerPath));
+  reversedScheduler.active_leases = [];
+  await writeFile(reversedSchedulerPath, `${JSON.stringify(reversedScheduler, null, 2)}\n`);
+  const reversedAttemptReport = await buildValidationReport(reversedAttemptRoot);
+  assert.ok(reversedAttemptReport.checks.find(({id}) => id === 'control-plane-contract').codes
+    .includes('control.work_journal_state_invalid'));
 
   const retrying = await executingJournal();
   retrying.journal.receipts.push(authenticateJournalRecord({

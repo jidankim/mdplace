@@ -708,6 +708,15 @@ function dispatch(initial, action) {
   if (!['queued', 'retry_wait'].includes(initial.work.state) || action.lease_id === null) {
     return rejected(initial, action, 'control.illegal_transition', {illegal: true, terminal: initial.work.state});
   }
+  const historicalLeaseIds = new Set([
+    ...initial.journal_prefix_receipt.active_leases.map(({lease_id: leaseId}) => leaseId),
+    ...initial.prior_lease_receipts
+      .filter(({receipt_kind: receiptKind}) => receiptKind === 'lease')
+      .map(({lease_id: leaseId}) => leaseId),
+  ]);
+  if (historicalLeaseIds.has(action.lease_id)) {
+    return rejected(initial, action, 'control.lease_identity_conflict', {terminal: initial.work.state});
+  }
   if (!journalCanAppend(initial)) return rejected(initial, action, 'control.journal_capacity_exhausted', {terminal: 'blocked'});
   if (!Number.isInteger(action.current_tick)) return rejected(initial, action, 'control.current_tick_missing', {terminal: 'blocked'});
   if (action.current_tick > controlPlaneLimits.latestDispatchTick) {
