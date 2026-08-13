@@ -22,6 +22,7 @@ export async function checkSchemaInstances(packageRoot, conformance) {
     ['contracts/semantic-operation-kinds.json', 'contracts/schemas/semantic-operation-kind-registry.schema.json'],
     ['contracts/transitions/semantic-kernel-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
     ['contracts/processing-policy-rules.json', 'contracts/schemas/processing-policy-rules.schema.json'],
+    ['contracts/processing-policy-trust-store.json', 'contracts/schemas/processing-policy-trust-store.schema.json'],
     ['contracts/transitions/processing-policy-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
     ['contracts/transitions/source-profile-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
     ['conformance/manifest.yaml', 'contracts/schemas/conformance-manifest.schema.json'],

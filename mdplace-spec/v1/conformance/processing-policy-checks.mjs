@@ -1,7 +1,14 @@
 import {createHash} from 'node:crypto';
+import {isDeepStrictEqual} from 'node:util';
 
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
+import {
+  processingPolicyDigest,
+  processingPolicyReceiptDigest,
+  sourceProfileDigest,
+} from './processing-policy-core.mjs';
 import {processingPolicyEvidenceCodes} from './processing-policy-evidence.mjs';
+import {observeProcessingPolicyScenario} from './processing-policy-observer.mjs';
 import {readPackageFile} from './safe-path.mjs';
 
 const requiredCategories = [
@@ -33,20 +40,33 @@ async function schemaCode(packageRoot, schemaPath, document) {
   }
 }
 
+function tableIsComplete(table) {
+  const rows = table?.transitions ?? [];
+  const keys = rows.map(({from_state: state, command_or_event: command}) => `${state}\u0000${command}`);
+  return rows.length === table?.states?.length * table?.commands?.length && new Set(keys).size === rows.length &&
+    table.states.every((state) => table.commands.every((command) => keys.includes(`${state}\u0000${command}`)));
+}
+
+function sortedDigests(values) {
+  return [...new Set(values)].sort();
+}
+
 export async function checkCoreProcessingPolicyContract(packageRoot, manifest, conformance, traceability) {
   const codes = [];
-  const [rules, policyTable, profileTable, recovery, claimsIndex] = await Promise.all([
+  const [rules, policyTable, profileTable, recovery, claimsIndex, trustStore] = await Promise.all([
     readJson(packageRoot, 'contracts/processing-policy-rules.json'),
     readJson(packageRoot, 'contracts/transitions/processing-policy-lifecycle.json'),
     readJson(packageRoot, 'contracts/transitions/source-profile-lifecycle.json'),
     readJson(packageRoot, 'conformance/evidence/core-processing-policy-recovery-report.json'),
     readJson(packageRoot, 'claims-and-evidence.yaml'),
+    readJson(packageRoot, 'contracts/processing-policy-trust-store.json'),
   ]);
   const roots = [
     [rules, 'contracts/schemas/processing-policy-rules.schema.json'],
     [policyTable, 'contracts/schemas/transition-table.schema.json'],
     [profileTable, 'contracts/schemas/transition-table.schema.json'],
     [recovery, 'contracts/schemas/core-processing-policy-recovery-report.schema.json'],
+    [trustStore, 'contracts/schemas/processing-policy-trust-store.schema.json'],
   ];
   for (const [document, schemaPath] of roots) {
     const code = await schemaCode(packageRoot, schemaPath, document);
@@ -89,6 +109,24 @@ export async function checkCoreProcessingPolicyContract(packageRoot, manifest, c
     const document = fixture.subject.document;
     scenarioIds.push(document.scenario_id);
     operations.add(document.operation);
+    const trust = trustStore?.scenarios?.filter(({scenario_id: id}) => id === document.scenario_id) ?? [];
+    const expectedPolicies = [document.policy, document.descendant_policy].filter(Boolean).map((policy) => ({
+      policy_id: policy.policy_id, policy_version: policy.policy_version,
+      policy_sha256: processingPolicyDigest(policy), lifecycle_state: document.lifecycle.policy_state,
+    }));
+    const expectedProfiles = document.source_profile === null ? [] : [{
+      profile_id: document.source_profile.profile_id, profile_version: document.source_profile.profile_version,
+      profile_sha256: sourceProfileDigest(document.source_profile), lifecycle_state: document.lifecycle.source_profile_state,
+    }];
+    if (trust.length !== 1 || trust[0].vault_id !== document.policy.vault_id ||
+        !isDeepStrictEqual(trust[0].policy_bindings, expectedPolicies) ||
+        !isDeepStrictEqual(trust[0].source_profile_bindings, expectedProfiles) ||
+        !isDeepStrictEqual(trust[0].approval_receipt_sha256s,
+          sortedDigests(document.approval_receipts.map(({receipt_sha256: digest}) => digest))) ||
+        !isDeepStrictEqual(trust[0].redaction_receipt_sha256s,
+          sortedDigests(document.redaction_receipts.map(({receipt_sha256: digest}) => digest)))) {
+      codes.push('policy.trust_store_invalid');
+    }
     if (document.source_profile !== null) {
       const profileCode = await schemaCode(packageRoot, 'contracts/schemas/source-profile.schema.json', document.source_profile);
       if (profileCode !== null) codes.push(profileCode);
@@ -128,7 +166,22 @@ export async function checkCoreProcessingPolicyContract(packageRoot, manifest, c
         continue;
       }
       const receiptCode = await schemaCode(packageRoot, 'contracts/schemas/processing-policy-receipt.schema.json', receipt);
-      if (receiptCode !== null) codes.push('policy.receipt_invalid');
+      if (receiptCode !== null || receipt.receipt_sha256 !== processingPolicyReceiptDigest(receipt)) {
+        codes.push('policy.receipt_invalid');
+      }
+    }
+    for (const recoveryCase of document.recovery_denials) {
+      for (const approvalReceipt of recoveryCase.approval_receipts) {
+        if (await schemaCode(packageRoot, 'contracts/schemas/approval-receipt.schema.json', approvalReceipt) !== null) {
+          codes.push('policy.recovery_denial_invalid');
+        }
+      }
+      const caseSubject = structuredClone(fixture.subject);
+      caseSubject.document.recovery_denials = [];
+      caseSubject.document.recovery = recoveryCase.recovery;
+      caseSubject.document.approval_receipts = recoveryCase.approval_receipts;
+      const observed = await observeProcessingPolicyScenario(caseSubject, packageRoot);
+      if (!isDeepStrictEqual(observed, recoveryCase.expected)) codes.push('policy.recovery_denial_invalid');
     }
     if (fixture.expected?.network_effects?.length !== 1 || fixture.expected.network_effects[0] !== 'none') {
       codes.push('policy.network_effects_invalid');
@@ -142,6 +195,22 @@ export async function checkCoreProcessingPolicyContract(packageRoot, manifest, c
     codes.push('policy.required_operation_uncovered');
   }
   if (!externalCompatibilityEvidence) codes.push('source_profile.compatibility_evidence_external_missing');
+  if (!tableIsComplete(policyTable) || !tableIsComplete(profileTable)) codes.push('policy.lifecycle_incomplete');
+  const deniedRows = [policyTable, profileTable].flatMap((table) => (table?.transitions ?? [])
+    .filter(({allowed}) => !allowed)
+    .map((row) => ({
+      table_id: table.table_id, transition_id: row.transition_id, from_state: row.from_state,
+      command_or_event: row.command_or_event, code: row.failure_result.code, terminal_state: row.terminal_state,
+    })));
+  const declaredDenials = owned.flatMap(({fixture}) => fixture?.subject?.document?.lifecycle_denials ?? []);
+  if (deniedRows.length !== 22 || !isDeepStrictEqual(declaredDenials, deniedRows)) {
+    codes.push('policy.lifecycle_denial_coverage_missing');
+  }
+  const recoveryDenialIds = owned.flatMap(({fixture}) =>
+    fixture?.subject?.document?.recovery_denials?.map(({case_id: id}) => id) ?? []);
+  if (!isDeepStrictEqual(recoveryDenialIds.sort(), [
+    'ambiguous_approval_receipt', 'mismatched_binding', 'missing_recovery', 'torn_journal',
+  ])) codes.push('policy.recovery_denial_coverage_missing');
   const transition = (state, command) => profileTable?.transitions?.find((row) =>
     row.from_state === state && row.command_or_event === command);
   if (transition('active', 'invalidate_source_profile')?.terminal_state !== 'stale' ||

@@ -4,7 +4,7 @@
   "title": "mdplace vault-owner approval receipt",
   "type": "object",
   "additionalProperties": false,
-  "required": ["$schema", "schema_id", "receipt_id", "subject_kind", "subject_id", "subject_version", "vault_id", "subject_payload_sha256", "approved", "principal_id", "role", "delegated", "receipt_sha256"],
+  "required": ["$schema", "schema_id", "receipt_id", "subject_kind", "subject_id", "subject_version", "vault_id", "subject_payload_sha256", "approved", "principal_id", "identity_assurance", "verification_method", "role", "delegated", "receipt_sha256"],
   "properties": {
     "$schema": {"const": "contracts/schemas/approval-receipt.schema.json"},
     "schema_id": {"const": "mdplace.approval-receipt/v1"},
@@ -16,6 +16,8 @@
     "subject_payload_sha256": {"$ref": "#/$defs/digest"},
     "approved": {"type": "boolean"},
     "principal_id": {"type": "string", "pattern": "^person:[a-z][a-z0-9-]{2,63}$"},
+    "identity_assurance": {"const": "canonical_authenticated_human"},
+    "verification_method": {"const": "authenticated_foreground_approval"},
     "role": {"enum": ["vault_owner", "capture_adapter", "compatibility_claim"]},
     "delegated": {"type": "boolean"},
     "receipt_sha256": {"$ref": "#/$defs/digest"}

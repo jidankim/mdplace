@@ -8,8 +8,37 @@ import {
   sha256Text,
   sourceProfileApprovalDigest,
   sourceProfileDigest,
+  valuesHaveUniqueKey,
   valuesAreSubset,
 } from './processing-policy-core.mjs';
+
+function policyCollectionCode(policy) {
+  if (!valuesHaveUniqueKey(policy.grants.fields, 'field_id')) return 'policy.field_denied';
+  if (!valuesHaveUniqueKey(policy.grants.destinations, 'destination_id') ||
+      !valuesHaveUniqueKey(policy.grants.consent_bindings, 'consent_binding_id')) {
+    return 'policy.destination_denied';
+  }
+  if (!valuesHaveUniqueKey(policy.grants.credential_boundaries, 'credential_ref')) {
+    return 'policy.credential_boundary_denied';
+  }
+  if (!valuesHaveUniqueKey(policy.redaction_obligations, 'redaction_rule_id')) {
+    return 'policy.redaction_unproven';
+  }
+  if (!valuesHaveUniqueKey(policy.retention_facts, 'retention_fact_id')) return 'policy.retention_unproven';
+  return null;
+}
+
+function consentBindingCode(policy, request) {
+  const scope = policy.grants.consent_bindings.find(({consent_binding_id: id}) =>
+    id === request.consent_binding_id);
+  if (scope === undefined || scope.adapter_id !== request.adapter_id ||
+      scope.provider_id !== request.provider_id || scope.purpose_id !== request.purpose_id ||
+      scope.destination_id !== request.destination_id || scope.credential_ref !== request.credential_ref ||
+      scope.retention_fact_id !== request.destination.retention_fact_id) return 'policy.destination_denied';
+  if (!valuesAreSubset(request.field_ids, scope.field_ids) ||
+      !valuesAreSubset(request.artifact_kinds, scope.artifact_kinds)) return 'policy.destination_denied';
+  return null;
+}
 
 function fallbackMatches(request, policy) {
   if (request.fallback_position === 0) return true;
@@ -31,7 +60,9 @@ function redactionsProven(document, policyDigest) {
       proof.receipt_sha256 === ref.receipt_sha256 && proof.request_id === request.request_id &&
       isDeepStrictEqual(proof.policy_ref, request.policy_binding) && proof.policy_ref.policy_sha256 === policyDigest &&
       proof.payload_sha256 === request.payload.sha256 && isDeepStrictEqual(proof.field_grant, field) &&
-      proof.outcome === 'applied' && proof.issuer === 'mdplace_local_redactor';
+      proof.outcome === 'applied' && proof.issuer === 'mdplace_local_redactor' &&
+      proof.identity_assurance === 'trusted_local_redactor' &&
+      proof.verification_method === 'local_redaction_digest_readback';
   });
 }
 
@@ -45,6 +76,22 @@ function approvalEvidenceCode(document, subjectKind, subject) {
     : approval.profile_payload_sha256;
   if (approval.approved !== true || approval.role !== 'vault_owner' || approval.delegated ||
       approval.principal_id !== document.trusted_context.owner_principal_id) return 'approval_denied';
+  const trustedBindings = subjectKind === 'processing_policy'
+    ? document.trusted_context.policy_bindings
+    : document.trusted_context.source_profile_bindings;
+  const subjectDigest = subjectKind === 'processing_policy'
+    ? processingPolicyDigest(subject)
+    : sourceProfileDigest(subject);
+  const lifecycleState = subjectKind === 'processing_policy'
+    ? document.lifecycle.policy_state
+    : document.lifecycle.source_profile_state;
+  const current = trustedBindings.filter((binding) => binding.lifecycle_state === lifecycleState &&
+    binding[subjectKind === 'processing_policy' ? 'policy_id' : 'profile_id'] ===
+      (subjectKind === 'processing_policy' ? subject.policy_id : subject.profile_id) &&
+    binding[subjectKind === 'processing_policy' ? 'policy_version' : 'profile_version'] ===
+      (subjectKind === 'processing_policy' ? subject.policy_version : subject.profile_version) &&
+    binding[subjectKind === 'processing_policy' ? 'policy_sha256' : 'profile_sha256'] === subjectDigest);
+  if (current.length !== 1) return 'approval_readback_failed';
   const receipt = document.approval_receipts.find(({receipt_id: id}) => id === approval.receipt_id);
   const subjectId = subjectKind === 'processing_policy' ? subject.policy_id : subject.profile_id;
   const subjectVersion = subjectKind === 'processing_policy' ? subject.policy_version : subject.profile_version;
@@ -56,14 +103,20 @@ function approvalEvidenceCode(document, subjectKind, subject) {
       receipt.subject_version !== subjectVersion || receipt.vault_id !== subject.vault_id ||
       receipt.subject_payload_sha256 !== payloadDigest || receipt.approved !== approval.approved ||
       receipt.principal_id !== approval.principal_id || receipt.role !== approval.role ||
+      receipt.identity_assurance !== 'canonical_authenticated_human' ||
+      receipt.verification_method !== 'authenticated_foreground_approval' ||
       receipt.delegated !== approval.delegated) return 'approval_readback_failed';
   return null;
+}
+
+export function approvalReadbackCode(document, subjectKind, subject) {
+  return approvalEvidenceCode(document, subjectKind, subject);
 }
 
 export function processingDenialCode(document) {
   const {policy, request} = document;
   const policyDigest = processingPolicyDigest(policy);
-  if (policy.lifecycle_state !== 'active') return 'policy.inactive';
+  if (policy.lifecycle_state !== 'active' || document.lifecycle.policy_state !== 'active') return 'policy.inactive';
   if (request.policy_binding.policy_id !== policy.policy_id ||
       request.policy_binding.policy_version !== policy.policy_version) return 'policy.version_mismatch';
   if (request.policy_binding.policy_sha256 !== policyDigest) return 'policy.digest_mismatch';
@@ -72,11 +125,14 @@ export function processingDenialCode(document) {
   }
   const policyApprovalCode = approvalEvidenceCode(document, 'processing_policy', policy);
   if (policyApprovalCode !== null) return `policy.${policyApprovalCode}`;
-  if (!policy.grants.adapter_ids.includes(request.adapter_id)) return 'policy.adapter_denied';
-  if (!policy.grants.provider_ids.includes(request.provider_id)) return 'policy.provider_denied';
+  const collectionCode = policyCollectionCode(policy);
+  if (collectionCode !== null) return collectionCode;
+  if (!policy.grants.adapter_ids.includes(request.adapter_id) ||
+      !policy.grants.provider_ids.includes(request.provider_id)) return 'policy.provider_denied';
   if (!policy.grants.purpose_ids.includes(request.purpose_id)) return 'policy.purpose_denied';
   const fieldMap = new Map(policy.grants.fields.map((field) => [field.field_id, field]));
-  if (request.field_ids.some((fieldId) => !fieldMap.has(fieldId))) return 'policy.field_denied';
+  if ((Buffer.byteLength(request.payload.bytes, 'utf8') > 0 && request.field_ids.length === 0) ||
+      request.field_ids.some((fieldId) => !fieldMap.has(fieldId))) return 'policy.field_denied';
   if (!isDeepStrictEqual(request.field_grants, request.field_ids.map((fieldId) => fieldMap.get(fieldId)))) {
     return 'policy.field_denied';
   }
@@ -88,7 +144,10 @@ export function processingDenialCode(document) {
   if (boundary === undefined || boundary.provider_id !== request.provider_id ||
       !isDeepStrictEqual(request.credential_boundary, boundary)) return 'policy.credential_boundary_denied';
   if (!boundary.purpose_ids.includes(request.purpose_id)) return 'policy.credential_purpose_denied';
-  if (Object.keys(policy.grants.budget).some((key) => request.budget[key] > policy.grants.budget[key])) {
+  const consentCode = consentBindingCode(policy, request);
+  if (consentCode !== null) return consentCode;
+  if (Buffer.byteLength(request.payload.bytes, 'utf8') > request.budget.input_bytes ||
+      Object.keys(policy.grants.budget).some((key) => request.budget[key] > policy.grants.budget[key])) {
     return 'policy.budget_exceeded';
   }
   if (Object.keys(policy.grants.retry).some((key) => request.retry[key] > policy.grants.retry[key])) {
@@ -116,6 +175,7 @@ export function processingDenialCode(document) {
 
 export function sourceProfileBindingCode(document, requireActive = true) {
   const {observed_binding: observed, policy, source_profile: profile} = document;
+  if (policy.lifecycle_state !== 'active' || document.lifecycle.policy_state !== 'active') return 'policy.inactive';
   if (requireActive && document.lifecycle.source_profile_state !== 'active') {
     return document.lifecycle.source_profile_state === 'stale'
       ? 'source_profile.stale'

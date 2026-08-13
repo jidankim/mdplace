@@ -9,6 +9,9 @@ import {
   policyNarrowingViolation,
   processingPolicyApprovalDigest,
   processingPolicyDigest,
+  processingPolicyReceiptDigest,
+  redactionReceiptDigest,
+  sha256Text,
   sourceProfileApprovalDigest,
   sourceProfileDigest,
 } from './processing-policy-core.mjs';
@@ -75,6 +78,9 @@ test('Source Profile readback and descendant obligations reject independent wide
 });
 
 test('binding recovery rejects torn journal, approval, and readback evidence', async () => {
+  const beforeApproval = await fixture('crash-before-approval-recovery');
+  assert.ok(beforeApproval.subject.document.approval_receipts.every(({subject_kind: kind}) =>
+    kind !== 'source_profile'));
   const recovery = await fixture('crash-after-binding-publish-recovery');
   for (const mutate of [
     (document) => { document.recovery.journal_sha256 = 'a'.repeat(64); },
@@ -242,7 +248,7 @@ test('fixtures expose the exact consent boundary and a real external compatibili
   const intake = (await fixture('approved-source-profile-intake-allowed')).subject.document;
 
   // When their machine-consumed request and compatibility bindings are inspected.
-  const requestKeys = ['vault_id', 'adapter_id', 'field_grants', 'destination', 'credential_boundary',
+  const requestKeys = ['vault_id', 'adapter_id', 'consent_binding_id', 'field_grants', 'destination', 'credential_boundary',
     'payload', 'redaction_receipt_refs', 'retention_facts'];
 
   // Then every exact dimension is observable and compatibility names the registered Claim Manifest.
@@ -254,7 +260,7 @@ test('exact request dimensions deny independently before any network effect', as
   const reference = (await fixture('remote-processing-allowed')).subject;
   const cases = [
     ['policy.vault_mismatch', (document) => { document.request.vault_id = 'vault:another-vault'; }],
-    ['policy.adapter_denied', (document) => { document.request.adapter_id = 'adapter:unapproved'; }],
+    ['policy.provider_denied', (document) => { document.request.adapter_id = 'adapter:unapproved'; }],
     ['policy.field_denied', (document) => { document.request.field_grants[0].data_class = 'data:private-frontmatter'; }],
     ['policy.destination_denied', (document) => { document.request.destination.endpoint = 'https://other.invalid/process'; }],
     ['policy.credential_boundary_denied', (document) => { document.request.credential_boundary.authentication_method = 'delegated_login'; }],
@@ -268,4 +274,84 @@ test('exact request dimensions deny independently before any network effect', as
     assert.deepEqual(observed.codes, [code]);
     assert.deepEqual(observed.network_effects, ['none']);
   }
+});
+
+test('standing consent remains exact, current, and request-bound', async () => {
+  const reference = (await fixture('remote-processing-allowed')).subject;
+
+  const revoked = structuredClone(reference);
+  revoked.document.lifecycle.policy_state = 'revoked';
+  const revokedObserved = await observeProcessingPolicyScenario(revoked, packageRoot);
+  assert.deepEqual(revokedObserved.codes, ['policy.inactive']);
+
+  const missingScope = structuredClone(reference);
+  missingScope.document.request.consent_binding_id = 'consent:missing';
+  const missingScopeObserved = await observeProcessingPolicyScenario(missingScope, packageRoot);
+  assert.deepEqual(missingScopeObserved.codes, ['policy.destination_denied']);
+
+  const changedRequest = structuredClone(reference);
+  changedRequest.document.request.request_id = 'request:changed';
+  for (const receipt of changedRequest.document.redaction_receipts) {
+    receipt.request_id = changedRequest.document.request.request_id;
+    receipt.receipt_sha256 = redactionReceiptDigest(receipt);
+  }
+  changedRequest.document.request.redaction_receipt_refs = changedRequest.document.redaction_receipts
+    .map(({receipt_id, receipt_sha256}) => ({receipt_id, receipt_sha256}));
+  const changedObserved = await observeProcessingPolicyScenario(changedRequest, packageRoot);
+  const originalObserved = await observeProcessingPolicyScenario(reference, packageRoot);
+  const changedReceipt = JSON.parse(changedObserved.receipts[0]);
+  const originalReceipt = JSON.parse(originalObserved.receipts[0]);
+  assert.notEqual(changedObserved.receipts[0], originalObserved.receipts[0]);
+  assert.equal(changedReceipt.request_id, 'request:changed');
+  assert.notEqual(changedReceipt.request_sha256, originalReceipt.request_sha256);
+  assert.equal(changedReceipt.receipt_sha256, processingPolicyReceiptDigest(changedReceipt));
+});
+
+test('actual payload bytes and ambiguous receipt identifiers fail closed', async () => {
+  const reference = (await fixture('remote-processing-allowed')).subject;
+  const oversized = structuredClone(reference);
+  oversized.document.request.payload.bytes = 'x'.repeat(oversized.document.request.budget.input_bytes + 1);
+  oversized.document.request.payload.sha256 = sha256Text(oversized.document.request.payload.bytes);
+  const oversizedObserved = await observeProcessingPolicyScenario(oversized, packageRoot);
+  assert.deepEqual(oversizedObserved.codes, ['policy.budget_exceeded']);
+
+  const duplicate = structuredClone(reference);
+  const ambiguous = structuredClone(duplicate.document.approval_receipts[0]);
+  ambiguous.role = 'capture_adapter';
+  ambiguous.receipt_sha256 = approvalReceiptDigest(ambiguous);
+  duplicate.document.approval_receipts.push(ambiguous);
+  const duplicateObserved = await observeProcessingPolicyScenario(duplicate, packageRoot);
+  assert.deepEqual(duplicateObserved.codes, ['policy.approval_readback_failed']);
+});
+
+test('descendant approval and malformed public boundaries cannot authorize or throw', async () => {
+  const pair = (await fixture('policy-preservation-canary')).subject;
+  const unapproved = structuredClone(pair);
+  unapproved.document.descendant_policy.approval.approved = false;
+  const unapprovedObserved = await observeProcessingPolicyScenario(unapproved, packageRoot);
+  assert.deepEqual(unapprovedObserved.codes, ['policy.approval_denied']);
+
+  const recovery = (await fixture('crash-after-binding-publish-recovery')).subject;
+  const missingRecovery = structuredClone(recovery);
+  missingRecovery.document.recovery = null;
+  const missingObserved = await observeProcessingPolicyScenario(missingRecovery, packageRoot);
+  assert.deepEqual(missingObserved.codes, ['source_profile.recovery_evidence_invalid']);
+  assert.equal(missingObserved.terminal_state, 'recovery_required');
+
+  const nullObserved = await observeProcessingPolicyScenario({
+    kind: 'processing_policy', schema: 'contracts/schemas/processing-policy-scenario.schema.json', document: null,
+  }, packageRoot);
+  assert.deepEqual(nullObserved.codes, ['schema.instance_missing']);
+});
+
+test('one normative fixture covers every illegal lifecycle row and recovery denial class', async () => {
+  const lifecycle = (await fixture('intake-before-binding-denied')).subject.document.lifecycle_denials;
+  const recovery = (await fixture('crash-after-binding-publish-recovery')).subject.document.recovery_denials;
+  assert.equal(lifecycle.length, 22);
+  assert.equal(new Set(lifecycle.map(({transition_id: id}) => id)).size, 22);
+  assert.deepEqual(recovery.map(({case_id: id}) => id).sort(), [
+    'ambiguous_approval_receipt', 'mismatched_binding', 'missing_recovery', 'torn_journal',
+  ]);
+  assert.ok(recovery.every(({expected}) => expected.verdict === 'fail' &&
+    expected.terminal_state === 'recovery_required' && expected.network_effects[0] === 'none'));
 });

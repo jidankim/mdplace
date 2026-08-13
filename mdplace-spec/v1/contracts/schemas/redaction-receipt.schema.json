@@ -4,7 +4,7 @@
   "title": "mdplace local redaction receipt",
   "type": "object",
   "additionalProperties": false,
-  "required": ["$schema", "schema_id", "receipt_id", "request_id", "policy_ref", "payload_sha256", "field_grant", "outcome", "issuer", "receipt_sha256"],
+  "required": ["$schema", "schema_id", "receipt_id", "request_id", "policy_ref", "payload_sha256", "field_grant", "outcome", "issuer", "identity_assurance", "verification_method", "receipt_sha256"],
   "properties": {
     "$schema": {"const": "contracts/schemas/redaction-receipt.schema.json"},
     "schema_id": {"const": "mdplace.redaction-receipt/v1"},
@@ -32,6 +32,8 @@
     },
     "outcome": {"const": "applied"},
     "issuer": {"const": "mdplace_local_redactor"},
+    "identity_assurance": {"const": "trusted_local_redactor"},
+    "verification_method": {"const": "local_redaction_digest_readback"},
     "receipt_sha256": {"$ref": "#/$defs/digest"}
   },
   "$defs": {"digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}}

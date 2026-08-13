@@ -44,6 +44,15 @@ export function approvalReceiptDigest(receipt) {
   return sha256Json(receiptPayload);
 }
 
+export function processingPolicyReceiptDigest(receipt) {
+  const {receipt_sha256: _receiptDigest, ...receiptPayload} = receipt;
+  return sha256Json(receiptPayload);
+}
+
+export function valuesHaveUniqueKey(values, key) {
+  return new Set(values.map((value) => value[key])).size === values.length;
+}
+
 function isSubset(child, parent) {
   const permitted = new Set(parent);
   return child.every((value) => permitted.has(value));
@@ -120,13 +129,35 @@ function fallbackValue(fallback) {
   return value;
 }
 
+function consentBindingsNarrow(parent, child) {
+  const parentById = new Map(parent.map((binding) => [binding.consent_binding_id, binding]));
+  return child.every((binding) => {
+    const permitted = parentById.get(binding.consent_binding_id);
+    return permitted !== undefined && binding.adapter_id === permitted.adapter_id &&
+      binding.provider_id === permitted.provider_id && binding.purpose_id === permitted.purpose_id &&
+      binding.destination_id === permitted.destination_id && binding.credential_ref === permitted.credential_ref &&
+      binding.retention_fact_id === permitted.retention_fact_id &&
+      isSubset(binding.field_ids, permitted.field_ids) && isSubset(binding.artifact_kinds, permitted.artifact_kinds);
+  });
+}
+
+function collectionsHaveUniqueIds(policy) {
+  return valuesHaveUniqueKey(policy.grants.fields, 'field_id') &&
+    valuesHaveUniqueKey(policy.grants.destinations, 'destination_id') &&
+    valuesHaveUniqueKey(policy.grants.credential_boundaries, 'credential_ref') &&
+    valuesHaveUniqueKey(policy.grants.consent_bindings, 'consent_binding_id') &&
+    valuesHaveUniqueKey(policy.redaction_obligations, 'redaction_rule_id') &&
+    valuesHaveUniqueKey(policy.retention_facts, 'retention_fact_id');
+}
+
 export function policyNarrowingViolation(parent, child) {
   const expectedParent = {
     policy_id: parent.policy_id,
     policy_version: parent.policy_version,
     policy_sha256: processingPolicyDigest(parent),
   };
-  if (!isDeepStrictEqual(child.parent_policy, expectedParent) || child.vault_id !== parent.vault_id) {
+  if (!collectionsHaveUniqueIds(parent) ||
+      !isDeepStrictEqual(child.parent_policy, expectedParent) || child.vault_id !== parent.vault_id) {
     return 'policy.parent_binding_invalid';
   }
   const checks = [
@@ -145,6 +176,13 @@ export function policyNarrowingViolation(parent, child) {
     ['automation_scope', isSubset(child.grants.automation_scope, parent.grants.automation_scope)],
     ['redaction', redactionsNarrow(parent, child)],
     ['retention', retentionNarrow(parent, child)],
+    ['destination', valuesHaveUniqueKey(child.grants.fields, 'field_id') &&
+      valuesHaveUniqueKey(child.grants.destinations, 'destination_id') &&
+      valuesHaveUniqueKey(child.grants.credential_boundaries, 'credential_ref') &&
+      valuesHaveUniqueKey(child.grants.consent_bindings, 'consent_binding_id') &&
+      valuesHaveUniqueKey(child.redaction_obligations, 'redaction_rule_id') &&
+      valuesHaveUniqueKey(child.retention_facts, 'retention_fact_id') &&
+      consentBindingsNarrow(parent.grants.consent_bindings, child.grants.consent_bindings)],
   ];
   return checks.find(([, accepted]) => !accepted)?.[0] === undefined
     ? null

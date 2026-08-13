@@ -133,6 +133,27 @@
           ],
           "adapter_ids": [
             "adapter:fixture-capture"
+          ],
+          "consent_bindings": [
+            {
+              "consent_binding_id": "consent:primary",
+              "adapter_id": "adapter:fixture-capture",
+              "provider_id": "provider:remote-alpha",
+              "purpose_id": "purpose:placement",
+              "field_ids": [
+                "field:source-url",
+                "field:title",
+                "field:source-content",
+                "field:filesystem-path"
+              ],
+              "artifact_kinds": [
+                "artifact:intelligence-proposal",
+                "artifact:raw-provider-response"
+              ],
+              "destination_id": "destination:remote-alpha",
+              "credential_ref": "credential-ref:remote-alpha",
+              "retention_fact_id": "retention:remote-alpha"
+            }
           ]
         },
         "redaction_obligations": [
@@ -189,8 +210,8 @@
           "role": "vault_owner",
           "delegated": false,
           "receipt_id": "approval:policy-core",
-          "policy_payload_sha256": "735a7ca28475758c52f6b74f6451b23f18882dafdc27cec646a54281474a6a90",
-          "receipt_sha256": "e495d44a0415a7899a3474eb83d75b45d8b6778240aa51f76507b3128ab166a1"
+          "policy_payload_sha256": "f63bf980231d04d1d468179d8bb325134ba241c84864802f4e91b0d6096937f6",
+          "receipt_sha256": "20871196edf80e9f349884d3d8d07e02a1597f76bfbcdd0c1aa9f7263a07d491"
         }
       },
       "source_profile": null,
@@ -201,7 +222,7 @@
         "policy_binding": {
           "policy_id": "policy:core-processing",
           "policy_version": "1.0.0",
-          "policy_sha256": "88559d6755c582747f92bf90a7de36f2c2d4afb8980fb08d0ab40145b014fb7b"
+          "policy_sha256": "f738fd975731c03c6292c16f060f87fdce53e9e409b2b87f985a4d42b78f5259"
         },
         "provider_id": "provider:remote-alpha",
         "purpose_id": "purpose:placement",
@@ -308,17 +329,18 @@
         "redaction_receipt_refs": [
           {
             "receipt_id": "redaction-receipt:source-url",
-            "receipt_sha256": "9f3743b97d3d8f572fd4b4bfda4709c63ed6c58fe56d14b49c2c715064c0c009"
+            "receipt_sha256": "7a82484b04733e73093389f73ff8d30db3cb0413ee9924048db70033a05ee9ab"
           },
           {
             "receipt_id": "redaction-receipt:title",
-            "receipt_sha256": "efca7b4ce664ba55b7bd3dffa3f11e68374c3e7491bbab74a6007ac5db384f21"
+            "receipt_sha256": "1a9b0616eb585a894a53ca99ab8afd9f2a59eea4fb0ea77eee6dde2759a19c47"
           },
           {
             "receipt_id": "redaction-receipt:source-content",
-            "receipt_sha256": "518d887a9bbe9feeda1c689f4bdb5bb11d07dd893fcca6213a377c800db5610c"
+            "receipt_sha256": "1726108892bc294b1c2434a230eab98c769c47f439d0335296990d7269609fb1"
           }
-        ]
+        ],
+        "consent_binding_id": "consent:primary"
       },
       "descendant_policy": {
         "$schema": "contracts/schemas/processing-policy.schema.json",
@@ -329,7 +351,7 @@
         "parent_policy": {
           "policy_id": "policy:core-processing",
           "policy_version": "1.0.0",
-          "policy_sha256": "88559d6755c582747f92bf90a7de36f2c2d4afb8980fb08d0ab40145b014fb7b"
+          "policy_sha256": "f738fd975731c03c6292c16f060f87fdce53e9e409b2b87f985a4d42b78f5259"
         },
         "lifecycle_state": "active",
         "grants": {
@@ -439,6 +461,27 @@
           ],
           "adapter_ids": [
             "adapter:fixture-capture"
+          ],
+          "consent_bindings": [
+            {
+              "consent_binding_id": "consent:primary",
+              "adapter_id": "adapter:fixture-capture",
+              "provider_id": "provider:remote-alpha",
+              "purpose_id": "purpose:placement",
+              "field_ids": [
+                "field:source-url",
+                "field:title",
+                "field:source-content",
+                "field:filesystem-path"
+              ],
+              "artifact_kinds": [
+                "artifact:intelligence-proposal",
+                "artifact:raw-provider-response"
+              ],
+              "destination_id": "destination:remote-alpha",
+              "credential_ref": "credential-ref:remote-alpha",
+              "retention_fact_id": "retention:remote-alpha"
+            }
           ]
         },
         "redaction_obligations": [
@@ -490,8 +533,8 @@
           "role": "vault_owner",
           "delegated": false,
           "receipt_id": "approval:policy-child",
-          "policy_payload_sha256": "3a62751fe4ef2e21ecd4434d8183b5b9b70a4fb0aae90d4277f072341dbfc992",
-          "receipt_sha256": "2882d56d5c1e315d680fe9648c544e24040f8ee5f0d67cd22ddcc82ff0b20ba3"
+          "policy_payload_sha256": "064f8a3f75cb1fa2582855094fed61327b734c1ff230b4f8fbbb211e1bac48a8",
+          "receipt_sha256": "151e9f01e7089bf7f469d346e38fde2ea71f4392307f414900ae083c697dd59d"
         }
       },
       "observed_binding": null,
@@ -510,7 +553,7 @@
           "policy_ref": {
             "policy_id": "policy:core-processing",
             "policy_version": "1.0.0",
-            "policy_sha256": "88559d6755c582747f92bf90a7de36f2c2d4afb8980fb08d0ab40145b014fb7b"
+            "policy_sha256": "f738fd975731c03c6292c16f060f87fdce53e9e409b2b87f985a4d42b78f5259"
           },
           "payload_sha256": "8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c",
           "field_grant": {
@@ -521,7 +564,9 @@
           },
           "outcome": "applied",
           "issuer": "mdplace_local_redactor",
-          "receipt_sha256": "9f3743b97d3d8f572fd4b4bfda4709c63ed6c58fe56d14b49c2c715064c0c009"
+          "receipt_sha256": "7a82484b04733e73093389f73ff8d30db3cb0413ee9924048db70033a05ee9ab",
+          "identity_assurance": "trusted_local_redactor",
+          "verification_method": "local_redaction_digest_readback"
         },
         {
           "$schema": "contracts/schemas/redaction-receipt.schema.json",
@@ -531,7 +576,7 @@
           "policy_ref": {
             "policy_id": "policy:core-processing",
             "policy_version": "1.0.0",
-            "policy_sha256": "88559d6755c582747f92bf90a7de36f2c2d4afb8980fb08d0ab40145b014fb7b"
+            "policy_sha256": "f738fd975731c03c6292c16f060f87fdce53e9e409b2b87f985a4d42b78f5259"
           },
           "payload_sha256": "8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c",
           "field_grant": {
@@ -542,7 +587,9 @@
           },
           "outcome": "applied",
           "issuer": "mdplace_local_redactor",
-          "receipt_sha256": "efca7b4ce664ba55b7bd3dffa3f11e68374c3e7491bbab74a6007ac5db384f21"
+          "receipt_sha256": "1a9b0616eb585a894a53ca99ab8afd9f2a59eea4fb0ea77eee6dde2759a19c47",
+          "identity_assurance": "trusted_local_redactor",
+          "verification_method": "local_redaction_digest_readback"
         },
         {
           "$schema": "contracts/schemas/redaction-receipt.schema.json",
@@ -552,7 +599,7 @@
           "policy_ref": {
             "policy_id": "policy:core-processing",
             "policy_version": "1.0.0",
-            "policy_sha256": "88559d6755c582747f92bf90a7de36f2c2d4afb8980fb08d0ab40145b014fb7b"
+            "policy_sha256": "f738fd975731c03c6292c16f060f87fdce53e9e409b2b87f985a4d42b78f5259"
           },
           "payload_sha256": "8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c",
           "field_grant": {
@@ -563,7 +610,9 @@
           },
           "outcome": "applied",
           "issuer": "mdplace_local_redactor",
-          "receipt_sha256": "518d887a9bbe9feeda1c689f4bdb5bb11d07dd893fcca6213a377c800db5610c"
+          "receipt_sha256": "1726108892bc294b1c2434a230eab98c769c47f439d0335296990d7269609fb1",
+          "identity_assurance": "trusted_local_redactor",
+          "verification_method": "local_redaction_digest_readback"
         }
       ],
       "approval_receipts": [
@@ -575,12 +624,14 @@
           "subject_id": "policy:core-processing",
           "subject_version": "1.0.0",
           "vault_id": "vault:fixture-vault",
-          "subject_payload_sha256": "735a7ca28475758c52f6b74f6451b23f18882dafdc27cec646a54281474a6a90",
+          "subject_payload_sha256": "f63bf980231d04d1d468179d8bb325134ba241c84864802f4e91b0d6096937f6",
           "approved": true,
           "principal_id": "person:vault-owner",
           "role": "vault_owner",
           "delegated": false,
-          "receipt_sha256": "e495d44a0415a7899a3474eb83d75b45d8b6778240aa51f76507b3128ab166a1"
+          "receipt_sha256": "20871196edf80e9f349884d3d8d07e02a1597f76bfbcdd0c1aa9f7263a07d491",
+          "identity_assurance": "canonical_authenticated_human",
+          "verification_method": "authenticated_foreground_approval"
         },
         {
           "$schema": "contracts/schemas/approval-receipt.schema.json",
@@ -590,27 +641,18 @@
           "subject_id": "policy:core-processing-child",
           "subject_version": "1.0.1",
           "vault_id": "vault:fixture-vault",
-          "subject_payload_sha256": "3a62751fe4ef2e21ecd4434d8183b5b9b70a4fb0aae90d4277f072341dbfc992",
+          "subject_payload_sha256": "064f8a3f75cb1fa2582855094fed61327b734c1ff230b4f8fbbb211e1bac48a8",
           "approved": true,
           "principal_id": "person:vault-owner",
           "role": "vault_owner",
           "delegated": false,
-          "receipt_sha256": "2882d56d5c1e315d680fe9648c544e24040f8ee5f0d67cd22ddcc82ff0b20ba3"
+          "receipt_sha256": "151e9f01e7089bf7f469d346e38fde2ea71f4392307f414900ae083c697dd59d",
+          "identity_assurance": "canonical_authenticated_human",
+          "verification_method": "authenticated_foreground_approval"
         }
       ],
-      "trusted_context": {
-        "vault_id": "vault:fixture-vault",
-        "owner_principal_id": "person:vault-owner",
-        "approval_receipt_sha256s": [
-          "e495d44a0415a7899a3474eb83d75b45d8b6778240aa51f76507b3128ab166a1",
-          "2882d56d5c1e315d680fe9648c544e24040f8ee5f0d67cd22ddcc82ff0b20ba3"
-        ],
-        "redaction_receipt_sha256s": [
-          "9f3743b97d3d8f572fd4b4bfda4709c63ed6c58fe56d14b49c2c715064c0c009",
-          "efca7b4ce664ba55b7bd3dffa3f11e68374c3e7491bbab74a6007ac5db384f21",
-          "518d887a9bbe9feeda1c689f4bdb5bb11d07dd893fcca6213a377c800db5610c"
-        ]
-      }
+      "lifecycle_denials": [],
+      "recovery_denials": []
     }
   },
   "expected": {
@@ -626,7 +668,7 @@
       "apply default-deny Processing Policy"
     ],
     "receipts": [
-      "{\"code\":\"policy.widening_redaction\",\"decision\":\"denied\",\"operation\":\"policy_pair\",\"policy_ref\":{\"policy_id\":\"policy:core-processing\",\"policy_sha256\":\"88559d6755c582747f92bf90a7de36f2c2d4afb8980fb08d0ab40145b014fb7b\",\"policy_version\":\"1.0.0\"},\"receipt_id\":\"receipt:cpp-007\",\"scenario_id\":\"CPP-007\",\"schema_id\":\"mdplace.processing-policy-receipt/v1\",\"source_profile_ref\":null}"
+      "{\"code\":\"policy.widening_redaction\",\"consent_binding_id\":\"consent:primary\",\"consent_binding_sha256\":\"4bb95ea8ac204ea43a4c27e5148bfedad8aceb5f5ac31a1bd391fa107db76a97\",\"decision\":\"denied\",\"network_effect\":\"none\",\"operation\":\"policy_pair\",\"payload_sha256\":\"8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c\",\"policy_ref\":{\"policy_id\":\"policy:core-processing\",\"policy_sha256\":\"f738fd975731c03c6292c16f060f87fdce53e9e409b2b87f985a4d42b78f5259\",\"policy_version\":\"1.0.0\"},\"receipt_id\":\"receipt:cpp-007\",\"receipt_sha256\":\"22e4e517de7f3972f12f2a61af7764406005d98f023092491bc4da80e3c203de\",\"request_id\":\"request:cpp-007\",\"request_sha256\":\"ffc060d6759fe73082d6e08c5c53998c7b51ce050a46f2fb2e2fa83e2fff646f\",\"scenario_id\":\"CPP-007\",\"schema_id\":\"mdplace.processing-policy-receipt/v1\",\"source_profile_ref\":null}"
     ],
     "filesystem_effects": [
       "none"

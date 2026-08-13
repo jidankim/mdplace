@@ -1,65 +1,23 @@
+import {createHash} from 'node:crypto';
+
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
-import {canonicalJson} from './semantic-kernel-core.mjs';
 import {
   policyNarrowingViolation,
-  processingPolicyDigest,
   recoveryJournalDigest,
   sha256Json,
   sourceProfileApprovalDigest,
   sourceProfileDigest,
 } from './processing-policy-core.mjs';
-import {processingDenialCode, sourceProfileBindingCode} from './processing-policy-decision.mjs';
-
-function receipt(document, decision, code, policy, profile = null) {
-  const profileReference = profile !== null && typeof profile.profile_id === 'string' &&
-    typeof profile.profile_version === 'string'
-    ? {profile_id: profile.profile_id, profile_version: profile.profile_version, profile_sha256: sourceProfileDigest(profile)}
-    : null;
-  return canonicalJson({
-    schema_id: 'mdplace.processing-policy-receipt/v1',
-    receipt_id: `receipt:${document.scenario_id.toLowerCase()}`,
-    scenario_id: document.scenario_id,
-    operation: document.operation,
-    decision,
-    code,
-    policy_ref: {
-      policy_id: policy.policy_id,
-      policy_version: policy.policy_version,
-      policy_sha256: processingPolicyDigest(policy),
-    },
-    source_profile_ref: profileReference,
-  });
-}
-
-function observed(document, {verdict, code = null, output, operations, terminal, illegal = false, effects = ['none']}) {
-  const profile = document.source_profile === null ? null : document.source_profile;
-  return {
-    verdict,
-    codes: code === null ? [] : [code],
-    outputs: [output],
-    operations,
-    receipts: [receipt(document, verdict === 'pass' ? 'allowed' : 'denied', code, document.policy, profile)],
-    filesystem_effects: effects,
-    network_effects: ['none'],
-    terminal_state: terminal,
-    illegal_transition: illegal,
-  };
-}
-
-function denied(document, code, operation = 'processing_decision', illegal = false) {
-  const intake = operation === 'intake_decision';
-  const recovery = operation === 'recovery';
-  const staleBinding = code.startsWith('source_profile.') &&
-    (code.includes('mismatch') || code.includes('readback'));
-  return observed(document, {
-    verdict: 'fail', code, output: intake ? 'intake denied' : recovery ? 'binding recovery denied' : 'processing denied',
-    operations: intake
-      ? ['validate Source Profile binding', 'apply default-deny Processing Policy']
-      : ['validate processing request', 'apply default-deny Processing Policy'],
-    terminal: intake ? staleBinding ? 'stale' : document.lifecycle.source_profile_state
-      : recovery ? 'recovery_required' : 'denied', illegal,
-  });
-}
+import {
+  approvalReadbackCode,
+  processingDenialCode,
+  sourceProfileBindingCode,
+} from './processing-policy-decision.mjs';
+import {
+  processingPolicyDenied as denied,
+  processingPolicyObserved as observed,
+} from './processing-policy-result.mjs';
+import {readPackageFile} from './safe-path.mjs';
 
 async function schemaCode(packageRoot, path, value) {
   if (value === null) return 'schema.instance_missing';
@@ -71,6 +29,10 @@ async function schemaCode(packageRoot, path, value) {
 }
 
 async function receiptSchemaCode(document, packageRoot) {
+  if (new Set(document.approval_receipts.map(({receipt_id: id}) => id)).size !==
+      document.approval_receipts.length) return 'policy.approval_readback_failed';
+  if (new Set(document.redaction_receipts.map(({receipt_id: id}) => id)).size !==
+      document.redaction_receipts.length) return 'policy.redaction_unproven';
   for (const approvalReceipt of document.approval_receipts) {
     if (await schemaCode(packageRoot, 'contracts/schemas/approval-receipt.schema.json', approvalReceipt) !== null) {
       return 'policy.approval_readback_failed';
@@ -82,6 +44,38 @@ async function receiptSchemaCode(document, packageRoot) {
     }
   }
   return null;
+}
+
+async function trustedContext(packageRoot, scenarioId, vaultId) {
+  const path = 'contracts/processing-policy-trust-store.json';
+  const [read, manifestRead] = await Promise.all([
+    readPackageFile(packageRoot, path),
+    readPackageFile(packageRoot, 'package-manifest.yaml'),
+  ]);
+  if (read.status !== 'present' || manifestRead.status !== 'present') return null;
+  let store;
+  let manifest;
+  try {
+    store = JSON.parse(read.content.toString('utf8'));
+    manifest = JSON.parse(manifestRead.content.toString('utf8'));
+  } catch {
+    return null;
+  }
+  const digest = createHash('sha256').update(read.content).digest('hex');
+  const bindings = Array.isArray(manifest.artifacts)
+    ? manifest.artifacts.filter(({path: artifactPath}) => artifactPath === path)
+    : [];
+  if (bindings.length !== 1 || bindings[0].authority !== 'normative' || bindings[0].sha256 !== digest) return null;
+  if (await schemaCode(packageRoot, 'contracts/schemas/processing-policy-trust-store.schema.json', store) !== null) {
+    return null;
+  }
+  const matches = store.scenarios.filter(({scenario_id: id, vault_id: trustedVault}) =>
+    id === scenarioId && trustedVault === vaultId);
+  if (matches.length !== 1) return null;
+  return {
+    context: matches[0],
+    digest,
+  };
 }
 
 async function observeProcessing(document, packageRoot) {
@@ -114,6 +108,12 @@ async function observeIntake(document, packageRoot) {
 async function observePolicyPair(document, packageRoot) {
   const childCode = await schemaCode(packageRoot, 'contracts/schemas/processing-policy.schema.json', document.descendant_policy);
   if (childCode !== null) return denied(document, childCode, 'policy_pair');
+  if (document.lifecycle.policy_state !== 'active' || document.policy.lifecycle_state !== 'active' ||
+      document.descendant_policy.lifecycle_state !== 'active') return denied(document, 'policy.inactive', 'policy_pair');
+  const parentApprovalCode = approvalReadbackCode(document, 'processing_policy', document.policy);
+  if (parentApprovalCode !== null) return denied(document, `policy.${parentApprovalCode}`, 'policy_pair');
+  const childApprovalCode = approvalReadbackCode(document, 'processing_policy', document.descendant_policy);
+  if (childApprovalCode !== null) return denied(document, `policy.${childApprovalCode}`, 'policy_pair');
   const violation = policyNarrowingViolation(document.policy, document.descendant_policy);
   if (violation !== null) return denied(document, violation, 'policy_pair');
   return observed(document, {
@@ -132,7 +132,8 @@ function observeRecovery(document) {
   const afterBinding = point === 'after_binding_publish';
   const profile = document.source_profile;
   const journalMatches = recovery.journal_sha256 === recoveryJournalDigest(recovery) && profile !== null &&
-    recovery.source_profile_sha256 === sourceProfileDigest(profile);
+    recovery.source_profile_sha256 === sourceProfileDigest(profile) &&
+    recovery.trust_store_sha256 === document.trust_store_sha256;
   if (!journalMatches) return denied(document, 'source_profile.recovery_evidence_invalid', 'recovery');
   if (beforeApproval) {
     if (recovery.approval_payload_sha256 !== null || recovery.approval_receipt_id !== null ||
@@ -166,6 +167,13 @@ function observeRecovery(document) {
 }
 
 export async function observeProcessingPolicyScenario(subject, packageRoot) {
+  if (subject?.document === null || typeof subject?.document !== 'object') {
+    return {
+      verdict: 'fail', codes: ['schema.instance_missing'], outputs: ['processing denied'],
+      operations: ['validate scenario boundary'], receipts: [], filesystem_effects: ['none'],
+      network_effects: ['none'], terminal_state: 'denied', illegal_transition: false,
+    };
+  }
   const scenarioCode = await schemaCode(packageRoot, subject.schema, subject.document);
   if (scenarioCode !== null) {
     const document = subject.document;
@@ -173,15 +181,30 @@ export async function observeProcessingPolicyScenario(subject, packageRoot) {
   }
   const policyCode = await schemaCode(packageRoot, 'contracts/schemas/processing-policy.schema.json', subject.document.policy);
   if (policyCode !== null) return denied(subject.document, policyCode, subject.document.operation);
-  const receiptCode = await receiptSchemaCode(subject.document, packageRoot);
-  if (receiptCode !== null) return denied(subject.document, receiptCode, subject.document.operation);
-  switch (subject.document.operation) {
-    case 'processing_decision': return observeProcessing(subject.document, packageRoot);
-    case 'intake_decision': return observeIntake(subject.document, packageRoot);
-    case 'policy_pair': return observePolicyPair(subject.document, packageRoot);
+  const trust = await trustedContext(packageRoot, subject.document.scenario_id, subject.document.policy.vault_id);
+  if (trust === null) {
+    const code = subject.document.operation === 'recover_binding'
+      ? 'source_profile.recovery_evidence_invalid'
+      : 'policy.approval_readback_failed';
+    return denied(subject.document, code, subject.document.operation === 'recover_binding' ? 'recovery' : subject.document.operation);
+  }
+  const document = {...subject.document, trusted_context: trust.context, trust_store_sha256: trust.digest};
+  if (document.operation === 'recover_binding' && document.recovery === null) {
+    return denied(document, 'source_profile.recovery_evidence_invalid', 'recovery');
+  }
+  const receiptCode = await receiptSchemaCode(document, packageRoot);
+  if (receiptCode !== null) {
+    return denied(document, document.operation === 'recover_binding'
+      ? 'source_profile.recovery_evidence_invalid'
+      : receiptCode, document.operation === 'recover_binding' ? 'recovery' : document.operation);
+  }
+  switch (document.operation) {
+    case 'processing_decision': return observeProcessing(document, packageRoot);
+    case 'intake_decision': return observeIntake(document, packageRoot);
+    case 'policy_pair': return observePolicyPair(document, packageRoot);
     case 'recover_binding': {
-      const profileCode = await schemaCode(packageRoot, 'contracts/schemas/source-profile.schema.json', subject.document.source_profile);
-      return profileCode === null ? observeRecovery(subject.document) : denied(subject.document, profileCode, 'recovery');
+      const profileCode = await schemaCode(packageRoot, 'contracts/schemas/source-profile.schema.json', document.source_profile);
+      return profileCode === null ? observeRecovery(document) : denied(document, profileCode, 'recovery');
     }
     default: throw new Error('scenario schema allowed an unknown operation');
   }

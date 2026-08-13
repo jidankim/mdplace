@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:processing-policy-trust-store:v1",
+  "title": "mdplace trusted local Processing Policy receipt readback",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "observer_id", "identity_assurance", "verification_method", "scenarios"],
+  "properties": {
+    "$schema": {"const": "contracts/schemas/processing-policy-trust-store.schema.json"},
+    "schema_id": {"const": "mdplace.processing-policy-trust-store/v1"},
+    "observer_id": {"const": "mdplace.package-validator/v1"},
+    "identity_assurance": {"const": "trusted_local_validator"},
+    "verification_method": {"const": "manifest_bound_receipt_readback"},
+    "scenarios": {
+      "type": "array", "minItems": 50, "maxItems": 50, "uniqueItems": true,
+      "items": {"$ref": "#/$defs/scenarioTrust"}
+    }
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "policyTrust": {
+      "type": "object", "additionalProperties": false,
+      "required": ["policy_id", "policy_version", "policy_sha256", "lifecycle_state"],
+      "properties": {
+        "policy_id": {"type": "string", "pattern": "^policy:[a-z][a-z0-9-]{2,63}$"},
+        "policy_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+        "policy_sha256": {"$ref": "#/$defs/digest"},
+        "lifecycle_state": {"enum": ["draft", "active", "revoked"]}
+      }
+    },
+    "profileTrust": {
+      "type": "object", "additionalProperties": false,
+      "required": ["profile_id", "profile_version", "profile_sha256", "lifecycle_state"],
+      "properties": {
+        "profile_id": {"type": "string", "pattern": "^source-profile:[a-z][a-z0-9-]{2,63}$"},
+        "profile_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+        "profile_sha256": {"$ref": "#/$defs/digest"},
+        "lifecycle_state": {"enum": ["unbound", "active", "stale", "revoked", "recovery_required"]}
+      }
+    },
+    "scenarioTrust": {
+      "type": "object", "additionalProperties": false,
+      "required": ["scenario_id", "vault_id", "owner_principal_id", "policy_bindings", "source_profile_bindings", "approval_receipt_sha256s", "redaction_receipt_sha256s"],
+      "properties": {
+        "scenario_id": {"type": "string", "pattern": "^CPP-[0-9]{3}$"},
+        "vault_id": {"type": "string", "pattern": "^vault:[a-z][a-z0-9-]{2,63}$"},
+        "owner_principal_id": {"type": "string", "pattern": "^person:[a-z][a-z0-9-]{2,63}$"},
+        "policy_bindings": {"type": "array", "minItems": 1, "maxItems": 2, "uniqueItems": true, "items": {"$ref": "#/$defs/policyTrust"}},
+        "source_profile_bindings": {"type": "array", "maxItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/profileTrust"}},
+        "approval_receipt_sha256s": {"type": "array", "maxItems": 4, "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}},
+        "redaction_receipt_sha256s": {"type": "array", "maxItems": 64, "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}}
+      }
+    }
+  }
+}

@@ -55,7 +55,7 @@ const sourceProfileBindings = [
   'capture_source_identity_and_claimed_version', 'candidate_schema_identity_version_and_digest',
   'template_identity_version_and_import_digest', 'url_retention_mode',
   'processing_policy_identity_version_and_digest', 'capture_contract_identity_version_and_digest',
-  'vault_owner_approval_payload_digest', 'approval_receipt_digest_and_trusted_readback',
+  'vault_owner_approval_payload_digest', 'approval_receipt_digest_and_manifest_bound_trusted_readback',
 ];
 
 function sha256(value) {
