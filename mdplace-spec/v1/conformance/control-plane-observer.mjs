@@ -78,10 +78,11 @@ function validPriorLeaseReceipt(initial, work, leaseId, beforeSequence, observed
     candidate === null || prior.journal_sequence > candidate.journal_sequence ? prior : candidate, null);
   const currentLeaseMatches = work.lease_id !== leaseId ||
     work.lease_acquired_tick === latest?.acquired_tick && work.lease_expires_tick === latest?.expires_tick &&
-    work.lease_status === latest?.status;
+    ['active', 'expired', 'revoked'].includes(work.lease_status);
   const observedWithinLease = observedTick === null || latest !== null &&
     observedTick >= latest.acquired_tick && observedTick < latest.expires_tick;
-  const statusIsApplicable = requiredStatus === null || latest?.status === requiredStatus;
+  const statusIsApplicable = requiredStatus === null || latest?.status === requiredStatus &&
+    (work.lease_id !== leaseId || work.lease_status === requiredStatus);
   return latest?.lease_id === leaseId && currentLeaseMatches && observedWithinLease && statusIsApplicable;
 }
 
@@ -299,6 +300,7 @@ function validCompletionReceipt(initial, work) {
     receipt?.journal_sequence,
     !recoveryReceiptIsValid && receipt?.outcome === 'failed' && receipt?.code !== 'control.recovery_ceiling_exceeded'
       ? receipt.failure_observed_tick : null,
+    recoveryReceiptIsValid ? null : 'active',
   );
   const outputIsValid = controlPlaneOutcomeFieldsAreValid(receipt, {
     retryCount: work?.retry_count,
@@ -412,7 +414,7 @@ function exactWorkBase(initial, action) {
 }
 
 function journalCanAppend(initial, count = 1) {
-  return initial.journal_head_sequence <= 1000000 - count;
+  return initial.journal_head_sequence <= controlPlaneLimits.maxTick - count;
 }
 
 function controlChannelIsCurrent(initial) {
@@ -427,25 +429,30 @@ function controlChannelIsClosedForStartup(initial) {
 
 function workStateIsConsistent(work) {
   if (work === null) return true;
-  const scalarBoundsAreValid = Number.isInteger(work.work_version) && work.work_version >= 1 && work.work_version <= 1000000 &&
+  const scalarBoundsAreValid = Number.isInteger(work.work_version) && work.work_version >= 1 &&
+    work.work_version <= controlPlaneLimits.maxTick &&
     Number.isInteger(work.retry_count) && work.retry_count >= 0 && work.retry_count <= work.retry_ceiling &&
-    Number.isInteger(work.recovery_interruption_count) && work.recovery_interruption_count >= 0 && work.recovery_interruption_count <= 3 &&
+    Number.isInteger(work.recovery_interruption_count) && work.recovery_interruption_count >= 0 &&
+    work.recovery_interruption_count <= controlPlaneLimits.maxRecoveryInterruptionCount &&
     Number.isInteger(work.resume_count) && work.resume_count >= 0 && work.resume_count <= work.resume_ceiling;
   const leased = work.state === 'leased' || work.state === 'executing';
   const leaseIsBound = typeof work.lease_id === 'string' && typeof work.owner_agent_id === 'string' &&
     ['active', 'revoked', 'expired'].includes(work.lease_status) &&
     Number.isInteger(work.lease_acquired_tick) && Number.isInteger(work.lease_expires_tick) &&
-    work.lease_acquired_tick >= 0 && work.lease_acquired_tick <= 1000000 &&
-    work.lease_expires_tick > work.lease_acquired_tick && work.lease_expires_tick <= 1000300 &&
+    work.lease_acquired_tick >= 0 && work.lease_acquired_tick <= controlPlaneLimits.maxTick &&
+    work.lease_expires_tick > work.lease_acquired_tick &&
+    work.lease_expires_tick <= controlPlaneLimits.maxLeaseExpiryTick &&
     work.lease_expires_tick - work.lease_acquired_tick <= controlPlaneLimits.leaseDurationTicks;
   const leaseIsAbsent = work.lease_id === null && work.owner_agent_id === null && work.lease_status === null &&
     work.lease_acquired_tick === null && work.lease_expires_tick === null;
   const retryEligibilityIsValid = work.state === 'retry_wait'
-    ? Number.isInteger(work.retry_eligible_tick) && work.retry_eligible_tick >= 0 && work.retry_eligible_tick <= 1000000
+    ? Number.isInteger(work.retry_eligible_tick) && work.retry_eligible_tick >= 0 &&
+      work.retry_eligible_tick <= controlPlaneLimits.maxTick
     : work.retry_eligible_tick === null;
   const terminal = ['cancelled', 'succeeded', 'failed'].includes(work.state);
   const completionIsValid = terminal ? work.completion_receipt !== null : work.completion_receipt === null;
-  const completionBoundsAreValid = !terminal || work.completion_receipt.journal_sequence <= 1000000;
+  const completionBoundsAreValid = !terminal ||
+    work.completion_receipt.journal_sequence <= controlPlaneLimits.maxTick;
   const cancellationIsValid = work.state === 'cancelled'
     ? work.cancellation_receipt !== null && work.cancellation_id === work.cancellation_receipt.cancellation_id
     : work.cancellation_receipt === null || work.resume_count > 0;

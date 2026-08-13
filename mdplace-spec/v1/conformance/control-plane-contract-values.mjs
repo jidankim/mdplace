@@ -1,9 +1,11 @@
 export const controlPlaneLimits = Object.freeze({
   maxTick: 1_000_000,
   leaseDurationTicks: 300,
+  maxLeaseExpiryTick: 1_000_300,
   retryDelays: Object.freeze([1000, 5000]),
   retryCeiling: 2,
   recoveryInterruptionCeiling: 2,
+  maxRecoveryInterruptionCount: 3,
   resumeCeiling: 1,
   latestDispatchTick: 999_700,
 });

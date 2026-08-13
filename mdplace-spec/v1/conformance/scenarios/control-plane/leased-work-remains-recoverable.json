@@ -74,7 +74,7 @@
         "dependency_state_digest": "c289e61ad636413a47b06ff09a505fd15701b9302e0fe955557e4b7b45ad4111",
         "active_work_count": 0,
         "max_concurrent_work": 8,
-        "journal_head_digest": "6b24f9cfcb013ec45c68f29e3f0cb76c39f467241995a32be0ee952add151a55",
+        "journal_head_digest": "a9ec88b6f105cb494f7b1c55a2332ff11918d67720dd801683e84d6d7948bd0f",
         "active_lease_ids": [],
         "scheduler_state_digest": "6974ab1c0f4e5f5cfbb45d9756a8756121a07522cf16a73e07b08dc281ea1c43",
         "prior_lease_receipts": [
@@ -89,22 +89,23 @@
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "667e77d5f13d7b96482ecc7e6b7eba78f1746d1b9531f429eb0c354d578995e4",
+            "signature_digest": "efdac3b83bd27b926e5ca8729ad7497109c0ca7bb4f2205b7e585f8b413978ab",
             "authenticated": true,
             "acquired_tick": 1,
             "expires_tick": 301,
-            "status": "expired"
+            "status": "active",
+            "started_tick": null
           }
         ],
         "journal_head_receipt": {
           "receipt_id": "journal-head-receipt:vault-001",
           "journal_id": "journal:vault-001",
           "head_sequence": 2,
-          "head_digest": "6b24f9cfcb013ec45c68f29e3f0cb76c39f467241995a32be0ee952add151a55",
+          "head_digest": "a9ec88b6f105cb494f7b1c55a2332ff11918d67720dd801683e84d6d7948bd0f",
           "signature_scheme": "hmac-sha256",
           "signing_key_id": "signer-key:primary-001",
           "signer_agent_id": "agent:primary-001",
-          "signature_digest": "eb5cbcfc2b7fff0c9b9cfa3b3ede9fa676a5c3d2463b57fc434a1bab4fa04b49",
+          "signature_digest": "fc79853b0f2eb83edb6dd3066d0b8af1f5d43d29a8fe3e5ab6bcfc76a1e14980",
           "authenticated": true
         },
         "dependency_state_receipt": {
@@ -267,7 +268,7 @@
         ],
         "current_tick": 301,
         "expected_dependency_state_digest": "c289e61ad636413a47b06ff09a505fd15701b9302e0fe955557e4b7b45ad4111",
-        "expected_journal_head_digest": "6b24f9cfcb013ec45c68f29e3f0cb76c39f467241995a32be0ee952add151a55",
+        "expected_journal_head_digest": "a9ec88b6f105cb494f7b1c55a2332ff11918d67720dd801683e84d6d7948bd0f",
         "expected_scheduler_state_digest": null,
         "vault_owner_receipt": null
       }

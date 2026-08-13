@@ -63,7 +63,7 @@
     "leaseReceipt": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["receipt_id", "receipt_kind", "lease_id", "work_id", "work_version", "journal_sequence", "owner_agent_id", "acquired_tick", "expires_tick", "status", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
+      "required": ["receipt_id", "receipt_kind", "lease_id", "work_id", "work_version", "journal_sequence", "owner_agent_id", "acquired_tick", "expires_tick", "started_tick", "status", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
       "properties": {
         "receipt_id": {"type": "string", "pattern": "^lease-receipt:[a-z0-9-]{3,64}$"},
         "receipt_kind": {"enum": ["lease", "start"]},
@@ -74,13 +74,18 @@
         "owner_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
         "acquired_tick": {"type": "integer", "minimum": 0, "maximum": 1000000},
         "expires_tick": {"type": "integer", "minimum": 1, "maximum": 1000300},
-        "status": {"enum": ["active", "revoked", "expired"]},
+        "started_tick": {"type": ["integer", "null"], "minimum": 0, "maximum": 1000000},
+        "status": {"const": "active"},
         "signature_scheme": {"const": "hmac-sha256"},
         "signing_key_id": {"const": "signer-key:primary-001"},
         "signer_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
         "signature_digest": {"$ref": "#/$defs/digest"},
         "authenticated": {"const": true}
-      }
+      },
+      "allOf": [
+        {"if": {"properties": {"receipt_kind": {"const": "lease"}}, "required": ["receipt_kind"]}, "then": {"properties": {"started_tick": {"type": "null"}}}},
+        {"if": {"properties": {"receipt_kind": {"const": "start"}}, "required": ["receipt_kind"]}, "then": {"properties": {"started_tick": {"type": "integer"}}}}
+      ]
     },
     "recoveryReceipt": {
       "type": "object",
@@ -183,7 +188,7 @@
       "properties": {
         "receipt_id": {"type": "string", "pattern": "^vault-owner-receipt:[a-z0-9-]{3,64}$"},
         "principal_id": {"const": "person:owner-001"},
-        "vault_id": {"type": "string", "pattern": "^vault:[a-z0-9-]{3,64}$"},
+        "vault_id": {"const": "vault:001"},
         "action_kind": {"enum": ["cancel", "resume"]},
         "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
         "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
@@ -278,7 +283,7 @@
       "required": ["state", "vault_id", "protocol_version", "command_version", "same_user_authenticated", "local_transport"],
       "properties": {
         "state": {"enum": ["closed", "open"]},
-        "vault_id": {"type": "string", "pattern": "^vault:[a-z0-9-]{3,64}$"},
+        "vault_id": {"const": "vault:001"},
         "protocol_version": {"const": "1.0"},
         "command_version": {"const": 1},
         "same_user_authenticated": {"type": "boolean"},
@@ -345,7 +350,7 @@
       "properties": {
         "agent_state": {"enum": ["stopped", "starting", "recovering", "ready", "draining", "blocked", "crashed"]},
         "persistent_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
-        "vault_id": {"type": "string", "pattern": "^vault:[a-z0-9-]{3,64}$"},
+        "vault_id": {"const": "vault:001"},
         "writer_owner_agent_id": {"type": ["string", "null"], "pattern": "^agent:[a-z0-9-]{3,64}$"},
         "writer_epoch": {"type": "integer", "minimum": 0, "maximum": 1000000},
         "journal_available": {"type": "boolean"},

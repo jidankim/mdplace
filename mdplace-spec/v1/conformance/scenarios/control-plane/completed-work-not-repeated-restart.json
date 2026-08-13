@@ -111,7 +111,7 @@
         "dependency_state_digest": "c289e61ad636413a47b06ff09a505fd15701b9302e0fe955557e4b7b45ad4111",
         "active_work_count": 0,
         "max_concurrent_work": 8,
-        "journal_head_digest": "ecdeaf8d6fd4aa8368461f975b0cf9ffed2ed33f7a99d2c8629cab5255f295fc",
+        "journal_head_digest": "6d7cab3ff358979c74d8359019b786d4f356b17d3028e153e8b7be147d9cc964",
         "active_lease_ids": [],
         "scheduler_state_digest": "6974ab1c0f4e5f5cfbb45d9756a8756121a07522cf16a73e07b08dc281ea1c43",
         "prior_lease_receipts": [
@@ -129,8 +129,9 @@
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "eda9fedd6f9438d3e0283ed75e259f88ee99ca6795264ce905ba8ae9a3b02443",
-            "authenticated": true
+            "signature_digest": "efdac3b83bd27b926e5ca8729ad7497109c0ca7bb4f2205b7e585f8b413978ab",
+            "authenticated": true,
+            "started_tick": null
           },
           {
             "receipt_id": "lease-receipt:start-1",
@@ -146,19 +147,20 @@
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "f4a5a0fafebe568f1d30f0703204fe5b26facfe53f30d301600958f30ca765b5",
-            "authenticated": true
+            "signature_digest": "f74db24f561c79eac5afb74d8352a5e862e11c91f94b6b25c32e813d14f2dd60",
+            "authenticated": true,
+            "started_tick": 1
           }
         ],
         "journal_head_receipt": {
           "receipt_id": "journal-head-receipt:vault-001",
           "journal_id": "journal:vault-001",
           "head_sequence": 4,
-          "head_digest": "ecdeaf8d6fd4aa8368461f975b0cf9ffed2ed33f7a99d2c8629cab5255f295fc",
+          "head_digest": "6d7cab3ff358979c74d8359019b786d4f356b17d3028e153e8b7be147d9cc964",
           "signature_scheme": "hmac-sha256",
           "signing_key_id": "signer-key:primary-001",
           "signer_agent_id": "agent:primary-001",
-          "signature_digest": "91c80373ac499a57ee756de0b1d7fd785f1bb064098920e10c1bf0ee9f6ec5e2",
+          "signature_digest": "889c6a6278682d4f2f3de6bdb74e171ee72449e057c30a6a1743c59bfe8ab5f1",
           "authenticated": true
         },
         "dependency_state_receipt": {
@@ -321,7 +323,7 @@
         ],
         "current_tick": 1,
         "expected_dependency_state_digest": "c289e61ad636413a47b06ff09a505fd15701b9302e0fe955557e4b7b45ad4111",
-        "expected_journal_head_digest": "ecdeaf8d6fd4aa8368461f975b0cf9ffed2ed33f7a99d2c8629cab5255f295fc",
+        "expected_journal_head_digest": "6d7cab3ff358979c74d8359019b786d4f356b17d3028e153e8b7be147d9cc964",
         "expected_scheduler_state_digest": null,
         "vault_owner_receipt": null
       }

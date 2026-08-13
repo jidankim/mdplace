@@ -74,7 +74,7 @@
         "dependency_state_digest": "c289e61ad636413a47b06ff09a505fd15701b9302e0fe955557e4b7b45ad4111",
         "active_work_count": 1,
         "max_concurrent_work": 8,
-        "journal_head_digest": "ff5b256a3b54d7e1e3b222f62271745f297d6bcc3e4013950cd4eab2292c46ea",
+        "journal_head_digest": "9fb066e2ccad0268242eedd81b72ed883b2a9074bc32fb629c8b68a0aaa4bf9b",
         "active_lease_ids": [
           "lease:001"
         ],
@@ -94,8 +94,9 @@
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "192f224fd5dc3454d5c87fa89f87c7d64d600b83b8f7a923c8c71df3da0ae2fd",
-            "authenticated": true
+            "signature_digest": "e38d1ead33ac40763e04b5caaa2225b45f57c69e30b2ec6fa5bd78c58519730a",
+            "authenticated": true,
+            "started_tick": null
           },
           {
             "receipt_id": "lease-receipt:start-1",
@@ -111,8 +112,9 @@
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "1f9afb3e80ebc6ed0cc9514ce28d196c51f1687048271f6aebb2cb2f7c1c42f8",
-            "authenticated": true
+            "signature_digest": "0954c5b5a75950086043f838711de2c6ca1871f6657f222b2e20e6e24f68ab97",
+            "authenticated": true,
+            "started_tick": 1
           },
           {
             "receipt_id": "lease-receipt:attempt-2",
@@ -128,8 +130,9 @@
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "645d4229535402e6de9de36e71c079307b921aa97c30c6c7baff242371858b04",
-            "authenticated": true
+            "signature_digest": "3da6adb4ed1b6673fa34c13caafee0c955174ad387dd32f9e6eea1f5b61a3d4d",
+            "authenticated": true,
+            "started_tick": null
           },
           {
             "receipt_id": "lease-receipt:start-2",
@@ -145,8 +148,9 @@
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "d21830a2230172e10f9021f8d5c284048ab9d84d0668c34339c5946d55b03d59",
-            "authenticated": true
+            "signature_digest": "891281c9ac1e3d2682e71c75a2d2460accf7423bd2490377cfe8e7500f49c3c2",
+            "authenticated": true,
+            "started_tick": 1002
           },
           {
             "receipt_id": "lease-receipt:attempt-3",
@@ -162,8 +166,9 @@
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "a649547fa93f6667c61c6ac7c877a6f0bf10b44c2b91a7fb4179792866d7b605",
-            "authenticated": true
+            "signature_digest": "24878c55b0e2ccf29a8c353d3c157ed9a840b3e2aa950b3dbcfaec2972e73f83",
+            "authenticated": true,
+            "started_tick": null
           },
           {
             "receipt_id": "lease-receipt:start-3",
@@ -179,19 +184,20 @@
             "signature_scheme": "hmac-sha256",
             "signing_key_id": "signer-key:primary-001",
             "signer_agent_id": "agent:primary-001",
-            "signature_digest": "339942976609f0f4537e31687ed03ace740818ed67e2a6c14e26433936073ce7",
-            "authenticated": true
+            "signature_digest": "12f750c2efa9629cc4ad64e0ddd0ac0891341f6ffdabbc8323537d494b5b005b",
+            "authenticated": true,
+            "started_tick": 6003
           }
         ],
         "journal_head_receipt": {
           "receipt_id": "journal-head-receipt:vault-001",
           "journal_id": "journal:vault-001",
           "head_sequence": 9,
-          "head_digest": "ff5b256a3b54d7e1e3b222f62271745f297d6bcc3e4013950cd4eab2292c46ea",
+          "head_digest": "9fb066e2ccad0268242eedd81b72ed883b2a9074bc32fb629c8b68a0aaa4bf9b",
           "signature_scheme": "hmac-sha256",
           "signing_key_id": "signer-key:primary-001",
           "signer_agent_id": "agent:primary-001",
-          "signature_digest": "02d4030040d8c5955bab1f9369233adbcf7da750b722b337d07e56a2f6621f6b",
+          "signature_digest": "23227163d72faa4f7789d957753f3b03d51086c1a8aa0fe5b698c4ae7b08b1f6",
           "authenticated": true
         },
         "dependency_state_receipt": {

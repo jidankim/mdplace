@@ -1,3 +1,5 @@
+import {controlPlaneLimits} from './control-plane-contract-values.mjs';
+
 const digestPattern = /^[a-f0-9]{64}$/;
 
 export function controlPlaneOutcomeFieldsAreValid(result, {
@@ -5,8 +7,8 @@ export function controlPlaneOutcomeFieldsAreValid(result, {
   retryCeiling,
   recoveryInterruptionCount,
   recoveryCeiling,
-  retryDelays = [1000, 5000],
-  latestDispatchTick = 999700,
+  retryDelays = controlPlaneLimits.retryDelays,
+  latestDispatchTick = controlPlaneLimits.latestDispatchTick,
 }) {
   const hasNoFailureBasis = result?.failure_retryable === null &&
     result?.failure_observed_tick === null && result?.selected_retry_delay_ticks === null;

@@ -14,7 +14,7 @@ export function leaseReceiptFields(receipt) {
   return [
     receipt.receipt_id, receipt.receipt_kind, receipt.lease_id, receipt.work_id,
     receipt.work_version, receipt.journal_sequence, receipt.owner_agent_id,
-    receipt.acquired_tick, receipt.expires_tick, receipt.status,
+    receipt.acquired_tick, receipt.expires_tick, receipt.started_tick ?? '', receipt.status,
   ];
 }
 
@@ -83,14 +83,14 @@ function receiptIsAuthenticated(initial, kind, receipt) {
 
 export function scenarioLifecycleIsValid(initial) {
   const work = initial.work;
-  if (work === null) return initial.prior_lease_receipts.length === 0 &&
-    (initial.prior_retry_receipts ?? []).length === 0 &&
-    (initial.prior_recovery_receipts ?? []).length === 0;
   const records = lifecycleRecords(initial);
   if (new Set(records.map(({receipt}) => receipt.receipt_id)).size !== records.length ||
       new Set(records.map(({receipt}) => receipt.journal_sequence)).size !== records.length ||
-      records.some(({receipt}) => receipt.journal_sequence > initial.journal_head_sequence) ||
+      records.some(({receipt}, index) => receipt.journal_sequence !== index + 1) ||
+      initial.journal_head_sequence !== records.length ||
+      initial.journal_head_digest !== scenarioLifecycleDigest(initial) ||
       records.some(({kind, receipt}) => !receiptIsAuthenticated(initial, kind, receipt))) return false;
+  if (work === null) return records.length === 0;
 
   let state = 'absent';
   let version = 0;
@@ -111,6 +111,7 @@ export function scenarioLifecycleIsValid(initial) {
       case 'lease':
         if (!['queued', 'retry_wait'].includes(state) || receipt.work_version !== version + 1 ||
             receipt.owner_agent_id !== initial.persistent_agent_id ||
+            receipt.started_tick !== null || receipt.status !== 'active' ||
             receipt.expires_tick <= receipt.acquired_tick ||
             receipt.expires_tick - receipt.acquired_tick > controlPlaneLimits.leaseDurationTicks ||
             receipt.acquired_tick > controlPlaneLimits.latestDispatchTick ||
@@ -121,7 +122,8 @@ export function scenarioLifecycleIsValid(initial) {
         if (state !== 'leased' || lease === null || receipt.work_version !== version + 1 ||
             receipt.lease_id !== lease.lease_id || receipt.owner_agent_id !== lease.owner_agent_id ||
             receipt.acquired_tick !== lease.acquired_tick || receipt.expires_tick !== lease.expires_tick ||
-            receipt.status !== lease.status) return false;
+            receipt.status !== 'active' || receipt.started_tick < lease.acquired_tick ||
+            receipt.started_tick >= lease.expires_tick) return false;
         state = 'executing'; version = receipt.work_version;
         break;
       case 'retry': {
@@ -149,10 +151,9 @@ export function scenarioLifecycleIsValid(initial) {
             receipt.work_version !== version + 1 || receipt.lease_id !== lease.lease_id ||
             receipt.prior_state !== state || receipt.prior_retry_count !== retryCount ||
             receipt.recovery_interruption_count !== recoveryCount + 1 ||
-            receipt.recovery_lease_status !== lease.status ||
-            !['expired', 'revoked'].includes(lease.status) ||
+            !['expired', 'revoked'].includes(receipt.recovery_lease_status) ||
             receipt.recovery_tick < lease.acquired_tick ||
-            (lease.status === 'expired' && receipt.recovery_tick < lease.expires_tick) ||
+            (receipt.recovery_lease_status === 'expired' && receipt.recovery_tick < lease.expires_tick) ||
             (receipt.recovery_decision === 'fail') !== failureRequired) return false;
         if (failureRequired) {
           if (receipt.resulting_state !== 'failed' || receipt.resulting_retry_count !== retryCount ||
@@ -215,7 +216,7 @@ export function scenarioLifecycleIsValid(initial) {
   const leaseIsExact = ['leased', 'executing'].includes(state)
     ? lease !== null && work.lease_id === lease.lease_id && work.owner_agent_id === lease.owner_agent_id &&
       work.lease_acquired_tick === lease.acquired_tick && work.lease_expires_tick === lease.expires_tick &&
-      work.lease_status === lease.status
+      ['active', 'expired', 'revoked'].includes(work.lease_status)
     : work.lease_id === null && work.owner_agent_id === null && work.lease_acquired_tick === null &&
       work.lease_expires_tick === null && work.lease_status === null;
   return state === work.state && version === work.work_version && retryCount === work.retry_count &&
