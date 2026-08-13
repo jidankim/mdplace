@@ -193,7 +193,7 @@
         "budget": {"$ref": "#/$defs/budget"},
         "retry_count": {"type": "integer", "minimum": 0, "maximum": 2},
         "retry_eligible_tick": {"type": ["integer", "null"], "minimum": 0, "maximum": 1000000},
-        "recovery_interruption_count": {"type": "integer", "minimum": 0, "maximum": 2},
+        "recovery_interruption_count": {"type": "integer", "minimum": 0, "maximum": 3},
         "rejection_count": {"type": "integer", "minimum": 0, "maximum": 1000000},
         "resume_count": {"type": "integer", "minimum": 0, "maximum": 1},
         "lease": {"$ref": "#/$defs/lease"},
@@ -228,10 +228,11 @@
         "failure_observed_tick": {"type": "integer", "minimum": 0, "maximum": 1000000},
         "selected_retry_delay_ticks": {"enum": [1000, 5000]},
         "retry_eligible_tick": {"type": "integer", "minimum": 0, "maximum": 1000000},
-        "recovery_interruption_count": {"type": "integer", "minimum": 1, "maximum": 2},
+        "recovery_interruption_count": {"type": "integer", "minimum": 1, "maximum": 3},
         "resulting_retry_count": {"type": "integer", "minimum": 0, "maximum": 2},
         "recovery_tick": {"type": "integer", "minimum": 0, "maximum": 1000000},
-        "recovery_decision": {"enum": ["requeue", "fail", "preserve", "block"]},
+        "recovery_lease_status": {"enum": ["revoked", "expired"]},
+        "recovery_decision": {"enum": ["requeue", "fail"]},
         "rejection_code": {"type": "string", "pattern": "^control\\.[a-z0-9_]{3,64}$"},
         "signature_scheme": {"const": "hmac-sha256"},
         "signing_key_id": {"const": "signer-key:primary-001"},
@@ -244,7 +245,7 @@
         {"if": {"properties": {"receipt_kind": {"const": "lease"}}, "required": ["receipt_kind"]}, "then": {"required": ["owner_agent_id", "acquired_tick", "expires_tick", "lease_status"], "properties": {"lease_id": {"type": "string"}, "state": {"const": "leased"}}}},
         {"if": {"properties": {"receipt_kind": {"const": "start"}}, "required": ["receipt_kind"]}, "then": {"required": ["owner_agent_id", "started_tick"], "properties": {"lease_id": {"type": "string"}, "state": {"const": "executing"}}}},
         {"if": {"properties": {"receipt_kind": {"const": "retry"}}, "required": ["receipt_kind"]}, "then": {"required": ["retry_count", "failure_retryable", "failure_observed_tick", "selected_retry_delay_ticks", "retry_eligible_tick"], "properties": {"lease_id": {"type": "null"}, "state": {"const": "retry_wait"}, "failure_retryable": {"const": true}}}},
-        {"if": {"properties": {"receipt_kind": {"const": "recovery"}}, "required": ["receipt_kind"]}, "then": {"required": ["recovery_interruption_count", "resulting_retry_count", "recovery_tick", "recovery_decision"]}},
+        {"if": {"properties": {"receipt_kind": {"const": "recovery"}}, "required": ["receipt_kind"]}, "then": {"required": ["recovery_interruption_count", "resulting_retry_count", "recovery_tick", "recovery_lease_status", "recovery_decision"]}},
         {"if": {"properties": {"receipt_kind": {"const": "rejection"}}, "required": ["receipt_kind"]}, "then": {"required": ["rejection_code"], "properties": {"state": {"const": "rejected"}}}}
       ]
     }

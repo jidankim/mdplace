@@ -62,7 +62,7 @@
     "leaseReceipt": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["receipt_id", "receipt_kind", "lease_id", "work_id", "work_version", "journal_sequence", "owner_agent_id", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
+      "required": ["receipt_id", "receipt_kind", "lease_id", "work_id", "work_version", "journal_sequence", "owner_agent_id", "acquired_tick", "expires_tick", "status", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
       "properties": {
         "receipt_id": {"type": "string", "pattern": "^lease-receipt:[a-z0-9-]{3,64}$"},
         "receipt_kind": {"enum": ["lease", "start"]},
@@ -71,6 +71,9 @@
         "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
         "journal_sequence": {"type": "integer", "minimum": 1, "maximum": 1000000},
         "owner_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
+        "acquired_tick": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "expires_tick": {"type": "integer", "minimum": 1, "maximum": 1000300},
+        "status": {"enum": ["active", "revoked", "expired"]},
         "signature_scheme": {"const": "hmac-sha256"},
         "signing_key_id": {"const": "signer-key:primary-001"},
         "signer_agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
@@ -202,7 +205,7 @@
         "retry_count": {"type": "integer", "minimum": 0, "maximum": 2},
         "retry_ceiling": {"const": 2},
         "retry_eligible_tick": {"type": ["integer", "null"], "minimum": 0, "maximum": 1000000},
-        "recovery_interruption_count": {"type": "integer", "minimum": 0, "maximum": 2},
+        "recovery_interruption_count": {"type": "integer", "minimum": 0, "maximum": 3},
         "lease_id": {"type": ["string", "null"], "pattern": "^lease:[a-z0-9-]{3,64}$"},
         "lease_status": {"type": ["string", "null"], "enum": ["active", "revoked", "expired", null]},
         "lease_acquired_tick": {"type": ["integer", "null"], "minimum": 0, "maximum": 1000000},

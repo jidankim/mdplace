@@ -27,7 +27,7 @@ export function controlPlaneOutcomeFieldsAreValid(result, {
       Number.isInteger(result.failure_observed_tick) && result.selected_retry_delay_ticks === null;
   }
   if (result.code === 'control.recovery_ceiling_exceeded') {
-    return recoveryInterruptionCount === recoveryCeiling && hasNoFailureBasis;
+    return recoveryInterruptionCount > recoveryCeiling && hasNoFailureBasis;
   }
   if (result.code !== 'control.retry_tick_overflow' || result.failure_retryable !== true ||
       !Number.isInteger(result.failure_observed_tick) || retryCount >= retryCeiling) return false;
