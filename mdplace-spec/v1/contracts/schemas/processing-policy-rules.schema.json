@@ -10,7 +10,7 @@
     "schema_id": {"const": "mdplace.processing-policy-rules/v1"},
     "default_deny_precedence": {"type": "array", "minItems": 19, "maxItems": 19, "uniqueItems": true, "items": {"$ref": "#/$defs/denial"}},
     "narrowing_dimensions": {"type": "array", "minItems": 14, "maxItems": 14, "uniqueItems": true, "items": {"$ref": "#/$defs/narrowing"}},
-    "source_profile_bindings": {"type": "array", "minItems": 10, "maxItems": 10, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]{2,95}$"}}
+    "source_profile_bindings": {"type": "array", "minItems": 11, "maxItems": 11, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]{2,95}$"}}
   },
   "$defs": {
     "denial": {

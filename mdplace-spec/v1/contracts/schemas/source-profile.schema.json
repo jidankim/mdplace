@@ -59,13 +59,14 @@
     },
     "approval": {
       "type": "object", "additionalProperties": false,
-      "required": ["approved", "principal_id", "role", "delegated", "receipt_id", "profile_payload_sha256"],
+      "required": ["approved", "principal_id", "role", "delegated", "receipt_id", "receipt_sha256", "profile_payload_sha256"],
       "properties": {
         "approved": {"type": "boolean"},
         "principal_id": {"type": "string", "pattern": "^person:[a-z][a-z0-9-]{2,63}$"},
         "role": {"enum": ["vault_owner", "capture_adapter", "compatibility_claim"]},
         "delegated": {"type": "boolean"},
         "receipt_id": {"type": "string", "pattern": "^approval:[a-z][a-z0-9-]{2,63}$"},
+        "receipt_sha256": {"$ref": "#/$defs/digest"},
         "profile_payload_sha256": {"$ref": "#/$defs/digest"}
       }
     }

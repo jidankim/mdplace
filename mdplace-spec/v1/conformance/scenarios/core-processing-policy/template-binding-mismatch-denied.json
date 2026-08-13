@@ -87,7 +87,8 @@
               "purpose_ids": [
                 "purpose:placement",
                 "purpose:taxonomy"
-              ]
+              ],
+              "authentication_method": "api_key"
             },
             {
               "credential_ref": "credential-ref:local-alpha",
@@ -95,7 +96,8 @@
               "provider_id": "provider:local-alpha",
               "purpose_ids": [
                 "purpose:placement"
-              ]
+              ],
+              "authentication_method": "local_process"
             }
           ],
           "budget": {
@@ -105,7 +107,7 @@
             "cost_microunits": 500000
           },
           "retry": {
-            "attempts": 2,
+            "attempts": 1,
             "elapsed_ms": 60000,
             "cumulative_cost_microunits": 750000
           },
@@ -128,6 +130,9 @@
             "initial_existing_category_placement",
             "new_leaf_promotion",
             "alias_promotion"
+          ],
+          "adapter_ids": [
+            "adapter:fixture-capture"
           ]
         },
         "redaction_obligations": [
@@ -158,14 +163,24 @@
             "destination_id": "destination:remote-alpha",
             "status": "known",
             "max_days": 30,
-            "risk_acknowledged": true
+            "risk_acknowledged": true,
+            "data_use": "request_only",
+            "region": "global",
+            "subprocessors": [
+              "none"
+            ]
           },
           {
             "retention_fact_id": "retention:local-alpha",
             "destination_id": "destination:local-alpha",
             "status": "known",
             "max_days": 0,
-            "risk_acknowledged": true
+            "risk_acknowledged": true,
+            "data_use": "request_only",
+            "region": "local",
+            "subprocessors": [
+              "none"
+            ]
           }
         ],
         "approval": {
@@ -173,7 +188,9 @@
           "principal_id": "person:vault-owner",
           "role": "vault_owner",
           "delegated": false,
-          "receipt_id": "approval:policy-core"
+          "receipt_id": "approval:policy-core",
+          "policy_payload_sha256": "735a7ca28475758c52f6b74f6451b23f18882dafdc27cec646a54281474a6a90",
+          "receipt_sha256": "e495d44a0415a7899a3474eb83d75b45d8b6778240aa51f76507b3128ab166a1"
         }
       },
       "source_profile": {
@@ -200,7 +217,7 @@
         "processing_policy": {
           "policy_id": "policy:core-processing",
           "policy_version": "1.0.0",
-          "policy_sha256": "ce4c2c6813d83067b84433b38675ebae6304970ea71299b8d29513489fff7269"
+          "policy_sha256": "88559d6755c582747f92bf90a7de36f2c2d4afb8980fb08d0ab40145b014fb7b"
         },
         "capture_contract": {
           "artifact_id": "contract:capture-intake",
@@ -213,7 +230,8 @@
           "role": "vault_owner",
           "delegated": false,
           "receipt_id": "approval:source-profile",
-          "profile_payload_sha256": "5bc66f0d607c6d069d0847fe0a7fe45a380e2c4fd8ef40121dbbbe5d0a8c6a45"
+          "profile_payload_sha256": "f847bb130e06545c6ec28e42071f52ceea94eb1bc3dc5743104881f166b4b4ad",
+          "receipt_sha256": "8462b67ba1ca92ec7f16e91b4632e50578639f29b51aba61fabd673a4a86ea5f"
         }
       },
       "request": {
@@ -223,7 +241,7 @@
         "policy_binding": {
           "policy_id": "policy:core-processing",
           "policy_version": "1.0.0",
-          "policy_sha256": "ce4c2c6813d83067b84433b38675ebae6304970ea71299b8d29513489fff7269"
+          "policy_sha256": "88559d6755c582747f92bf90a7de36f2c2d4afb8980fb08d0ab40145b014fb7b"
         },
         "provider_id": "provider:remote-alpha",
         "purpose_id": "purpose:placement",
@@ -269,13 +287,84 @@
         "untrusted_content": {
           "present": true,
           "requested_actions": []
-        }
+        },
+        "vault_id": "vault:fixture-vault",
+        "adapter_id": "adapter:fixture-capture",
+        "field_grants": [
+          {
+            "field_id": "field:source-url",
+            "data_class": "data:source-url",
+            "disclosure": "remote",
+            "redaction_rule_id": "redaction:sanitize-url"
+          },
+          {
+            "field_id": "field:title",
+            "data_class": "data:title",
+            "disclosure": "remote",
+            "redaction_rule_id": "redaction:remove-identifiers"
+          },
+          {
+            "field_id": "field:source-content",
+            "data_class": "data:source-content",
+            "disclosure": "remote",
+            "redaction_rule_id": "redaction:remove-secrets"
+          }
+        ],
+        "destination": {
+          "destination_id": "destination:remote-alpha",
+          "provider_id": "provider:remote-alpha",
+          "endpoint": "https://api.remote-alpha.test/v1/process",
+          "retention_fact_id": "retention:remote-alpha"
+        },
+        "credential_boundary": {
+          "credential_ref": "credential-ref:remote-alpha",
+          "store": "os_credential_store",
+          "provider_id": "provider:remote-alpha",
+          "purpose_ids": [
+            "purpose:placement",
+            "purpose:taxonomy"
+          ],
+          "authentication_method": "api_key"
+        },
+        "payload": {
+          "media_type": "text/markdown",
+          "bytes": "# Fixture payload\n",
+          "sha256": "8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c"
+        },
+        "retention_facts": [
+          {
+            "retention_fact_id": "retention:remote-alpha",
+            "destination_id": "destination:remote-alpha",
+            "status": "known",
+            "max_days": 30,
+            "risk_acknowledged": true,
+            "data_use": "request_only",
+            "region": "global",
+            "subprocessors": [
+              "none"
+            ]
+          }
+        ],
+        "redaction_receipt_refs": [
+          {
+            "receipt_id": "redaction-receipt:source-url",
+            "receipt_sha256": "4c705a313beb47f9d93b787e993222f21f33ac1578a88e3d0005c5895379b1af"
+          },
+          {
+            "receipt_id": "redaction-receipt:title",
+            "receipt_sha256": "e21fdb1945e209ad8a45d5567923439dbc8132650a1913fc67307cd68128bed3"
+          },
+          {
+            "receipt_id": "redaction-receipt:source-content",
+            "receipt_sha256": "3679136bfc49ba2e9a158de859baae17792539488889723c00040fba74524b71"
+          }
+        ]
       },
       "descendant_policy": null,
       "observed_binding": {
         "profile_id": "source-profile:web-clipper",
         "profile_version": "1.0.0",
-        "profile_sha256": "b7c08df585368848b3c0b72e867a49d4baa730f7a7b2ef04d257fe3addab38b8",
+        "profile_sha256": "d1ba57206552702f0a8f7ef4ed9028998f68cd9017acf1c9cbf4cfe755d731ca",
         "approval_receipt_id": "approval:source-profile",
         "capture_source": {
           "source_id": "capture-source:obsidian-web-clipper",
@@ -294,21 +383,134 @@
         "processing_policy": {
           "policy_id": "policy:core-processing",
           "policy_version": "1.0.0",
-          "policy_sha256": "ce4c2c6813d83067b84433b38675ebae6304970ea71299b8d29513489fff7269"
+          "policy_sha256": "88559d6755c582747f92bf90a7de36f2c2d4afb8980fb08d0ab40145b014fb7b"
         },
         "capture_contract": {
           "artifact_id": "contract:capture-intake",
           "artifact_version": "1.0.0",
           "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
         },
-        "url_retention_mode": "sanitized"
+        "url_retention_mode": "sanitized",
+        "vault_id": "vault:fixture-vault",
+        "approval_payload_sha256": "f847bb130e06545c6ec28e42071f52ceea94eb1bc3dc5743104881f166b4b4ad",
+        "approval_receipt_sha256": "8462b67ba1ca92ec7f16e91b4632e50578639f29b51aba61fabd673a4a86ea5f"
       },
-      "compatibility_claim_ref": "claim:web-clipper-compatibility",
+      "compatibility_claim_ref": "CLAIM-WEBCLIPPER-001",
       "lifecycle": {
         "policy_state": "active",
         "source_profile_state": "active"
       },
-      "recovery": null
+      "recovery": null,
+      "redaction_receipts": [
+        {
+          "$schema": "contracts/schemas/redaction-receipt.schema.json",
+          "schema_id": "mdplace.redaction-receipt/v1",
+          "receipt_id": "redaction-receipt:source-url",
+          "request_id": "request:cpp-034",
+          "policy_ref": {
+            "policy_id": "policy:core-processing",
+            "policy_version": "1.0.0",
+            "policy_sha256": "88559d6755c582747f92bf90a7de36f2c2d4afb8980fb08d0ab40145b014fb7b"
+          },
+          "payload_sha256": "8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c",
+          "field_grant": {
+            "field_id": "field:source-url",
+            "data_class": "data:source-url",
+            "disclosure": "remote",
+            "redaction_rule_id": "redaction:sanitize-url"
+          },
+          "outcome": "applied",
+          "issuer": "mdplace_local_redactor",
+          "receipt_sha256": "4c705a313beb47f9d93b787e993222f21f33ac1578a88e3d0005c5895379b1af"
+        },
+        {
+          "$schema": "contracts/schemas/redaction-receipt.schema.json",
+          "schema_id": "mdplace.redaction-receipt/v1",
+          "receipt_id": "redaction-receipt:title",
+          "request_id": "request:cpp-034",
+          "policy_ref": {
+            "policy_id": "policy:core-processing",
+            "policy_version": "1.0.0",
+            "policy_sha256": "88559d6755c582747f92bf90a7de36f2c2d4afb8980fb08d0ab40145b014fb7b"
+          },
+          "payload_sha256": "8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c",
+          "field_grant": {
+            "field_id": "field:title",
+            "data_class": "data:title",
+            "disclosure": "remote",
+            "redaction_rule_id": "redaction:remove-identifiers"
+          },
+          "outcome": "applied",
+          "issuer": "mdplace_local_redactor",
+          "receipt_sha256": "e21fdb1945e209ad8a45d5567923439dbc8132650a1913fc67307cd68128bed3"
+        },
+        {
+          "$schema": "contracts/schemas/redaction-receipt.schema.json",
+          "schema_id": "mdplace.redaction-receipt/v1",
+          "receipt_id": "redaction-receipt:source-content",
+          "request_id": "request:cpp-034",
+          "policy_ref": {
+            "policy_id": "policy:core-processing",
+            "policy_version": "1.0.0",
+            "policy_sha256": "88559d6755c582747f92bf90a7de36f2c2d4afb8980fb08d0ab40145b014fb7b"
+          },
+          "payload_sha256": "8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c",
+          "field_grant": {
+            "field_id": "field:source-content",
+            "data_class": "data:source-content",
+            "disclosure": "remote",
+            "redaction_rule_id": "redaction:remove-secrets"
+          },
+          "outcome": "applied",
+          "issuer": "mdplace_local_redactor",
+          "receipt_sha256": "3679136bfc49ba2e9a158de859baae17792539488889723c00040fba74524b71"
+        }
+      ],
+      "approval_receipts": [
+        {
+          "$schema": "contracts/schemas/approval-receipt.schema.json",
+          "schema_id": "mdplace.approval-receipt/v1",
+          "receipt_id": "approval:policy-core",
+          "subject_kind": "processing_policy",
+          "subject_id": "policy:core-processing",
+          "subject_version": "1.0.0",
+          "vault_id": "vault:fixture-vault",
+          "subject_payload_sha256": "735a7ca28475758c52f6b74f6451b23f18882dafdc27cec646a54281474a6a90",
+          "approved": true,
+          "principal_id": "person:vault-owner",
+          "role": "vault_owner",
+          "delegated": false,
+          "receipt_sha256": "e495d44a0415a7899a3474eb83d75b45d8b6778240aa51f76507b3128ab166a1"
+        },
+        {
+          "$schema": "contracts/schemas/approval-receipt.schema.json",
+          "schema_id": "mdplace.approval-receipt/v1",
+          "receipt_id": "approval:source-profile",
+          "subject_kind": "source_profile",
+          "subject_id": "source-profile:web-clipper",
+          "subject_version": "1.0.0",
+          "vault_id": "vault:fixture-vault",
+          "subject_payload_sha256": "f847bb130e06545c6ec28e42071f52ceea94eb1bc3dc5743104881f166b4b4ad",
+          "approved": true,
+          "principal_id": "person:vault-owner",
+          "role": "vault_owner",
+          "delegated": false,
+          "receipt_sha256": "8462b67ba1ca92ec7f16e91b4632e50578639f29b51aba61fabd673a4a86ea5f"
+        }
+      ],
+      "trusted_context": {
+        "vault_id": "vault:fixture-vault",
+        "owner_principal_id": "person:vault-owner",
+        "approval_receipt_sha256s": [
+          "e495d44a0415a7899a3474eb83d75b45d8b6778240aa51f76507b3128ab166a1",
+          "8462b67ba1ca92ec7f16e91b4632e50578639f29b51aba61fabd673a4a86ea5f"
+        ],
+        "redaction_receipt_sha256s": [
+          "4c705a313beb47f9d93b787e993222f21f33ac1578a88e3d0005c5895379b1af",
+          "e21fdb1945e209ad8a45d5567923439dbc8132650a1913fc67307cd68128bed3",
+          "3679136bfc49ba2e9a158de859baae17792539488889723c00040fba74524b71"
+        ]
+      }
     }
   },
   "expected": {
@@ -324,12 +526,15 @@
       "apply default-deny Processing Policy"
     ],
     "receipts": [
-      "{\"code\":\"source_profile.template_binding_mismatch\",\"decision\":\"denied\",\"operation\":\"intake_decision\",\"policy_ref\":{\"policy_id\":\"policy:core-processing\",\"policy_sha256\":\"ce4c2c6813d83067b84433b38675ebae6304970ea71299b8d29513489fff7269\",\"policy_version\":\"1.0.0\"},\"receipt_id\":\"receipt:cpp-034\",\"scenario_id\":\"CPP-034\",\"schema_id\":\"mdplace.processing-policy-receipt/v1\",\"source_profile_ref\":{\"profile_id\":\"source-profile:web-clipper\",\"profile_sha256\":\"b7c08df585368848b3c0b72e867a49d4baa730f7a7b2ef04d257fe3addab38b8\",\"profile_version\":\"1.0.0\"}}"
+      "{\"code\":\"source_profile.template_binding_mismatch\",\"decision\":\"denied\",\"operation\":\"intake_decision\",\"policy_ref\":{\"policy_id\":\"policy:core-processing\",\"policy_sha256\":\"88559d6755c582747f92bf90a7de36f2c2d4afb8980fb08d0ab40145b014fb7b\",\"policy_version\":\"1.0.0\"},\"receipt_id\":\"receipt:cpp-034\",\"scenario_id\":\"CPP-034\",\"schema_id\":\"mdplace.processing-policy-receipt/v1\",\"source_profile_ref\":{\"profile_id\":\"source-profile:web-clipper\",\"profile_sha256\":\"d1ba57206552702f0a8f7ef4ed9028998f68cd9017acf1c9cbf4cfe755d731ca\",\"profile_version\":\"1.0.0\"}}"
     ],
     "filesystem_effects": [
       "none"
     ],
-    "terminal_state": "active",
+    "network_effects": [
+      "none"
+    ],
+    "terminal_state": "stale",
     "illegal_transition": false
   }
 }

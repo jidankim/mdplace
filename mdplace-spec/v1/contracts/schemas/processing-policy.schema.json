@@ -53,10 +53,11 @@
     },
     "credentialBoundary": {
       "type": "object", "additionalProperties": false,
-      "required": ["credential_ref", "store", "provider_id", "purpose_ids"],
+      "required": ["credential_ref", "store", "authentication_method", "provider_id", "purpose_ids"],
       "properties": {
         "credential_ref": {"type": "string", "pattern": "^credential-ref:[a-z][a-z0-9-]{2,63}$"},
         "store": {"const": "os_credential_store"},
+        "authentication_method": {"enum": ["api_key", "delegated_login", "local_process"]},
         "provider_id": {"type": "string", "pattern": "^provider:[a-z][a-z0-9-]{2,63}$"},
         "purpose_ids": {"$ref": "#/$defs/stringSet"}
       }
@@ -75,7 +76,7 @@
       "type": "object", "additionalProperties": false,
       "required": ["attempts", "elapsed_ms", "cumulative_cost_microunits"],
       "properties": {
-        "attempts": {"type": "integer", "minimum": 0, "maximum": 16},
+        "attempts": {"type": "integer", "minimum": 0, "maximum": 1},
         "elapsed_ms": {"type": "integer", "minimum": 0, "maximum": 3600000},
         "cumulative_cost_microunits": {"type": "integer", "minimum": 0, "maximum": 1000000000}
       }
@@ -84,7 +85,7 @@
       "type": "object", "additionalProperties": false,
       "required": ["position", "provider_id", "purpose_id", "destination_id", "credential_ref"],
       "properties": {
-        "position": {"type": "integer", "minimum": 1, "maximum": 8},
+        "position": {"const": 1},
         "provider_id": {"type": "string", "pattern": "^provider:[a-z][a-z0-9-]{2,63}$"},
         "purpose_id": {"type": "string", "pattern": "^purpose:[a-z][a-z0-9-]{2,63}$"},
         "destination_id": {"type": "string", "pattern": "^destination:[a-z][a-z0-9-]{2,63}$"},
@@ -93,8 +94,9 @@
     },
     "grants": {
       "type": "object", "additionalProperties": false,
-      "required": ["provider_ids", "purpose_ids", "fields", "artifact_kinds", "destinations", "credential_boundaries", "budget", "retry", "fallback_chain", "capabilities", "semantic_authority", "automation_scope"],
+      "required": ["adapter_ids", "provider_ids", "purpose_ids", "fields", "artifact_kinds", "destinations", "credential_boundaries", "budget", "retry", "fallback_chain", "capabilities", "semantic_authority", "automation_scope"],
       "properties": {
+        "adapter_ids": {"type": "array", "maxItems": 16, "uniqueItems": true, "items": {"type": "string", "pattern": "^adapter:[a-z][a-z0-9-]{2,63}$"}},
         "provider_ids": {"$ref": "#/$defs/stringSet"},
         "purpose_ids": {"$ref": "#/$defs/stringSet"},
         "fields": {"type": "array", "maxItems": 64, "uniqueItems": true, "items": {"$ref": "#/$defs/fieldGrant"}},
@@ -103,8 +105,8 @@
         "credential_boundaries": {"type": "array", "maxItems": 16, "uniqueItems": true, "items": {"$ref": "#/$defs/credentialBoundary"}},
         "budget": {"$ref": "#/$defs/budget"},
         "retry": {"$ref": "#/$defs/retry"},
-        "fallback_chain": {"type": "array", "maxItems": 8, "uniqueItems": true, "items": {"$ref": "#/$defs/fallback"}},
-        "capabilities": {"$ref": "#/$defs/stringSet"},
+        "fallback_chain": {"type": "array", "maxItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/fallback"}},
+        "capabilities": {"type": "array", "maxItems": 1, "uniqueItems": true, "items": {"enum": ["capability:produce-proposal"]}},
         "semantic_authority": {"type": "array", "maxItems": 4, "uniqueItems": true, "items": {"enum": ["produce_advisory_evidence"]}},
         "automation_scope": {"type": "array", "maxItems": 8, "uniqueItems": true, "items": {"enum": ["initial_existing_category_placement", "new_leaf_promotion", "alias_promotion"]}}
       }
@@ -120,24 +122,29 @@
     },
     "retention": {
       "type": "object", "additionalProperties": false,
-      "required": ["retention_fact_id", "destination_id", "status", "max_days", "risk_acknowledged"],
+      "required": ["retention_fact_id", "destination_id", "status", "max_days", "risk_acknowledged", "data_use", "region", "subprocessors"],
       "properties": {
         "retention_fact_id": {"type": "string", "pattern": "^retention:[a-z][a-z0-9-]{2,63}$"},
         "destination_id": {"type": "string", "pattern": "^destination:[a-z][a-z0-9-]{2,63}$"},
         "status": {"enum": ["known", "unknown"]},
         "max_days": {"type": "integer", "minimum": 0, "maximum": 36500},
-        "risk_acknowledged": {"type": "boolean"}
+        "risk_acknowledged": {"type": "boolean"},
+        "data_use": {"enum": ["request_only", "provider_training", "unknown"]},
+        "region": {"type": "string", "pattern": "^(local|global|[A-Z]{2})$"},
+        "subprocessors": {"type": "array", "maxItems": 16, "uniqueItems": true, "items": {"type": "string", "pattern": "^(none|unknown|provider:[a-z][a-z0-9-]{2,63})$"}}
       }
     },
     "approval": {
       "type": "object", "additionalProperties": false,
-      "required": ["approved", "principal_id", "role", "delegated", "receipt_id"],
+      "required": ["approved", "principal_id", "role", "delegated", "receipt_id", "receipt_sha256", "policy_payload_sha256"],
       "properties": {
         "approved": {"type": "boolean"},
         "principal_id": {"type": "string", "pattern": "^person:[a-z][a-z0-9-]{2,63}$"},
         "role": {"enum": ["vault_owner", "capture_adapter", "compatibility_claim"]},
         "delegated": {"type": "boolean"},
-        "receipt_id": {"type": "string", "pattern": "^approval:[a-z][a-z0-9-]{2,63}$"}
+        "receipt_id": {"type": "string", "pattern": "^approval:[a-z][a-z0-9-]{2,63}$"},
+        "receipt_sha256": {"$ref": "#/$defs/digest"},
+        "policy_payload_sha256": {"$ref": "#/$defs/digest"}
       }
     }
   }

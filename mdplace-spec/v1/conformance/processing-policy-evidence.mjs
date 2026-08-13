@@ -11,6 +11,53 @@ const narrowingDimensions = [
   'redaction', 'retention',
 ];
 
+const denialSemantics = [
+  ['malformed_or_unknown_structured_field', 'schema.unknown_field'],
+  ['source_profile_trusted_binding_readback', 'source_profile.binding_required'],
+  ['processing_policy_exact_binding', 'policy.version_mismatch'],
+  ['vault_owner_approval_receipt_readback', 'policy.approval_denied'],
+  ['adapter_or_provider', 'policy.provider_denied'],
+  ['purpose', 'policy.purpose_denied'],
+  ['field_data_class_or_disclosure', 'policy.field_denied'],
+  ['artifact', 'policy.artifact_denied'],
+  ['destination_or_endpoint', 'policy.destination_denied'],
+  ['credential_reference_store_authentication_provider_or_purpose', 'policy.credential_boundary_denied'],
+  ['budget', 'policy.budget_exceeded'],
+  ['retry', 'policy.retry_exceeded'],
+  ['fallback', 'policy.fallback_denied'],
+  ['closed_advisory_capability', 'policy.capability_denied'],
+  ['semantic_authority', 'policy.semantic_authority_denied'],
+  ['automation_scope', 'policy.automation_scope_denied'],
+  ['trusted_exact_redaction_receipt', 'policy.redaction_unproven'],
+  ['destination_bound_retention_data_use_region_and_subprocessors', 'policy.retention_unproven'],
+  ['hostile_content', 'policy.hostile_content_capability_denied'],
+];
+
+const narrowingSemantics = [
+  ['provider', 'adapter_and_provider_set_subset'],
+  ['purpose', 'set_subset'],
+  ['disclosure', 'field_and_data_class_preserved_and_local_only_is_narrower'],
+  ['artifact', 'set_subset'],
+  ['destination', 'identical_tuple_subset'],
+  ['credential_boundary', 'same_reference_store_authentication_provider_and_purpose_subset'],
+  ['budget', 'all_numeric_maxima_nonincreasing'],
+  ['retry', 'all_numeric_maxima_nonincreasing'],
+  ['fallback', 'order_preserving_identical_tuple_subset'],
+  ['capability', 'set_subset'],
+  ['semantic_authority', 'set_subset'],
+  ['automation_scope', 'set_subset'],
+  ['redaction', 'applicable_obligations_preserved'],
+  ['retention', 'applicable_destination_fact_preserved_and_terms_nonincreasing'],
+];
+
+const sourceProfileBindings = [
+  'profile_identity_and_version', 'vault_identity', 'trusted_owner_identity',
+  'capture_source_identity_and_claimed_version', 'candidate_schema_identity_version_and_digest',
+  'template_identity_version_and_import_digest', 'url_retention_mode',
+  'processing_policy_identity_version_and_digest', 'capture_contract_identity_version_and_digest',
+  'vault_owner_approval_payload_digest', 'approval_receipt_digest_and_trusted_readback',
+];
+
 function sha256(value) {
   return createHash('sha256').update(value).digest('hex');
 }
@@ -25,6 +72,14 @@ export function processingPolicyResultDigest(result) {
 
 export async function processingPolicyEvidenceCodes(packageRoot, evidence, entries, rules) {
   const codes = [];
+  const actualDenials = rules?.default_deny_precedence?.map(({order, condition, code}) => [order, condition, code]);
+  const expectedDenials = denialSemantics.map(([condition, code], index) => [index + 1, condition, code]);
+  const actualNarrowing = rules?.narrowing_dimensions?.map(({dimension, rule}) => [dimension, rule]);
+  if (!isDeepStrictEqual(actualDenials, expectedDenials) ||
+      !isDeepStrictEqual(actualNarrowing, narrowingSemantics) ||
+      !isDeepStrictEqual(rules?.source_profile_bindings, sourceProfileBindings)) {
+    codes.push('policy.rules_semantics_invalid');
+  }
   const bindings = Array.isArray(evidence?.fixture_bindings) ? evidence.fixture_bindings : [];
   const entryById = new Map(entries.map((entry) => [entry.fixture_id, entry]));
   const observedById = new Map();

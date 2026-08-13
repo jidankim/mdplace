@@ -43,6 +43,8 @@ export const requiredSchemaPaths = [
   'contracts/schemas/semantic-kernel-recovery-report.schema.json',
   'contracts/schemas/semantic-receipt.schema.json',
   'contracts/schemas/processing-policy.schema.json',
+  'contracts/schemas/approval-receipt.schema.json',
+  'contracts/schemas/redaction-receipt.schema.json',
   'contracts/schemas/source-profile.schema.json',
   'contracts/schemas/processing-request.schema.json',
   'contracts/schemas/processing-policy-scenario.schema.json',

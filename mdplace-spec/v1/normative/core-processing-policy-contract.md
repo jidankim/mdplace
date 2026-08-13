@@ -12,9 +12,9 @@ A Processing Policy is a versioned grant document, not blanket consent. A Source
 
 ## REQ-CPP-002: Processing Policy and Source Profile contracts are closed and complete
 
-Every Processing Policy MUST conform to `contracts/schemas/processing-policy.schema.json`. It MUST name one vault, stable policy identity and exact version, lifecycle state, optional exact parent binding, explicit grants, local redaction obligations, provider-declared retention facts, and a nondelegated approval record. It MUST contain no credential value. A credential reference is usable only inside an exact boundary that names the operating-system credential store, permitted provider, and permitted purposes.
+Every Processing Policy MUST conform to `contracts/schemas/processing-policy.schema.json`. It MUST name one vault, stable policy identity and exact version, lifecycle state, optional exact parent binding, explicit grants, local redaction obligations, provider-declared retention facts, and a nondelegated approval record. Its approval MUST bind the canonical policy payload and a separately validated, digest-bound vault-owner approval receipt present in trusted local readback. It MUST contain no credential value. A credential reference is usable only inside an exact boundary that names the operating-system credential store, authentication method, permitted provider, and permitted purposes.
 
-The grants are exhaustive. They MUST explicitly enumerate provider identifiers, purposes, field and data-class grants, disclosure class, derived artifact kinds, destinations and exact endpoints, credential boundaries, input/output/runtime/cost budgets, retry attempts/elapsed time/cumulative cost, an ordered fallback chain, capabilities, non-authoritative semantic scope, and automation scope. An empty collection grants nothing. A missing field, unknown field, wildcard, ambient default, inferred provider capability, or unbound fallback grants nothing.
+The grants are exhaustive. They MUST explicitly enumerate Capture Adapter and provider identifiers, purposes, field and data-class grants, disclosure class, derived artifact kinds, destinations and exact endpoints, credential boundaries, input/output/runtime/cost budgets, retry attempts/elapsed time/cumulative cost, an ordered fallback chain, capabilities, non-authoritative semantic scope, and automation scope. Retention facts MUST bind data-use terms, region, and subprocessors. The non-configurable v1 ceiling is one retry against the same adapter and one pre-authorized fallback adapter; both share the aggregate budget. An empty collection grants nothing. A missing field, unknown field, wildcard, ambient default, inferred provider capability, or unbound fallback grants nothing.
 
 Every Source Profile MUST conform to `contracts/schemas/source-profile.schema.json`. It MUST bind one vault and stable profile identity/version to exactly one Capture Source identity and claimed version, Capture Candidate schema identity/version/digest, template identity/version/import-artifact digest, URL-retention mode, Processing Policy identity/version/digest, capture-contract identity/version/digest, and user approval over the exact profile payload. The schema is closed; in particular, compatibility evidence, runtime observations, raw credentials, semantic claims, and inferred versions are forbidden fields.
 
@@ -30,15 +30,15 @@ A processing decision MUST validate its closed request and exact policy binding 
 | 2 | Source Profile absent, unapproved, delegated, stale, revoked, mismatched, or unreadable | Deny intake before candidate interpretation |
 | 3 | Processing Policy inactive, version-mismatched, digest-mismatched, or unreadable | Deny processing |
 | 3a | Processing Policy unapproved, approved by a non-owner, or delegated | Deny processing before any local or remote adapter effect |
-| 4 | Provider or purpose not enumerated | Deny processing |
+| 4 | Vault, Capture Adapter, provider, or purpose not enumerated | Deny processing |
 | 5 | Field, data class, disclosure class, or artifact not enumerated | Deny processing |
 | 6 | Destination or exact endpoint not enumerated | Deny processing and transmit zero bytes |
-| 7 | Credential reference, provider, purpose, or store crosses its boundary | Deny without exposing credential material |
+| 7 | Credential reference, provider, purpose, store, or authentication method crosses its boundary | Deny without exposing credential material |
 | 8 | Input, output, runtime, or cost budget exceeds its exact maximum | Deny before processing |
 | 9 | Retry attempt, elapsed time, or cumulative retry cost exceeds its exact maximum | Terminate the chain and record denial |
 | 10 | Fallback is absent from the ordered chain or does not match its exact provider, purpose, destination, and credential boundary | Deny; never silently substitute |
 | 11 | Capability, semantic scope, or automation scope is not enumerated | Deny without side effect or semantic write |
-| 12 | A required local redaction receipt or bound retention fact is missing; unknown retention lacks risk acknowledgment | Deny and transmit zero bytes |
+| 12 | A required trusted, request/policy/payload/field-bound local redaction receipt is missing, or a destination-bound retention/data-use/region/subprocessor fact is missing; unknown retention lacks risk acknowledgment | Deny and transmit zero bytes |
 | 13 | Hostile content requests shell, filesystem, browser, credential, arbitrary network, taxonomy-write, projection, or semantic-write action | Treat content as data and deny the requested action |
 
 An exact numeric maximum is permitted; its first successor is denied. A fallback position is permitted only when every bound value matches the policy row at that position. Partial output, malformed output, provider error, quota exhaustion, or retry exhaustion cannot be promoted or silently routed elsewhere.
@@ -49,19 +49,19 @@ A descendant Processing Policy MUST bind the exact parent identity, version, and
 
 | Dimension | Preserve or reduce | Widening that MUST be denied |
 | --- | --- | --- |
-| Provider | Keep a subset of exact provider IDs | Add, replace, wildcard, or infer a provider |
+| Provider | Keep a subset of exact Capture Adapter and provider IDs | Add, replace, wildcard, or infer either identity |
 | Purpose | Keep a subset of exact purposes | Add or substitute a purpose |
 | Disclosure and fields | Remove fields or change `remote` to `local_only` while preserving required redaction | Add a field, weaken redaction, or change `local_only` to `remote` |
 | Artifacts | Keep a subset of exact artifact kinds | Add a persisted, transmitted, or derived artifact |
 | Destinations | Keep identical destination/provider/endpoint/retention tuples | Add or alter any tuple or endpoint |
-| Credential boundary | Keep a credential reference with the same provider and a purpose subset | Add a credential reference, provider, purpose, or different store |
+| Credential boundary | Keep a credential reference with the same store, authentication method, and provider and a purpose subset | Add a credential reference, provider, purpose, store, or authentication method |
 | Budget | Lower or preserve every numeric maximum | Raise any input, output, runtime, or cost maximum |
 | Retry | Lower or preserve attempts, elapsed time, and cumulative cost | Raise any retry maximum |
 | Fallback | Keep an order-preserving subset of identical fallback tuples | Add, reorder, or alter a fallback |
 | Capabilities | Keep a subset | Add a capability |
 | Semantic authority | Keep a subset of non-authoritative advisory scope | Add advisory scope or any truth-establishing authority |
 | Automation scope | Keep a subset | Add Placement Automation Permission or Automation Grant scope |
-| Redaction and retention | Preserve applicable redaction rules; shorten known retention without weakening status or acknowledgment | Remove an applicable obligation or weaken a retention fact |
+| Redaction and retention | Preserve applicable redaction rules and trusted receipt binding; shorten known retention without changing data-use, region, subprocessors, status, or acknowledgment | Remove an applicable obligation or weaken or unbind a retention fact |
 
 The conformance pack MUST include a preservation canary, a comprehensive narrowing canary, and one schema-valid attempted widening for every grant dimension. Every widening pair MUST be denied even if every other dimension narrows.
 
@@ -77,7 +77,7 @@ Revocation stops future intake immediately. A Processing Policy change, capture-
 
 The conformance manifest MUST own exactly 50 `FIX-CPP-*` Conformance Fixtures under `conformance/scenarios/core-processing-policy/`. Classification is by identifier, path, subject kind, or scenario schema; any matching signal counts, so renaming one signal cannot hide an extra fixture. The set MUST include positive, negative, exact-boundary, stale-state, authority-denial, illegal-transition, policy-pair canary, hostile-content, and crash/recovery cases.
 
-Every fixture MUST declare observable inputs, outputs, operations, closed receipts, filesystem effects, terminal state, and illegal-transition status. The reference validator MUST validate the Processing Policy, Source Profile, request, scenario, receipt, rule-table, lifecycle, and recovery-report schemas; recompute policy, profile, approval-payload, fixture, and observable-result digests; verify all 50 oracles; prove every required default-deny code and policy-pair dimension; and validate `conformance/evidence/core-processing-policy-recovery-report.json`. It MUST NOT inspect private helper calls, class shape, or prose that no machine consumes.
+Every fixture MUST declare observable inputs, exact payload bytes, outputs, operations, closed receipts, filesystem and network effects, terminal state, and illegal-transition status. The reference validator MUST validate the Processing Policy, Source Profile, request, scenario, approval receipt, redaction receipt, decision receipt, rule-table, lifecycle, and recovery-report schemas; recompute policy, profile, approval-payload, receipt, fixture, and observable-result digests; verify trusted local readback bindings and all 50 oracles; prove every required default-deny code and policy-pair dimension; and validate `conformance/evidence/core-processing-policy-recovery-report.json`. It MUST NOT inspect private helper calls, class shape, or prose that no machine consumes.
 
 Crash recovery MUST read the binding journal and exact approval receipt. A crash before approval publication discards unapproved staging and returns to `unbound`. A crash after approval publication finishes or preserves the exact approved binding only after digest readback. A crash after binding publication is idempotent. Missing, torn, mismatched, or ambiguous recovery evidence remains `recovery_required` or returns to `unbound`; it never authorizes intake.
 

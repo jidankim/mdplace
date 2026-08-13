@@ -4,7 +4,7 @@
   "title": "mdplace Core Processing Policy conformance scenario",
   "type": "object",
   "additionalProperties": false,
-  "required": ["scenario_id", "operation", "policy", "source_profile", "request", "descendant_policy", "observed_binding", "compatibility_claim_ref", "lifecycle", "recovery"],
+  "required": ["scenario_id", "operation", "policy", "source_profile", "request", "descendant_policy", "approval_receipts", "redaction_receipts", "trusted_context", "observed_binding", "compatibility_claim_ref", "lifecycle", "recovery"],
   "properties": {
     "scenario_id": {"type": "string", "pattern": "^CPP-[0-9]{3}$"},
     "operation": {"enum": ["processing_decision", "intake_decision", "policy_pair", "recover_binding"]},
@@ -12,8 +12,11 @@
     "source_profile": {"description": "Null or validated separately against the closed Source Profile schema."},
     "request": {"description": "Null or validated separately against the closed processing request schema."},
     "descendant_policy": {"description": "Null or validated separately against the closed Processing Policy schema."},
+    "approval_receipts": {"type": "array", "maxItems": 4, "uniqueItems": true, "items": {"description": "Validated separately against the closed approval receipt schema."}},
+    "redaction_receipts": {"type": "array", "maxItems": 64, "uniqueItems": true, "items": {"description": "Validated separately against the closed redaction receipt schema."}},
+    "trusted_context": {"$ref": "#/$defs/trustedContext"},
     "observed_binding": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/observedBinding"}]},
-    "compatibility_claim_ref": {"type": ["string", "null"], "pattern": "^claim:[a-z][a-z0-9-]{2,63}$"},
+    "compatibility_claim_ref": {"type": ["string", "null"], "pattern": "^CLAIM-[A-Z0-9][A-Z0-9-]{2,63}$"},
     "lifecycle": {"$ref": "#/$defs/lifecycle"},
     "recovery": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/recovery"}]}
   },
@@ -57,18 +60,31 @@
     },
     "observedBinding": {
       "type": "object", "additionalProperties": false,
-      "required": ["profile_id", "profile_version", "profile_sha256", "approval_receipt_id", "capture_source", "candidate_schema", "template", "url_retention_mode", "processing_policy", "capture_contract"],
+      "required": ["profile_id", "profile_version", "profile_sha256", "vault_id", "approval_receipt_id", "approval_receipt_sha256", "approval_payload_sha256", "capture_source", "candidate_schema", "template", "url_retention_mode", "processing_policy", "capture_contract"],
       "properties": {
         "profile_id": {"type": "string", "pattern": "^source-profile:[a-z][a-z0-9-]{2,63}$"},
         "profile_version": {"$ref": "#/$defs/semver"},
         "profile_sha256": {"$ref": "#/$defs/digest"},
+        "vault_id": {"type": "string", "pattern": "^vault:[a-z][a-z0-9-]{2,63}$"},
         "approval_receipt_id": {"type": "string", "pattern": "^approval:[a-z][a-z0-9-]{2,63}$"},
+        "approval_receipt_sha256": {"$ref": "#/$defs/digest"},
+        "approval_payload_sha256": {"$ref": "#/$defs/digest"},
         "capture_source": {"$ref": "#/$defs/captureSource"},
         "candidate_schema": {"$ref": "#/$defs/versionedArtifact"},
         "template": {"$ref": "#/$defs/template"},
         "url_retention_mode": {"enum": ["withheld", "sanitized"]},
         "processing_policy": {"$ref": "#/$defs/policyRef"},
         "capture_contract": {"$ref": "#/$defs/versionedArtifact"}
+      }
+    },
+    "trustedContext": {
+      "type": "object", "additionalProperties": false,
+      "required": ["vault_id", "owner_principal_id", "approval_receipt_sha256s", "redaction_receipt_sha256s"],
+      "properties": {
+        "vault_id": {"type": "string", "pattern": "^vault:[a-z][a-z0-9-]{2,63}$"},
+        "owner_principal_id": {"type": "string", "pattern": "^person:[a-z][a-z0-9-]{2,63}$"},
+        "approval_receipt_sha256s": {"type": "array", "maxItems": 4, "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}},
+        "redaction_receipt_sha256s": {"type": "array", "maxItems": 64, "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}}
       }
     },
     "lifecycle": {

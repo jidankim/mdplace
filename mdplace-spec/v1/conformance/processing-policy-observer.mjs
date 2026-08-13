@@ -1,5 +1,3 @@
-import {isDeepStrictEqual} from 'node:util';
-
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {canonicalJson} from './semantic-kernel-core.mjs';
 import {
@@ -9,10 +7,14 @@ import {
   sha256Json,
   sourceProfileApprovalDigest,
   sourceProfileDigest,
-  valuesAreSubset,
 } from './processing-policy-core.mjs';
+import {processingDenialCode, sourceProfileBindingCode} from './processing-policy-decision.mjs';
 
 function receipt(document, decision, code, policy, profile = null) {
+  const profileReference = profile !== null && typeof profile.profile_id === 'string' &&
+    typeof profile.profile_version === 'string'
+    ? {profile_id: profile.profile_id, profile_version: profile.profile_version, profile_sha256: sourceProfileDigest(profile)}
+    : null;
   return canonicalJson({
     schema_id: 'mdplace.processing-policy-receipt/v1',
     receipt_id: `receipt:${document.scenario_id.toLowerCase()}`,
@@ -25,11 +27,7 @@ function receipt(document, decision, code, policy, profile = null) {
       policy_version: policy.policy_version,
       policy_sha256: processingPolicyDigest(policy),
     },
-    source_profile_ref: profile === null ? null : {
-      profile_id: profile.profile_id,
-      profile_version: profile.profile_version,
-      profile_sha256: sourceProfileDigest(profile),
-    },
+    source_profile_ref: profileReference,
   });
 }
 
@@ -42,6 +40,7 @@ function observed(document, {verdict, code = null, output, operations, terminal,
     operations,
     receipts: [receipt(document, verdict === 'pass' ? 'allowed' : 'denied', code, document.policy, profile)],
     filesystem_effects: effects,
+    network_effects: ['none'],
     terminal_state: terminal,
     illegal_transition: illegal,
   };
@@ -50,12 +49,15 @@ function observed(document, {verdict, code = null, output, operations, terminal,
 function denied(document, code, operation = 'processing_decision', illegal = false) {
   const intake = operation === 'intake_decision';
   const recovery = operation === 'recovery';
+  const staleBinding = code.startsWith('source_profile.') &&
+    (code.includes('mismatch') || code.includes('readback'));
   return observed(document, {
     verdict: 'fail', code, output: intake ? 'intake denied' : recovery ? 'binding recovery denied' : 'processing denied',
     operations: intake
       ? ['validate Source Profile binding', 'apply default-deny Processing Policy']
       : ['validate processing request', 'apply default-deny Processing Policy'],
-    terminal: intake ? document.lifecycle.source_profile_state : recovery ? 'recovery_required' : 'denied', illegal,
+    terminal: intake ? staleBinding ? 'stale' : document.lifecycle.source_profile_state
+      : recovery ? 'recovery_required' : 'denied', illegal,
   });
 }
 
@@ -68,84 +70,29 @@ async function schemaCode(packageRoot, path, value) {
   }
 }
 
-function fallbackMatches(request, policy) {
-  if (request.fallback_position === 0) return true;
-  const fallback = policy.grants.fallback_chain.find(({position}) => position === request.fallback_position);
-  return fallback !== undefined && fallback.provider_id === request.provider_id &&
-    fallback.purpose_id === request.purpose_id && fallback.destination_id === request.destination_id &&
-    fallback.credential_ref === request.credential_ref;
-}
-
-function processingDenialCode(policy, request) {
-  const policyDigest = processingPolicyDigest(policy);
-  if (policy.lifecycle_state !== 'active') return 'policy.inactive';
-  if (request.policy_binding.policy_id !== policy.policy_id ||
-      request.policy_binding.policy_version !== policy.policy_version) return 'policy.version_mismatch';
-  if (request.policy_binding.policy_sha256 !== policyDigest) return 'policy.digest_mismatch';
-  if (policy.approval.approved !== true || policy.approval.role !== 'vault_owner' || policy.approval.delegated) {
-    return 'policy.approval_denied';
+async function receiptSchemaCode(document, packageRoot) {
+  for (const approvalReceipt of document.approval_receipts) {
+    if (await schemaCode(packageRoot, 'contracts/schemas/approval-receipt.schema.json', approvalReceipt) !== null) {
+      return 'policy.approval_readback_failed';
+    }
   }
-  if (!policy.grants.provider_ids.includes(request.provider_id)) return 'policy.provider_denied';
-  if (!policy.grants.purpose_ids.includes(request.purpose_id)) return 'policy.purpose_denied';
-  const fieldMap = new Map(policy.grants.fields.map((field) => [field.field_id, field]));
-  if (request.field_ids.some((fieldId) => !fieldMap.has(fieldId))) return 'policy.field_denied';
-  if (!valuesAreSubset(request.artifact_kinds, policy.grants.artifact_kinds)) return 'policy.artifact_denied';
-  const destination = policy.grants.destinations.find(({destination_id: id}) => id === request.destination_id);
-  if (destination === undefined || destination.provider_id !== request.provider_id) return 'policy.destination_denied';
-  const boundary = policy.grants.credential_boundaries.find(({credential_ref: ref}) => ref === request.credential_ref);
-  if (boundary === undefined || boundary.provider_id !== request.provider_id) return 'policy.credential_boundary_denied';
-  if (!boundary.purpose_ids.includes(request.purpose_id)) return 'policy.credential_purpose_denied';
-  if (Object.keys(policy.grants.budget).some((key) => request.budget[key] > policy.grants.budget[key])) return 'policy.budget_exceeded';
-  if (Object.keys(policy.grants.retry).some((key) => request.retry[key] > policy.grants.retry[key])) return 'policy.retry_exceeded';
-  if (!fallbackMatches(request, policy)) return 'policy.fallback_denied';
-  if (!valuesAreSubset(request.capabilities, policy.grants.capabilities)) return 'policy.capability_denied';
-  if (!valuesAreSubset(request.semantic_authority, policy.grants.semantic_authority)) return 'policy.semantic_authority_denied';
-  if (!valuesAreSubset(request.automation_scope, policy.grants.automation_scope)) return 'policy.automation_scope_denied';
-  const requiredRedactions = request.field_ids.map((fieldId) => fieldMap.get(fieldId).redaction_rule_id);
-  if (!valuesAreSubset(requiredRedactions, request.redaction_receipt_ids)) return 'policy.redaction_unproven';
-  const retention = policy.retention_facts.find(({retention_fact_id: id}) => id === destination.retention_fact_id);
-  if (retention === undefined || retention.destination_id !== destination.destination_id ||
-      !request.retention_fact_ids.includes(destination.retention_fact_id) ||
-      (retention.status === 'unknown' && !retention.risk_acknowledged)) return 'policy.retention_unproven';
-  if (request.untrusted_content.requested_actions.length > 0) return 'policy.hostile_content_capability_denied';
+  for (const redactionReceipt of document.redaction_receipts) {
+    if (await schemaCode(packageRoot, 'contracts/schemas/redaction-receipt.schema.json', redactionReceipt) !== null) {
+      return 'policy.redaction_unproven';
+    }
+  }
   return null;
 }
 
 async function observeProcessing(document, packageRoot) {
   const requestCode = await schemaCode(packageRoot, 'contracts/schemas/processing-request.schema.json', document.request);
   if (requestCode !== null) return denied(document, requestCode);
-  const code = processingDenialCode(document.policy, document.request);
+  const code = processingDenialCode(document);
   if (code !== null) return denied(document, code);
   return observed(document, {
     verdict: 'pass', output: 'processing allowed',
     operations: ['validate processing request', 'apply default-deny Processing Policy'], terminal: 'allowed',
   });
-}
-
-function sourceProfileBindingCode(document, requireActive = true) {
-  const {observed_binding: observed, policy, source_profile: profile} = document;
-  if (requireActive && document.lifecycle.source_profile_state !== 'active') {
-    return document.lifecycle.source_profile_state === 'stale' ? 'source_profile.stale' : 'source_profile.binding_required';
-  }
-  if (observed === null) return 'source_profile.readback_failed';
-  if (profile.approval.approved !== true || profile.approval.role !== 'vault_owner' || profile.approval.delegated) {
-    return 'source_profile.approval_denied';
-  }
-  if (profile.approval.profile_payload_sha256 !== sourceProfileApprovalDigest(profile)) return 'source_profile.approval_readback_failed';
-  if (observed.profile_id !== profile.profile_id || observed.profile_version !== profile.profile_version) return 'source_profile.version_mismatch';
-  if (observed.profile_sha256 !== sourceProfileDigest(profile) || observed.approval_receipt_id !== profile.approval.receipt_id) {
-    return 'source_profile.readback_failed';
-  }
-  if (!isDeepStrictEqual(observed.capture_source, profile.capture_source) ||
-      !isDeepStrictEqual(observed.candidate_schema, profile.candidate_schema)) return 'source_profile.source_binding_mismatch';
-  if (!isDeepStrictEqual(observed.template, profile.template)) return 'source_profile.template_binding_mismatch';
-  if (observed.url_retention_mode !== profile.url_retention_mode) return 'source_profile.url_retention_mode_mismatch';
-  if (!isDeepStrictEqual(observed.capture_contract, profile.capture_contract)) return 'source_profile.capture_contract_mismatch';
-  if (profile.processing_policy.policy_id !== policy.policy_id ||
-      profile.processing_policy.policy_version !== policy.policy_version) return 'policy.version_mismatch';
-  if (profile.processing_policy.policy_sha256 !== processingPolicyDigest(policy) ||
-      !isDeepStrictEqual(observed.processing_policy, profile.processing_policy)) return 'policy.digest_mismatch';
-  return null;
 }
 
 async function observeIntake(document, packageRoot) {
@@ -156,7 +103,7 @@ async function observeIntake(document, packageRoot) {
   if (bindingCode !== null) return denied(document, bindingCode, 'intake_decision', bindingCode === 'source_profile.binding_required');
   const requestCode = await schemaCode(packageRoot, 'contracts/schemas/processing-request.schema.json', document.request);
   if (requestCode !== null) return denied(document, requestCode, 'intake_decision');
-  const policyCode = processingDenialCode(document.policy, document.request);
+  const policyCode = processingDenialCode(document);
   if (policyCode !== null) return denied(document, policyCode, 'intake_decision');
   return observed(document, {
     verdict: 'pass', output: 'intake allowed',
@@ -226,11 +173,16 @@ export async function observeProcessingPolicyScenario(subject, packageRoot) {
   }
   const policyCode = await schemaCode(packageRoot, 'contracts/schemas/processing-policy.schema.json', subject.document.policy);
   if (policyCode !== null) return denied(subject.document, policyCode, subject.document.operation);
+  const receiptCode = await receiptSchemaCode(subject.document, packageRoot);
+  if (receiptCode !== null) return denied(subject.document, receiptCode, subject.document.operation);
   switch (subject.document.operation) {
     case 'processing_decision': return observeProcessing(subject.document, packageRoot);
     case 'intake_decision': return observeIntake(subject.document, packageRoot);
     case 'policy_pair': return observePolicyPair(subject.document, packageRoot);
-    case 'recover_binding': return observeRecovery(subject.document);
+    case 'recover_binding': {
+      const profileCode = await schemaCode(packageRoot, 'contracts/schemas/source-profile.schema.json', subject.document.source_profile);
+      return profileCode === null ? observeRecovery(subject.document) : denied(subject.document, profileCode, 'recovery');
+    }
     default: throw new Error('scenario schema allowed an unknown operation');
   }
 }

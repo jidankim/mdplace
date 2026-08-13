@@ -1,3 +1,5 @@
+import {createHash} from 'node:crypto';
+
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {processingPolicyEvidenceCodes} from './processing-policy-evidence.mjs';
 import {readPackageFile} from './safe-path.mjs';
@@ -33,11 +35,12 @@ async function schemaCode(packageRoot, schemaPath, document) {
 
 export async function checkCoreProcessingPolicyContract(packageRoot, manifest, conformance, traceability) {
   const codes = [];
-  const [rules, policyTable, profileTable, recovery] = await Promise.all([
+  const [rules, policyTable, profileTable, recovery, claimsIndex] = await Promise.all([
     readJson(packageRoot, 'contracts/processing-policy-rules.json'),
     readJson(packageRoot, 'contracts/transitions/processing-policy-lifecycle.json'),
     readJson(packageRoot, 'contracts/transitions/source-profile-lifecycle.json'),
     readJson(packageRoot, 'conformance/evidence/core-processing-policy-recovery-report.json'),
+    readJson(packageRoot, 'claims-and-evidence.yaml'),
   ]);
   const roots = [
     [rules, 'contracts/schemas/processing-policy-rules.schema.json'],
@@ -67,6 +70,7 @@ export async function checkCoreProcessingPolicyContract(packageRoot, manifest, c
   }
   const scenarioIds = [];
   const operations = new Set();
+  const claimEntries = Array.isArray(claimsIndex?.claims) ? claimsIndex.claims : [];
   let externalCompatibilityEvidence = false;
   for (const {entry, fixture} of owned) {
     if (!entry.fixture_id?.startsWith('FIX-CPP-') ||
@@ -90,7 +94,31 @@ export async function checkCoreProcessingPolicyContract(packageRoot, manifest, c
       if (profileCode !== null) codes.push(profileCode);
       if (Object.hasOwn(document.source_profile, 'compatibility_evidence')) codes.push('source_profile.compatibility_evidence_embedded');
     }
-    if (document.compatibility_claim_ref !== null) externalCompatibilityEvidence = true;
+    if (document.compatibility_claim_ref !== null) {
+      const claim = claimEntries.find(({claim_id: id}) => id === document.compatibility_claim_ref);
+      const claimManifest = typeof claim?.manifest_ref === 'string' ? await readJson(packageRoot, claim.manifest_ref) : null;
+      const claimRead = typeof claim?.manifest_ref === 'string'
+        ? await readPackageFile(packageRoot, claim.manifest_ref)
+        : {status: 'missing'};
+      const digest = claimRead.status === 'present'
+        ? createHash('sha256').update(claimRead.content).digest('hex')
+        : null;
+      if (claimManifest?.claim_id === document.compatibility_claim_ref && digest === claim?.sha256) {
+        externalCompatibilityEvidence = true;
+      } else {
+        codes.push('source_profile.compatibility_claim_invalid');
+      }
+    }
+    for (const approvalReceipt of document.approval_receipts) {
+      if (await schemaCode(packageRoot, 'contracts/schemas/approval-receipt.schema.json', approvalReceipt) !== null) {
+        codes.push('policy.approval_receipt_invalid');
+      }
+    }
+    for (const redactionReceipt of document.redaction_receipts) {
+      if (await schemaCode(packageRoot, 'contracts/schemas/redaction-receipt.schema.json', redactionReceipt) !== null) {
+        codes.push('policy.redaction_receipt_invalid');
+      }
+    }
     for (const receiptValue of fixture.expected?.receipts ?? []) {
       let receipt;
       try {
@@ -102,6 +130,9 @@ export async function checkCoreProcessingPolicyContract(packageRoot, manifest, c
       const receiptCode = await schemaCode(packageRoot, 'contracts/schemas/processing-policy-receipt.schema.json', receipt);
       if (receiptCode !== null) codes.push('policy.receipt_invalid');
     }
+    if (fixture.expected?.network_effects?.length !== 1 || fixture.expected.network_effects[0] !== 'none') {
+      codes.push('policy.network_effects_invalid');
+    }
   }
   const expectedScenarioIds = Array.from({length: 50}, (_, index) => `CPP-${String(index + 1).padStart(3, '0')}`);
   if (new Set(scenarioIds).size !== 50 || expectedScenarioIds.some((id) => !scenarioIds.includes(id))) {
@@ -111,6 +142,15 @@ export async function checkCoreProcessingPolicyContract(packageRoot, manifest, c
     codes.push('policy.required_operation_uncovered');
   }
   if (!externalCompatibilityEvidence) codes.push('source_profile.compatibility_evidence_external_missing');
+  const transition = (state, command) => profileTable?.transitions?.find((row) =>
+    row.from_state === state && row.command_or_event === command);
+  if (transition('active', 'invalidate_source_profile')?.terminal_state !== 'stale' ||
+      transition('recovery_required', 'recover_unapproved_source_profile')?.terminal_state !== 'unbound' ||
+      transition('recovery_required', 'recover_approved_source_profile')?.terminal_state !== 'active') {
+    codes.push('source_profile.lifecycle_semantics_invalid');
+  }
+  const profileStates = new Set(owned.map(({fixture}) => fixture?.subject?.document?.lifecycle?.source_profile_state));
+  if (!profileStates.has('stale') || !profileStates.has('revoked')) codes.push('source_profile.lifecycle_coverage_missing');
   if (recovery?.validator_version !== manifest?.validator_version || recovery?.scenario_count !== 50) {
     codes.push('policy.recovery_evidence_invalid');
   }

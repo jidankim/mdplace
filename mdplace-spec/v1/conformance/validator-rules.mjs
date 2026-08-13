@@ -46,7 +46,9 @@ const authorityByCommand = new Map([
   ['revoke_policy', {roles: ['vault_owner'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
   ['activate_source_profile', {roles: ['vault_owner'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
   ['revoke_source_profile', {roles: ['vault_owner'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
-  ['recover_source_profile', {roles: ['foreground_recovery'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['invalidate_source_profile', {roles: ['capture_adapter'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['recover_unapproved_source_profile', {roles: ['foreground_recovery'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['recover_approved_source_profile', {roles: ['foreground_recovery'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
 ]);
 
 const conformanceExecutables = new Set([
@@ -74,6 +76,7 @@ const conformanceExecutables = new Set([
   'conformance/pattern-evaluation.mjs',
   'conformance/processing-policy-checks.mjs',
   'conformance/processing-policy-core.mjs',
+  'conformance/processing-policy-decision.mjs',
   'conformance/processing-policy-evidence.mjs',
   'conformance/processing-policy-observer.mjs',
   'conformance/requirement-checks.mjs',

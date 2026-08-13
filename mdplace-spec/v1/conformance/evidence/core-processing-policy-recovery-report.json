@@ -6,304 +6,304 @@
   "scenario_count": 50,
   "fixture_bindings": [
     {
-      "fixture_id": "FIX-CPP-POS-001",
-      "path": "scenarios/core-processing-policy/remote-processing-allowed.json",
-      "fixture_sha256": "5139c19db4196fcbee29ab471df57849c7790170e638be3624c17e466cf0824d",
-      "observable_result_sha256": "17a23b0986e77d9a674351a5f5df866186092fc6095c4ac17069050a8a962092"
-    },
-    {
       "fixture_id": "FIX-CPP-POS-002",
       "path": "scenarios/core-processing-policy/approved-source-profile-intake-allowed.json",
-      "fixture_sha256": "81c8468b031a79f491c2d78b4f1303a6e46ad238047319f92d98761224452447",
-      "observable_result_sha256": "accc4f3910d27cf55d973911903f9d834b97179b14eb8de11b9dfc67edf45d5c"
-    },
-    {
-      "fixture_id": "FIX-CPP-NEG-014",
-      "path": "scenarios/core-processing-policy/unpermitted-capability-denied.json",
-      "fixture_sha256": "71bd1c46364ff78e6e5fea6e1a5cf510bc59002f45fc6390ccd2286b1789cf76",
-      "observable_result_sha256": "363a67368dfab890ec5b9a66df85f019ff86804c142d752e818e917ba6efbdec"
-    },
-    {
-      "fixture_id": "FIX-CPP-POS-004",
-      "path": "scenarios/core-processing-policy/policy-preservation-canary.json",
-      "fixture_sha256": "adc8b53939db5c6d7d9ef52903d8ee269e74cf14e936aa59feedf2b8c35e0097",
-      "observable_result_sha256": "c886782b95c3821975d61f7081056e04c4f22ad1492fcf17f763855217b99e52"
-    },
-    {
-      "fixture_id": "FIX-CPP-POS-005",
-      "path": "scenarios/core-processing-policy/policy-comprehensive-narrowing-canary.json",
-      "fixture_sha256": "c23e21e766c2629b737a8bcd1cd74c50e49b2988e8768eb8fe2b4497c82e9099",
-      "observable_result_sha256": "69be2ff8eb3402750a8fa7b3cbc01fe5a1242c99083353a982f218cb34879e78"
-    },
-    {
-      "fixture_id": "FIX-CPP-BND-001",
-      "path": "scenarios/core-processing-policy/exact-budget-allowed.json",
-      "fixture_sha256": "a9f9b699bbb3558863e04a447aef8084c9c7d4adc30e3714fea9976657fe49a9",
-      "observable_result_sha256": "92122a705620e7340ff40aff04d9d9ffc4df532c5e7fa4c31ca9dc8e2427236d"
-    },
-    {
-      "fixture_id": "FIX-CPP-PAIR_REDACTION-001",
-      "path": "scenarios/core-processing-policy/redaction-obligation-widening-denied.json",
-      "fixture_sha256": "f1d8d137bba940eda544058d7ab5a373e9152b51175a66fc482eba9fe44ffc95",
-      "observable_result_sha256": "ef9640d88a3dc53ed5949d1379f702a53971f474baa1934e29090bbc1ca6d9dd"
-    },
-    {
-      "fixture_id": "FIX-CPP-PAIR_RETENTION-001",
-      "path": "scenarios/core-processing-policy/retention-fact-widening-denied.json",
-      "fixture_sha256": "f5857da40ad20382eab500bb051c7a3b7002a938a3ebcfefe579cf5fb3217f9b",
-      "observable_result_sha256": "6f228ccf5af1d3937aa9d48951dd6b7fc7ed29fa5b1c51a1e2d3bf11945809ad"
-    },
-    {
-      "fixture_id": "FIX-CPP-NEG-001",
-      "path": "scenarios/core-processing-policy/unknown-provider-denied.json",
-      "fixture_sha256": "b2c24db22dcba39c875e3c69bd1122daa275693d46f027cb045ebf2f4e6e36b6",
-      "observable_result_sha256": "b3598da3cb629b09988594c555e6031368ff26acb2c0dfef736154425907ba09"
-    },
-    {
-      "fixture_id": "FIX-CPP-NEG-002",
-      "path": "scenarios/core-processing-policy/unknown-purpose-denied.json",
-      "fixture_sha256": "a003e581abd244acef05e4ad0a4d0d96c19a4e0131541d0da29545e88965da02",
-      "observable_result_sha256": "17bef479db5291abf1b699a9a99701de0468110d4973cc53f64441ba5aa640ca"
-    },
-    {
-      "fixture_id": "FIX-CPP-NEG-003",
-      "path": "scenarios/core-processing-policy/unpermitted-field-denied.json",
-      "fixture_sha256": "7d74bf357d63384b8cffc1ebeafc48da2fbf4c25768572a35e973ba34bfaeb66",
-      "observable_result_sha256": "8c5ce1b2ad22f0c9cf8d297ea7059f6b4723765fd7a77b026241e14c0ef9c4d9"
-    },
-    {
-      "fixture_id": "FIX-CPP-NEG-004",
-      "path": "scenarios/core-processing-policy/unpermitted-artifact-denied.json",
-      "fixture_sha256": "9e0d7d1eb1069cb5dee7ef495426f8157f779fc17f526a8909aaaf8279f6fc18",
-      "observable_result_sha256": "ad0ed0ff039786bff263d8a692875b1c15e773a32ee6fdedec03f2d4ff00926e"
-    },
-    {
-      "fixture_id": "FIX-CPP-NEG-005",
-      "path": "scenarios/core-processing-policy/unpermitted-destination-denied.json",
-      "fixture_sha256": "f1053c6ca78be354201300c229ce37acec7131dd07b7334001dd34899bb2803b",
-      "observable_result_sha256": "dc08a1086f2dbce219f97b7f3f0461693f3f74715a7f4f2716d4660de5501778"
-    },
-    {
-      "fixture_id": "FIX-CPP-NEG-006",
-      "path": "scenarios/core-processing-policy/credential-boundary-denied.json",
-      "fixture_sha256": "a10600f5ad0f7620fa513e8fad8b9e977691b3f3bb6746879d4895ca248251d3",
-      "observable_result_sha256": "0c6da4ade8fa7c9d8d37bb371804c2f31aa9864c86d52efe4c63897b6b5a238f"
-    },
-    {
-      "fixture_id": "FIX-CPP-NEG-007",
-      "path": "scenarios/core-processing-policy/budget-excess-denied.json",
-      "fixture_sha256": "1fcadc8a066e3458252a07a2a8da227ed08835399d07a06da76e5f98b511ed4d",
-      "observable_result_sha256": "b6ab3da939430771ff9493c4ebe7fdc6c8fdb9d5eb44b84338bbfd961059d6e5"
-    },
-    {
-      "fixture_id": "FIX-CPP-NEG-008",
-      "path": "scenarios/core-processing-policy/retry-excess-denied.json",
-      "fixture_sha256": "2b4a54d320a7c640ff962a1a290504f4432a47cdc811c4e9de38ea11159918fe",
-      "observable_result_sha256": "88512ded17cf2530a33e77ea94b0c7eb9594f45527202ad0d9a0a52c9a72da66"
-    },
-    {
-      "fixture_id": "FIX-CPP-NEG-009",
-      "path": "scenarios/core-processing-policy/fallback-excess-denied.json",
-      "fixture_sha256": "42e6674964116dd7a63f2e8bb3768a500ccde426266f554bee33d0420fe9eba4",
-      "observable_result_sha256": "88354092da1a8f482ccef713a0286c1451c7bc2e72407b5c6cc6d2f2533be562"
-    },
-    {
-      "fixture_id": "FIX-CPP-NEG-010",
-      "path": "scenarios/core-processing-policy/missing-redaction-denied.json",
-      "fixture_sha256": "aaa6ec574d3b7d97eeab4478763d56959c9c753d83d564a8fc7b8bcd2ae1b0e5",
-      "observable_result_sha256": "a7fab66195068437f2dd49b982bb70ad1ffb8c8d2a523c5a05e83d0d35ad314e"
-    },
-    {
-      "fixture_id": "FIX-CPP-NEG-011",
-      "path": "scenarios/core-processing-policy/missing-retention-fact-denied.json",
-      "fixture_sha256": "5f4a998f99f95a9555ad34a407e55d30af0d02b9f5e2d9a9701b6f7e9ec8736b",
-      "observable_result_sha256": "3438b568a6adc268dd926974b1284c6141bafc33e5b4b9c21ff7882500888231"
-    },
-    {
-      "fixture_id": "FIX-CPP-STATE-001",
-      "path": "scenarios/core-processing-policy/revoked-policy-denied.json",
-      "fixture_sha256": "8ab48dc70fb221a157940a370d735775aceaa798e008a5baecbc6d5a970f4210",
-      "observable_result_sha256": "b2a343c4d55b86a0ded2c19eb5826c4ec70cc49c04a1fd63a6a18529c318264f"
-    },
-    {
-      "fixture_id": "FIX-CPP-STATE-002",
-      "path": "scenarios/core-processing-policy/policy-version-mismatch-denied.json",
-      "fixture_sha256": "33671e3d4fb0f41c84ea394825cafcbab19a84bf564e83491dd7425607355f81",
-      "observable_result_sha256": "bb65e36a50510d145688dde8df9e7dbe740765bf288ee4e0bfa527a78d3679ea"
-    },
-    {
-      "fixture_id": "FIX-CPP-STATE-010",
-      "path": "scenarios/core-processing-policy/url-retention-mode-mismatch-denied.json",
-      "fixture_sha256": "3cad82962a1f285f3f2788b0282f69a61abeeee180601f6d7b948c54a1c2a09f",
-      "observable_result_sha256": "1b7ab24825f179d8dcb2ea88ce4e2617a35a80c1c20068577bc43f2e5575afc3"
-    },
-    {
-      "fixture_id": "FIX-CPP-NEG-012",
-      "path": "scenarios/core-processing-policy/malformed-request-unknown-field-denied.json",
-      "fixture_sha256": "bff3bff6c2d8b82c82e256ab59ad4ed9cd92484b7964d18fcf76b2edf636113f",
-      "observable_result_sha256": "71ad2af59170f8e207294d7ba9016fb4e0ad96111ea32428bf812a8ea0381a6c"
-    },
-    {
-      "fixture_id": "FIX-CPP-NEG-013",
-      "path": "scenarios/core-processing-policy/hostile-content-action-denied.json",
-      "fixture_sha256": "dbe05f3227db82021a8d0531168224156a9862351ca30da40562cf262307b53d",
-      "observable_result_sha256": "ee9261d4e86a8ef316ce0528f6541564e8e1e146b9c21322d05e02f8fff38bac"
-    },
-    {
-      "fixture_id": "FIX-CPP-AUTH-001",
-      "path": "scenarios/core-processing-policy/semantic-authority-denied.json",
-      "fixture_sha256": "a9382e0c8b69eefd6941cc5b5caef4135a16b6347621658e765e1db19cf84d01",
-      "observable_result_sha256": "faf5966c32002aeed6a466d7065fbd7bca2ed04335ab44a7947f21f356c0a9a1"
-    },
-    {
-      "fixture_id": "FIX-CPP-AUTH-002",
-      "path": "scenarios/core-processing-policy/automation-scope-denied.json",
-      "fixture_sha256": "4f8e64bd6de0408e1043024cb61f38d0c15ceed80e0450469ec9e1db6d39c485",
-      "observable_result_sha256": "99b675827f7a7429bed4b22ef345af771b6af6b5a00b061a13f620b3ce5de3ff"
-    },
-    {
-      "fixture_id": "FIX-CPP-ILLEGAL-001",
-      "path": "scenarios/core-processing-policy/intake-before-binding-denied.json",
-      "fixture_sha256": "2448c3c1441daae1710bc8c037122d5a51a437f5aa2a032a91b464985c70280c",
-      "observable_result_sha256": "10e815a14d40ec3949f1c8c173418fd1071bc653961e64fae1e458187085b148"
-    },
-    {
-      "fixture_id": "FIX-CPP-AUTH-003",
-      "path": "scenarios/core-processing-policy/source-profile-unapproved-denied.json",
-      "fixture_sha256": "879fada78a38bb32175307237114e9d9b29f5832a5a2b8efaf21c67af7a83cdb",
-      "observable_result_sha256": "d164e0aaa5b66983ea654882ad2d811c0f9b519d64310de545c84a330d6bdb0a"
-    },
-    {
-      "fixture_id": "FIX-CPP-AUTH-005",
-      "path": "scenarios/core-processing-policy/policy-approval-denied.json",
-      "fixture_sha256": "78b875c1628544f0815fae9e53ecb965120f32e55f26f0f9ca92c36e37858ed8",
-      "observable_result_sha256": "ea8775dafaaadc8eb38a305d237a7bf3dd966bad0cb24fc2940dbcba8d8abda1"
-    },
-    {
-      "fixture_id": "FIX-CPP-STATE-004",
-      "path": "scenarios/core-processing-policy/source-profile-approval-readback-failed.json",
-      "fixture_sha256": "061fe6f43ca7eacb427094433b92fe62362ce6bc42d8573cc70338ab909c9b63",
-      "observable_result_sha256": "bfa7331d21d19669b8448c70b7b3973823666008a095878032fb5b1a5aa3c66b"
-    },
-    {
-      "fixture_id": "FIX-CPP-STATE-005",
-      "path": "scenarios/core-processing-policy/source-profile-version-mismatch-denied.json",
-      "fixture_sha256": "f3ebe92e10a5c6adb1bd3a0834969d0057602d855c1a5dca8535bc5b646e3abe",
-      "observable_result_sha256": "72d372a7b036aefd26b639756badfbb5e60ac18cc7e9a11b93eb0597efcf0952"
-    },
-    {
-      "fixture_id": "FIX-CPP-STATE-006",
-      "path": "scenarios/core-processing-policy/source-profile-digest-readback-failed.json",
-      "fixture_sha256": "a810cc8ea359412d755710b793010edc463c58e253a128280d981e3eeb7cc201",
-      "observable_result_sha256": "c093ad4fec4514fcc20ab33342d89b93ffc906814e01282995fb89dea5dc4fcc"
-    },
-    {
-      "fixture_id": "FIX-CPP-STATE-007",
-      "path": "scenarios/core-processing-policy/source-binding-mismatch-denied.json",
-      "fixture_sha256": "861b8c0f3632a1df9be0081369269319f1d964e825ebe911f7014f3111b4f943",
-      "observable_result_sha256": "f80a5aaf5d22d11b5c839fa55dd90e20836707bb3beb04fa7922fe18325de2c7"
-    },
-    {
-      "fixture_id": "FIX-CPP-STATE-008",
-      "path": "scenarios/core-processing-policy/template-binding-mismatch-denied.json",
-      "fixture_sha256": "e7a0a46a05d6d286677bd89ed8d84f76018143fc98322d20eb7242fafb1cbeba",
-      "observable_result_sha256": "b38a8656773d30519383012da0d986f2641afdea54200cfac4c056ea3a3a7126"
-    },
-    {
-      "fixture_id": "FIX-CPP-STATE-009",
-      "path": "scenarios/core-processing-policy/capture-contract-mismatch-denied.json",
-      "fixture_sha256": "efd0371a30d540e6cb4c2672150d71a882d93eac1f0c80c7d6fb4b318a3f9687",
-      "observable_result_sha256": "5d82e52c8c71f2357003c193574ade1786f8089d5a0f0d62022c508330be5f00"
-    },
-    {
-      "fixture_id": "FIX-CPP-PAIR_PROVIDER-001",
-      "path": "scenarios/core-processing-policy/provider-widening-denied.json",
-      "fixture_sha256": "9c626a6de2e40aea1ce8a17178e88cd6fee555cb80101198036da750a67a9543",
-      "observable_result_sha256": "9d71e54b8879e39a8e073fe155c09b262cbd9e97944268ea76294cf0be419a9f"
-    },
-    {
-      "fixture_id": "FIX-CPP-PAIR_PURPOSE-001",
-      "path": "scenarios/core-processing-policy/purpose-widening-denied.json",
-      "fixture_sha256": "3215a3fc488c5ddeb60fc1b239b6e1e7a0e10db6f6c96cf72129b125339dccf2",
-      "observable_result_sha256": "9ab469dce0b5ac5c23ec7a9bd9e7ede3c421ffce157b072b52cbb207229eee2d"
-    },
-    {
-      "fixture_id": "FIX-CPP-PAIR_DISCLOSURE-001",
-      "path": "scenarios/core-processing-policy/disclosure-widening-denied.json",
-      "fixture_sha256": "a7f08d662f64de095697e2d0cdfb149be338fdc004f9af61b5cb2ad1ec45da00",
-      "observable_result_sha256": "888739809cc32c4d10e7bf04e29aec92f19b9a7488cd7cffbb4ca57414b7bf8b"
+      "fixture_sha256": "ae132d943b3b7b1db65654925b87ad320fab1875e707f0e9f62ef867c472c7a9",
+      "observable_result_sha256": "45fe9267997dd96f0f6065cf867f7c6d9fdab642374aca521d31524532e30aed"
     },
     {
       "fixture_id": "FIX-CPP-PAIR_ARTIFACT-001",
       "path": "scenarios/core-processing-policy/artifact-widening-denied.json",
-      "fixture_sha256": "d8f1f3b08df10470ee344e15b22b40742b5e76e2ac39cfa385bd28dc12ae87e5",
-      "observable_result_sha256": "3d3635d2b8072e02e27104f90dedf4007b0d381ae822474e1b861c538c973d17"
+      "fixture_sha256": "f88e374db4a9b51750ec88af3e443919543f0b16217fa57b39ea535216296505",
+      "observable_result_sha256": "5e9f645bf256601ddfaf86317e74fe02ff72ecbb3215fb61390f77cdf9a61a62"
     },
     {
-      "fixture_id": "FIX-CPP-PAIR_DESTINATION-001",
-      "path": "scenarios/core-processing-policy/destination-widening-denied.json",
-      "fixture_sha256": "98c3b98cbd48076d23b2ffaf5dde73be955213cfc04153eb2adff15b759ee546",
-      "observable_result_sha256": "7bbc299e0debd58bfe06771725a03ea0701ab342280a1eeae9945a964204e841"
-    },
-    {
-      "fixture_id": "FIX-CPP-PAIR_CREDENTIAL-001",
-      "path": "scenarios/core-processing-policy/credential-boundary-widening-denied.json",
-      "fixture_sha256": "e0cf07c2ffd9dbe59bfe50d4a389c180dd13eb69efb9872699d224d410d61448",
-      "observable_result_sha256": "2b152c11636825239487b95b4fba61062ad77fac544a7ecd9258cca9f8bc449a"
-    },
-    {
-      "fixture_id": "FIX-CPP-PAIR_BUDGET-001",
-      "path": "scenarios/core-processing-policy/budget-widening-denied.json",
-      "fixture_sha256": "549cd7496459d5a72864cf744f6f0b993bed1f6b1a64d4a6459cb069e2085bf8",
-      "observable_result_sha256": "ac94f5f96650f5b641f37c5986be47db3876cf4caa19a62100bcc05ba2658c0b"
-    },
-    {
-      "fixture_id": "FIX-CPP-PAIR_RETRY-001",
-      "path": "scenarios/core-processing-policy/retry-widening-denied.json",
-      "fixture_sha256": "659f51543bda8032bfcfb2ab35e12840d2113fcc7ef3dd079c91e5b12b75402c",
-      "observable_result_sha256": "46b3f3b2db1fd4f2aa786201c73b7e2d58f4ad419fbbd89332efda6c8a6448ee"
-    },
-    {
-      "fixture_id": "FIX-CPP-PAIR_FALLBACK-001",
-      "path": "scenarios/core-processing-policy/fallback-widening-denied.json",
-      "fixture_sha256": "791529a65c91bbb848ba16c8c53da2601d5e0891320c4fbbc4436b4dccc658a1",
-      "observable_result_sha256": "fb75ae3dd14f188d34b54fb85e6a5ca8743d1fb256510b3fe6919be185507e92"
-    },
-    {
-      "fixture_id": "FIX-CPP-PAIR_CAPABILITY-001",
-      "path": "scenarios/core-processing-policy/capability-widening-denied.json",
-      "fixture_sha256": "350c2b487e9e44f641dc5bb8020cd8df6872f4692d0996936a543e3026ead2fd",
-      "observable_result_sha256": "a932ab8595ec9055c7f2ea5066ee5c16c6dc9e8a2713ee9a5ce3e95a5fea9086"
-    },
-    {
-      "fixture_id": "FIX-CPP-PAIR_SEMANTIC-001",
-      "path": "scenarios/core-processing-policy/semantic-authority-widening-denied.json",
-      "fixture_sha256": "bbe60c9c25e062113cae06a2c589bf6d5fbdca207bb587cb69c99998ac7ce91b",
-      "observable_result_sha256": "b6ccf3f883934aab8b15e43dc664c20bef7dd86eb4e2d1c4d16f46a2da594696"
+      "fixture_id": "FIX-CPP-AUTH-002",
+      "path": "scenarios/core-processing-policy/automation-scope-denied.json",
+      "fixture_sha256": "eca425c1b63522f593ecb077bcdf81c3c907d41d85f5a0f5bd50b76ffd638dff",
+      "observable_result_sha256": "493a4671eb09f46d2f9497390601794e9d1672de1e4a2baa3e7444ab44878317"
     },
     {
       "fixture_id": "FIX-CPP-PAIR_AUTOMATION-001",
       "path": "scenarios/core-processing-policy/automation-scope-widening-denied.json",
-      "fixture_sha256": "eb0bff2766a598f4970c8469339066d8675c5ff1da6a7c8a3eeb672bd572f2a3",
-      "observable_result_sha256": "95b8cf7bb59722e5e73dc2359568ab55bef163c37fa0fc91abd2efb862e82d83"
+      "fixture_sha256": "94356e91638dbe8fd1e4ba4ce32de7e4cec0d1ce6367a9f83685f364e03814cd",
+      "observable_result_sha256": "bcff6a4f3e42b1d36dd947d44c7b50beef3e1cdd7d6f37e6fd143b64e81539e1"
     },
     {
-      "fixture_id": "FIX-CPP-REC-001",
-      "path": "scenarios/core-processing-policy/crash-before-approval-recovery.json",
-      "fixture_sha256": "21a7f2a916938cc5335b531326d134c87b629fba10483507050d717a2a125565",
-      "observable_result_sha256": "7187cc71ff617a1e60c8a51edebcb53afd2ae3a30e9c798ad8639620b45ee643"
+      "fixture_id": "FIX-CPP-NEG-007",
+      "path": "scenarios/core-processing-policy/budget-excess-denied.json",
+      "fixture_sha256": "b3b94f074e62ed0282c87c81a6f2fdca5ebfd510dab91fae7a44d940db614036",
+      "observable_result_sha256": "44ef76756109cc6fe611819a859a4112287cc21a27dcae131639364e0dbe22b5"
+    },
+    {
+      "fixture_id": "FIX-CPP-PAIR_BUDGET-001",
+      "path": "scenarios/core-processing-policy/budget-widening-denied.json",
+      "fixture_sha256": "f7e0ec1ba5226526867fbd63c7cc10a4ddf07fb9c3b3466211c9a13a3cab5ffa",
+      "observable_result_sha256": "02d7503cd47f81bef223616e610f97568bb7e91241930173c91c6c043b02db32"
+    },
+    {
+      "fixture_id": "FIX-CPP-PAIR_CAPABILITY-001",
+      "path": "scenarios/core-processing-policy/capability-widening-denied.json",
+      "fixture_sha256": "0dc27cc4269008b9d4c941f62f89e8a110b996d11942d760e89e4042e8f9f924",
+      "observable_result_sha256": "69bf083de04af25f194e68d4198dcc57b9b2a31710ba03c7eee8a0583a9d34df"
+    },
+    {
+      "fixture_id": "FIX-CPP-STATE-009",
+      "path": "scenarios/core-processing-policy/capture-contract-mismatch-denied.json",
+      "fixture_sha256": "f1ebad05ba76ba4a76785845eb506362208407ce79c629e31c727ae54b3e9548",
+      "observable_result_sha256": "3eb23b208e3927e7f91d1ede41a4a47b7746a527d3bbb45b7ba448a451ae60f4"
     },
     {
       "fixture_id": "FIX-CPP-REC-002",
       "path": "scenarios/core-processing-policy/crash-after-approval-recovery.json",
-      "fixture_sha256": "622405a9ff5bd78eb31b98b71a1c8ab8189c99377c5c960c8894ca01477e5547",
-      "observable_result_sha256": "0be08a62459eb265489f0efc8aa5e671444e760d8a15dfe1f31e6938d0fdab62"
+      "fixture_sha256": "6d873d40c1e7faaee41c7dbd509c16d67cbb4fb6bb60b55c37c35678612d7431",
+      "observable_result_sha256": "cae1104dcfcc9fb3f0836eaa9b5e638d46efd061ed54c1c190e4dfaa304748c2"
     },
     {
       "fixture_id": "FIX-CPP-REC-003",
       "path": "scenarios/core-processing-policy/crash-after-binding-publish-recovery.json",
-      "fixture_sha256": "5145a4d382ffdfd61770d02b56e2204181f54784677b0515da689a01f3a2a3a4",
-      "observable_result_sha256": "aac31e591f6f0b74f5388076d6060ae7fa2e339e93a28e1a96024cb0e96a1f34"
+      "fixture_sha256": "7df62f5fb507d97a5cfc0a4733cf214ba1c3e232fd8bcab18798424ba38a64d4",
+      "observable_result_sha256": "0a885ecd536cbf2dfffd6309877406cb8aeb1eb998c7fd2e2aff0de7169ec6ad"
+    },
+    {
+      "fixture_id": "FIX-CPP-REC-001",
+      "path": "scenarios/core-processing-policy/crash-before-approval-recovery.json",
+      "fixture_sha256": "37fa7c84d2b24c2f3b15cc23fa23a034390379ac0c418246c7e45bdde8c67fea",
+      "observable_result_sha256": "b319dde0ab3f4b236f7799f7ea19f270f82610b5e5a7328a0b1273a616163f6b"
+    },
+    {
+      "fixture_id": "FIX-CPP-NEG-006",
+      "path": "scenarios/core-processing-policy/credential-boundary-denied.json",
+      "fixture_sha256": "f36458b7026a933e04b9e9a3a4737a15fb2d6e287d2beded86aa7dc1a11f84bc",
+      "observable_result_sha256": "cf1f4874e878ded9a12260c4b2c44a3f764b0a4ba9772e0fb402a3e83587c216"
+    },
+    {
+      "fixture_id": "FIX-CPP-PAIR_CREDENTIAL-001",
+      "path": "scenarios/core-processing-policy/credential-boundary-widening-denied.json",
+      "fixture_sha256": "1663b3353a89c09ea843ce5e95f99b1451a9c21e00346fe0817416369b780451",
+      "observable_result_sha256": "30ef7e6e3deeb08d3e1d13bfb38cafb9ef980e5a478fb8f521f0a1cec3035896"
+    },
+    {
+      "fixture_id": "FIX-CPP-PAIR_DESTINATION-001",
+      "path": "scenarios/core-processing-policy/destination-widening-denied.json",
+      "fixture_sha256": "77ddf5150d25ae1bec0b6c748d86b29acbd3fdaabf0e2f246295512faf0fcbab",
+      "observable_result_sha256": "401af037d39305fb831c54da539e19aaf6982931c2b63e50e709defcad93b062"
+    },
+    {
+      "fixture_id": "FIX-CPP-PAIR_DISCLOSURE-001",
+      "path": "scenarios/core-processing-policy/disclosure-widening-denied.json",
+      "fixture_sha256": "a8916f4fff5f6abccf45f09c9115972c99841303ad6d024e83603043e99b20b6",
+      "observable_result_sha256": "d3860acab59c743250a4fe9fc659905212a8334ea85d1ce5d4a58c65fa47209a"
+    },
+    {
+      "fixture_id": "FIX-CPP-BND-001",
+      "path": "scenarios/core-processing-policy/exact-budget-allowed.json",
+      "fixture_sha256": "b9b12495ab7947c2bd0dd42645343f58869316956ff08cb2ec05e606e9fa605b",
+      "observable_result_sha256": "7430ae3304d6423141e490f2895adef3f867fbf30bf51aa92d5cc2bc5b58c864"
+    },
+    {
+      "fixture_id": "FIX-CPP-NEG-009",
+      "path": "scenarios/core-processing-policy/fallback-excess-denied.json",
+      "fixture_sha256": "76b5dcd335438413e4d811cffb7b7c596207a4c27a5e6f9184d4eeb6be0bc783",
+      "observable_result_sha256": "a3091fc5847da6129d8be6de3f9d8ad1da13e1e99656b51453205aa657d12983"
+    },
+    {
+      "fixture_id": "FIX-CPP-PAIR_FALLBACK-001",
+      "path": "scenarios/core-processing-policy/fallback-widening-denied.json",
+      "fixture_sha256": "4eb6b3ba71e9afdc767cb036fde8386222303f44226b2ab378e4e97e84927d5e",
+      "observable_result_sha256": "703f0f143365d06631b05ae267a35da4a59710089c550f03dcf0b8b23a35baf5"
+    },
+    {
+      "fixture_id": "FIX-CPP-NEG-013",
+      "path": "scenarios/core-processing-policy/hostile-content-action-denied.json",
+      "fixture_sha256": "aaee2a759c235fc105c20fe2c3cf01443d85ed67abb9504c3be4c169d6b50baa",
+      "observable_result_sha256": "9ddb6608333005441593569c1c44d98808aa83e93e6f4068f317e0884abb3212"
+    },
+    {
+      "fixture_id": "FIX-CPP-ILLEGAL-001",
+      "path": "scenarios/core-processing-policy/intake-before-binding-denied.json",
+      "fixture_sha256": "800971dd67f11ffdd7f15c2b909295ba432dcdfb05e1c60d9fdc29ed3bade188",
+      "observable_result_sha256": "cbe5f1e8c8ab2cd00a6cde1bbc36969727abb48a3111a3739581c8eed72913d0"
+    },
+    {
+      "fixture_id": "FIX-CPP-NEG-012",
+      "path": "scenarios/core-processing-policy/malformed-request-unknown-field-denied.json",
+      "fixture_sha256": "eb2923f5ce1c7ce2deb043364cc3d6cd92542d5bbc936ea23150dc7365aba236",
+      "observable_result_sha256": "041dc581483897bbe3f666453511f5a8250df8ce6c2383c1339dd1debc3b5b64"
+    },
+    {
+      "fixture_id": "FIX-CPP-NEG-010",
+      "path": "scenarios/core-processing-policy/missing-redaction-denied.json",
+      "fixture_sha256": "472bf8855777b10af6461019f438ea22e96ee8f13ccf891afc6538e4eda00916",
+      "observable_result_sha256": "7e69f17327e0d83123aed03e711ab214fa557c466a877285b0a2bccd56dd7541"
+    },
+    {
+      "fixture_id": "FIX-CPP-NEG-011",
+      "path": "scenarios/core-processing-policy/missing-retention-fact-denied.json",
+      "fixture_sha256": "74557531cb8a9b45227f9e39844eca85216db83df4fbb9c38c2c6f4ba80c895d",
+      "observable_result_sha256": "db742658e981396ef6e8cb05be2ffcc2386c65af16404e77af154da3d0a2b168"
+    },
+    {
+      "fixture_id": "FIX-CPP-AUTH-005",
+      "path": "scenarios/core-processing-policy/policy-approval-denied.json",
+      "fixture_sha256": "eef4a21670726634174b1d9d234322086d8da6a935a3eb0002867aee3eeb181d",
+      "observable_result_sha256": "7370e7777ef5afa305c229dbc090361f75d058f1f4e04f1a7ab8ab5166e2f792"
+    },
+    {
+      "fixture_id": "FIX-CPP-POS-005",
+      "path": "scenarios/core-processing-policy/policy-comprehensive-narrowing-canary.json",
+      "fixture_sha256": "6c7e48d3b8a16381c3c5ac61d928e81de01de528cd080ccb55837d7077a69001",
+      "observable_result_sha256": "4d9d4a859dd496655ab92556316f3d5161c44e7407f935dd0904dbfdcf14cdc5"
+    },
+    {
+      "fixture_id": "FIX-CPP-POS-004",
+      "path": "scenarios/core-processing-policy/policy-preservation-canary.json",
+      "fixture_sha256": "b7ce9ba22a792a250b69d9fb6a9cfbc66fc8792aa22b196ec82fe2aab08f2598",
+      "observable_result_sha256": "8cc511156baad4881059cf5a9c88afab8c72b3222e511996b03f792dbab56ed5"
+    },
+    {
+      "fixture_id": "FIX-CPP-STATE-002",
+      "path": "scenarios/core-processing-policy/policy-version-mismatch-denied.json",
+      "fixture_sha256": "325e47eef62fbccc663a2b949b39807bb9ecd28bb0ab039e73927923415f1c63",
+      "observable_result_sha256": "921b5b9af26512a545cd59670bc6a61ae74a39eb1aa87c4ddc79526f9f90dcca"
+    },
+    {
+      "fixture_id": "FIX-CPP-PAIR_PROVIDER-001",
+      "path": "scenarios/core-processing-policy/provider-widening-denied.json",
+      "fixture_sha256": "e4ac564ba7f236264330777be3ed455b623b2244aac027553c6872d26eb77443",
+      "observable_result_sha256": "edd2799850ffab9269b809ac1d2b6cfe53776ca7307ba6d93db57b00908eb399"
+    },
+    {
+      "fixture_id": "FIX-CPP-PAIR_PURPOSE-001",
+      "path": "scenarios/core-processing-policy/purpose-widening-denied.json",
+      "fixture_sha256": "82cb4614e5bb8626f0eb80b70aa93187afabd9e97ea8fecd561e43ec80b9a248",
+      "observable_result_sha256": "744d45ceca3c255592371be265126e179467d78aba2a2211426cfa413f1e9726"
+    },
+    {
+      "fixture_id": "FIX-CPP-PAIR_REDACTION-001",
+      "path": "scenarios/core-processing-policy/redaction-obligation-widening-denied.json",
+      "fixture_sha256": "714408e45d11c21bb82865e505d77a47f03e568193452adec233c1e13be9b375",
+      "observable_result_sha256": "cda35b32f7548ca32bc7667a91088bea86bea0084716151ef8c370e89ea1bd9b"
+    },
+    {
+      "fixture_id": "FIX-CPP-POS-001",
+      "path": "scenarios/core-processing-policy/remote-processing-allowed.json",
+      "fixture_sha256": "e1e00b2f82fb555cab93ae93a95e4c307f6a123ca2ab5dbf0a4cda8a5e8611e8",
+      "observable_result_sha256": "3b54b46439ba86d79ec185b9309049c6226e0fa52f323412f3d2e825c2fe9ffd"
+    },
+    {
+      "fixture_id": "FIX-CPP-PAIR_RETENTION-001",
+      "path": "scenarios/core-processing-policy/retention-fact-widening-denied.json",
+      "fixture_sha256": "e726c08465e5a8937d348d18e373650c40dc0d86463918b3e5b347ac08a30546",
+      "observable_result_sha256": "c1282f33c57d4067249495809fb084255cccb82e1f81b42d3d1b54cd82f76cff"
+    },
+    {
+      "fixture_id": "FIX-CPP-NEG-008",
+      "path": "scenarios/core-processing-policy/retry-excess-denied.json",
+      "fixture_sha256": "0d7a0ac5c201eaa0d496f69db0b9cf709c7b80a649828b9ecc0c2e30b4031f5e",
+      "observable_result_sha256": "f85886c86819d86646393e5d768f59de0cf8b809146e98b27737417a5cc6e751"
+    },
+    {
+      "fixture_id": "FIX-CPP-PAIR_RETRY-001",
+      "path": "scenarios/core-processing-policy/retry-widening-denied.json",
+      "fixture_sha256": "7fda25bafee1b0a4b2b5a9022e452ad985a4b4717c30133c8dbb429e9fc7efd3",
+      "observable_result_sha256": "23e6383ad1bf009b362b44a31e11c024c0fd38956cb1fec7d054ac9b03567f0b"
+    },
+    {
+      "fixture_id": "FIX-CPP-STATE-001",
+      "path": "scenarios/core-processing-policy/revoked-policy-denied.json",
+      "fixture_sha256": "b841868e85b2b3490d479dfe4f2f154b23673eb744d69f820e64e3916892a15f",
+      "observable_result_sha256": "fdacf398e4ab58575cd8dfac74452e0882eee6cd4223ff71ee3689b46f5a0269"
+    },
+    {
+      "fixture_id": "FIX-CPP-AUTH-001",
+      "path": "scenarios/core-processing-policy/semantic-authority-denied.json",
+      "fixture_sha256": "dfca41f56625101fe51f19527ffdbbc3db9a6f86655e40dba257c12974be90d5",
+      "observable_result_sha256": "f2cae8fd2d6551f39d191a4fdff4a429bbfbc8a0b4225b82c0469949f0e75e62"
+    },
+    {
+      "fixture_id": "FIX-CPP-PAIR_SEMANTIC-001",
+      "path": "scenarios/core-processing-policy/semantic-authority-widening-denied.json",
+      "fixture_sha256": "d30b0ea016e7efd13434ca499d595ace005f5ac99c9bf43a75e2c0750955d1fc",
+      "observable_result_sha256": "43093f760cf020537793da365cc7ec82147622c5d782a8d4f02b5dee8121a069"
+    },
+    {
+      "fixture_id": "FIX-CPP-STATE-007",
+      "path": "scenarios/core-processing-policy/source-binding-mismatch-denied.json",
+      "fixture_sha256": "f47a73f36784a7777778628fb1b58fa6e1e3e6c74213af6c1826060bce6bd9ae",
+      "observable_result_sha256": "2976ccb1ffdb4d1ffeb6c95d5ac87b9a5387f597be3500cefe4aededea9386d7"
+    },
+    {
+      "fixture_id": "FIX-CPP-STATE-004",
+      "path": "scenarios/core-processing-policy/source-profile-approval-readback-failed.json",
+      "fixture_sha256": "0df52fb0f2c9d163c7f74aa58038196ac4e7687f4b767281af6b9745f981bdaf",
+      "observable_result_sha256": "cd3f927098a41187575d6bc49fcf14a15c67679bbc7f49ea18d2e36c6d29d550"
+    },
+    {
+      "fixture_id": "FIX-CPP-STATE-006",
+      "path": "scenarios/core-processing-policy/source-profile-digest-readback-failed.json",
+      "fixture_sha256": "975b3d7883f54dc2b952d5abedabe746ddb2d34490364aaccd49a3c69f0a2a10",
+      "observable_result_sha256": "038543e289ec213bde96b616f98b5030e0538b5a49145660c14c4391ced15765"
+    },
+    {
+      "fixture_id": "FIX-CPP-AUTH-003",
+      "path": "scenarios/core-processing-policy/source-profile-unapproved-denied.json",
+      "fixture_sha256": "0a07855195fa8f1bac52372bd14fbdd11f8335ec2b73a37f836a27240a4d631e",
+      "observable_result_sha256": "7b6c804cfada5b09d8384b99c4020353c8b6e01ea62de22fa036821f207e123d"
+    },
+    {
+      "fixture_id": "FIX-CPP-STATE-005",
+      "path": "scenarios/core-processing-policy/source-profile-version-mismatch-denied.json",
+      "fixture_sha256": "2c75c8edebde33709d08ecf5861338550ac57233e7a25ad5eb1b10cfb5c3eee1",
+      "observable_result_sha256": "ebc681998d926369c0409b198edfbf8df04c7dd722aca03bc90a82b45cdf1278"
+    },
+    {
+      "fixture_id": "FIX-CPP-STATE-008",
+      "path": "scenarios/core-processing-policy/template-binding-mismatch-denied.json",
+      "fixture_sha256": "ed77ce4d15d94857e28352775e3d6b76a2358cce0f8cb55d279b893cfdcf9937",
+      "observable_result_sha256": "c1212a4804a061c88b0337b9f8974922241ce07c70889670f04e3fc9c8c0cc4e"
+    },
+    {
+      "fixture_id": "FIX-CPP-NEG-001",
+      "path": "scenarios/core-processing-policy/unknown-provider-denied.json",
+      "fixture_sha256": "2d15ce8ed6a45565ae64e73a044fe120dad01baaac02523aa0d38a4d6561565c",
+      "observable_result_sha256": "5763fa9ae3409d241ceb88dd117954ebd1f6eb65323db35e7c52f242998f3b0d"
+    },
+    {
+      "fixture_id": "FIX-CPP-NEG-002",
+      "path": "scenarios/core-processing-policy/unknown-purpose-denied.json",
+      "fixture_sha256": "c2f4116f2f4c7a7d8605d06b211865086a1788e9d0e6df0efa3f141d07e85f72",
+      "observable_result_sha256": "b727f5a9d3eb0be4617137e15c0f18142ad33d5a725cf150bd0d986110cd0fac"
+    },
+    {
+      "fixture_id": "FIX-CPP-NEG-004",
+      "path": "scenarios/core-processing-policy/unpermitted-artifact-denied.json",
+      "fixture_sha256": "6a9e9cd3a56958bf1e68e54d301161918d547623ceae4e479b284443b6a4a5e7",
+      "observable_result_sha256": "4475f9477a3d058aed2de6f71d8e5b5e254b722a681bf19bca34beebfe2eb487"
+    },
+    {
+      "fixture_id": "FIX-CPP-NEG-014",
+      "path": "scenarios/core-processing-policy/unpermitted-capability-denied.json",
+      "fixture_sha256": "8d66d5c5e0ddeaed208ca3abf9206aeebe06086ec5024a95b69c9eb90fb9d216",
+      "observable_result_sha256": "fa53c074b5387a0d81650c0673d00f75d34795e5cbc2b084d8a44528684faadb"
+    },
+    {
+      "fixture_id": "FIX-CPP-NEG-005",
+      "path": "scenarios/core-processing-policy/unpermitted-destination-denied.json",
+      "fixture_sha256": "205c49227b0d25dc82f81e7bb76a1c0f716bf28bb0d292e3a9f1e651f7f9d3ea",
+      "observable_result_sha256": "e86933660d543eeba1103a41432cad14e3680a1473c2472febd75ef7a8e1e586"
+    },
+    {
+      "fixture_id": "FIX-CPP-NEG-003",
+      "path": "scenarios/core-processing-policy/unpermitted-field-denied.json",
+      "fixture_sha256": "3e5f146f7c35378c1e7d9c998571c29ecb03c661091e0b733c928b6246392137",
+      "observable_result_sha256": "7b99be50389d702b0f3a0896451bc9e71ab126d3384361015155c101e6ec4fcd"
+    },
+    {
+      "fixture_id": "FIX-CPP-STATE-010",
+      "path": "scenarios/core-processing-policy/url-retention-mode-mismatch-denied.json",
+      "fixture_sha256": "959f1e3accc507999e23e695a6267b0fdc79b0e321e15e822c05a6642583a7f1",
+      "observable_result_sha256": "76d4c101c39d58c432cc9e99a0677ff613c29be2c9f6877896b39832350422cf"
     }
   ],
   "claims": {

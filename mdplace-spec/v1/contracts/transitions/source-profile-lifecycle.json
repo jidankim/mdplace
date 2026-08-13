@@ -4,23 +4,1220 @@
   "table_id": "TRANS-SOURCE-PROFILE",
   "lifecycle": "Source Profile approval binding readback and recovery",
   "version": "1.0.0",
-  "states": ["unbound", "active", "stale", "revoked", "recovery_required"],
-  "commands": ["activate_source_profile", "revoke_source_profile", "recover_source_profile"],
+  "states": [
+    "unbound",
+    "active",
+    "stale",
+    "revoked",
+    "recovery_required"
+  ],
+  "commands": [
+    "activate_source_profile",
+    "revoke_source_profile",
+    "invalidate_source_profile",
+    "recover_unapproved_source_profile",
+    "recover_approved_source_profile"
+  ],
   "transitions": [
-    {"transition_id":"TR-SP-001","command_or_event":"activate_source_profile","from_state":"unbound","allowed":true,"actor_authority":{"roles":["vault_owner"],"quorum":1,"distinct_actors":false,"delegation":"forbidden"},"preconditions":["closed Source Profile validates","nondelegated approval binds exact profile payload","exact Processing Policy is active"],"base_references":["profile_id","profile_version","profile_sha256","processing_policy_sha256"],"emitted_records":["SourceProfileApprovalReceipt","SourceProfileBindingReceipt"],"filesystem_effects":["publish approved Source Profile binding"],"idempotency":{"key_fields":["profile_id","profile_version","profile_sha256"],"retry_result":"return the original binding receipt"},"terminal_state":"active","failure_result":{"code":"source_profile.activation_denied","state_effect":"unchanged","emitted_records":["SourceProfileDenialReceipt"],"filesystem_effects":["none"]},"recovery":"Enter recovery_required only for an interrupted approval publication boundary."},
-    {"transition_id":"TR-SP-002","command_or_event":"revoke_source_profile","from_state":"unbound","allowed":false,"actor_authority":{"roles":["vault_owner"],"quorum":1,"distinct_actors":false,"delegation":"forbidden"},"preconditions":["Source Profile is active"],"base_references":["profile_id","profile_version"],"emitted_records":["SourceProfileDenialReceipt"],"filesystem_effects":["none"],"idempotency":{"key_fields":["profile_id","profile_version"],"retry_result":"return the original denial"},"terminal_state":"unbound","failure_result":{"code":"source_profile.binding_required","state_effect":"unchanged","emitted_records":["SourceProfileDenialReceipt"],"filesystem_effects":["none"]},"recovery":"Remain unbound."},
-    {"transition_id":"TR-SP-003","command_or_event":"recover_source_profile","from_state":"unbound","allowed":false,"actor_authority":{"roles":["foreground_recovery"],"quorum":1,"distinct_actors":false,"delegation":"forbidden"},"preconditions":["recovery journal exists"],"base_references":["profile_id","journal_sha256"],"emitted_records":["SourceProfileDenialReceipt"],"filesystem_effects":["none"],"idempotency":{"key_fields":["profile_id","journal_sha256"],"retry_result":"return the original denial"},"terminal_state":"unbound","failure_result":{"code":"source_profile.recovery_not_required","state_effect":"unchanged","emitted_records":["SourceProfileDenialReceipt"],"filesystem_effects":["none"]},"recovery":"Continue with no approved Source Profile."},
-    {"transition_id":"TR-SP-004","command_or_event":"activate_source_profile","from_state":"active","allowed":false,"actor_authority":{"roles":["vault_owner"],"quorum":1,"distinct_actors":false,"delegation":"forbidden"},"preconditions":["Source Profile is unbound or stale"],"base_references":["profile_id","profile_version","profile_sha256"],"emitted_records":["SourceProfileDenialReceipt"],"filesystem_effects":["none"],"idempotency":{"key_fields":["profile_id","profile_version","profile_sha256"],"retry_result":"return original receipt only for exact retry"},"terminal_state":"active","failure_result":{"code":"source_profile.already_active","state_effect":"unchanged","emitted_records":["SourceProfileDenialReceipt"],"filesystem_effects":["none"]},"recovery":"Keep the current binding."},
-    {"transition_id":"TR-SP-005","command_or_event":"revoke_source_profile","from_state":"active","allowed":true,"actor_authority":{"roles":["vault_owner"],"quorum":1,"distinct_actors":false,"delegation":"forbidden"},"preconditions":["exact Source Profile binding is read back"],"base_references":["profile_id","profile_version","profile_sha256"],"emitted_records":["SourceProfileRevocationReceipt"],"filesystem_effects":["remove active Source Profile binding"],"idempotency":{"key_fields":["profile_id","profile_version","profile_sha256"],"retry_result":"return the original revocation receipt"},"terminal_state":"revoked","failure_result":{"code":"source_profile.revocation_failed","state_effect":"unchanged","emitted_records":["SourceProfileDenialReceipt"],"filesystem_effects":["none"]},"recovery":"Deny intake until exact revocation state is read back."},
-    {"transition_id":"TR-SP-006","command_or_event":"recover_source_profile","from_state":"active","allowed":false,"actor_authority":{"roles":["foreground_recovery"],"quorum":1,"distinct_actors":false,"delegation":"forbidden"},"preconditions":["recovery journal exists"],"base_references":["profile_id","journal_sha256"],"emitted_records":["SourceProfileDenialReceipt"],"filesystem_effects":["none"],"idempotency":{"key_fields":["profile_id","journal_sha256"],"retry_result":"return the original denial"},"terminal_state":"active","failure_result":{"code":"source_profile.recovery_not_required","state_effect":"unchanged","emitted_records":["SourceProfileDenialReceipt"],"filesystem_effects":["none"]},"recovery":"Continue using the validated active binding."},
-    {"transition_id":"TR-SP-007","command_or_event":"activate_source_profile","from_state":"stale","allowed":true,"actor_authority":{"roles":["vault_owner"],"quorum":1,"distinct_actors":false,"delegation":"forbidden"},"preconditions":["new Source Profile version validates","fresh nondelegated approval binds exact payload"],"base_references":["stale_profile_sha256","new_profile_sha256","processing_policy_sha256"],"emitted_records":["SourceProfileApprovalReceipt","SourceProfileBindingReceipt"],"filesystem_effects":["replace active binding with newly approved version"],"idempotency":{"key_fields":["profile_id","profile_version","profile_sha256"],"retry_result":"return the original binding receipt"},"terminal_state":"active","failure_result":{"code":"source_profile.reapproval_denied","state_effect":"unchanged","emitted_records":["SourceProfileDenialReceipt"],"filesystem_effects":["none"]},"recovery":"Preserve stale binding as non-authoritative until fresh activation completes."},
-    {"transition_id":"TR-SP-008","command_or_event":"revoke_source_profile","from_state":"stale","allowed":true,"actor_authority":{"roles":["vault_owner"],"quorum":1,"distinct_actors":false,"delegation":"forbidden"},"preconditions":["stale Source Profile identity is known"],"base_references":["profile_id","profile_version","profile_sha256"],"emitted_records":["SourceProfileRevocationReceipt"],"filesystem_effects":["remove stale Source Profile binding"],"idempotency":{"key_fields":["profile_id","profile_version","profile_sha256"],"retry_result":"return the original revocation receipt"},"terminal_state":"revoked","failure_result":{"code":"source_profile.revocation_failed","state_effect":"unchanged","emitted_records":["SourceProfileDenialReceipt"],"filesystem_effects":["none"]},"recovery":"Keep intake denied while revocation is unresolved."},
-    {"transition_id":"TR-SP-009","command_or_event":"recover_source_profile","from_state":"stale","allowed":false,"actor_authority":{"roles":["foreground_recovery"],"quorum":1,"distinct_actors":false,"delegation":"forbidden"},"preconditions":["recovery_required state is present"],"base_references":["profile_id","journal_sha256"],"emitted_records":["SourceProfileDenialReceipt"],"filesystem_effects":["none"],"idempotency":{"key_fields":["profile_id","journal_sha256"],"retry_result":"return the original denial"},"terminal_state":"stale","failure_result":{"code":"source_profile.recovery_not_required","state_effect":"unchanged","emitted_records":["SourceProfileDenialReceipt"],"filesystem_effects":["none"]},"recovery":"Obtain fresh user approval instead of recovering stale permission."},
-    {"transition_id":"TR-SP-010","command_or_event":"activate_source_profile","from_state":"revoked","allowed":false,"actor_authority":{"roles":["vault_owner"],"quorum":1,"distinct_actors":false,"delegation":"forbidden"},"preconditions":["fresh Source Profile identity and approval exist"],"base_references":["profile_id","profile_version"],"emitted_records":["SourceProfileDenialReceipt"],"filesystem_effects":["none"],"idempotency":{"key_fields":["profile_id","profile_version"],"retry_result":"return the original denial"},"terminal_state":"revoked","failure_result":{"code":"source_profile.fresh_approval_required","state_effect":"unchanged","emitted_records":["SourceProfileDenialReceipt"],"filesystem_effects":["none"]},"recovery":"Create and approve a new Source Profile version."},
-    {"transition_id":"TR-SP-011","command_or_event":"revoke_source_profile","from_state":"revoked","allowed":false,"actor_authority":{"roles":["vault_owner"],"quorum":1,"distinct_actors":false,"delegation":"forbidden"},"preconditions":["Source Profile is active or stale"],"base_references":["profile_id","profile_version"],"emitted_records":["SourceProfileDenialReceipt"],"filesystem_effects":["none"],"idempotency":{"key_fields":["profile_id","profile_version"],"retry_result":"return the original denial"},"terminal_state":"revoked","failure_result":{"code":"source_profile.already_revoked","state_effect":"unchanged","emitted_records":["SourceProfileDenialReceipt"],"filesystem_effects":["none"]},"recovery":"Remain revoked."},
-    {"transition_id":"TR-SP-012","command_or_event":"recover_source_profile","from_state":"revoked","allowed":false,"actor_authority":{"roles":["foreground_recovery"],"quorum":1,"distinct_actors":false,"delegation":"forbidden"},"preconditions":["recovery_required state is present"],"base_references":["profile_id","journal_sha256"],"emitted_records":["SourceProfileDenialReceipt"],"filesystem_effects":["none"],"idempotency":{"key_fields":["profile_id","journal_sha256"],"retry_result":"return the original denial"},"terminal_state":"revoked","failure_result":{"code":"source_profile.recovery_not_required","state_effect":"unchanged","emitted_records":["SourceProfileDenialReceipt"],"filesystem_effects":["none"]},"recovery":"Remain revoked."},
-    {"transition_id":"TR-SP-013","command_or_event":"activate_source_profile","from_state":"recovery_required","allowed":false,"actor_authority":{"roles":["vault_owner"],"quorum":1,"distinct_actors":false,"delegation":"forbidden"},"preconditions":["recovery completes"],"base_references":["profile_id","profile_version","journal_sha256"],"emitted_records":["SourceProfileDenialReceipt"],"filesystem_effects":["none"],"idempotency":{"key_fields":["profile_id","profile_version","journal_sha256"],"retry_result":"return the original denial"},"terminal_state":"recovery_required","failure_result":{"code":"source_profile.recovery_required","state_effect":"unchanged","emitted_records":["SourceProfileDenialReceipt"],"filesystem_effects":["none"]},"recovery":"Complete deterministic binding recovery before activation."},
-    {"transition_id":"TR-SP-014","command_or_event":"revoke_source_profile","from_state":"recovery_required","allowed":false,"actor_authority":{"roles":["vault_owner"],"quorum":1,"distinct_actors":false,"delegation":"forbidden"},"preconditions":["recovery completes"],"base_references":["profile_id","profile_version","journal_sha256"],"emitted_records":["SourceProfileDenialReceipt"],"filesystem_effects":["none"],"idempotency":{"key_fields":["profile_id","profile_version","journal_sha256"],"retry_result":"return the original denial"},"terminal_state":"recovery_required","failure_result":{"code":"source_profile.recovery_required","state_effect":"unchanged","emitted_records":["SourceProfileDenialReceipt"],"filesystem_effects":["none"]},"recovery":"Complete deterministic binding recovery before revocation."},
-    {"transition_id":"TR-SP-015","command_or_event":"recover_source_profile","from_state":"recovery_required","allowed":true,"actor_authority":{"roles":["foreground_recovery"],"quorum":1,"distinct_actors":false,"delegation":"forbidden"},"preconditions":["binding journal is complete","approval receipt and exact bytes are read back when published"],"base_references":["profile_id","profile_version","profile_sha256","journal_sha256"],"emitted_records":["SourceProfileRecoveryReport","SourceProfileBindingReceipt"],"filesystem_effects":["discard unapproved staging or publish or preserve exact approved binding"],"idempotency":{"key_fields":["profile_id","profile_version","journal_sha256"],"retry_result":"return the original recovery report"},"terminal_state":"active","failure_result":{"code":"source_profile.recovery_failed","state_effect":"unchanged","emitted_records":["SourceProfileRecoveryReport"],"filesystem_effects":["none"]},"recovery":"Remain recovery_required on ambiguous bytes; return unbound when approval never published; otherwise restore exact approved binding."}
+    {
+      "transition_id": "TR-SP-001",
+      "command_or_event": "activate_source_profile",
+      "from_state": "unbound",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "vault_owner"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Source Profile evidence validates"
+      ],
+      "base_references": [
+        "profile_id",
+        "profile_version",
+        "profile_sha256"
+      ],
+      "emitted_records": [
+        "SourceProfileTransitionReceipt"
+      ],
+      "filesystem_effects": [
+        "publish exact lifecycle result"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "profile_id",
+          "profile_version",
+          "profile_sha256"
+        ],
+        "retry_result": "return the original receipt"
+      },
+      "terminal_state": "active",
+      "failure_result": {
+        "code": "source_profile.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "SourceProfileDenialReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Read back the exact terminal lifecycle state."
+    },
+    {
+      "transition_id": "TR-SP-002",
+      "command_or_event": "revoke_source_profile",
+      "from_state": "unbound",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_owner"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state is present"
+      ],
+      "base_references": [
+        "profile_id",
+        "profile_version",
+        "profile_sha256"
+      ],
+      "emitted_records": [
+        "SourceProfileDenialReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "profile_id",
+          "profile_version",
+          "profile_sha256"
+        ],
+        "retry_result": "return the original receipt"
+      },
+      "terminal_state": "unbound",
+      "failure_result": {
+        "code": "source_profile.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "SourceProfileDenialReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain unbound."
+    },
+    {
+      "transition_id": "TR-SP-003",
+      "command_or_event": "invalidate_source_profile",
+      "from_state": "unbound",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "capture_adapter"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state is present"
+      ],
+      "base_references": [
+        "profile_id",
+        "profile_version",
+        "profile_sha256"
+      ],
+      "emitted_records": [
+        "SourceProfileDenialReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "profile_id",
+          "profile_version",
+          "profile_sha256"
+        ],
+        "retry_result": "return the original receipt"
+      },
+      "terminal_state": "unbound",
+      "failure_result": {
+        "code": "source_profile.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "SourceProfileDenialReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain unbound."
+    },
+    {
+      "transition_id": "TR-SP-004",
+      "command_or_event": "recover_unapproved_source_profile",
+      "from_state": "unbound",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state is present"
+      ],
+      "base_references": [
+        "profile_id",
+        "profile_version",
+        "profile_sha256"
+      ],
+      "emitted_records": [
+        "SourceProfileDenialReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "profile_id",
+          "profile_version",
+          "profile_sha256"
+        ],
+        "retry_result": "return the original receipt"
+      },
+      "terminal_state": "unbound",
+      "failure_result": {
+        "code": "source_profile.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "SourceProfileDenialReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain unbound."
+    },
+    {
+      "transition_id": "TR-SP-005",
+      "command_or_event": "recover_approved_source_profile",
+      "from_state": "unbound",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state is present"
+      ],
+      "base_references": [
+        "profile_id",
+        "profile_version",
+        "profile_sha256"
+      ],
+      "emitted_records": [
+        "SourceProfileDenialReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "profile_id",
+          "profile_version",
+          "profile_sha256"
+        ],
+        "retry_result": "return the original receipt"
+      },
+      "terminal_state": "unbound",
+      "failure_result": {
+        "code": "source_profile.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "SourceProfileDenialReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain unbound."
+    },
+    {
+      "transition_id": "TR-SP-006",
+      "command_or_event": "activate_source_profile",
+      "from_state": "active",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_owner"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state is present"
+      ],
+      "base_references": [
+        "profile_id",
+        "profile_version",
+        "profile_sha256"
+      ],
+      "emitted_records": [
+        "SourceProfileDenialReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "profile_id",
+          "profile_version",
+          "profile_sha256"
+        ],
+        "retry_result": "return the original receipt"
+      },
+      "terminal_state": "active",
+      "failure_result": {
+        "code": "source_profile.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "SourceProfileDenialReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain active."
+    },
+    {
+      "transition_id": "TR-SP-007",
+      "command_or_event": "revoke_source_profile",
+      "from_state": "active",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "vault_owner"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Source Profile evidence validates"
+      ],
+      "base_references": [
+        "profile_id",
+        "profile_version",
+        "profile_sha256"
+      ],
+      "emitted_records": [
+        "SourceProfileTransitionReceipt"
+      ],
+      "filesystem_effects": [
+        "publish exact lifecycle result"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "profile_id",
+          "profile_version",
+          "profile_sha256"
+        ],
+        "retry_result": "return the original receipt"
+      },
+      "terminal_state": "revoked",
+      "failure_result": {
+        "code": "source_profile.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "SourceProfileDenialReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Read back the exact terminal lifecycle state."
+    },
+    {
+      "transition_id": "TR-SP-008",
+      "command_or_event": "invalidate_source_profile",
+      "from_state": "active",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "capture_adapter"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Source Profile evidence validates"
+      ],
+      "base_references": [
+        "profile_id",
+        "profile_version",
+        "profile_sha256"
+      ],
+      "emitted_records": [
+        "SourceProfileTransitionReceipt"
+      ],
+      "filesystem_effects": [
+        "publish exact lifecycle result"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "profile_id",
+          "profile_version",
+          "profile_sha256"
+        ],
+        "retry_result": "return the original receipt"
+      },
+      "terminal_state": "stale",
+      "failure_result": {
+        "code": "source_profile.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "SourceProfileDenialReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Read back the exact terminal lifecycle state."
+    },
+    {
+      "transition_id": "TR-SP-009",
+      "command_or_event": "recover_unapproved_source_profile",
+      "from_state": "active",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state is present"
+      ],
+      "base_references": [
+        "profile_id",
+        "profile_version",
+        "profile_sha256"
+      ],
+      "emitted_records": [
+        "SourceProfileDenialReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "profile_id",
+          "profile_version",
+          "profile_sha256"
+        ],
+        "retry_result": "return the original receipt"
+      },
+      "terminal_state": "active",
+      "failure_result": {
+        "code": "source_profile.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "SourceProfileDenialReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain active."
+    },
+    {
+      "transition_id": "TR-SP-010",
+      "command_or_event": "recover_approved_source_profile",
+      "from_state": "active",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state is present"
+      ],
+      "base_references": [
+        "profile_id",
+        "profile_version",
+        "profile_sha256"
+      ],
+      "emitted_records": [
+        "SourceProfileDenialReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "profile_id",
+          "profile_version",
+          "profile_sha256"
+        ],
+        "retry_result": "return the original receipt"
+      },
+      "terminal_state": "active",
+      "failure_result": {
+        "code": "source_profile.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "SourceProfileDenialReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain active."
+    },
+    {
+      "transition_id": "TR-SP-011",
+      "command_or_event": "activate_source_profile",
+      "from_state": "stale",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "vault_owner"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Source Profile evidence validates"
+      ],
+      "base_references": [
+        "profile_id",
+        "profile_version",
+        "profile_sha256"
+      ],
+      "emitted_records": [
+        "SourceProfileTransitionReceipt"
+      ],
+      "filesystem_effects": [
+        "publish exact lifecycle result"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "profile_id",
+          "profile_version",
+          "profile_sha256"
+        ],
+        "retry_result": "return the original receipt"
+      },
+      "terminal_state": "active",
+      "failure_result": {
+        "code": "source_profile.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "SourceProfileDenialReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Read back the exact terminal lifecycle state."
+    },
+    {
+      "transition_id": "TR-SP-012",
+      "command_or_event": "revoke_source_profile",
+      "from_state": "stale",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "vault_owner"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Source Profile evidence validates"
+      ],
+      "base_references": [
+        "profile_id",
+        "profile_version",
+        "profile_sha256"
+      ],
+      "emitted_records": [
+        "SourceProfileTransitionReceipt"
+      ],
+      "filesystem_effects": [
+        "publish exact lifecycle result"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "profile_id",
+          "profile_version",
+          "profile_sha256"
+        ],
+        "retry_result": "return the original receipt"
+      },
+      "terminal_state": "revoked",
+      "failure_result": {
+        "code": "source_profile.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "SourceProfileDenialReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Read back the exact terminal lifecycle state."
+    },
+    {
+      "transition_id": "TR-SP-013",
+      "command_or_event": "invalidate_source_profile",
+      "from_state": "stale",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "capture_adapter"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state is present"
+      ],
+      "base_references": [
+        "profile_id",
+        "profile_version",
+        "profile_sha256"
+      ],
+      "emitted_records": [
+        "SourceProfileDenialReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "profile_id",
+          "profile_version",
+          "profile_sha256"
+        ],
+        "retry_result": "return the original receipt"
+      },
+      "terminal_state": "stale",
+      "failure_result": {
+        "code": "source_profile.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "SourceProfileDenialReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain stale."
+    },
+    {
+      "transition_id": "TR-SP-014",
+      "command_or_event": "recover_unapproved_source_profile",
+      "from_state": "stale",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state is present"
+      ],
+      "base_references": [
+        "profile_id",
+        "profile_version",
+        "profile_sha256"
+      ],
+      "emitted_records": [
+        "SourceProfileDenialReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "profile_id",
+          "profile_version",
+          "profile_sha256"
+        ],
+        "retry_result": "return the original receipt"
+      },
+      "terminal_state": "stale",
+      "failure_result": {
+        "code": "source_profile.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "SourceProfileDenialReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain stale."
+    },
+    {
+      "transition_id": "TR-SP-015",
+      "command_or_event": "recover_approved_source_profile",
+      "from_state": "stale",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state is present"
+      ],
+      "base_references": [
+        "profile_id",
+        "profile_version",
+        "profile_sha256"
+      ],
+      "emitted_records": [
+        "SourceProfileDenialReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "profile_id",
+          "profile_version",
+          "profile_sha256"
+        ],
+        "retry_result": "return the original receipt"
+      },
+      "terminal_state": "stale",
+      "failure_result": {
+        "code": "source_profile.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "SourceProfileDenialReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain stale."
+    },
+    {
+      "transition_id": "TR-SP-016",
+      "command_or_event": "activate_source_profile",
+      "from_state": "revoked",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_owner"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state is present"
+      ],
+      "base_references": [
+        "profile_id",
+        "profile_version",
+        "profile_sha256"
+      ],
+      "emitted_records": [
+        "SourceProfileDenialReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "profile_id",
+          "profile_version",
+          "profile_sha256"
+        ],
+        "retry_result": "return the original receipt"
+      },
+      "terminal_state": "revoked",
+      "failure_result": {
+        "code": "source_profile.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "SourceProfileDenialReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain revoked."
+    },
+    {
+      "transition_id": "TR-SP-017",
+      "command_or_event": "revoke_source_profile",
+      "from_state": "revoked",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_owner"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state is present"
+      ],
+      "base_references": [
+        "profile_id",
+        "profile_version",
+        "profile_sha256"
+      ],
+      "emitted_records": [
+        "SourceProfileDenialReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "profile_id",
+          "profile_version",
+          "profile_sha256"
+        ],
+        "retry_result": "return the original receipt"
+      },
+      "terminal_state": "revoked",
+      "failure_result": {
+        "code": "source_profile.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "SourceProfileDenialReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain revoked."
+    },
+    {
+      "transition_id": "TR-SP-018",
+      "command_or_event": "invalidate_source_profile",
+      "from_state": "revoked",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "capture_adapter"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state is present"
+      ],
+      "base_references": [
+        "profile_id",
+        "profile_version",
+        "profile_sha256"
+      ],
+      "emitted_records": [
+        "SourceProfileDenialReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "profile_id",
+          "profile_version",
+          "profile_sha256"
+        ],
+        "retry_result": "return the original receipt"
+      },
+      "terminal_state": "revoked",
+      "failure_result": {
+        "code": "source_profile.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "SourceProfileDenialReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain revoked."
+    },
+    {
+      "transition_id": "TR-SP-019",
+      "command_or_event": "recover_unapproved_source_profile",
+      "from_state": "revoked",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state is present"
+      ],
+      "base_references": [
+        "profile_id",
+        "profile_version",
+        "profile_sha256"
+      ],
+      "emitted_records": [
+        "SourceProfileDenialReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "profile_id",
+          "profile_version",
+          "profile_sha256"
+        ],
+        "retry_result": "return the original receipt"
+      },
+      "terminal_state": "revoked",
+      "failure_result": {
+        "code": "source_profile.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "SourceProfileDenialReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain revoked."
+    },
+    {
+      "transition_id": "TR-SP-020",
+      "command_or_event": "recover_approved_source_profile",
+      "from_state": "revoked",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state is present"
+      ],
+      "base_references": [
+        "profile_id",
+        "profile_version",
+        "profile_sha256"
+      ],
+      "emitted_records": [
+        "SourceProfileDenialReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "profile_id",
+          "profile_version",
+          "profile_sha256"
+        ],
+        "retry_result": "return the original receipt"
+      },
+      "terminal_state": "revoked",
+      "failure_result": {
+        "code": "source_profile.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "SourceProfileDenialReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain revoked."
+    },
+    {
+      "transition_id": "TR-SP-021",
+      "command_or_event": "activate_source_profile",
+      "from_state": "recovery_required",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_owner"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state is present"
+      ],
+      "base_references": [
+        "profile_id",
+        "profile_version",
+        "profile_sha256"
+      ],
+      "emitted_records": [
+        "SourceProfileDenialReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "profile_id",
+          "profile_version",
+          "profile_sha256"
+        ],
+        "retry_result": "return the original receipt"
+      },
+      "terminal_state": "recovery_required",
+      "failure_result": {
+        "code": "source_profile.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "SourceProfileDenialReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain recovery_required."
+    },
+    {
+      "transition_id": "TR-SP-022",
+      "command_or_event": "revoke_source_profile",
+      "from_state": "recovery_required",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_owner"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state is present"
+      ],
+      "base_references": [
+        "profile_id",
+        "profile_version",
+        "profile_sha256"
+      ],
+      "emitted_records": [
+        "SourceProfileDenialReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "profile_id",
+          "profile_version",
+          "profile_sha256"
+        ],
+        "retry_result": "return the original receipt"
+      },
+      "terminal_state": "recovery_required",
+      "failure_result": {
+        "code": "source_profile.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "SourceProfileDenialReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain recovery_required."
+    },
+    {
+      "transition_id": "TR-SP-023",
+      "command_or_event": "invalidate_source_profile",
+      "from_state": "recovery_required",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "capture_adapter"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state is present"
+      ],
+      "base_references": [
+        "profile_id",
+        "profile_version",
+        "profile_sha256"
+      ],
+      "emitted_records": [
+        "SourceProfileDenialReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "profile_id",
+          "profile_version",
+          "profile_sha256"
+        ],
+        "retry_result": "return the original receipt"
+      },
+      "terminal_state": "recovery_required",
+      "failure_result": {
+        "code": "source_profile.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "SourceProfileDenialReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain recovery_required."
+    },
+    {
+      "transition_id": "TR-SP-024",
+      "command_or_event": "recover_unapproved_source_profile",
+      "from_state": "recovery_required",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Source Profile evidence validates"
+      ],
+      "base_references": [
+        "profile_id",
+        "profile_version",
+        "profile_sha256"
+      ],
+      "emitted_records": [
+        "SourceProfileTransitionReceipt"
+      ],
+      "filesystem_effects": [
+        "publish exact lifecycle result"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "profile_id",
+          "profile_version",
+          "profile_sha256"
+        ],
+        "retry_result": "return the original receipt"
+      },
+      "terminal_state": "unbound",
+      "failure_result": {
+        "code": "source_profile.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "SourceProfileDenialReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Read back the exact terminal lifecycle state."
+    },
+    {
+      "transition_id": "TR-SP-025",
+      "command_or_event": "recover_approved_source_profile",
+      "from_state": "recovery_required",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Source Profile evidence validates"
+      ],
+      "base_references": [
+        "profile_id",
+        "profile_version",
+        "profile_sha256"
+      ],
+      "emitted_records": [
+        "SourceProfileTransitionReceipt"
+      ],
+      "filesystem_effects": [
+        "publish exact lifecycle result"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "profile_id",
+          "profile_version",
+          "profile_sha256"
+        ],
+        "retry_result": "return the original receipt"
+      },
+      "terminal_state": "active",
+      "failure_result": {
+        "code": "source_profile.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "SourceProfileDenialReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Read back the exact terminal lifecycle state."
+    }
   ]
 }

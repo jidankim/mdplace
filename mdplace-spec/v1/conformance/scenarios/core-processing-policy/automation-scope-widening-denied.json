@@ -87,7 +87,8 @@
               "purpose_ids": [
                 "purpose:placement",
                 "purpose:taxonomy"
-              ]
+              ],
+              "authentication_method": "api_key"
             },
             {
               "credential_ref": "credential-ref:local-alpha",
@@ -95,7 +96,8 @@
               "provider_id": "provider:local-alpha",
               "purpose_ids": [
                 "purpose:placement"
-              ]
+              ],
+              "authentication_method": "local_process"
             }
           ],
           "budget": {
@@ -105,7 +107,7 @@
             "cost_microunits": 500000
           },
           "retry": {
-            "attempts": 2,
+            "attempts": 1,
             "elapsed_ms": 60000,
             "cumulative_cost_microunits": 750000
           },
@@ -124,7 +126,10 @@
           "semantic_authority": [
             "produce_advisory_evidence"
           ],
-          "automation_scope": []
+          "automation_scope": [],
+          "adapter_ids": [
+            "adapter:fixture-capture"
+          ]
         },
         "redaction_obligations": [
           {
@@ -154,14 +159,24 @@
             "destination_id": "destination:remote-alpha",
             "status": "known",
             "max_days": 30,
-            "risk_acknowledged": true
+            "risk_acknowledged": true,
+            "data_use": "request_only",
+            "region": "global",
+            "subprocessors": [
+              "none"
+            ]
           },
           {
             "retention_fact_id": "retention:local-alpha",
             "destination_id": "destination:local-alpha",
             "status": "known",
             "max_days": 0,
-            "risk_acknowledged": true
+            "risk_acknowledged": true,
+            "data_use": "request_only",
+            "region": "local",
+            "subprocessors": [
+              "none"
+            ]
           }
         ],
         "approval": {
@@ -169,7 +184,9 @@
           "principal_id": "person:vault-owner",
           "role": "vault_owner",
           "delegated": false,
-          "receipt_id": "approval:policy-core"
+          "receipt_id": "approval:policy-core",
+          "policy_payload_sha256": "b5e5c464f8f518a911abcea8eb9ec64d6be9e0dcef30122da6fe26b95b5d4053",
+          "receipt_sha256": "1ee1662a5becd63bb8ea1809e2e9670b60108f2e542728586ee07ca173413655"
         }
       },
       "source_profile": null,
@@ -183,7 +200,7 @@
         "parent_policy": {
           "policy_id": "policy:core-processing",
           "policy_version": "1.0.0",
-          "policy_sha256": "b83deb7dade65ef0dcedf73298cd51751f063d9f11adfe6139b3ba12e0a0360c"
+          "policy_sha256": "4a25a1c5316cc65a28c84db49878decd0410f264498cf960b31ab1880f53122b"
         },
         "lifecycle_state": "active",
         "grants": {
@@ -247,7 +264,8 @@
               "purpose_ids": [
                 "purpose:placement",
                 "purpose:taxonomy"
-              ]
+              ],
+              "authentication_method": "api_key"
             },
             {
               "credential_ref": "credential-ref:local-alpha",
@@ -255,7 +273,8 @@
               "provider_id": "provider:local-alpha",
               "purpose_ids": [
                 "purpose:placement"
-              ]
+              ],
+              "authentication_method": "local_process"
             }
           ],
           "budget": {
@@ -265,7 +284,7 @@
             "cost_microunits": 500000
           },
           "retry": {
-            "attempts": 2,
+            "attempts": 1,
             "elapsed_ms": 60000,
             "cumulative_cost_microunits": 750000
           },
@@ -286,6 +305,9 @@
           ],
           "automation_scope": [
             "initial_existing_category_placement"
+          ],
+          "adapter_ids": [
+            "adapter:fixture-capture"
           ]
         },
         "redaction_obligations": [
@@ -316,14 +338,24 @@
             "destination_id": "destination:remote-alpha",
             "status": "known",
             "max_days": 30,
-            "risk_acknowledged": true
+            "risk_acknowledged": true,
+            "data_use": "request_only",
+            "region": "global",
+            "subprocessors": [
+              "none"
+            ]
           },
           {
             "retention_fact_id": "retention:local-alpha",
             "destination_id": "destination:local-alpha",
             "status": "known",
             "max_days": 0,
-            "risk_acknowledged": true
+            "risk_acknowledged": true,
+            "data_use": "request_only",
+            "region": "local",
+            "subprocessors": [
+              "none"
+            ]
           }
         ],
         "approval": {
@@ -331,7 +363,9 @@
           "principal_id": "person:vault-owner",
           "role": "vault_owner",
           "delegated": false,
-          "receipt_id": "approval:policy-descendant"
+          "receipt_id": "approval:policy-descendant",
+          "policy_payload_sha256": "3a8db8fe817b2c60fe0e9b380bb38ff753562ec30b0dcce564e2a234c97fc622",
+          "receipt_sha256": "a3611b4a161844f6476ff7b6bac8c6f1dff4daa89d3bc388ec1175ce78ff9011"
         }
       },
       "observed_binding": null,
@@ -340,7 +374,49 @@
         "policy_state": "active",
         "source_profile_state": "unbound"
       },
-      "recovery": null
+      "recovery": null,
+      "redaction_receipts": [],
+      "approval_receipts": [
+        {
+          "$schema": "contracts/schemas/approval-receipt.schema.json",
+          "schema_id": "mdplace.approval-receipt/v1",
+          "receipt_id": "approval:policy-core",
+          "subject_kind": "processing_policy",
+          "subject_id": "policy:core-processing",
+          "subject_version": "1.0.0",
+          "vault_id": "vault:fixture-vault",
+          "subject_payload_sha256": "b5e5c464f8f518a911abcea8eb9ec64d6be9e0dcef30122da6fe26b95b5d4053",
+          "approved": true,
+          "principal_id": "person:vault-owner",
+          "role": "vault_owner",
+          "delegated": false,
+          "receipt_sha256": "1ee1662a5becd63bb8ea1809e2e9670b60108f2e542728586ee07ca173413655"
+        },
+        {
+          "$schema": "contracts/schemas/approval-receipt.schema.json",
+          "schema_id": "mdplace.approval-receipt/v1",
+          "receipt_id": "approval:policy-descendant",
+          "subject_kind": "processing_policy",
+          "subject_id": "policy:core-processing",
+          "subject_version": "1.0.1",
+          "vault_id": "vault:fixture-vault",
+          "subject_payload_sha256": "3a8db8fe817b2c60fe0e9b380bb38ff753562ec30b0dcce564e2a234c97fc622",
+          "approved": true,
+          "principal_id": "person:vault-owner",
+          "role": "vault_owner",
+          "delegated": false,
+          "receipt_sha256": "a3611b4a161844f6476ff7b6bac8c6f1dff4daa89d3bc388ec1175ce78ff9011"
+        }
+      ],
+      "trusted_context": {
+        "vault_id": "vault:fixture-vault",
+        "owner_principal_id": "person:vault-owner",
+        "approval_receipt_sha256s": [
+          "1ee1662a5becd63bb8ea1809e2e9670b60108f2e542728586ee07ca173413655",
+          "a3611b4a161844f6476ff7b6bac8c6f1dff4daa89d3bc388ec1175ce78ff9011"
+        ],
+        "redaction_receipt_sha256s": []
+      }
     }
   },
   "expected": {
@@ -356,9 +432,12 @@
       "apply default-deny Processing Policy"
     ],
     "receipts": [
-      "{\"code\":\"policy.widening_automation_scope\",\"decision\":\"denied\",\"operation\":\"policy_pair\",\"policy_ref\":{\"policy_id\":\"policy:core-processing\",\"policy_sha256\":\"b83deb7dade65ef0dcedf73298cd51751f063d9f11adfe6139b3ba12e0a0360c\",\"policy_version\":\"1.0.0\"},\"receipt_id\":\"receipt:cpp-047\",\"scenario_id\":\"CPP-047\",\"schema_id\":\"mdplace.processing-policy-receipt/v1\",\"source_profile_ref\":null}"
+      "{\"code\":\"policy.widening_automation_scope\",\"decision\":\"denied\",\"operation\":\"policy_pair\",\"policy_ref\":{\"policy_id\":\"policy:core-processing\",\"policy_sha256\":\"4a25a1c5316cc65a28c84db49878decd0410f264498cf960b31ab1880f53122b\",\"policy_version\":\"1.0.0\"},\"receipt_id\":\"receipt:cpp-047\",\"scenario_id\":\"CPP-047\",\"schema_id\":\"mdplace.processing-policy-receipt/v1\",\"source_profile_ref\":null}"
     ],
     "filesystem_effects": [
+      "none"
+    ],
+    "network_effects": [
       "none"
     ],
     "terminal_state": "denied",

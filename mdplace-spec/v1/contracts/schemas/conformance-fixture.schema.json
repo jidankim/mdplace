@@ -263,6 +263,7 @@
         "operations": {"$ref": "#/$defs/stringList"},
         "receipts": {"$ref": "#/$defs/stringList"},
         "filesystem_effects": {"$ref": "#/$defs/stringList"},
+        "network_effects": {"$ref": "#/$defs/stringList"},
         "terminal_state": {"type": "string", "minLength": 1},
         "illegal_transition": {"type": "boolean"}
       }
