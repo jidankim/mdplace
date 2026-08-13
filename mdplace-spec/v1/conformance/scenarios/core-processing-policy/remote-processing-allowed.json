@@ -377,7 +377,7 @@
             "fallback_position": 0,
             "outcome": "safe_transient_failure",
             "receipt_id": "attempt-receipt:cpp-001-0",
-            "receipt_sha256": "8172c77e015fabef2e23d467d4004ac7aa1b5b3d2468164267cc6aa03a415ae0"
+            "receipt_sha256": "90ece6ead9d965f11729281f4caefbe5c615303c0fe4a2e8fd66ecdd28bf4cfe"
           },
           {
             "sequence": 1,
@@ -386,7 +386,7 @@
             "fallback_position": 0,
             "outcome": "pending",
             "receipt_id": "attempt-receipt:cpp-001-1",
-            "receipt_sha256": "f41e5c35d9a9100e9a48d22c2d77bd0b51c5cceca7123d36377c906f4dcabcb8"
+            "receipt_sha256": "e95e17342f17d5487d70248b15ffdf754329a2c79ee3d4602f3c4d33c4d802fd"
           }
         ]
       },
@@ -512,7 +512,8 @@
           "issuer": "mdplace_local_attempt_accountant",
           "identity_assurance": "trusted_local_accountant",
           "verification_method": "manifest_bound_attempt_accounting_readback",
-          "receipt_sha256": "8172c77e015fabef2e23d467d4004ac7aa1b5b3d2468164267cc6aa03a415ae0"
+          "receipt_sha256": "90ece6ead9d965f11729281f4caefbe5c615303c0fe4a2e8fd66ecdd28bf4cfe",
+          "request_sha256": "2fd07dc5e93789cf530b3f3d2a206d50be1b66859724454b2a0554a18329d74d"
         },
         {
           "$schema": "contracts/schemas/processing-attempt-receipt.schema.json",
@@ -535,7 +536,8 @@
           "issuer": "mdplace_local_attempt_accountant",
           "identity_assurance": "trusted_local_accountant",
           "verification_method": "manifest_bound_attempt_accounting_readback",
-          "receipt_sha256": "f41e5c35d9a9100e9a48d22c2d77bd0b51c5cceca7123d36377c906f4dcabcb8"
+          "receipt_sha256": "e95e17342f17d5487d70248b15ffdf754329a2c79ee3d4602f3c4d33c4d802fd",
+          "request_sha256": "2fd07dc5e93789cf530b3f3d2a206d50be1b66859724454b2a0554a18329d74d"
         }
       ]
     }
@@ -551,7 +553,7 @@
       "apply default-deny Processing Policy"
     ],
     "receipts": [
-      "{\"code\":null,\"consent_binding_id\":\"consent:primary\",\"consent_binding_sha256\":\"11a22d43c5ca437235ebb8b683c05e89404565ffdbcc866a259e80cec31f0f51\",\"decision\":\"allowed\",\"network_effect\":\"none\",\"operation\":\"processing_decision\",\"payload_sha256\":\"8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c\",\"policy_ref\":{\"policy_id\":\"policy:core-processing\",\"policy_sha256\":\"27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766\",\"policy_version\":\"1.0.0\"},\"receipt_id\":\"receipt:cpp-001\",\"receipt_sha256\":\"c4aea9fcf32e6a6d0932811649dc55456f9b362ebc70df7d9528f7cec4cd7843\",\"request_id\":\"request:cpp-001\",\"request_sha256\":\"015d2334eae0c94e6c997e1fb433182bd1a30478f6b15944a7f6b1ca135216e5\",\"scenario_id\":\"CPP-001\",\"schema_id\":\"mdplace.processing-policy-receipt/v1\",\"source_profile_ref\":null}"
+      "{\"code\":null,\"consent_binding_id\":\"consent:primary\",\"consent_binding_sha256\":\"11a22d43c5ca437235ebb8b683c05e89404565ffdbcc866a259e80cec31f0f51\",\"decision\":\"allowed\",\"network_effect\":\"none\",\"operation\":\"processing_decision\",\"payload_sha256\":\"8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c\",\"policy_ref\":{\"policy_id\":\"policy:core-processing\",\"policy_sha256\":\"27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766\",\"policy_version\":\"1.0.0\"},\"receipt_id\":\"receipt:cpp-001\",\"receipt_sha256\":\"9c2f088e5707dd12b57aa42f0d2a6c2926915954627db6c77500a5ea8c17a1ae\",\"request_id\":\"request:cpp-001\",\"request_sha256\":\"5a73eacd1ba6e37c9d8dfb4d0ed7730ec370cfd62705f7d46beca0fff4facca1\",\"scenario_id\":\"CPP-001\",\"schema_id\":\"mdplace.processing-policy-receipt/v1\",\"source_profile_ref\":null}"
     ],
     "filesystem_effects": [
       "none"

@@ -417,7 +417,7 @@
             "fallback_position": 0,
             "outcome": "safe_transient_failure",
             "receipt_id": "attempt-receipt:cpp-002-0",
-            "receipt_sha256": "d52eb7759c3b43e1f39eb8cb149f684a7367682175dfaac9d521a74a3e61a273"
+            "receipt_sha256": "561f307e4652f44e5d7da4b4b804c8110af2c720bb901d5e497e21c77e50d945"
           },
           {
             "sequence": 1,
@@ -426,7 +426,7 @@
             "fallback_position": 0,
             "outcome": "pending",
             "receipt_id": "attempt-receipt:cpp-002-1",
-            "receipt_sha256": "2032c5a582c93943e60e172724104fe2b0e30684fbbdb5ff6ab2d747c9245da8"
+            "receipt_sha256": "f73d4aeeb3c3990e7fc34da53a740737373a725363242c177334e0f7fc9e8b03"
           }
         ]
       },
@@ -602,7 +602,8 @@
           "issuer": "mdplace_local_attempt_accountant",
           "identity_assurance": "trusted_local_accountant",
           "verification_method": "manifest_bound_attempt_accounting_readback",
-          "receipt_sha256": "d52eb7759c3b43e1f39eb8cb149f684a7367682175dfaac9d521a74a3e61a273"
+          "receipt_sha256": "561f307e4652f44e5d7da4b4b804c8110af2c720bb901d5e497e21c77e50d945",
+          "request_sha256": "36dc99d26dac10519e2d9564cb101d267455ac128d35154e4b743e6bd1355214"
         },
         {
           "$schema": "contracts/schemas/processing-attempt-receipt.schema.json",
@@ -625,7 +626,8 @@
           "issuer": "mdplace_local_attempt_accountant",
           "identity_assurance": "trusted_local_accountant",
           "verification_method": "manifest_bound_attempt_accounting_readback",
-          "receipt_sha256": "2032c5a582c93943e60e172724104fe2b0e30684fbbdb5ff6ab2d747c9245da8"
+          "receipt_sha256": "f73d4aeeb3c3990e7fc34da53a740737373a725363242c177334e0f7fc9e8b03",
+          "request_sha256": "36dc99d26dac10519e2d9564cb101d267455ac128d35154e4b743e6bd1355214"
         }
       ]
     }
@@ -641,7 +643,7 @@
       "apply default-deny Processing Policy"
     ],
     "receipts": [
-      "{\"code\":null,\"consent_binding_id\":\"consent:primary\",\"consent_binding_sha256\":\"11a22d43c5ca437235ebb8b683c05e89404565ffdbcc866a259e80cec31f0f51\",\"decision\":\"allowed\",\"network_effect\":\"none\",\"operation\":\"intake_decision\",\"payload_sha256\":\"8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c\",\"policy_ref\":{\"policy_id\":\"policy:core-processing\",\"policy_sha256\":\"27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766\",\"policy_version\":\"1.0.0\"},\"receipt_id\":\"receipt:cpp-002\",\"receipt_sha256\":\"51949576e2038702cc622df33b935cc27952e8bb1acf7d9f67128d2eb4cd87a3\",\"request_id\":\"request:cpp-002\",\"request_sha256\":\"82cfdc6932acbe85619b2e462b66f20d8252b82877d0ca352dceee8d53e8d4bd\",\"scenario_id\":\"CPP-002\",\"schema_id\":\"mdplace.processing-policy-receipt/v1\",\"source_profile_ref\":{\"profile_id\":\"source-profile:web-clipper\",\"profile_sha256\":\"e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549\",\"profile_version\":\"1.0.0\"}}"
+      "{\"code\":null,\"consent_binding_id\":\"consent:primary\",\"consent_binding_sha256\":\"11a22d43c5ca437235ebb8b683c05e89404565ffdbcc866a259e80cec31f0f51\",\"decision\":\"allowed\",\"network_effect\":\"none\",\"operation\":\"intake_decision\",\"payload_sha256\":\"8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c\",\"policy_ref\":{\"policy_id\":\"policy:core-processing\",\"policy_sha256\":\"27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766\",\"policy_version\":\"1.0.0\"},\"receipt_id\":\"receipt:cpp-002\",\"receipt_sha256\":\"51d80a475102ffadef182f9b34e752b89393cc156f3e9e32b6bebfb0435cbd02\",\"request_id\":\"request:cpp-002\",\"request_sha256\":\"c03f181d84cf1a0ea5385683be1f0882f6196f059c686a9302d6354d8e045979\",\"scenario_id\":\"CPP-002\",\"schema_id\":\"mdplace.processing-policy-receipt/v1\",\"source_profile_ref\":{\"profile_id\":\"source-profile:web-clipper\",\"profile_sha256\":\"e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549\",\"profile_version\":\"1.0.0\"}}"
     ],
     "filesystem_effects": [
       "none"

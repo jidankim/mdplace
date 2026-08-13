@@ -7,6 +7,12 @@ export function processingAttemptReceiptDigest(receipt) {
   return sha256Json(receiptPayload);
 }
 
+export function processingAttemptRequestDigest(request) {
+  const attemptChain = request.attempt_chain.map(({receipt_id: _receiptId, receipt_sha256: _receiptDigest, ...attempt}) =>
+    attempt);
+  return sha256Json({...request, attempt_chain: attemptChain});
+}
+
 export function attemptChainViolation(policy, request) {
   const chain = request.attempt_chain;
   if (!Array.isArray(chain) || chain.length !== request.retry.attempts + request.fallback_position + 1 ||
@@ -42,15 +48,21 @@ export function attemptAccountingViolation(document) {
   const byId = new Map(receipts.map((receipt) => [receipt.receipt_id, receipt]));
   const totals = {input_bytes: 0, output_bytes: 0, elapsed_ms: 0, cumulative_cost_microunits: 0};
   const payloadBytes = Buffer.byteLength(request.payload.bytes, 'utf8');
+  const requestDigest = processingAttemptRequestDigest(request);
   for (const attempt of request.attempt_chain) {
     const receipt = byId.get(attempt.receipt_id);
     if (receipt === undefined || receipt.receipt_sha256 !== attempt.receipt_sha256 ||
         receipt.receipt_sha256 !== processingAttemptReceiptDigest(receipt) ||
         !trusted.attempt_receipt_sha256s.includes(receipt.receipt_sha256) ||
-        receipt.request_id !== request.request_id || receipt.sequence !== attempt.sequence ||
+        receipt.request_id !== request.request_id || receipt.request_sha256 !== requestDigest ||
+        receipt.sequence !== attempt.sequence ||
         receipt.adapter_id !== attempt.adapter_id || receipt.consent_binding_id !== attempt.consent_binding_id ||
         receipt.fallback_position !== attempt.fallback_position || receipt.outcome !== attempt.outcome ||
         receipt.payload_sha256 !== request.payload.sha256 || receipt.usage.input_bytes < payloadBytes ||
+        receipt.usage.input_bytes > request.budget.input_bytes ||
+        receipt.usage.output_bytes > request.budget.output_bytes ||
+        receipt.usage.elapsed_ms > request.budget.runtime_ms ||
+        receipt.usage.cost_microunits > request.budget.cost_microunits ||
         receipt.accounting_kind !== (attempt.outcome === 'pending' ? 'reserved' : 'measured') ||
         receipt.issuer !== 'mdplace_local_attempt_accountant' ||
         receipt.identity_assurance !== 'trusted_local_accountant' ||

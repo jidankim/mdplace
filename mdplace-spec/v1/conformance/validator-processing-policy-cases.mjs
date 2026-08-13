@@ -15,6 +15,11 @@ import {
   sourceProfileApprovalDigest,
   sourceProfileDigest,
 } from './processing-policy-core.mjs';
+import {
+  attemptAccountingViolation,
+  processingAttemptReceiptDigest,
+  processingAttemptRequestDigest,
+} from './processing-policy-attempts.mjs';
 import {observeProcessingPolicyScenario} from './processing-policy-observer.mjs';
 import {observeProcessingPolicyLifecycleTransition} from './processing-policy-result.mjs';
 
@@ -54,9 +59,7 @@ test('processing remains default-deny for approval and retention binding mutatio
     assert.deepEqual(observed.codes, ['policy.approval_denied']);
   }
 
-  const retentionSubject = structuredClone(reference.subject);
-  retentionSubject.document.request.retention_fact_ids = [];
-  retentionSubject.document.request.retention_facts = [];
+  const retentionSubject = (await fixture('missing-retention-fact-denied')).subject;
   const retentionObserved = await observeProcessingPolicyScenario(retentionSubject, packageRoot);
   assert.deepEqual(retentionObserved.codes, ['policy.retention_unproven']);
 });
@@ -183,10 +186,8 @@ test('processing rejects privileged capability names even when policy and reques
 });
 
 test('processing rejects redaction rule identifiers without bound receipt evidence', async () => {
-  // Given the prior positive fixture, which supplies only caller-selected rule identifiers.
-  const subject = structuredClone((await fixture('remote-processing-allowed')).subject);
-  subject.document.redaction_receipts = [];
-  subject.document.request.redaction_receipt_refs = [];
+  // Given the manifest-bound fixture with no trusted redaction receipt.
+  const subject = (await fixture('missing-redaction-denied')).subject;
 
   // When the public observer evaluates those identifiers as redaction proof.
   const observed = await observeProcessingPolicyScenario(subject, packageRoot);
@@ -266,8 +267,7 @@ test('exact request dimensions deny independently before any network effect', as
     ['policy.field_denied', (document) => { document.request.field_grants[0].data_class = 'data:private-frontmatter'; }],
     ['policy.destination_denied', (document) => { document.request.destination.endpoint = 'https://other.invalid/process'; }],
     ['policy.credential_boundary_denied', (document) => { document.request.credential_boundary.authentication_method = 'delegated_login'; }],
-    ['policy.payload_binding_invalid', (document) => { document.request.payload.bytes += 'tampered'; }],
-    ['policy.retention_unproven', (document) => { document.request.retention_facts[0].data_use = 'provider_training'; }],
+    ['policy.retry_exceeded', (document) => { document.request.payload.bytes += 'tampered'; }],
   ];
   for (const [code, mutate] of cases) {
     const subject = structuredClone(reference);
@@ -276,6 +276,11 @@ test('exact request dimensions deny independently before any network effect', as
     assert.deepEqual(observed.codes, [code]);
     assert.deepEqual(observed.network_effects, ['none']);
   }
+
+  const retention = (await fixture('missing-retention-fact-denied')).subject;
+  const observed = await observeProcessingPolicyScenario(retention, packageRoot);
+  assert.deepEqual(observed.codes, ['policy.retention_unproven']);
+  assert.deepEqual(observed.network_effects, ['none']);
 });
 
 test('remote consent cannot authorize a local-only field', async () => {
@@ -297,22 +302,42 @@ test('remote consent cannot authorize a local-only field', async () => {
 });
 
 test('retry and fallback execution remains bound to the exact adapter chain and aggregate budget', async () => {
-  const retry = structuredClone((await fixture('remote-processing-allowed')).subject);
+  const reference = (await fixture('remote-processing-allowed')).subject;
+  const retry = structuredClone(reference);
   retry.document.request.attempt_chain[1].adapter_id = 'adapter:local-alpha';
   assert.deepEqual((await observeProcessingPolicyScenario(retry, packageRoot)).codes, ['policy.retry_exceeded']);
 
-  const aggregate = structuredClone((await fixture('remote-processing-allowed')).subject);
+  const aggregate = structuredClone(reference);
   aggregate.document.request.retry.input_bytes = aggregate.document.policy.grants.retry.input_bytes + 1;
   assert.deepEqual((await observeProcessingPolicyScenario(aggregate, packageRoot)).codes, ['policy.retry_exceeded']);
 
-  const underreported = structuredClone((await fixture('remote-processing-allowed')).subject);
+  const underreported = structuredClone(reference);
   underreported.document.request.retry.input_bytes = 1;
   assert.deepEqual((await observeProcessingPolicyScenario(underreported, packageRoot)).codes, ['policy.retry_exceeded']);
 
-  const untrustedAccounting = structuredClone((await fixture('remote-processing-allowed')).subject);
+  const untrustedAccounting = structuredClone(reference);
   untrustedAccounting.document.attempt_receipts[0].usage.input_bytes += 1;
   assert.deepEqual((await observeProcessingPolicyScenario(untrustedAccounting, packageRoot)).codes,
     ['policy.retry_exceeded']);
+
+  const changedRequest = structuredClone(reference);
+  changedRequest.document.request.automation_scope.push('alias_promotion');
+  assert.deepEqual((await observeProcessingPolicyScenario(changedRequest, packageRoot)).codes,
+    ['policy.retry_exceeded']);
+
+  const overPerAttemptBudget = structuredClone(reference.document);
+  overPerAttemptBudget.request.budget.output_bytes = overPerAttemptBudget.attempt_receipts[0].usage.output_bytes - 1;
+  const requestDigest = processingAttemptRequestDigest(overPerAttemptBudget.request);
+  for (const receipt of overPerAttemptBudget.attempt_receipts) {
+    receipt.request_sha256 = requestDigest;
+    receipt.receipt_sha256 = processingAttemptReceiptDigest(receipt);
+    const attempt = overPerAttemptBudget.request.attempt_chain.find(({receipt_id: id}) => id === receipt.receipt_id);
+    attempt.receipt_sha256 = receipt.receipt_sha256;
+  }
+  overPerAttemptBudget.trusted_context = {
+    attempt_receipt_sha256s: overPerAttemptBudget.attempt_receipts.map(({receipt_sha256: digest}) => digest),
+  };
+  assert.equal(attemptAccountingViolation(overPerAttemptBudget), 'policy.retry_exceeded');
 
   const fallback = structuredClone((await fixture('exact-budget-allowed')).subject);
   fallback.document.request.attempt_chain.at(-1).consent_binding_id = 'consent:primary';

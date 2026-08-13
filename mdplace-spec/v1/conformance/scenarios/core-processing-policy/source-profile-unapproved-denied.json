@@ -417,7 +417,7 @@
             "fallback_position": 0,
             "outcome": "safe_transient_failure",
             "receipt_id": "attempt-receipt:cpp-028-0",
-            "receipt_sha256": "7ca041d8f09f5f347031ed4e80fe259d36556a2f0746e56527fe09c2d51858aa"
+            "receipt_sha256": "537f756569e10e60899233ebfd3ab87381c99fa93091d45f18f389efa475eab0"
           },
           {
             "sequence": 1,
@@ -426,7 +426,7 @@
             "fallback_position": 0,
             "outcome": "pending",
             "receipt_id": "attempt-receipt:cpp-028-1",
-            "receipt_sha256": "d71e2f023dc0a47376e62e08a87e0dc073d76f70f2185ff71301de1c90cfcbc6"
+            "receipt_sha256": "7daf9efabc8cd80f6e33edf75d43aa34775075e39d243d98928042d6533162a0"
           }
         ]
       },
@@ -602,7 +602,8 @@
           "issuer": "mdplace_local_attempt_accountant",
           "identity_assurance": "trusted_local_accountant",
           "verification_method": "manifest_bound_attempt_accounting_readback",
-          "receipt_sha256": "7ca041d8f09f5f347031ed4e80fe259d36556a2f0746e56527fe09c2d51858aa"
+          "receipt_sha256": "537f756569e10e60899233ebfd3ab87381c99fa93091d45f18f389efa475eab0",
+          "request_sha256": "cbe4d51e10044ff9e8b6d0cc303a22f58003c5de38b0f33f8aeffbe6fb37f01d"
         },
         {
           "$schema": "contracts/schemas/processing-attempt-receipt.schema.json",
@@ -625,7 +626,8 @@
           "issuer": "mdplace_local_attempt_accountant",
           "identity_assurance": "trusted_local_accountant",
           "verification_method": "manifest_bound_attempt_accounting_readback",
-          "receipt_sha256": "d71e2f023dc0a47376e62e08a87e0dc073d76f70f2185ff71301de1c90cfcbc6"
+          "receipt_sha256": "7daf9efabc8cd80f6e33edf75d43aa34775075e39d243d98928042d6533162a0",
+          "request_sha256": "cbe4d51e10044ff9e8b6d0cc303a22f58003c5de38b0f33f8aeffbe6fb37f01d"
         }
       ]
     }
@@ -643,7 +645,7 @@
       "apply default-deny Processing Policy"
     ],
     "receipts": [
-      "{\"code\":\"source_profile.approval_denied\",\"consent_binding_id\":\"consent:primary\",\"consent_binding_sha256\":\"11a22d43c5ca437235ebb8b683c05e89404565ffdbcc866a259e80cec31f0f51\",\"decision\":\"denied\",\"network_effect\":\"none\",\"operation\":\"intake_decision\",\"payload_sha256\":\"8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c\",\"policy_ref\":{\"policy_id\":\"policy:core-processing\",\"policy_sha256\":\"27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766\",\"policy_version\":\"1.0.0\"},\"receipt_id\":\"receipt:cpp-028\",\"receipt_sha256\":\"3627cd7bcc01d3643de183dbd0809596c63770c1f7764cb156b41bdcbb7c12d7\",\"request_id\":\"request:cpp-028\",\"request_sha256\":\"8bacbe108da2a9c01722e32e17a96a6de107d33bba45993661f7db8287112a99\",\"scenario_id\":\"CPP-028\",\"schema_id\":\"mdplace.processing-policy-receipt/v1\",\"source_profile_ref\":{\"profile_id\":\"source-profile:web-clipper\",\"profile_sha256\":\"98b4b2dfadd778874f78c2e47b84eeef1ae7c94c00b4ff6f74aac1e285dedeea\",\"profile_version\":\"1.0.0\"}}"
+      "{\"code\":\"source_profile.approval_denied\",\"consent_binding_id\":\"consent:primary\",\"consent_binding_sha256\":\"11a22d43c5ca437235ebb8b683c05e89404565ffdbcc866a259e80cec31f0f51\",\"decision\":\"denied\",\"network_effect\":\"none\",\"operation\":\"intake_decision\",\"payload_sha256\":\"8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c\",\"policy_ref\":{\"policy_id\":\"policy:core-processing\",\"policy_sha256\":\"27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766\",\"policy_version\":\"1.0.0\"},\"receipt_id\":\"receipt:cpp-028\",\"receipt_sha256\":\"e1aa62811f0f048d0b13c8b84731292a2ac45fa770af9d6be17bc30d032f4eae\",\"request_id\":\"request:cpp-028\",\"request_sha256\":\"047efc59a8d3dbff616ea41d674897f43fba8a85eea0299d8c89104a8e1b8007\",\"scenario_id\":\"CPP-028\",\"schema_id\":\"mdplace.processing-policy-receipt/v1\",\"source_profile_ref\":{\"profile_id\":\"source-profile:web-clipper\",\"profile_sha256\":\"98b4b2dfadd778874f78c2e47b84eeef1ae7c94c00b4ff6f74aac1e285dedeea\",\"profile_version\":\"1.0.0\"}}"
     ],
     "filesystem_effects": [
       "none"

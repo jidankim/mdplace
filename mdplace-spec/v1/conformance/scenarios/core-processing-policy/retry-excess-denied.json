@@ -269,7 +269,7 @@
         },
         "retry": {
           "attempts": 1,
-          "elapsed_ms": 60001,
+          "elapsed_ms": 60000,
           "cumulative_cost_microunits": 250000,
           "input_bytes": 50000,
           "output_bytes": 5000
@@ -377,7 +377,7 @@
             "fallback_position": 0,
             "outcome": "safe_transient_failure",
             "receipt_id": "attempt-receipt:cpp-016-0",
-            "receipt_sha256": "bc44283ebab9c0337ceed9aae9f9e45f22747c06e8a18d15c13fa14e06571fdc"
+            "receipt_sha256": "7f76587336fb9d89df8cb1c0c9c8f30367a05b8c63916fb1f4add6a06df6c281"
           },
           {
             "sequence": 1,
@@ -386,7 +386,7 @@
             "fallback_position": 0,
             "outcome": "pending",
             "receipt_id": "attempt-receipt:cpp-016-1",
-            "receipt_sha256": "02874aec9b50b24cb07f6ec3ec421a2f381d1a905ac044473c88f8bbe98d616e"
+            "receipt_sha256": "dd38f663b83d14824da842fd68d94296d1f50f01f548e662e86d6570e85b190b"
           }
         ]
       },
@@ -512,7 +512,8 @@
           "issuer": "mdplace_local_attempt_accountant",
           "identity_assurance": "trusted_local_accountant",
           "verification_method": "manifest_bound_attempt_accounting_readback",
-          "receipt_sha256": "bc44283ebab9c0337ceed9aae9f9e45f22747c06e8a18d15c13fa14e06571fdc"
+          "receipt_sha256": "7f76587336fb9d89df8cb1c0c9c8f30367a05b8c63916fb1f4add6a06df6c281",
+          "request_sha256": "2aa6e1e5cd759d123ae48e480ec7e03702d53df6307b8e9b3408007e48b0b708"
         },
         {
           "$schema": "contracts/schemas/processing-attempt-receipt.schema.json",
@@ -529,13 +530,14 @@
           "usage": {
             "input_bytes": 25000,
             "output_bytes": 2500,
-            "elapsed_ms": 30001,
+            "elapsed_ms": 30000,
             "cost_microunits": 125000
           },
           "issuer": "mdplace_local_attempt_accountant",
           "identity_assurance": "trusted_local_accountant",
           "verification_method": "manifest_bound_attempt_accounting_readback",
-          "receipt_sha256": "02874aec9b50b24cb07f6ec3ec421a2f381d1a905ac044473c88f8bbe98d616e"
+          "receipt_sha256": "dd38f663b83d14824da842fd68d94296d1f50f01f548e662e86d6570e85b190b",
+          "request_sha256": "2aa6e1e5cd759d123ae48e480ec7e03702d53df6307b8e9b3408007e48b0b708"
         }
       ]
     }
@@ -553,7 +555,7 @@
       "apply default-deny Processing Policy"
     ],
     "receipts": [
-      "{\"code\":\"policy.retry_exceeded\",\"consent_binding_id\":\"consent:primary\",\"consent_binding_sha256\":\"11a22d43c5ca437235ebb8b683c05e89404565ffdbcc866a259e80cec31f0f51\",\"decision\":\"denied\",\"network_effect\":\"none\",\"operation\":\"processing_decision\",\"payload_sha256\":\"8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c\",\"policy_ref\":{\"policy_id\":\"policy:core-processing\",\"policy_sha256\":\"27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766\",\"policy_version\":\"1.0.0\"},\"receipt_id\":\"receipt:cpp-016\",\"receipt_sha256\":\"07a17cd6c4da76f25064ee9fb15f2a6df7ec77d3033168eb772c660816eb4a20\",\"request_id\":\"request:cpp-016\",\"request_sha256\":\"30f379d720a538699bf49c1d3e6b68d666ce086de9d431b9baf2e29cd9fe7590\",\"scenario_id\":\"CPP-016\",\"schema_id\":\"mdplace.processing-policy-receipt/v1\",\"source_profile_ref\":null}"
+      "{\"code\":\"policy.retry_exceeded\",\"consent_binding_id\":\"consent:primary\",\"consent_binding_sha256\":\"11a22d43c5ca437235ebb8b683c05e89404565ffdbcc866a259e80cec31f0f51\",\"decision\":\"denied\",\"network_effect\":\"none\",\"operation\":\"processing_decision\",\"payload_sha256\":\"8c96ed622647dd83d6b9f304118b8105e1b28cf69908a5362a9c88675716b01c\",\"policy_ref\":{\"policy_id\":\"policy:core-processing\",\"policy_sha256\":\"27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766\",\"policy_version\":\"1.0.0\"},\"receipt_id\":\"receipt:cpp-016\",\"receipt_sha256\":\"530bc6e09bd0a0f92da499d9112ef37785e9b4cfd2ffaba2ebe641fc94a48b97\",\"request_id\":\"request:cpp-016\",\"request_sha256\":\"d6a5d8108c486b0adc1a7e8cb687ec2ed05b672b0f92c613bae781069527b9e6\",\"scenario_id\":\"CPP-016\",\"schema_id\":\"mdplace.processing-policy-receipt/v1\",\"source_profile_ref\":null}"
     ],
     "filesystem_effects": [
       "none"
