@@ -55,12 +55,13 @@
     },
     "compensatingPlan": {
       "type": "object", "additionalProperties": false,
-      "required": ["plan_id", "plan_sha256", "operation", "effect_sha256", "authority_receipt_sha256"],
+      "required": ["plan_id", "plan_sha256", "operation", "effect_sha256", "expected_result_identity", "authority_receipt_sha256"],
       "properties": {
         "plan_id": {"type": "string", "pattern": "^mutation-plan:[a-z0-9-]{3,64}$"},
         "plan_sha256": {"$ref": "#/$defs/digest"},
         "operation": {"enum": ["promote_capture", "move_projection", "create_directory", "remove_empty_owned_directory", "write_managed_frontmatter"]},
         "effect_sha256": {"$ref": "#/$defs/digest"},
+        "expected_result_identity": {"$ref": "#/$defs/identity"},
         "authority_receipt_sha256": {"$ref": "#/$defs/digest"}
       }
     },
@@ -96,11 +97,17 @@
     },
     "idempotencyRecord": {
       "type": "object", "additionalProperties": false,
-      "required": ["idempotency_key", "plan_sha256"],
+      "required": ["idempotency_key", "plan_sha256", "state", "original_receipt_sha256"],
       "properties": {
         "idempotency_key": {"type": "string", "pattern": "^vmg-idem:[a-z0-9-]{3,64}$"},
-        "plan_sha256": {"$ref": "#/$defs/digest"}
-      }
+        "plan_sha256": {"$ref": "#/$defs/digest"},
+        "state": {"enum": ["committed", "recovery_required"]},
+        "original_receipt_sha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]}
+      },
+      "allOf": [
+        {"if": {"properties": {"state": {"const": "committed"}}}, "then": {"properties": {"original_receipt_sha256": {"$ref": "#/$defs/digest"}}}},
+        {"if": {"properties": {"state": {"const": "recovery_required"}}}, "then": {"properties": {"original_receipt_sha256": {"type": "null"}}}}
+      ]
     },
     "projectionState": {
       "type": "object", "additionalProperties": false,
@@ -109,7 +116,11 @@
         "state": {"enum": ["idle", "applying", "recovery_required"]},
         "active_plan_id": {"type": ["string", "null"], "pattern": "^mutation-plan:[a-z0-9-]{3,64}$"},
         "active_plan_sha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]}
-      }
+      },
+      "allOf": [
+        {"if": {"properties": {"state": {"const": "idle"}}}, "then": {"properties": {"active_plan_id": {"type": "null"}, "active_plan_sha256": {"type": "null"}}}},
+        {"if": {"properties": {"state": {"enum": ["applying", "recovery_required"]}}}, "then": {"properties": {"active_plan_id": {"type": "string"}, "active_plan_sha256": {"$ref": "#/$defs/digest"}}}}
+      ]
     },
     "virtualDescriptor": {
       "type": "object", "additionalProperties": false,
@@ -160,17 +171,23 @@
     },
     "recovery": {
       "type": "object", "additionalProperties": false,
-      "required": ["mode", "crash_boundary", "durable_prefix", "declared_intent", "reverse_descriptor", "compensation_authorization", "interruption_count", "interruption_budget"],
+      "required": ["mode", "crash_boundary", "durable_prefix", "declared_intent", "reverse_descriptor", "later_dependency_plan_ids", "compensation_authorization", "post_recovery_descriptor", "interruption_count", "interruption_budget"],
       "properties": {
         "mode": {"enum": ["none", "cancel", "cancel_and_resume", "restart", "repeated_interruption"]},
         "crash_boundary": {"enum": [null, "before_journal", "after_journal", "before_validation", "after_validation", "before_data", "after_data", "before_metadata", "after_metadata", "before_receipt", "after_receipt", "before_echo", "after_echo", "before_readback", "after_readback", "before_commit", "after_commit"]},
         "durable_prefix": {"type": "array", "uniqueItems": true, "items": {"enum": ["journal", "validation", "data", "metadata", "receipt", "echo", "readback", "commit"]}},
         "declared_intent": {"enum": ["resume", "exact_rollback", "compensate", "terminal_manual_repair"]},
         "reverse_descriptor": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/virtualDescriptor"}]},
+        "later_dependency_plan_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^mutation-plan:[a-z0-9-]{3,64}$"}},
         "compensation_authorization": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/compensatingPlan"}]},
+        "post_recovery_descriptor": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/virtualDescriptor"}]},
         "interruption_count": {"type": "integer", "minimum": 0, "maximum": 3},
         "interruption_budget": {"const": 3}
-      }
+      },
+      "allOf": [
+        {"if": {"properties": {"declared_intent": {"const": "exact_rollback"}}}, "then": {"properties": {"reverse_descriptor": {"$ref": "#/$defs/virtualDescriptor"}, "post_recovery_descriptor": {"$ref": "#/$defs/virtualDescriptor"}}}},
+        {"if": {"properties": {"declared_intent": {"const": "compensate"}}}, "then": {"properties": {"compensation_authorization": {"$ref": "#/$defs/compensatingPlan"}, "post_recovery_descriptor": {"$ref": "#/$defs/virtualDescriptor"}}}}
+      ]
     }
   }
 }

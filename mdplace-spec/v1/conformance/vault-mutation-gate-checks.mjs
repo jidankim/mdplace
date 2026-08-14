@@ -137,8 +137,7 @@ export async function checkVaultMutationGateContract(packageRoot, manifest, conf
     journal?.ownership_receipt_sha256 === plan?.ownership?.exclusive_writer_receipt_sha256 &&
     journal?.idempotency_key === plan?.idempotency_key && receipt?.journal_sha256 === journal?.journal_sha256;
   if (!planBindingsMatch) codes.push('vault_mutation.echo_binding_invalid');
-  const scheduledWorkBindingsMatch = plan?.scheduled_work !== null &&
-    isDeepStrictEqual(journal?.scheduled_work, plan?.scheduled_work) &&
+  const scheduledWorkBindingsMatch = isDeepStrictEqual(journal?.scheduled_work, plan?.scheduled_work) &&
     isDeepStrictEqual(receipt?.scheduled_work, plan?.scheduled_work);
   if (!scheduledWorkBindingsMatch) codes.push('vault_mutation.scheduled_work_binding_invalid');
   const expectedCallerPrefix = new Map([

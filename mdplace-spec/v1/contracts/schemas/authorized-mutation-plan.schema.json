@@ -88,12 +88,13 @@
     },
     "compensatingPlan": {
       "type": "object", "additionalProperties": false,
-      "required": ["plan_id", "plan_sha256", "operation", "effect_sha256", "authority_receipt_sha256"],
+      "required": ["plan_id", "plan_sha256", "operation", "effect_sha256", "expected_result_identity", "authority_receipt_sha256"],
       "properties": {
         "plan_id": {"type": "string", "pattern": "^mutation-plan:[a-z0-9-]{3,64}$"},
         "plan_sha256": {"$ref": "#/$defs/digest"},
         "operation": {"enum": ["promote_capture", "move_projection", "create_directory", "remove_empty_owned_directory", "write_managed_frontmatter"]},
         "effect_sha256": {"$ref": "#/$defs/digest"},
+        "expected_result_identity": {"$ref": "#/$defs/descriptorIdentity"},
         "authority_receipt_sha256": {"$ref": "#/$defs/digest"}
       }
     },

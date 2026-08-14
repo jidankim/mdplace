@@ -102,14 +102,16 @@
         "reverse_descriptor": null,
         "compensation_authorization": null,
         "interruption_count": 0,
-        "interruption_budget": 3
+        "interruption_budget": 3,
+        "later_dependency_plan_ids": [],
+        "post_recovery_descriptor": null
       },
       "caller": {
         "caller_id": "folder-projection:fixture-001",
         "role": "folder_projection"
       },
       "authorized_plan": {
-        "plan_sha256": "e2bbcac0af7821303413a8d517a00af38e19e514dd2290d6a83e9c4c11a128ea",
+        "plan_sha256": "ae55236cf15f187d1b4aa3bfd688cc157f7076f5ce61dc8d250e3e9a08a4d375",
         "operation": "move_projection",
         "caller_id": "folder-projection:fixture-001",
         "authority_receipt_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -141,7 +143,7 @@
       },
       "authorization": {
         "plan_id": "mutation-plan:vmg-011",
-        "plan_sha256": "e2bbcac0af7821303413a8d517a00af38e19e514dd2290d6a83e9c4c11a128ea",
+        "plan_sha256": "ae55236cf15f187d1b4aa3bfd688cc157f7076f5ce61dc8d250e3e9a08a4d375",
         "authority_receipt_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "idempotency_key": "vmg-idem:vmg-011"

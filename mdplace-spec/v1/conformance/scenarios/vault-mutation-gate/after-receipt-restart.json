@@ -106,17 +106,30 @@
         "reverse_descriptor": null,
         "compensation_authorization": {
           "plan_id": "mutation-plan:compensate-vmg-063",
-          "plan_sha256": "0f23b484259cb8a8fb1c8e25cc0cf2974ad4dcb950cd2c1ef5e84040ad195613",
+          "plan_sha256": "4e441b5e36472d0e94b0e521da6ac0c9c320cd80aa33f3949ee1bad20ee83c38",
           "operation": "move_projection",
-          "effect_sha256": "9999999999999999999999999999999999999999999999999999999999999999",
-          "authority_receipt_sha256": "8888888888888888888888888888888888888888888888888888888888888888"
+          "effect_sha256": "047447851abe1e0d15567fc4f372b70b997fe44e991e3b5ed42ab22b8d44fabe",
+          "authority_receipt_sha256": "8888888888888888888888888888888888888888888888888888888888888888",
+          "expected_result_identity": {
+            "device": 42,
+            "inode": 1001,
+            "size": 15,
+            "content_sha256": "047447851abe1e0d15567fc4f372b70b997fe44e991e3b5ed42ab22b8d44fabe"
+          }
         },
         "interruption_count": 1,
-        "interruption_budget": 3
+        "interruption_budget": 3,
+        "later_dependency_plan_ids": [],
+        "post_recovery_descriptor": {
+          "descriptor_id": "descriptor:source-001",
+          "device": 42,
+          "inode": 1001,
+          "bytes_utf8": "compensated-v1\n"
+        }
       },
       "authorized_plan": {
         "plan_id": "mutation-plan:vmg-063",
-        "plan_sha256": "318c2f0bb8a76e793e429d903342a140985f2a35b713d6a3773f78f9528e6f7e",
+        "plan_sha256": "6aac385905524b81d954af965abf4db85f597519df4622cfe821a52cc309821e",
         "operation": "move_projection",
         "caller_id": "folder-projection:fixture-001",
         "authority_receipt_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -146,15 +159,21 @@
         },
         "compensating_plan": {
           "plan_id": "mutation-plan:compensate-vmg-063",
-          "plan_sha256": "0f23b484259cb8a8fb1c8e25cc0cf2974ad4dcb950cd2c1ef5e84040ad195613",
+          "plan_sha256": "4e441b5e36472d0e94b0e521da6ac0c9c320cd80aa33f3949ee1bad20ee83c38",
           "operation": "move_projection",
-          "effect_sha256": "9999999999999999999999999999999999999999999999999999999999999999",
-          "authority_receipt_sha256": "8888888888888888888888888888888888888888888888888888888888888888"
+          "effect_sha256": "047447851abe1e0d15567fc4f372b70b997fe44e991e3b5ed42ab22b8d44fabe",
+          "authority_receipt_sha256": "8888888888888888888888888888888888888888888888888888888888888888",
+          "expected_result_identity": {
+            "device": 42,
+            "inode": 1001,
+            "size": 15,
+            "content_sha256": "047447851abe1e0d15567fc4f372b70b997fe44e991e3b5ed42ab22b8d44fabe"
+          }
         }
       },
       "authorization": {
         "plan_id": "mutation-plan:vmg-063",
-        "plan_sha256": "318c2f0bb8a76e793e429d903342a140985f2a35b713d6a3773f78f9528e6f7e",
+        "plan_sha256": "6aac385905524b81d954af965abf4db85f597519df4622cfe821a52cc309821e",
         "authority_receipt_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "idempotency_key": "vmg-idem:vmg-063"
@@ -163,7 +182,7 @@
       "projection_state": {
         "state": "recovery_required",
         "active_plan_id": "mutation-plan:vmg-063",
-        "active_plan_sha256": "318c2f0bb8a76e793e429d903342a140985f2a35b713d6a3773f78f9528e6f7e"
+        "active_plan_sha256": "6aac385905524b81d954af965abf4db85f597519df4622cfe821a52cc309821e"
       }
     }
   },
@@ -176,7 +195,8 @@
     "operations": [
       "reconcile exact durable prefix",
       "validate separate compensation authorization",
-      "perform compensation"
+      "perform compensation",
+      "read back authorized compensation result"
     ],
     "receipts": [
       "MutationCompensationReceipt"

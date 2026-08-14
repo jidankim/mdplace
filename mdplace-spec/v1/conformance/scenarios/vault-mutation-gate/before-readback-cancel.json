@@ -112,7 +112,14 @@
         },
         "compensation_authorization": null,
         "interruption_count": 1,
-        "interruption_budget": 3
+        "interruption_budget": 3,
+        "later_dependency_plan_ids": [],
+        "post_recovery_descriptor": {
+          "descriptor_id": "descriptor:source-001",
+          "device": 42,
+          "inode": 1001,
+          "bytes_utf8": "candidate-v1\n"
+        }
       },
       "authorized_plan": {
         "plan_id": "mutation-plan:vmg-073",
@@ -170,7 +177,9 @@
     "operations": [
       "reconcile exact durable prefix",
       "prove reverse Descriptor Identity",
-      "perform exact rollback"
+      "prove no later dependent plan",
+      "perform exact rollback",
+      "read back restored Descriptor Identity"
     ],
     "receipts": [
       "MutationRollbackReceipt"

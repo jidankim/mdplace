@@ -102,7 +102,9 @@
         "reverse_descriptor": null,
         "compensation_authorization": null,
         "interruption_count": 0,
-        "interruption_budget": 3
+        "interruption_budget": 3,
+        "later_dependency_plan_ids": [],
+        "post_recovery_descriptor": null
       },
       "operation_declared": true,
       "caller": {
@@ -150,7 +152,9 @@
       },
       "idempotency_record": {
         "idempotency_key": "vmg-idem:vmg-020",
-        "plan_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        "plan_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "state": "committed",
+        "original_receipt_sha256": "9999999999999999999999999999999999999999999999999999999999999999"
       },
       "projection_state": {
         "state": "idle",

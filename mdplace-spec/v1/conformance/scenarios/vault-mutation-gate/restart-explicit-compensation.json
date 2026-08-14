@@ -108,13 +108,26 @@
         "reverse_descriptor": null,
         "compensation_authorization": {
           "plan_id": "mutation-plan:compensate-vmg-023",
-          "plan_sha256": "603a786d96852720d8b2ee631b240f633b95f27799dd5ac341c842e50fc66779",
+          "plan_sha256": "8d0ba5f5a594f1b9389e8307bb504c7d1011f0d9551bf3f2131985885e272a81",
           "operation": "move_projection",
-          "effect_sha256": "9999999999999999999999999999999999999999999999999999999999999999",
-          "authority_receipt_sha256": "8888888888888888888888888888888888888888888888888888888888888888"
+          "effect_sha256": "047447851abe1e0d15567fc4f372b70b997fe44e991e3b5ed42ab22b8d44fabe",
+          "authority_receipt_sha256": "8888888888888888888888888888888888888888888888888888888888888888",
+          "expected_result_identity": {
+            "device": 42,
+            "inode": 1001,
+            "size": 15,
+            "content_sha256": "047447851abe1e0d15567fc4f372b70b997fe44e991e3b5ed42ab22b8d44fabe"
+          }
         },
         "interruption_count": 1,
-        "interruption_budget": 3
+        "interruption_budget": 3,
+        "later_dependency_plan_ids": [],
+        "post_recovery_descriptor": {
+          "descriptor_id": "descriptor:source-001",
+          "device": 42,
+          "inode": 1001,
+          "bytes_utf8": "compensated-v1\n"
+        }
       },
       "operation_declared": true,
       "caller": {
@@ -123,7 +136,7 @@
       },
       "authorized_plan": {
         "plan_id": "mutation-plan:vmg-023",
-        "plan_sha256": "9c2a1e06ab32bce28c92c0138ea6f47df381ad66ddcf385893288246f8001639",
+        "plan_sha256": "e683135b42dbb176775743288c38c0e0006321b04d5bf1e27a879a4888dbe0d6",
         "operation": "move_projection",
         "caller_id": "folder-projection:fixture-001",
         "authority_receipt_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -153,15 +166,21 @@
         },
         "compensating_plan": {
           "plan_id": "mutation-plan:compensate-vmg-023",
-          "plan_sha256": "603a786d96852720d8b2ee631b240f633b95f27799dd5ac341c842e50fc66779",
+          "plan_sha256": "8d0ba5f5a594f1b9389e8307bb504c7d1011f0d9551bf3f2131985885e272a81",
           "operation": "move_projection",
-          "effect_sha256": "9999999999999999999999999999999999999999999999999999999999999999",
-          "authority_receipt_sha256": "8888888888888888888888888888888888888888888888888888888888888888"
+          "effect_sha256": "047447851abe1e0d15567fc4f372b70b997fe44e991e3b5ed42ab22b8d44fabe",
+          "authority_receipt_sha256": "8888888888888888888888888888888888888888888888888888888888888888",
+          "expected_result_identity": {
+            "device": 42,
+            "inode": 1001,
+            "size": 15,
+            "content_sha256": "047447851abe1e0d15567fc4f372b70b997fe44e991e3b5ed42ab22b8d44fabe"
+          }
         }
       },
       "authorization": {
         "plan_id": "mutation-plan:vmg-023",
-        "plan_sha256": "9c2a1e06ab32bce28c92c0138ea6f47df381ad66ddcf385893288246f8001639",
+        "plan_sha256": "e683135b42dbb176775743288c38c0e0006321b04d5bf1e27a879a4888dbe0d6",
         "authority_receipt_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "idempotency_key": "vmg-idem:vmg-023"
@@ -170,7 +189,7 @@
       "projection_state": {
         "state": "recovery_required",
         "active_plan_id": "mutation-plan:vmg-023",
-        "active_plan_sha256": "9c2a1e06ab32bce28c92c0138ea6f47df381ad66ddcf385893288246f8001639"
+        "active_plan_sha256": "e683135b42dbb176775743288c38c0e0006321b04d5bf1e27a879a4888dbe0d6"
       }
     }
   },
@@ -183,7 +202,8 @@
     "operations": [
       "reconcile exact durable prefix",
       "validate separate compensation authorization",
-      "perform compensation"
+      "perform compensation",
+      "read back authorized compensation result"
     ],
     "receipts": [
       "MutationCompensationReceipt"

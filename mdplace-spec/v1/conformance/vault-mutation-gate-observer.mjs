@@ -14,6 +14,7 @@ import {
 const recoveryCodes = new Set([
   'journal.incomplete', 'receipt.echo_mismatch',
   'readback.identity_mismatch', 'receipt.readback_required',
+  'idempotency.recovery_required', 'projection.recovery_required',
 ]);
 
 const preconditionOperations = [
@@ -48,7 +49,7 @@ function isRecord(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
-function recoveryEvidenceMatches(recovery, matrix, plan) {
+function recoveryMatrixMatches(recovery, matrix, plan) {
   const boundaries = Array.isArray(matrix?.boundaries) ? matrix.boundaries.filter(isRecord) : [];
   const boundary = boundaries.find(({boundary_id: id}) => id === recovery.crash_boundary);
   const modeResults = Array.isArray(boundary?.mode_results) ? boundary.mode_results.filter(isRecord) : [];
@@ -56,15 +57,30 @@ function recoveryEvidenceMatches(recovery, matrix, plan) {
   return boundary !== undefined && modeResult !== undefined &&
     isDeepStrictEqual(recovery.durable_prefix, boundary.durable_prefix) &&
     recovery.declared_intent === modeResult.recovery_action &&
-    recovery.declared_intent === plan.recovery_intent &&
-    (modeResult.recovery_action !== 'exact_rollback' ||
-      recovery.reverse_descriptor !== null &&
+    recovery.declared_intent === plan.recovery_intent;
+}
+
+function compensationAuthorizationMatches(recovery, plan) {
+  return plan.compensating_plan !== null && recovery.compensation_authorization !== null &&
+    scenarioCompensatingPlanDigest(plan.compensating_plan) === plan.compensating_plan.plan_sha256 &&
+    isDeepStrictEqual(recovery.compensation_authorization, plan.compensating_plan);
+}
+
+function recoveryResultEvidenceMatches(recovery, plan) {
+  if (recovery.declared_intent === 'exact_rollback') {
+    return recovery.reverse_descriptor !== null && recovery.post_recovery_descriptor !== null &&
+      recovery.later_dependency_plan_ids.length === 0 &&
       isDeepStrictEqual(virtualDescriptorIdentity(recovery.reverse_descriptor),
-        plan.expected_result_identity)) &&
-    (modeResult.recovery_action !== 'compensate' ||
-      plan.compensating_plan !== null && recovery.compensation_authorization !== null &&
-      scenarioCompensatingPlanDigest(plan.compensating_plan) === plan.compensating_plan.plan_sha256 &&
-      isDeepStrictEqual(recovery.compensation_authorization, plan.compensating_plan));
+        plan.expected_result_identity) &&
+      isDeepStrictEqual(virtualDescriptorIdentity(recovery.post_recovery_descriptor),
+        plan.expected_precondition_identity);
+  }
+  if (recovery.declared_intent === 'compensate') {
+    return recovery.post_recovery_descriptor !== null && plan.compensating_plan !== null &&
+      isDeepStrictEqual(virtualDescriptorIdentity(recovery.post_recovery_descriptor),
+        plan.compensating_plan.expected_result_identity);
+  }
+  return true;
 }
 
 function planAuthorizationCode(scenario) {
@@ -93,13 +109,28 @@ function projectionSerializationCode(scenario) {
   const samePlan = scenario.projection_state.active_plan_id === scenario.authorized_plan.plan_id &&
     scenario.projection_state.active_plan_sha256 === scenario.authorized_plan.plan_sha256;
   if (scenario.recovery.mode !== 'none') return samePlan ? null : 'recovery.authorization_invalid';
-  return samePlan ? null : 'projection.concurrent_apply_denied';
+  return samePlan ? 'projection.recovery_required' : 'projection.concurrent_apply_denied';
 }
 
-function idempotencyConflictExists(scenario) {
+function idempotencyCode(scenario) {
   const record = scenario.idempotency_record;
-  return record !== null && record.idempotency_key === scenario.authorized_plan.idempotency_key &&
-    record.plan_sha256 !== scenario.authorized_plan.plan_sha256;
+  if (record === null || record.idempotency_key !== scenario.authorized_plan.idempotency_key) return null;
+  if (record.plan_sha256 !== scenario.authorized_plan.plan_sha256) return 'idempotency.conflict';
+  return record.state === 'recovery_required' ? 'idempotency.recovery_required' : null;
+}
+
+function committedIdempotencyObservation(scenario) {
+  const record = scenario.idempotency_record;
+  if (record === null || record.idempotency_key !== scenario.authorized_plan.idempotency_key ||
+      record.plan_sha256 !== scenario.authorized_plan.plan_sha256 || record.state !== 'committed') {
+    return null;
+  }
+  return {
+    verdict: 'pass', codes: [], outputs: ['original Operation Receipt returned'],
+    operations: ['authenticate compatible idempotency record', 'return original Operation Receipt'],
+    receipts: ['OperationReceipt'], filesystem_effects: ['none'],
+    terminal_state: 'committed', illegal_transition: false,
+  };
 }
 
 function invalidRecoveryObservation() {
@@ -131,7 +162,12 @@ function recoveryBudgetRemainingObservation() {
 }
 
 function recoveryObservation(recovery, matrix, plan) {
-  if (!recoveryEvidenceMatches(recovery, matrix, plan)) return invalidRecoveryAuthorizationObservation();
+  if (!recoveryMatrixMatches(recovery, matrix, plan)) return invalidRecoveryObservation();
+  if (recovery.declared_intent === 'compensate' &&
+      !compensationAuthorizationMatches(recovery, plan)) {
+    return invalidRecoveryAuthorizationObservation();
+  }
+  if (!recoveryResultEvidenceMatches(recovery, plan)) return invalidRecoveryObservation();
   if (recovery.declared_intent === 'terminal_manual_repair') {
     return {
       verdict: 'fail', codes: ['recovery.manual_repair_required'],
@@ -144,7 +180,8 @@ function recoveryObservation(recovery, matrix, plan) {
   if (recovery.declared_intent === 'exact_rollback' && recovery.reverse_descriptor !== null) {
     return {
       verdict: 'pass', codes: [], outputs: ['exact rollback completed'],
-      operations: ['reconcile exact durable prefix', 'prove reverse Descriptor Identity', 'perform exact rollback'],
+      operations: ['reconcile exact durable prefix', 'prove reverse Descriptor Identity',
+        'prove no later dependent plan', 'perform exact rollback', 'read back restored Descriptor Identity'],
       receipts: ['MutationRollbackReceipt'], filesystem_effects: ['reverse only the declared effect'],
       terminal_state: 'rolled_back', illegal_transition: false,
     };
@@ -152,7 +189,8 @@ function recoveryObservation(recovery, matrix, plan) {
   if (recovery.declared_intent === 'compensate' && recovery.compensation_authorization !== null) {
     return {
       verdict: 'pass', codes: [], outputs: ['authorized compensation completed'],
-      operations: ['reconcile exact durable prefix', 'validate separate compensation authorization', 'perform compensation'],
+      operations: ['reconcile exact durable prefix', 'validate separate compensation authorization',
+        'perform compensation', 'read back authorized compensation result'],
       receipts: ['MutationCompensationReceipt'], filesystem_effects: ['perform only the authorized compensating effect'],
       terminal_state: 'compensated', illegal_transition: false,
     };
@@ -219,9 +257,13 @@ export async function observeVaultMutationScenario(subject, packageRoot) {
     }
     return recoveryObservation(scenario.recovery, matrix, scenario.authorized_plan);
   }
+  const committedRetry = authorizationCode === null && scenario.plan_state === 'authorized'
+    ? committedIdempotencyObservation(scenario)
+    : null;
+  if (committedRetry !== null) return committedRetry;
   const code = scenario.plan_state === 'stale'
     ? 'plan.stale'
-    : authorizationCode ?? (idempotencyConflictExists(scenario) ? 'idempotency.conflict' : probeObservation.code);
+    : authorizationCode ?? idempotencyCode(scenario) ?? probeObservation.code;
   const codes = [...new Set([projectionCode, code].filter((value) => value !== null))];
   if (codes.length > 0) {
     const requiresRecovery = codes.every((candidate) => recoveryCodes.has(candidate));

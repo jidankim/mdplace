@@ -10,7 +10,11 @@ import {observeFixture} from './fixture-observer.mjs';
 import {validateAgainstSchemaPath} from './json-schema.mjs';
 import {buildValidationReport} from './validation-report.mjs';
 import {checkVaultMutationGateContract} from './vault-mutation-gate-checks.mjs';
-import {operationReceiptDigest} from './vault-mutation-digests.mjs';
+import {
+  operationReceiptDigest,
+  scenarioAuthorizedPlanDigest,
+  scenarioCompensatingPlanDigest,
+} from './vault-mutation-digests.mjs';
 import {copyCommittedPackage} from './validator-test-support.mjs';
 
 const packageRoot = fileURLToPath(new URL('../', import.meta.url));
@@ -170,6 +174,39 @@ test('Vault Mutation Gate binds the exact scheduled Work Item and Work Lease', a
   assert.ok(contract.codes.includes('vault_mutation.scheduled_work_binding_invalid'));
 });
 
+test('Vault Mutation Gate permits a consistently unscheduled direct operation', async () => {
+  // Given a copied plan, journal, and receipt that consistently declare no scheduled work.
+  const copiedRoot = await copyCommittedPackage();
+  const paths = [
+    'contracts/vault-mutation-gate/authorized-plan.json',
+    'contracts/vault-mutation-gate/mutation-journal.json',
+    'contracts/vault-mutation-gate/operation-receipt.json',
+  ];
+  const [plan, journal, receipt, manifest, conformance, traceability] = await Promise.all([
+    ...paths.map((path) => readFile(join(copiedRoot, path), 'utf8').then(JSON.parse)),
+    readFile(join(copiedRoot, 'package-manifest.yaml'), 'utf8').then(JSON.parse),
+    readFile(join(copiedRoot, 'conformance/manifest.yaml'), 'utf8').then(JSON.parse),
+    readFile(join(copiedRoot, 'traceability.yaml'), 'utf8').then(JSON.parse),
+  ]);
+  plan.scheduled_work = null;
+  journal.scheduled_work = null;
+  receipt.scheduled_work = null;
+  await Promise.all(paths.map((path, index) =>
+    writeFile(join(copiedRoot, path), `${JSON.stringify([plan, journal, receipt][index], null, 2)}\n`)));
+
+  // When the checker compares the three optional schedule bindings.
+  const contract = await checkVaultMutationGateContract(
+    copiedRoot,
+    manifest,
+    conformance,
+    traceability,
+  );
+
+  // Then all-three-null is consistent even though the tampered digests still fail independently.
+  assert.ok(contract.codes.includes('vault_mutation.digest_invalid'));
+  assert.ok(!contract.codes.includes('vault_mutation.scheduled_work_binding_invalid'));
+});
+
 test('Authorized Mutation Plan schema binds caller identity to caller role', async () => {
   // Given an otherwise valid plan with a mismatched caller identity prefix.
   const plan = await readPackageJson('contracts/vault-mutation-gate/authorized-plan.json');
@@ -272,6 +309,64 @@ test('Folder Projection serializes apply across distinct plans in one vault', as
   assert.deepEqual(observation.filesystem_effects, ['none']);
 });
 
+test('compatible idempotency retries never perform the effect again', async () => {
+  // Given committed and nonterminal records for the exact authorized plan.
+  const committed = await readPackageJson(
+    'conformance/scenarios/vault-mutation-gate/capture-promotion-commits.json',
+  );
+  const committedPlan = committed.subject.document.authorized_plan;
+  committed.subject.document.idempotency_record = {
+    idempotency_key: committedPlan.idempotency_key,
+    plan_sha256: committedPlan.plan_sha256,
+    state: 'committed',
+    original_receipt_sha256: '9'.repeat(64),
+  };
+  const nonterminal = structuredClone(committed);
+  nonterminal.subject.document.idempotency_record = {
+    idempotency_key: committedPlan.idempotency_key,
+    plan_sha256: committedPlan.plan_sha256,
+    state: 'recovery_required',
+    original_receipt_sha256: null,
+  };
+
+  // When both compatible retries reach the public observer.
+  const [committedObservation, nonterminalObservation] = await Promise.all([
+    observeFixture(committed, packageRoot),
+    observeFixture(nonterminal, packageRoot),
+  ]);
+
+  // Then a committed retry returns its original receipt and a nonterminal retry enters recovery.
+  assert.equal(committedObservation.verdict, 'pass');
+  assert.equal(committedObservation.terminal_state, 'committed');
+  assert.deepEqual(committedObservation.filesystem_effects, ['none']);
+  assert.deepEqual(committedObservation.receipts, ['OperationReceipt']);
+  assert.equal(nonterminalObservation.verdict, 'fail');
+  assert.deepEqual(nonterminalObservation.codes, ['idempotency.recovery_required']);
+  assert.equal(nonterminalObservation.terminal_state, 'recovery_required');
+});
+
+test('same-plan projection recovery cannot fall through to a fresh apply', async () => {
+  // Given a projection whose exact plan is already durably recovery-required.
+  const fixture = await readPackageJson(
+    'conformance/scenarios/vault-mutation-gate/folder-projection-commits.json',
+  );
+  const plan = fixture.subject.document.authorized_plan;
+  fixture.subject.document.projection_state = {
+    state: 'recovery_required',
+    active_plan_id: plan.plan_id,
+    active_plan_sha256: plan.plan_sha256,
+  };
+
+  // When the caller submits the plan outside the explicit recovery path.
+  const observation = await observeFixture(fixture, packageRoot);
+
+  // Then it remains recovery-required without performing another projection effect.
+  assert.equal(observation.verdict, 'fail');
+  assert.deepEqual(observation.codes, ['projection.recovery_required']);
+  assert.equal(observation.terminal_state, 'recovery_required');
+  assert.deepEqual(observation.filesystem_effects, ['preserve only the declared observed effect']);
+});
+
 test('crash and recovery evidence covers every boundary-mode pair', async () => {
   // Given the normative crash matrix and its machine-readable recovery report.
   const matrix = await readPackageJson('contracts/vault-mutation-gate/crash-boundary-matrix.json');
@@ -342,6 +437,79 @@ test('compensation requires the exact separately authorized compensating plan', 
   // Then a boolean-like claim cannot authorize a different compensating effect.
   assert.equal(observation.verdict, 'fail');
   assert.deepEqual(observation.codes, ['recovery.authorization_invalid']);
+});
+
+test('exact rollback proves the restored identity and absence of later dependencies', async () => {
+  // Given an authorized rollback with a closed post-recovery descriptor observation.
+  const fixture = await readPackageJson(
+    'conformance/scenarios/vault-mutation-gate/restart-exact-rollback.json',
+  );
+  fixture.subject.document.recovery.later_dependency_plan_ids = [];
+  fixture.subject.document.recovery.post_recovery_descriptor = {
+    descriptor_id: 'descriptor:source-001', device: 42, inode: 1001,
+    bytes_utf8: 'candidate-v1\n',
+  };
+  const wrongResult = structuredClone(fixture);
+  wrongResult.subject.document.recovery.post_recovery_descriptor.bytes_utf8 = 'published-v1\n';
+  const laterDependency = structuredClone(fixture);
+  laterDependency.subject.document.recovery.later_dependency_plan_ids = ['mutation-plan:dependent-001'];
+
+  // When recovery evaluates the valid, wrong-result, and dependent variants.
+  const [accepted, rejectedResult, rejectedDependency] = await Promise.all([
+    observeFixture(fixture, packageRoot),
+    observeFixture(wrongResult, packageRoot),
+    observeFixture(laterDependency, packageRoot),
+  ]);
+
+  // Then only the proven restoration without a later dependency reaches rolled-back.
+  assert.equal(accepted.verdict, 'pass');
+  assert.equal(accepted.terminal_state, 'rolled_back');
+  assert.deepEqual(rejectedResult.codes, ['recovery.evidence_mismatch']);
+  assert.deepEqual(rejectedDependency.codes, ['recovery.evidence_mismatch']);
+});
+
+test('compensation proves the separately authorized post-effect identity', async () => {
+  // Given a compensation plan that binds the exact post-compensation descriptor identity.
+  const fixture = await readPackageJson(
+    'conformance/scenarios/vault-mutation-gate/restart-explicit-compensation.json',
+  );
+  const compensationBytes = 'compensated-v1\n';
+  const compensationIdentity = {
+    device: 42,
+    inode: 1001,
+    size: Buffer.byteLength(compensationBytes),
+    content_sha256: createHash('sha256').update(compensationBytes).digest('hex'),
+  };
+  const plan = fixture.subject.document.authorized_plan;
+  plan.compensating_plan.effect_sha256 = compensationIdentity.content_sha256;
+  plan.compensating_plan.expected_result_identity = compensationIdentity;
+  plan.compensating_plan.plan_sha256 = scenarioCompensatingPlanDigest(plan.compensating_plan);
+  plan.plan_sha256 = scenarioAuthorizedPlanDigest(plan);
+  fixture.subject.document.authorization.plan_sha256 = plan.plan_sha256;
+  fixture.subject.document.recovery.compensation_authorization = structuredClone(plan.compensating_plan);
+  fixture.subject.document.projection_state.active_plan_sha256 = plan.plan_sha256;
+  fixture.subject.document.recovery.later_dependency_plan_ids = [];
+  fixture.subject.document.recovery.post_recovery_descriptor = {
+    descriptor_id: 'descriptor:source-001', device: 42, inode: 1001,
+    bytes_utf8: compensationBytes,
+  };
+  const wrongResult = structuredClone(fixture);
+  wrongResult.subject.document.recovery.post_recovery_descriptor.bytes_utf8 = 'wrong-result-v1\n';
+  const missingResult = structuredClone(fixture);
+  delete missingResult.subject.document.recovery.post_recovery_descriptor;
+
+  // When recovery evaluates exact, wrong, and missing result observations.
+  const [accepted, rejectedResult, rejectedMissing] = await Promise.all([
+    observeFixture(fixture, packageRoot),
+    observeFixture(wrongResult, packageRoot),
+    observeFixture(missingResult, packageRoot),
+  ]);
+
+  // Then authorization alone cannot claim compensation completion.
+  assert.equal(accepted.verdict, 'pass');
+  assert.equal(accepted.terminal_state, 'compensated');
+  assert.deepEqual(rejectedResult.codes, ['recovery.evidence_mismatch']);
+  assert.deepEqual(rejectedMissing.codes, ['schema.required_field']);
 });
 
 test('repeated interruption reaches manual repair only at the durable budget ceiling', async () => {
