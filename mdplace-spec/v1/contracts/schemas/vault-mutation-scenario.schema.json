@@ -4,7 +4,7 @@
   "title": "mdplace Vault Mutation Gate conformance scenario",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_id", "scenario_id", "operation", "operation_declared", "caller", "plan_state", "fault", "probe", "recovery"],
+  "required": ["schema_id", "scenario_id", "operation", "operation_declared", "caller", "plan_state", "fault", "authorized_plan", "authorization", "idempotency_record", "projection_state", "probe", "recovery"],
   "properties": {
     "schema_id": {"const": "mdplace.vault-mutation-scenario/v1"},
     "scenario_id": {"type": "string", "pattern": "^VMG-[0-9]{3}$"},
@@ -13,6 +13,10 @@
     "caller": {"$ref": "#/$defs/caller"},
     "plan_state": {"enum": ["authorized", "stale"]},
     "fault": {"enum": ["none", "symlink_swap", "pathname_swap", "traversal", "collision", "ownership_drift", "unauthorized_caller", "undeclared_operation", "malformed_plan", "stale_plan", "stale_hash", "identity_drift", "size_drift", "incomplete_journal", "receipt_echo_mismatch", "readback_mismatch", "misleading_success", "idempotency_conflict"]},
+    "authorized_plan": {"$ref": "#/$defs/authorizedPlan"},
+    "authorization": {"$ref": "#/$defs/authorization"},
+    "idempotency_record": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/idempotencyRecord"}]},
+    "projection_state": {"$ref": "#/$defs/projectionState"},
     "probe": {"$ref": "#/$defs/probe"},
     "recovery": {"$ref": "#/$defs/recovery"}
   },
@@ -37,38 +41,135 @@
       "required": ["device", "inode", "size", "content_sha256"],
       "properties": {"device": {"type": "integer", "minimum": 0}, "inode": {"type": "integer", "minimum": 1}, "size": {"type": "integer", "minimum": 0}, "content_sha256": {"$ref": "#/$defs/digest"}}
     },
-    "probe": {
+    "scheduledWork": {
       "type": "object", "additionalProperties": false,
-      "required": ["trusted_root_opened", "resolution", "nofollow", "pathname_reopened", "expected_precondition_identity", "expected_result_identity", "first_fstat", "second_fstat", "same_handle_hash", "receipt_precondition_identity", "receipt_result_identity", "readback_identity", "receipt_echo", "readback", "console_output"],
+      "required": ["work_id", "work_version", "lease_id", "lease_receipt_sha256", "work_journal_head_sequence", "work_journal_head_sha256"],
       "properties": {
-        "trusted_root_opened": {"type": "boolean"},
-        "resolution": {"enum": ["openat_each_component", "pathname"]},
-        "nofollow": {"type": "boolean"},
-        "pathname_reopened": {"type": "boolean"},
+        "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
+        "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "lease_id": {"type": "string", "pattern": "^lease:[a-z0-9-]{3,64}$"},
+        "lease_receipt_sha256": {"$ref": "#/$defs/digest"},
+        "work_journal_head_sequence": {"type": "integer", "minimum": 1, "maximum": 500},
+        "work_journal_head_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "compensatingPlan": {
+      "type": "object", "additionalProperties": false,
+      "required": ["plan_id", "plan_sha256", "operation", "effect_sha256", "authority_receipt_sha256"],
+      "properties": {
+        "plan_id": {"type": "string", "pattern": "^mutation-plan:[a-z0-9-]{3,64}$"},
+        "plan_sha256": {"$ref": "#/$defs/digest"},
+        "operation": {"enum": ["promote_capture", "move_projection", "create_directory", "remove_empty_owned_directory", "write_managed_frontmatter"]},
+        "effect_sha256": {"$ref": "#/$defs/digest"},
+        "authority_receipt_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "authorizedPlan": {
+      "type": "object", "additionalProperties": false,
+      "required": ["plan_id", "plan_sha256", "operation", "caller_id", "authority_receipt_sha256", "ownership_receipt_sha256", "idempotency_key", "recovery_intent", "projection_scope", "expected_precondition_identity", "expected_result_identity", "scheduled_work", "compensating_plan"],
+      "properties": {
+        "plan_id": {"type": "string", "pattern": "^mutation-plan:[a-z0-9-]{3,64}$"},
+        "plan_sha256": {"$ref": "#/$defs/digest"},
+        "operation": {"enum": ["promote_capture", "move_projection", "create_directory", "remove_empty_owned_directory", "write_managed_frontmatter"]},
+        "caller_id": {"type": "string", "pattern": "^(capture-adapter|folder-projection):[a-z0-9-]{3,64}$"},
+        "authority_receipt_sha256": {"$ref": "#/$defs/digest"},
+        "ownership_receipt_sha256": {"$ref": "#/$defs/digest"},
+        "idempotency_key": {"type": "string", "pattern": "^vmg-idem:[a-z0-9-]{3,64}$"},
+        "recovery_intent": {"enum": ["resume", "exact_rollback", "compensate", "terminal_manual_repair"]},
+        "projection_scope": {"enum": ["vault", null]},
         "expected_precondition_identity": {"$ref": "#/$defs/identity"},
         "expected_result_identity": {"$ref": "#/$defs/identity"},
-        "first_fstat": {"$ref": "#/$defs/identity"},
-        "second_fstat": {"$ref": "#/$defs/identity"},
-        "same_handle_hash": {"$ref": "#/$defs/digest"},
+        "scheduled_work": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/scheduledWork"}]},
+        "compensating_plan": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/compensatingPlan"}]}
+      }
+    },
+    "authorization": {
+      "type": "object", "additionalProperties": false,
+      "required": ["plan_id", "plan_sha256", "authority_receipt_sha256", "ownership_receipt_sha256", "idempotency_key"],
+      "properties": {
+        "plan_id": {"type": "string", "pattern": "^mutation-plan:[a-z0-9-]{3,64}$"},
+        "plan_sha256": {"$ref": "#/$defs/digest"},
+        "authority_receipt_sha256": {"$ref": "#/$defs/digest"},
+        "ownership_receipt_sha256": {"$ref": "#/$defs/digest"},
+        "idempotency_key": {"type": "string", "pattern": "^vmg-idem:[a-z0-9-]{3,64}$"}
+      }
+    },
+    "idempotencyRecord": {
+      "type": "object", "additionalProperties": false,
+      "required": ["idempotency_key", "plan_sha256"],
+      "properties": {
+        "idempotency_key": {"type": "string", "pattern": "^vmg-idem:[a-z0-9-]{3,64}$"},
+        "plan_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "projectionState": {
+      "type": "object", "additionalProperties": false,
+      "required": ["state", "active_plan_id", "active_plan_sha256"],
+      "properties": {
+        "state": {"enum": ["idle", "applying", "recovery_required"]},
+        "active_plan_id": {"type": ["string", "null"], "pattern": "^mutation-plan:[a-z0-9-]{3,64}$"},
+        "active_plan_sha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]}
+      }
+    },
+    "virtualDescriptor": {
+      "type": "object", "additionalProperties": false,
+      "required": ["descriptor_id", "device", "inode", "bytes_utf8"],
+      "properties": {
+        "descriptor_id": {"type": "string", "pattern": "^descriptor:[a-z0-9-]{3,64}$"},
+        "device": {"type": "integer", "minimum": 0},
+        "inode": {"type": "integer", "minimum": 1},
+        "bytes_utf8": {"type": "string", "maxLength": 1048576}
+      }
+    },
+    "virtualVault": {
+      "type": "object", "additionalProperties": false,
+      "required": ["trusted_root", "source_components", "component_kinds", "source_descriptor", "second_observation", "path_descriptor_after_validation", "target_exists", "result_descriptor", "readback_descriptor"],
+      "properties": {
+        "trusted_root": {
+          "type": "object", "additionalProperties": false,
+          "required": ["descriptor_id", "device", "inode"],
+          "properties": {
+            "descriptor_id": {"type": "string", "pattern": "^descriptor:[a-z0-9-]{3,64}$"},
+            "device": {"type": "integer", "minimum": 0},
+            "inode": {"type": "integer", "minimum": 1}
+          }
+        },
+        "source_components": {"type": "array", "minItems": 1, "maxItems": 32, "items": {"type": "string", "minLength": 1, "maxLength": 255}},
+        "component_kinds": {"type": "array", "minItems": 1, "maxItems": 32, "items": {"enum": ["directory", "file", "symlink"]}},
+        "source_descriptor": {"$ref": "#/$defs/virtualDescriptor"},
+        "second_observation": {"$ref": "#/$defs/virtualDescriptor"},
+        "path_descriptor_after_validation": {"type": "string", "pattern": "^descriptor:[a-z0-9-]{3,64}$"},
+        "target_exists": {"type": "boolean"},
+        "result_descriptor": {"$ref": "#/$defs/virtualDescriptor"},
+        "readback_descriptor": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/virtualDescriptor"}]}
+      }
+    },
+    "probe": {
+      "type": "object", "additionalProperties": false,
+      "required": ["virtual_vault", "authorized_precondition_identity", "authorized_result_identity", "receipt_precondition_identity", "receipt_result_identity", "receipt_echo", "journal_complete", "console_output"],
+      "properties": {
+        "virtual_vault": {"$ref": "#/$defs/virtualVault"},
+        "authorized_precondition_identity": {"$ref": "#/$defs/identity"},
+        "authorized_result_identity": {"$ref": "#/$defs/identity"},
         "receipt_precondition_identity": {"$ref": "#/$defs/identity"},
         "receipt_result_identity": {"$ref": "#/$defs/identity"},
-        "readback_identity": {"$ref": "#/$defs/identity"},
         "receipt_echo": {"enum": ["complete", "missing", "mismatch"]},
-        "readback": {"enum": ["match", "missing", "mismatch"]},
+        "journal_complete": {"type": "boolean"},
         "console_output": {"enum": ["none", "success"]}
       }
     },
     "recovery": {
       "type": "object", "additionalProperties": false,
-      "required": ["mode", "crash_boundary", "durable_prefix", "declared_intent", "safe_reverse", "compensation_authorized", "interruption_count"],
+      "required": ["mode", "crash_boundary", "durable_prefix", "declared_intent", "reverse_descriptor", "compensation_authorization", "interruption_count", "interruption_budget"],
       "properties": {
         "mode": {"enum": ["none", "cancel", "cancel_and_resume", "restart", "repeated_interruption"]},
         "crash_boundary": {"enum": [null, "before_journal", "after_journal", "before_validation", "after_validation", "before_data", "after_data", "before_metadata", "after_metadata", "before_receipt", "after_receipt", "before_echo", "after_echo", "before_readback", "after_readback", "before_commit", "after_commit"]},
         "durable_prefix": {"type": "array", "uniqueItems": true, "items": {"enum": ["journal", "validation", "data", "metadata", "receipt", "echo", "readback", "commit"]}},
         "declared_intent": {"enum": ["resume", "exact_rollback", "compensate", "terminal_manual_repair"]},
-        "safe_reverse": {"type": "boolean"},
-        "compensation_authorized": {"type": "boolean"},
-        "interruption_count": {"type": "integer", "minimum": 0, "maximum": 3}
+        "reverse_descriptor": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/virtualDescriptor"}]},
+        "compensation_authorization": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/compensatingPlan"}]},
+        "interruption_count": {"type": "integer", "minimum": 0, "maximum": 3},
+        "interruption_budget": {"const": 3}
       }
     }
   }

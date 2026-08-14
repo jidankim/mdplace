@@ -4,7 +4,7 @@
   "journal_id": "mutation-journal:reference-001",
   "vault_id": "vault:reference",
   "plan_id": "mutation-plan:reference-001",
-  "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
   "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
   "idempotency_key": "vmg-idem:reference-001",
   "state": "committed",
@@ -14,57 +14,65 @@
       "event": "prepared",
       "durability": "synced",
       "previous_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
-      "entry_sha256": "4444444444444444444444444444444444444444444444444444444444444444"
+      "entry_sha256": "dfbddf6b15f1b444935b69fd7d9723c34316784d1112760950e289009fd7f816"
     },
     {
       "sequence": 2,
       "event": "validated",
       "durability": "synced",
-      "previous_sha256": "4444444444444444444444444444444444444444444444444444444444444444",
-      "entry_sha256": "5555555555555555555555555555555555555555555555555555555555555555"
+      "previous_sha256": "dfbddf6b15f1b444935b69fd7d9723c34316784d1112760950e289009fd7f816",
+      "entry_sha256": "aa669e6b86d6e45e6e88cbf61dad27d067225bd4b785a92bd01e6f6976a7f78d"
     },
     {
       "sequence": 3,
       "event": "data_mutated",
       "durability": "synced",
-      "previous_sha256": "5555555555555555555555555555555555555555555555555555555555555555",
-      "entry_sha256": "6666666666666666666666666666666666666666666666666666666666666666"
+      "previous_sha256": "aa669e6b86d6e45e6e88cbf61dad27d067225bd4b785a92bd01e6f6976a7f78d",
+      "entry_sha256": "0b5f060aba4edf8b9979b57c8b7f9ebb64d0aa572c21a9b320fff76c53184df4"
     },
     {
       "sequence": 4,
       "event": "metadata_synced",
       "durability": "synced",
-      "previous_sha256": "6666666666666666666666666666666666666666666666666666666666666666",
-      "entry_sha256": "7777777777777777777777777777777777777777777777777777777777777777"
+      "previous_sha256": "0b5f060aba4edf8b9979b57c8b7f9ebb64d0aa572c21a9b320fff76c53184df4",
+      "entry_sha256": "f2c0d6315e1834a51b2eddc64ae7869db64b916e812c4a0d99a4cb511984452a"
     },
     {
       "sequence": 5,
       "event": "receipt_published",
       "durability": "synced",
-      "previous_sha256": "7777777777777777777777777777777777777777777777777777777777777777",
-      "entry_sha256": "8888888888888888888888888888888888888888888888888888888888888888"
+      "previous_sha256": "f2c0d6315e1834a51b2eddc64ae7869db64b916e812c4a0d99a4cb511984452a",
+      "entry_sha256": "c298eb7f2ad910f168344fbb2432342108bc82d111e229fe5a33420d17913eae"
     },
     {
       "sequence": 6,
       "event": "echo_published",
       "durability": "synced",
-      "previous_sha256": "8888888888888888888888888888888888888888888888888888888888888888",
-      "entry_sha256": "9999999999999999999999999999999999999999999999999999999999999999"
+      "previous_sha256": "c298eb7f2ad910f168344fbb2432342108bc82d111e229fe5a33420d17913eae",
+      "entry_sha256": "337eadbc7e6679952708d9619ef93c669cb0d9b1c29a59c33fac9e023f7bbbbe"
     },
     {
       "sequence": 7,
       "event": "readback_verified",
       "durability": "synced",
-      "previous_sha256": "9999999999999999999999999999999999999999999999999999999999999999",
-      "entry_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+      "previous_sha256": "337eadbc7e6679952708d9619ef93c669cb0d9b1c29a59c33fac9e023f7bbbbe",
+      "entry_sha256": "8e0c4f626171f554fd9f68527b0c3210bd5bfc495ce8b37e1ba7949baf86e55d"
     },
     {
       "sequence": 8,
       "event": "committed",
       "durability": "synced",
-      "previous_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
-      "entry_sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+      "previous_sha256": "8e0c4f626171f554fd9f68527b0c3210bd5bfc495ce8b37e1ba7949baf86e55d",
+      "entry_sha256": "cfeead87da9ad252318d8d9ab3c95fd763c6d9b831b970fe8ab528a68026dd30"
     }
   ],
-  "journal_sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+  "journal_sha256": "9003b27919f148e678b0d027172407ac38f617f3d900387eb276fb42b69c5f0f",
+  "scheduled_work": {
+    "work_id": "work:projection-reference-001",
+    "work_version": 1,
+    "lease_id": "lease:projection-reference-001",
+    "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "work_journal_head_sequence": 1,
+    "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+  }
 }

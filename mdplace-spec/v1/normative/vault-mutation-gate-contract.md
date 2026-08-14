@@ -26,6 +26,8 @@ A precondition passes only when the first and second `fstat` device, inode, and 
 
 Only the current persistent mdplace Agent or foreground recovery core holding the exact current Exclusive Writer Lock receipt may enter prepare. The Mutation Journal binds that receipt, the complete Authorized Mutation Plan digest, the Work Item and Work Lease when scheduled, and the exact prior journal head. Ownership loss before commit blocks further mutation and enters recovery.
 
+Folder Projection apply is additionally serialized per vault. Once one projection plan enters prepare, every different projection plan is denied until the active plan commits, completes exact rollback, or remains bound to its own recovery; the Agent's Exclusive Writer Lock cannot substitute for this cross-plan guard.
+
 The durability order is strict: publish and sync prepared journal intent; sync the journal directory; validate all descriptor-bound preconditions; publish and sync the validated journal entry; perform the single declared data or metadata operation; sync affected file data; sync affected metadata and parent directories; publish and sync the Operation Receipt and its echo; perform retained-descriptor readback; publish and sync the readback entry; publish and sync commit evidence; and sync the journal directory. A later event cannot substitute for a missing or unsynced predecessor.
 
 ## REQ-VMG-006: Mutation lifecycle and idempotency are complete

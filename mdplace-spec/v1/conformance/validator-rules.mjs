@@ -185,7 +185,9 @@ const conformanceExecutables = new Set([
   'conformance/validator-semantic-kernel-boundary-cases.mjs',
   'conformance/validator-semantic-kernel-review-cases.mjs',
   'conformance/vault-mutation-gate-checks.mjs',
+  'conformance/vault-mutation-digests.mjs',
   'conformance/vault-mutation-gate-observer.mjs',
+  'conformance/vault-mutation-virtual-vault.mjs',
   'conformance/validator-vault-mutation-gate-cases.mjs',
   'conformance/vault-mutation-recovery-checks.mjs',
 ]);

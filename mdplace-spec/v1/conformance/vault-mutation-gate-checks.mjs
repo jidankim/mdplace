@@ -4,6 +4,12 @@ import {isDeepStrictEqual} from 'node:util';
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {readPackageFile} from './safe-path.mjs';
 import {
+  authorizedMutationPlanDigest,
+  mutationJournalDigest,
+  mutationJournalEntryDigest,
+  operationReceiptDigest,
+} from './vault-mutation-digests.mjs';
+import {
   boundaryModeEvidenceIsValid,
   matrixRecoveryRowsAreValid,
 } from './vault-mutation-recovery-checks.mjs';
@@ -50,6 +56,42 @@ function tableIsComplete(table) {
     states.every((state) => commands.every((command) => pairs.includes(`${state}:${command}`)));
 }
 
+const committedJournalEvents = [
+  'prepared', 'validated', 'data_mutated', 'metadata_synced',
+  'receipt_published', 'echo_published', 'readback_verified', 'committed',
+];
+
+function journalEventOrderIsValid(journal) {
+  if (!Array.isArray(journal?.entries) || !journal.entries.every(isRecord)) return false;
+  const events = journal.entries.map(({event}) => event);
+  const terminalRecoveryEvent = new Map([
+    ['recovery_required', null],
+    ['rolled_back', 'rolled_back'],
+    ['compensated', 'compensated'],
+    ['terminal_manual_repair', 'terminal_manual_repair'],
+  ]).get(journal.state);
+  if (journal.state === 'recovery_required' || terminalRecoveryEvent !== undefined) {
+    const recoveryIndex = events.indexOf('recovery_required');
+    const prefix = events.slice(0, recoveryIndex);
+    const suffix = events.slice(recoveryIndex);
+    const expectedSuffix = terminalRecoveryEvent === null
+      ? ['recovery_required']
+      : ['recovery_required', terminalRecoveryEvent];
+    return recoveryIndex > 0 && isDeepStrictEqual(prefix, committedJournalEvents.slice(0, prefix.length)) &&
+      isDeepStrictEqual(suffix, expectedSuffix);
+  }
+  const allowedLengths = new Map([
+    ['prepared', [1]],
+    ['validated', [2]],
+    ['mutated', [3, 4]],
+    ['receipt_recorded', [5, 6]],
+    ['readback_verified', [7]],
+    ['committed', [8]],
+  ]).get(journal.state) ?? [];
+  return allowedLengths.includes(events.length) &&
+    isDeepStrictEqual(events, committedJournalEvents.slice(0, events.length));
+}
+
 export async function checkVaultMutationGateContract(packageRoot, manifest, conformance, traceability) {
   const codes = [];
   const documents = new Map();
@@ -74,6 +116,14 @@ export async function checkVaultMutationGateContract(packageRoot, manifest, conf
   const plan = documents.get('contracts/vault-mutation-gate/authorized-plan.json');
   const receipt = documents.get('contracts/vault-mutation-gate/operation-receipt.json');
   const journal = documents.get('contracts/vault-mutation-gate/mutation-journal.json');
+  const journalEntries = Array.isArray(journal?.entries) ? journal.entries : [];
+  const digestsAreValid = plan !== undefined && receipt !== undefined && journal !== undefined &&
+    authorizedMutationPlanDigest(plan) === plan?.immutable_inputs?.plan_sha256 &&
+    journalEntries.every((entry) => isRecord(entry) &&
+      mutationJournalEntryDigest(entry) === entry.entry_sha256) &&
+    mutationJournalDigest(journal) === journal.journal_sha256 &&
+    operationReceiptDigest(receipt) === receipt.receipt_sha256;
+  if (!digestsAreValid) codes.push('vault_mutation.digest_invalid');
   const planBindingsMatch = plan !== undefined && receipt !== undefined && journal !== undefined &&
     receipt?.plan_id === plan?.plan_id && receipt?.plan_sha256 === plan?.immutable_inputs?.plan_sha256 &&
     receipt?.operation === plan?.operation && receipt?.caller_id === plan?.caller?.caller_id &&
@@ -87,6 +137,10 @@ export async function checkVaultMutationGateContract(packageRoot, manifest, conf
     journal?.ownership_receipt_sha256 === plan?.ownership?.exclusive_writer_receipt_sha256 &&
     journal?.idempotency_key === plan?.idempotency_key && receipt?.journal_sha256 === journal?.journal_sha256;
   if (!planBindingsMatch) codes.push('vault_mutation.echo_binding_invalid');
+  const scheduledWorkBindingsMatch = plan?.scheduled_work !== null &&
+    isDeepStrictEqual(journal?.scheduled_work, plan?.scheduled_work) &&
+    isDeepStrictEqual(receipt?.scheduled_work, plan?.scheduled_work);
+  if (!scheduledWorkBindingsMatch) codes.push('vault_mutation.scheduled_work_binding_invalid');
   const expectedCallerPrefix = new Map([
     ['capture_adapter', 'capture-adapter:'],
     ['folder_projection', 'folder-projection:'],
@@ -95,13 +149,15 @@ export async function checkVaultMutationGateContract(packageRoot, manifest, conf
   if (expectedCallerPrefix === undefined || !plan?.caller?.caller_id?.startsWith(expectedCallerPrefix)) {
     codes.push('vault_mutation.caller_binding_invalid');
   }
-  const journalEntries = Array.isArray(journal?.entries) ? journal.entries : [];
   const journalChainValid = journalEntries.length > 0 && journalEntries.every((entry, index) => isRecord(entry) &&
     entry.sequence === index + 1 && entry.durability === 'synced' &&
     (index === 0 ? entry.previous_sha256 === '0'.repeat(64) :
       entry.previous_sha256 === journalEntries[index - 1].entry_sha256)) &&
     (journal?.state !== 'committed' || journalEntries.at(-1)?.event === 'committed');
   if (!journalChainValid) codes.push('vault_mutation.journal_chain_invalid');
+  if (journal === undefined || !journalEventOrderIsValid(journal)) {
+    codes.push('vault_mutation.journal_order_invalid');
+  }
 
   const {document: table} = await readJson(packageRoot, 'contracts/transitions/vault-mutation-gate-lifecycle.json');
   if (!tableIsComplete(table) || table?.states?.length !== 11 || table?.commands?.length !== 10) {
@@ -120,9 +176,6 @@ export async function checkVaultMutationGateContract(packageRoot, manifest, conf
       continue;
     }
     scenarios.push(fixture.subject.document);
-    if (fixture.subject.document.probe?.pathname_reopened) {
-      codes.push('vault_mutation.pathname_reopen_forbidden');
-    }
     if (entry.expected_verdict === 'fail' && fixture.expected.filesystem_effects?.some((effect) =>
       effect !== 'none' && effect !== 'preserve only the declared observed effect' &&
       effect !== 'preserve observed physical state')) {

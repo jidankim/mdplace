@@ -663,7 +663,7 @@
   "boundary_mode_results": [
     {
       "fixture_id": "FIX-VMG-CRASH-001",
-      "fixture_sha256": "f1a00ed8cf29abe41c5ba0c2ae8abc13245c0adb4267d5ca893010f10925f453",
+      "fixture_sha256": "b5ba8d9a29974a8a608dffb680f881c7f646ae8a945fa115371a94e8018ddb32",
       "boundary_id": "before_journal",
       "mode": "cancel",
       "durable_prefix": [],
@@ -674,26 +674,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -711,7 +719,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-002",
-      "fixture_sha256": "f31e3e1333337228f3090ad8567ceb69dd809fd51c3a9537757a2caf247b2452",
+      "fixture_sha256": "50c94a5de5add253a19db37ce7fb56709a56e5cd19487120054b457eeb8c8916",
       "boundary_id": "before_journal",
       "mode": "cancel_and_resume",
       "durable_prefix": [],
@@ -722,26 +730,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -759,7 +775,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-003",
-      "fixture_sha256": "1253a77051142b53ea08eacc575b25238d83d845af3a4a3812daa91249598561",
+      "fixture_sha256": "ed1d9584f47b700c9a8a919163d7816334858b6c57530e644d4d23c2914e6cec",
       "boundary_id": "before_journal",
       "mode": "restart",
       "durable_prefix": [],
@@ -770,26 +786,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -807,7 +831,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-004",
-      "fixture_sha256": "f3083712ff32360fea5acef771dea5f82e3ffae57e8d1f6fdded956c641a8678",
+      "fixture_sha256": "138f615235cf4abff112edf262c04f38f89881ca719ab75dfec33229ba1d037a",
       "boundary_id": "before_journal",
       "mode": "repeated_interruption",
       "durable_prefix": [],
@@ -818,26 +842,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -855,7 +887,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-005",
-      "fixture_sha256": "d01178c7c8ce486c2a516a361f11d9bb829727b959363848176c9ef015524427",
+      "fixture_sha256": "a350df4da8cb59ab8e8d1c0c46204d623d179b2e8e02cab91c55e462f2361a4b",
       "boundary_id": "after_journal",
       "mode": "cancel",
       "durable_prefix": [
@@ -868,26 +900,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -905,7 +945,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-006",
-      "fixture_sha256": "c1956be40d27e83393d2799d35dbba11f1d44e73391843de50b937af3e4b2ffa",
+      "fixture_sha256": "502b28c399370eac0017b742ee6c49352d110219a6d55f82709629ea95dbe2be",
       "boundary_id": "after_journal",
       "mode": "cancel_and_resume",
       "durable_prefix": [
@@ -918,26 +958,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -955,7 +1003,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-007",
-      "fixture_sha256": "1616ad3ca7fe2a4a6157bc3bf1e19b6e9e3542a900fb6e8a45c14099ef5e6bad",
+      "fixture_sha256": "43ee02c07f966ae76eb4082cfb99cb8f6e103090812333236610617b77ea1d67",
       "boundary_id": "after_journal",
       "mode": "restart",
       "durable_prefix": [
@@ -968,26 +1016,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -1005,7 +1061,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-008",
-      "fixture_sha256": "996fcc98c86aba6da71acf651150979d015b1663198f81e7cb9c67f707ad5b09",
+      "fixture_sha256": "3e9b5b9f8590ae43bc0fecad879bca431b04380676e56d1796110fdc6730a9f9",
       "boundary_id": "after_journal",
       "mode": "repeated_interruption",
       "durable_prefix": [
@@ -1018,26 +1074,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -1055,7 +1119,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-009",
-      "fixture_sha256": "11075846858b7f1bcf0ffaffee43ea34d4df8d0f7ac8083143696415e7666083",
+      "fixture_sha256": "d0a545a8a68c02bdb8720874c41dc9756767e0038ed3a58e87773681da05450e",
       "boundary_id": "before_validation",
       "mode": "cancel",
       "durable_prefix": [
@@ -1068,26 +1132,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -1105,7 +1177,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-010",
-      "fixture_sha256": "70cc448b1568044882fa283cf66011c8cb1faba0d2a73de8ad7e76167dce8b18",
+      "fixture_sha256": "171ba056661bd883cf81e3521285daf7d785d8a756ce5ffbbd15c4d63dad5459",
       "boundary_id": "before_validation",
       "mode": "cancel_and_resume",
       "durable_prefix": [
@@ -1118,26 +1190,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -1155,7 +1235,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-011",
-      "fixture_sha256": "4312a080445608af0cbb2bd698348b3c676f5535e3c4db5919e1c2885d10401c",
+      "fixture_sha256": "e07293f283c8bfa1d10dc39efdc926176dfd58659bb82ec8c16f874670cf34b1",
       "boundary_id": "before_validation",
       "mode": "restart",
       "durable_prefix": [
@@ -1168,26 +1248,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -1205,7 +1293,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-012",
-      "fixture_sha256": "c92adf8002501e25066109033d6e395883db981d321651318afb5eef859ad00e",
+      "fixture_sha256": "b57e6ba2216016c5f71d7a85726462e44781e33100993d78104f5f64d51d53aa",
       "boundary_id": "before_validation",
       "mode": "repeated_interruption",
       "durable_prefix": [
@@ -1218,26 +1306,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -1255,7 +1351,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-013",
-      "fixture_sha256": "12186585cb80c6fe6289ff3338b9659052d535b51154603139eac9cdc837c89b",
+      "fixture_sha256": "087b921c68f28f23276b0d1ad57e321b7fce12ab8dc33484a06df19034dc8f92",
       "boundary_id": "after_validation",
       "mode": "cancel",
       "durable_prefix": [
@@ -1269,26 +1365,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -1306,7 +1410,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-014",
-      "fixture_sha256": "1bd59874a31d5e6787e7d8a6fa76a9db824b2b0b21adcd53542d70d8ebea4c7d",
+      "fixture_sha256": "c4d35a65a3e13c6bb4509811481422dfa7196bf0656ab160c50a04bca1062754",
       "boundary_id": "after_validation",
       "mode": "cancel_and_resume",
       "durable_prefix": [
@@ -1320,26 +1424,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -1357,7 +1469,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-015",
-      "fixture_sha256": "000edcfe74fafeea1e71993fa6db3ef5b4cdc59eada0f1b3b1658e7c4f59ab36",
+      "fixture_sha256": "399d9b959cd4eaa158f3fd30d84bb0201e75532da9189af48bf71dc1522bd845",
       "boundary_id": "after_validation",
       "mode": "restart",
       "durable_prefix": [
@@ -1371,26 +1483,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -1408,7 +1528,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-016",
-      "fixture_sha256": "1979d6352c06686d6f863748d4ef7d6f17dbd4b9de9962350cf7b2fb11a696fc",
+      "fixture_sha256": "8ee7f26c3cc178c6d5e9d86ad685b5f6b577380bad956c3dcdba7f762c016677",
       "boundary_id": "after_validation",
       "mode": "repeated_interruption",
       "durable_prefix": [
@@ -1422,26 +1542,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -1459,7 +1587,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-017",
-      "fixture_sha256": "7f4ee52dade00a7a9f527041f970c6b680c08222b8864932502b46adf4ac700c",
+      "fixture_sha256": "6366215142a1430b63a8d75a9cfc82c6bd80856ed987fdfbaec6e18308853a1b",
       "boundary_id": "before_data",
       "mode": "cancel",
       "durable_prefix": [
@@ -1473,26 +1601,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -1510,7 +1646,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-018",
-      "fixture_sha256": "659e54183754e1b61ff9e415dce63afe4975e4773058b7a06f3a1800af258411",
+      "fixture_sha256": "3d5e7e86b664c891161d0b035ffa3bc3fd7e0e61d65d5d4a436a665d1edc0f36",
       "boundary_id": "before_data",
       "mode": "cancel_and_resume",
       "durable_prefix": [
@@ -1524,26 +1660,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -1561,7 +1705,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-019",
-      "fixture_sha256": "551ee5b5acffa95235323d35998a125b0a484d07d767e21d662821ecca24861f",
+      "fixture_sha256": "512554b8f2038742ff099cfa02484ca16f7dcba235520abec608d3aeeb2a5794",
       "boundary_id": "before_data",
       "mode": "restart",
       "durable_prefix": [
@@ -1575,26 +1719,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -1612,7 +1764,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-020",
-      "fixture_sha256": "6fcf99e992f7edb2966898457ffc9837b261529bdb73d8a6b0e7d183ad5e04f6",
+      "fixture_sha256": "aa36e189ee0b8f560ea17e6157dff7e65bbac54fdd2e73f6b0442cf769b0458f",
       "boundary_id": "before_data",
       "mode": "repeated_interruption",
       "durable_prefix": [
@@ -1626,26 +1778,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -1663,7 +1823,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-021",
-      "fixture_sha256": "0d3d9aa137a7453cc857368b3feea2ac34822ce30ef3896104edcd9d29acfee3",
+      "fixture_sha256": "66c0ecd60772fc175609e22fc15f6439fe62cf29084c1cde7125604d65a10877",
       "boundary_id": "after_data",
       "mode": "cancel",
       "durable_prefix": [
@@ -1679,26 +1839,34 @@
         "data"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -1716,7 +1884,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-022",
-      "fixture_sha256": "564cf03c825f1648cd919295d043d3eadef0c8f1e63ca396e8d9a0089e6acccd",
+      "fixture_sha256": "ec7679b0055174771a132b76773fe6fa0364035d57d3c20a1de8a6b3be4d45ae",
       "boundary_id": "after_data",
       "mode": "cancel_and_resume",
       "durable_prefix": [
@@ -1732,26 +1900,34 @@
         "data"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -1769,7 +1945,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-023",
-      "fixture_sha256": "499504da7e9d60340b4a4c00bc06f0c0437bd612d144e12ca562a9b7b045a342",
+      "fixture_sha256": "2ed9af095e575d9d4557fd85fcbfe6868b93c7b8b20e7d5a25a0687ea966c286",
       "boundary_id": "after_data",
       "mode": "restart",
       "durable_prefix": [
@@ -1785,26 +1961,34 @@
         "data"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -1822,7 +2006,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-024",
-      "fixture_sha256": "d26c506a0b6842384d463cbcb776b80827b0e776e010da6fa7c8687d33582160",
+      "fixture_sha256": "f8c8b724123f5949e3374e14dd6e773aa9a8ff1053dc32d6cdd11076bc250f48",
       "boundary_id": "after_data",
       "mode": "repeated_interruption",
       "durable_prefix": [
@@ -1838,26 +2022,34 @@
         "data"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -1875,7 +2067,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-025",
-      "fixture_sha256": "c21ddefee57324f94d52d2f525fc63b82e6039dec90a9bc247fe167008fbdebc",
+      "fixture_sha256": "0278a782a2251f65f8460f4b1407631f59e9392796e804d7f0d2b843aa0c87d2",
       "boundary_id": "before_metadata",
       "mode": "cancel",
       "durable_prefix": [
@@ -1890,26 +2082,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -1927,7 +2127,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-026",
-      "fixture_sha256": "247f9b71a35872ac1a487cd49e8ac4f1cbbcef83c800454fdf9e936f7a51a254",
+      "fixture_sha256": "a3c5772aee9e7c65225718641e2ee1fdd49cc54698d7c05e165173a3a1029106",
       "boundary_id": "before_metadata",
       "mode": "cancel_and_resume",
       "durable_prefix": [
@@ -1942,26 +2142,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -1979,7 +2187,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-027",
-      "fixture_sha256": "0d6e26d579ed001c2a6f8c613d87c3299fa3fe012c62a9d48a724e97b5b704d2",
+      "fixture_sha256": "9f1d80495414fb2b1620cbfbca81ab559c2a62cba337e436efcc90a749546f85",
       "boundary_id": "before_metadata",
       "mode": "restart",
       "durable_prefix": [
@@ -1994,26 +2202,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -2031,7 +2247,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-028",
-      "fixture_sha256": "007c034ed178a956a47ab4a19cd64cbf3b7413ce54d1e283b91ca072fa2146dc",
+      "fixture_sha256": "8c294e26966139eaf96902736876bf0a0b631434b413654e41f7f658e1c9694f",
       "boundary_id": "before_metadata",
       "mode": "repeated_interruption",
       "durable_prefix": [
@@ -2046,26 +2262,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -2083,7 +2307,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-029",
-      "fixture_sha256": "45e0809bd77642825565ee79c4874e0b41a153cdeb9421b22ba55e84fef0a95d",
+      "fixture_sha256": "5d25d93fec5f8ac204d796e5de8a4e5d938834dcbd2cd18f3b262ac5ce22d0dd",
       "boundary_id": "after_metadata",
       "mode": "cancel",
       "durable_prefix": [
@@ -2101,26 +2325,34 @@
         "metadata"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -2138,7 +2370,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-030",
-      "fixture_sha256": "f9e9026cc68e5e248daa51308a14d99d33a748cfbd9914d09589671120f47789",
+      "fixture_sha256": "ca4699d4a818a9550a75a717ab8797ed316f1c36258b5b25c2042e45b2844815",
       "boundary_id": "after_metadata",
       "mode": "cancel_and_resume",
       "durable_prefix": [
@@ -2156,26 +2388,34 @@
         "metadata"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -2193,7 +2433,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-031",
-      "fixture_sha256": "24134a9325c73515310ebac59d403068ed5a7fda13988db227c6bb646862e165",
+      "fixture_sha256": "3ab5e8baa32676cda0876cecd66f1f996d654637d6a969c6f8ce1a634b810162",
       "boundary_id": "after_metadata",
       "mode": "restart",
       "durable_prefix": [
@@ -2211,26 +2451,34 @@
         "metadata"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -2248,7 +2496,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-032",
-      "fixture_sha256": "abc83107efd948140a16cd5237a54ce6a142700d6cf4a3ec53bc31a9c8dfe4d2",
+      "fixture_sha256": "2e072d07c564b6affd5b23a30bbefe29d306e1e32752d981c276951de9256e26",
       "boundary_id": "after_metadata",
       "mode": "repeated_interruption",
       "durable_prefix": [
@@ -2266,26 +2514,34 @@
         "metadata"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -2303,7 +2559,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-033",
-      "fixture_sha256": "92aa45054a46a01a0742ab9d1882f4c433b7c713b215c0aaab6758da6b6f9043",
+      "fixture_sha256": "8061277a03fdc3a632fcd23f8ecedb8edd63f35aae8aace1f8ad293e6602205c",
       "boundary_id": "before_receipt",
       "mode": "cancel",
       "durable_prefix": [
@@ -2319,26 +2575,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -2356,7 +2620,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-034",
-      "fixture_sha256": "ec26becf22c006ef6d9561fad64a54b5f9d0849bebd93ce72d6a0c618df76b1b",
+      "fixture_sha256": "2ba0077d9521c3b5efb8d67edcd128473cd15eaaec001e9a6d8575f189994f91",
       "boundary_id": "before_receipt",
       "mode": "cancel_and_resume",
       "durable_prefix": [
@@ -2372,26 +2636,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -2409,7 +2681,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-035",
-      "fixture_sha256": "86898c117dc8e003d251bddd9e2960c91c7a443c248e3a2396f172814b5e7f40",
+      "fixture_sha256": "5d2fd6177edd00140a10ac64b496c30a03b29a73b96332874ab956eb7753e9df",
       "boundary_id": "before_receipt",
       "mode": "restart",
       "durable_prefix": [
@@ -2425,26 +2697,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -2462,7 +2742,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-036",
-      "fixture_sha256": "aee21a245935c713075d248d480578452f6b5434082c4d2baa257283cf3216ef",
+      "fixture_sha256": "17fdb641af29c3d1dbd2c299c0dfc30f93c11acd0b90b51db54136197ef51c42",
       "boundary_id": "before_receipt",
       "mode": "repeated_interruption",
       "durable_prefix": [
@@ -2478,26 +2758,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -2515,7 +2803,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-037",
-      "fixture_sha256": "64b70ea6c6d4381bd8967e18d0f56ed57ecc942f4c5629244e143e48bf71b806",
+      "fixture_sha256": "92bc0bdf0138483c649bc8c16915ecb5dbae11f66d61cef7c6b829818c07cf58",
       "boundary_id": "after_receipt",
       "mode": "cancel",
       "durable_prefix": [
@@ -2535,26 +2823,34 @@
         "receipt"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -2572,7 +2868,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-038",
-      "fixture_sha256": "94906ee398c2df48bf2c005c34d0fcaaaa759282c3cd45e6d1e4172892c5245b",
+      "fixture_sha256": "73a57a5624b23090be9a980e942052d4287d60e47e56c1aa51dbe7260e2a8552",
       "boundary_id": "after_receipt",
       "mode": "cancel_and_resume",
       "durable_prefix": [
@@ -2592,26 +2888,34 @@
         "receipt"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -2629,7 +2933,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-039",
-      "fixture_sha256": "5652571de519ba75acd8d9254e221f0ccc61be97743cfe3f59db815887c0e08c",
+      "fixture_sha256": "ce7d81da111cbc80bc9c164974ef3ccc32d3588b23140a6314737e535ff13fe6",
       "boundary_id": "after_receipt",
       "mode": "restart",
       "durable_prefix": [
@@ -2649,26 +2953,34 @@
         "receipt"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -2686,7 +2998,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-040",
-      "fixture_sha256": "4d727d5424600cd3700cd9da21048d28ee5180d5ea51f58f420adb629de0db4b",
+      "fixture_sha256": "9707d7deeeab04cf21e9ce862ea2c63482b50b798708ec9c63c67a5a836a6db2",
       "boundary_id": "after_receipt",
       "mode": "repeated_interruption",
       "durable_prefix": [
@@ -2706,26 +3018,34 @@
         "receipt"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -2743,7 +3063,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-041",
-      "fixture_sha256": "b52eb67141d825895e95399cd0938ed16bc14968b4239b73e31061dd4e852de6",
+      "fixture_sha256": "b9cfbfda25af0ca62f69639b03f7b6483618a769833a98827393223ba09e590c",
       "boundary_id": "before_echo",
       "mode": "cancel",
       "durable_prefix": [
@@ -2760,26 +3080,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -2797,7 +3125,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-042",
-      "fixture_sha256": "5d3b3bdb8adbd5f0940e119ca8d5a5698a878667ee0122856d864bf37419b70a",
+      "fixture_sha256": "46cb4df5569d1650236e6ba4d73453cd768e84f85a9547aeb3bfcb2ddc7ff09b",
       "boundary_id": "before_echo",
       "mode": "cancel_and_resume",
       "durable_prefix": [
@@ -2814,26 +3142,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -2851,7 +3187,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-043",
-      "fixture_sha256": "d3c511af80aeb5baa64518beedcead7ffcdc97d779c3eabdcb6b76fcda09b9b5",
+      "fixture_sha256": "ea79f360277d4e19154067035c2597e846ab6d7fbe05df9beb90a9d430b75f61",
       "boundary_id": "before_echo",
       "mode": "restart",
       "durable_prefix": [
@@ -2868,26 +3204,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -2905,7 +3249,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-044",
-      "fixture_sha256": "89608c9e4164f76d8f02c71fd5205dab922a5aa10c0dd46382448b65757fac28",
+      "fixture_sha256": "40ec31b6f33e93ead4435d5c6e489a96b8ba5e8419a04737591bd5cdb26f6e23",
       "boundary_id": "before_echo",
       "mode": "repeated_interruption",
       "durable_prefix": [
@@ -2922,26 +3266,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -2959,7 +3311,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-045",
-      "fixture_sha256": "aa5a0d35d02c4fbd30aa87c6b3b82363a415a6edcee1d1f3ea8ad100186c3007",
+      "fixture_sha256": "15033a54b6d0921e72417c9d248a3fa01a47d9951e036fbfde2ccf6796c7f811",
       "boundary_id": "after_echo",
       "mode": "cancel",
       "durable_prefix": [
@@ -2981,26 +3333,34 @@
         "echo"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -3018,7 +3378,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-046",
-      "fixture_sha256": "797db66658681e88deec9b174439749a8ab6a0a1b476777ac90159865a704d17",
+      "fixture_sha256": "f1aa4c22152f49c0f906fc1f9f7fb04cac2f2e8bbd386e9911ddadfd4300974d",
       "boundary_id": "after_echo",
       "mode": "cancel_and_resume",
       "durable_prefix": [
@@ -3040,26 +3400,34 @@
         "echo"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -3077,7 +3445,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-047",
-      "fixture_sha256": "98e2100715d4b573d8e25bd1bbdaf5e79136a4ebbfaf97475d0780f776026db6",
+      "fixture_sha256": "f513f5e774adb8d97372e9037f3e880304e8bfa4a73a4ffdda0dae1704233879",
       "boundary_id": "after_echo",
       "mode": "restart",
       "durable_prefix": [
@@ -3099,26 +3467,34 @@
         "echo"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -3136,7 +3512,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-048",
-      "fixture_sha256": "f3f24770bdf2c0475fd9d49f08dd72882ffd74fd5a1f01cccd6d3b76789f1667",
+      "fixture_sha256": "c32ee7fa3b4e6f391bef460a4be51c45f88f91521a20470d8810611603311eff",
       "boundary_id": "after_echo",
       "mode": "repeated_interruption",
       "durable_prefix": [
@@ -3158,26 +3534,34 @@
         "echo"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -3195,7 +3579,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-049",
-      "fixture_sha256": "85f284ec27843c36e326765e23b5820548ee8e8db3e9f4f7a5223867cee4d95e",
+      "fixture_sha256": "2bfed187e0f0ebfbe085bb450f803bc7066f4b0e9c8fb8bcb121c6453cf2f899",
       "boundary_id": "before_readback",
       "mode": "cancel",
       "durable_prefix": [
@@ -3213,26 +3597,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -3250,7 +3642,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-050",
-      "fixture_sha256": "dc03cff1faf3dcea5779361cd544cfb1f38cd5630548d4c486caf59afcd72664",
+      "fixture_sha256": "c05c1a7e15e6f9cc8c5fd69b1e3888949214d3948aff371b073d1d2eda0d2b87",
       "boundary_id": "before_readback",
       "mode": "cancel_and_resume",
       "durable_prefix": [
@@ -3268,26 +3660,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -3305,7 +3705,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-051",
-      "fixture_sha256": "16d75858bb382902156dad274c532057c76e97ced1186b21f575d542f1d1148e",
+      "fixture_sha256": "63f26e127d8a6351d81b5addefa5772dbf0fb6a11f2efad665df72d630244ff0",
       "boundary_id": "before_readback",
       "mode": "restart",
       "durable_prefix": [
@@ -3323,26 +3723,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -3360,7 +3768,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-052",
-      "fixture_sha256": "dd4647f1278106a9f9c2dd638567929672e0d78d05a60f7131b35b62b18dfa3c",
+      "fixture_sha256": "de589a1e81b7e355c1fbfbbafaaa1948ce41fe4df34093d81e0247301325d6ba",
       "boundary_id": "before_readback",
       "mode": "repeated_interruption",
       "durable_prefix": [
@@ -3378,26 +3786,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -3415,7 +3831,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-053",
-      "fixture_sha256": "12185715dfdf90acaab70e1017ea82ac1abb02a4f4a0507277688a1ea4960e87",
+      "fixture_sha256": "34199849d2f0abdd26efaad1799c522a1eb9c34691f166ee8aa92081a4a5e66d",
       "boundary_id": "after_readback",
       "mode": "cancel",
       "durable_prefix": [
@@ -3439,26 +3855,34 @@
         "readback"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -3476,7 +3900,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-054",
-      "fixture_sha256": "a1dee4d4fe6bd20183cacc7063d341ebbf699244eb95a2ee74c28954394dab97",
+      "fixture_sha256": "89463d11e99ac3515583f51aecf18eb9a952854676271050fc10ec1332c33778",
       "boundary_id": "after_readback",
       "mode": "cancel_and_resume",
       "durable_prefix": [
@@ -3500,26 +3924,34 @@
         "readback"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -3537,7 +3969,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-055",
-      "fixture_sha256": "2e8135544704e39f6b11ce909d8b490a4fb889586c6fefa71df59e392433eef5",
+      "fixture_sha256": "9c0f6bdf8a516d0e5804cd1085d33cb4fac1ce1d7748dfbd2622b0a06103923d",
       "boundary_id": "after_readback",
       "mode": "restart",
       "durable_prefix": [
@@ -3561,26 +3993,34 @@
         "readback"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -3598,7 +4038,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-056",
-      "fixture_sha256": "9f53e5cd5498ec4f4669178889eee6bf8e065228a784500b2e85bf6719667e8d",
+      "fixture_sha256": "bf8efb5cde0fd4e2a66ffaa62aa69c36d67452a7b0859b20b6c6bd518507c0d3",
       "boundary_id": "after_readback",
       "mode": "repeated_interruption",
       "durable_prefix": [
@@ -3622,26 +4062,34 @@
         "readback"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -3659,7 +4107,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-057",
-      "fixture_sha256": "13afd0c83bc965d196788aa8fb0a9b4b44688c0f5fd4fdd3ecfa5fb3d70c0369",
+      "fixture_sha256": "fcf9d2322b6d2ca0a8180e3d604e172cf0780c6b466d7c35082d30d5d774bbbf",
       "boundary_id": "before_commit",
       "mode": "cancel",
       "durable_prefix": [
@@ -3678,26 +4126,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -3715,7 +4171,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-058",
-      "fixture_sha256": "4b62b32c48136cad38fa76f83b361fb1464f43b0dff56b0ba47dd3c1a247c87d",
+      "fixture_sha256": "0e2183092a3a67a52285ec0e4374c4e9d7ec31f77ffc2a9f66c01fe6497f3290",
       "boundary_id": "before_commit",
       "mode": "cancel_and_resume",
       "durable_prefix": [
@@ -3734,26 +4190,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -3771,7 +4235,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-059",
-      "fixture_sha256": "fc6eee1411c9a5389914a9615bae9fed1c642a9009107400250e19d92001f1ec",
+      "fixture_sha256": "76cdb2444ac450478093c78cb44c090af52c197dfa3b59af77c8b742111f0ef9",
       "boundary_id": "before_commit",
       "mode": "restart",
       "durable_prefix": [
@@ -3790,26 +4254,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -3827,7 +4299,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-060",
-      "fixture_sha256": "cfc431bdf679e6b0e60e7bf1f8b816784030e235a0528481c9b571e3b87a47e3",
+      "fixture_sha256": "a7f1a3eca0acf7faa967627440880a38ed6d8df1603e6d5a289e8598c60aa609",
       "boundary_id": "before_commit",
       "mode": "repeated_interruption",
       "durable_prefix": [
@@ -3846,26 +4318,34 @@
         "descriptor_identity"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -3883,7 +4363,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-061",
-      "fixture_sha256": "00979b387f65c3e98a4d2f354f50f84371b54f3a6f3468989137c79e9dc11318",
+      "fixture_sha256": "84a5ba40541b258f9c6a09925ff779ddc79505226805b132eaab14b0475b65cb",
       "boundary_id": "after_commit",
       "mode": "cancel",
       "durable_prefix": [
@@ -3909,26 +4389,34 @@
         "commit"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -3946,7 +4434,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-062",
-      "fixture_sha256": "6a3f8b42f3eea4e3262aecd03c2b36076887b997c93d98f26172aaf7f54e8f29",
+      "fixture_sha256": "70d3ab21e0534159f89b00e2dbb7ead0fe0b76afd2fc72fa0b4e850b59d51d25",
       "boundary_id": "after_commit",
       "mode": "cancel_and_resume",
       "durable_prefix": [
@@ -3972,26 +4460,34 @@
         "commit"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -4009,7 +4505,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-063",
-      "fixture_sha256": "15bc77d32c78c679fe5e46160a5567dd3926de957fca8e08782142d7565fc7be",
+      "fixture_sha256": "c46819f1577c2d54f612b22bb4d83e5a75e8575ac97f127df3602b9f50ecf0ee",
       "boundary_id": "after_commit",
       "mode": "restart",
       "durable_prefix": [
@@ -4035,26 +4531,34 @@
         "commit"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {
@@ -4072,7 +4576,7 @@
     },
     {
       "fixture_id": "FIX-VMG-CRASH-064",
-      "fixture_sha256": "75194f68dd09a6763eb65ab997453209e18a9bb89f3113a7c6d1c841d5aee393",
+      "fixture_sha256": "58c2a5add35fb6363109df5913ab8c506dbb3054e95ec0e8c3473d9a2d4cdae9",
       "boundary_id": "after_commit",
       "mode": "repeated_interruption",
       "durable_prefix": [
@@ -4098,26 +4602,34 @@
         "commit"
       ],
       "operation_binding": {
-        "plan_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
         "idempotency_key": "vmg-idem:reference-001",
         "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "expected_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "expected_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "observed_effect_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         }
       },
       "receipt_echo_readback": {

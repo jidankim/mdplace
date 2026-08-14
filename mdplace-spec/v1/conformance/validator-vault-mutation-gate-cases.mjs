@@ -10,6 +10,7 @@ import {observeFixture} from './fixture-observer.mjs';
 import {validateAgainstSchemaPath} from './json-schema.mjs';
 import {buildValidationReport} from './validation-report.mjs';
 import {checkVaultMutationGateContract} from './vault-mutation-gate-checks.mjs';
+import {operationReceiptDigest} from './vault-mutation-digests.mjs';
 import {copyCommittedPackage} from './validator-test-support.mjs';
 
 const packageRoot = fileURLToPath(new URL('../', import.meta.url));
@@ -62,6 +63,113 @@ test('Vault Mutation Gate derives caller and operation authority from the plan f
   assert.equal(wrongOperation.verdict, 'fail');
 });
 
+test('Vault Mutation Gate recomputes plan digests instead of trusting consistent echoes', async () => {
+  // Given a copied package whose protected plan input and receipt echo are changed together.
+  const copiedRoot = await copyCommittedPackage();
+  const planPath = join(copiedRoot, 'contracts/vault-mutation-gate/authorized-plan.json');
+  const receiptPath = join(copiedRoot, 'contracts/vault-mutation-gate/operation-receipt.json');
+  const [plan, receipt, manifest, conformance, traceability] = await Promise.all([
+    readFile(planPath, 'utf8').then(JSON.parse),
+    readFile(receiptPath, 'utf8').then(JSON.parse),
+    readFile(join(copiedRoot, 'package-manifest.yaml'), 'utf8').then(JSON.parse),
+    readFile(join(copiedRoot, 'conformance/manifest.yaml'), 'utf8').then(JSON.parse),
+    readFile(join(copiedRoot, 'traceability.yaml'), 'utf8').then(JSON.parse),
+  ]);
+  plan.source_components = ['Tampered', 'other.md'];
+  receipt.source_components = ['Tampered', 'other.md'];
+  await Promise.all([
+    writeFile(planPath, `${JSON.stringify(plan, null, 2)}\n`),
+    writeFile(receiptPath, `${JSON.stringify(receipt, null, 2)}\n`),
+  ]);
+
+  // When the contract checker evaluates the declared digest bindings.
+  const contract = await checkVaultMutationGateContract(
+    copiedRoot,
+    manifest,
+    conformance,
+    traceability,
+  );
+
+  // Then changing all visible echoes cannot preserve the immutable plan identity.
+  assert.equal(contract.verdict, 'fail');
+  assert.ok(contract.codes.includes('vault_mutation.digest_invalid'));
+});
+
+test('Vault Mutation Gate rejects a reordered durable journal prefix', async () => {
+  // Given a copied committed journal whose interior events violate the normative order.
+  const copiedRoot = await copyCommittedPackage();
+  const journalPath = join(copiedRoot, 'contracts/vault-mutation-gate/mutation-journal.json');
+  const [journal, manifest, conformance, traceability] = await Promise.all([
+    readFile(journalPath, 'utf8').then(JSON.parse),
+    readFile(join(copiedRoot, 'package-manifest.yaml'), 'utf8').then(JSON.parse),
+    readFile(join(copiedRoot, 'conformance/manifest.yaml'), 'utf8').then(JSON.parse),
+    readFile(join(copiedRoot, 'traceability.yaml'), 'utf8').then(JSON.parse),
+  ]);
+  [journal.entries[1].event, journal.entries[2].event] =
+    [journal.entries[2].event, journal.entries[1].event];
+  await writeFile(journalPath, `${JSON.stringify(journal, null, 2)}\n`);
+
+  // When the contract checker replays the durable journal progression.
+  const contract = await checkVaultMutationGateContract(
+    copiedRoot,
+    manifest,
+    conformance,
+    traceability,
+  );
+
+  // Then hash linkage cannot substitute for the required event order.
+  assert.equal(contract.verdict, 'fail');
+  assert.ok(contract.codes.includes('vault_mutation.journal_order_invalid'));
+});
+
+test('Vault Mutation Gate contains malformed digest and journal artifacts', async () => {
+  // Given copied contract artifacts that are valid JSON but fail their schemas.
+  const copiedRoot = await copyCommittedPackage();
+  const planPath = join(copiedRoot, 'contracts/vault-mutation-gate/authorized-plan.json');
+  const journalPath = join(copiedRoot, 'contracts/vault-mutation-gate/mutation-journal.json');
+  const journal = JSON.parse(await readFile(journalPath, 'utf8'));
+  journal.entries = [null];
+  await Promise.all([
+    writeFile(planPath, '{}\n'),
+    writeFile(journalPath, `${JSON.stringify(journal, null, 2)}\n`),
+  ]);
+
+  // When the public report evaluates the malformed digest and event-order inputs.
+  const report = await buildValidationReport(copiedRoot);
+
+  // Then the package fails deterministically instead of escaping the validator boundary.
+  assert.equal(report.verdict, 'fail');
+  assert.ok(report.checks.some(({id, verdict}) =>
+    id === 'vault-mutation-gate-contract' && verdict === 'fail'));
+});
+
+test('Vault Mutation Gate binds the exact scheduled Work Item and Work Lease', async () => {
+  // Given a schema-valid receipt that substitutes the scheduled Work Item version.
+  const copiedRoot = await copyCommittedPackage();
+  const receiptPath = join(copiedRoot, 'contracts/vault-mutation-gate/operation-receipt.json');
+  const [receipt, manifest, conformance, traceability] = await Promise.all([
+    readFile(receiptPath, 'utf8').then(JSON.parse),
+    readFile(join(copiedRoot, 'package-manifest.yaml'), 'utf8').then(JSON.parse),
+    readFile(join(copiedRoot, 'conformance/manifest.yaml'), 'utf8').then(JSON.parse),
+    readFile(join(copiedRoot, 'traceability.yaml'), 'utf8').then(JSON.parse),
+  ]);
+  receipt.scheduled_work.work_version += 1;
+  receipt.receipt_sha256 = operationReceiptDigest(receipt);
+  await writeFile(receiptPath, `${JSON.stringify(receipt, null, 2)}\n`);
+
+  // When the contract checker compares the plan, journal, and receipt bindings.
+  const contract = await checkVaultMutationGateContract(
+    copiedRoot,
+    manifest,
+    conformance,
+    traceability,
+  );
+
+  // Then a different scheduled attempt cannot inherit mutation authority.
+  assert.equal(contract.verdict, 'fail');
+  assert.ok(contract.codes.includes('vault_mutation.scheduled_work_binding_invalid'));
+});
+
 test('Authorized Mutation Plan schema binds caller identity to caller role', async () => {
   // Given an otherwise valid plan with a mismatched caller identity prefix.
   const plan = await readPackageJson('contracts/vault-mutation-gate/authorized-plan.json');
@@ -83,8 +191,8 @@ test('descriptor probe distinguishes exact precondition and post-operation ident
   const fixture = await readPackageJson('conformance/scenarios/vault-mutation-gate/capture-promotion-commits.json');
   const document = fixture.subject.document;
   assert.notDeepEqual(
-    document.probe.expected_precondition_identity,
-    document.probe.expected_result_identity,
+    document.probe.authorized_precondition_identity,
+    document.probe.authorized_result_identity,
   );
 
   // When the retained-descriptor observation compares every exact tuple.
@@ -92,6 +200,76 @@ test('descriptor probe distinguishes exact precondition and post-operation ident
 
   // Then the distinct authorized result is accepted rather than compared to the precondition.
   assert.equal(observation.verdict, 'pass', JSON.stringify(observation));
+});
+
+test('descriptor probe derives content identity from closed virtual-vault bytes', async () => {
+  // Given a virtual source whose bytes no longer match the authorized precondition.
+  const fixture = await readPackageJson('conformance/scenarios/vault-mutation-gate/capture-promotion-commits.json');
+  const sourceBytes = 'candidate-v1\n';
+  const resultBytes = 'published-v1\n';
+  const identity = (bytes) => ({
+    device: 42,
+    inode: 1001,
+    size: Buffer.byteLength(bytes),
+    content_sha256: createHash('sha256').update(bytes).digest('hex'),
+  });
+  fixture.subject.document.probe = {
+    virtual_vault: {
+      trusted_root: {descriptor_id: 'descriptor:root-001', device: 42, inode: 1},
+      source_components: ['Inbox', 'candidate.md'],
+      component_kinds: ['directory', 'file'],
+      source_descriptor: {
+        descriptor_id: 'descriptor:source-001', device: 42, inode: 1001,
+        bytes_utf8: 'candidate-v2\n',
+      },
+      second_observation: {
+        descriptor_id: 'descriptor:source-001', device: 42, inode: 1001,
+        bytes_utf8: 'candidate-v2\n',
+      },
+      path_descriptor_after_validation: 'descriptor:source-001',
+      target_exists: false,
+      result_descriptor: {
+        descriptor_id: 'descriptor:source-001', device: 42, inode: 1001,
+        bytes_utf8: resultBytes,
+      },
+      readback_descriptor: {
+        descriptor_id: 'descriptor:source-001', device: 42, inode: 1001,
+        bytes_utf8: resultBytes,
+      },
+    },
+    authorized_precondition_identity: identity(sourceBytes),
+    authorized_result_identity: identity(resultBytes),
+    receipt_precondition_identity: identity(sourceBytes),
+    receipt_result_identity: identity(resultBytes),
+    receipt_echo: 'complete',
+    journal_complete: true,
+    console_output: 'none',
+  };
+
+  // When the observer hashes bytes from the modeled retained descriptor.
+  const observation = await observeFixture(fixture, packageRoot);
+
+  // Then caller-supplied tuple equality cannot hide the content change.
+  assert.equal(observation.verdict, 'fail');
+  assert.deepEqual(observation.codes, ['descriptor.hash_mismatch']);
+});
+
+test('Folder Projection serializes apply across distinct plans in one vault', async () => {
+  // Given a valid projection plan while a different projection plan is already applying.
+  const fixture = await readPackageJson('conformance/scenarios/vault-mutation-gate/folder-projection-commits.json');
+  fixture.subject.document.projection_state = {
+    state: 'applying',
+    active_plan_id: 'mutation-plan:competing-001',
+    active_plan_sha256: '7'.repeat(64),
+  };
+
+  // When the second plan reaches the vault-scoped mutation boundary.
+  const observation = await observeFixture(fixture, packageRoot);
+
+  // Then Agent ownership cannot substitute for cross-plan apply serialization.
+  assert.equal(observation.verdict, 'fail');
+  assert.deepEqual(observation.codes, ['projection.concurrent_apply_denied']);
+  assert.deepEqual(observation.filesystem_effects, ['none']);
 });
 
 test('crash and recovery evidence covers every boundary-mode pair', async () => {
@@ -126,7 +304,7 @@ test('recovery validates exact descriptor receipt and readback tuples', async ()
   const fixture = await readPackageJson(
     'conformance/scenarios/vault-mutation-gate/before-journal-cancel.json',
   );
-  fixture.subject.document.probe.readback_identity.content_sha256 = 'f'.repeat(64);
+  fixture.subject.document.probe.virtual_vault.readback_descriptor.bytes_utf8 = 'drifted-readback\n';
 
   // When recovery evaluates the retained-descriptor evidence.
   const observation = await observeFixture(fixture, packageRoot);
@@ -134,6 +312,52 @@ test('recovery validates exact descriptor receipt and readback tuples', async ()
   // Then recovery halts instead of accepting the matrix row alone.
   assert.equal(observation.verdict, 'fail');
   assert.deepEqual(observation.codes, ['recovery.evidence_mismatch']);
+});
+
+test('recovery rejects authorization detached from the exact plan', async () => {
+  // Given a valid restart scenario with a substituted authorized-plan digest.
+  const fixture = await readPackageJson(
+    'conformance/scenarios/vault-mutation-gate/before-journal-restart.json',
+  );
+  fixture.subject.document.authorization.plan_sha256 = 'f'.repeat(64);
+
+  // When foreground recovery presents the detached authorization.
+  const observation = await observeFixture(fixture, packageRoot);
+
+  // Then recovery fails closed before selecting a matrix outcome.
+  assert.equal(observation.verdict, 'fail');
+  assert.deepEqual(observation.codes, ['recovery.authorization_invalid']);
+});
+
+test('compensation requires the exact separately authorized compensating plan', async () => {
+  // Given a compensation scenario whose effect authorization was substituted.
+  const fixture = await readPackageJson(
+    'conformance/scenarios/vault-mutation-gate/restart-explicit-compensation.json',
+  );
+  fixture.subject.document.recovery.compensation_authorization.effect_sha256 = 'f'.repeat(64);
+
+  // When recovery evaluates the proposed compensation.
+  const observation = await observeFixture(fixture, packageRoot);
+
+  // Then a boolean-like claim cannot authorize a different compensating effect.
+  assert.equal(observation.verdict, 'fail');
+  assert.deepEqual(observation.codes, ['recovery.authorization_invalid']);
+});
+
+test('repeated interruption reaches manual repair only at the durable budget ceiling', async () => {
+  // Given the repeated-interruption scenario immediately below its declared ceiling.
+  const fixture = await readPackageJson(
+    'conformance/scenarios/vault-mutation-gate/before-journal-repeated-interruption.json',
+  );
+  fixture.subject.document.recovery.interruption_count = 2;
+
+  // When recovery evaluates the still-available interruption budget.
+  const observation = await observeFixture(fixture, packageRoot);
+
+  // Then the operation remains recovery-required rather than claiming exhausted-budget repair.
+  assert.equal(observation.verdict, 'fail');
+  assert.deepEqual(observation.codes, ['recovery.interruption_budget_remaining']);
+  assert.equal(observation.terminal_state, 'recovery_required');
 });
 
 test('recovery evidence binds each boundary-mode row to its exact fixture behavior', async () => {

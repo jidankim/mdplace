@@ -25,70 +25,134 @@
       "plan_state": "authorized",
       "fault": "identity_drift",
       "probe": {
-        "trusted_root_opened": true,
-        "resolution": "openat_each_component",
-        "nofollow": true,
-        "pathname_reopened": false,
-        "first_fstat": {
+        "virtual_vault": {
+          "trusted_root": {
+            "descriptor_id": "descriptor:root-001",
+            "device": 42,
+            "inode": 1
+          },
+          "source_components": [
+            "Inbox",
+            "candidate.md"
+          ],
+          "component_kinds": [
+            "directory",
+            "file"
+          ],
+          "source_descriptor": {
+            "descriptor_id": "descriptor:source-001",
+            "device": 42,
+            "inode": 1001,
+            "bytes_utf8": "candidate-v1\n"
+          },
+          "second_observation": {
+            "descriptor_id": "descriptor:source-001",
+            "device": 42,
+            "inode": 1002,
+            "bytes_utf8": "candidate-v1\n"
+          },
+          "path_descriptor_after_validation": "descriptor:source-001",
+          "target_exists": false,
+          "result_descriptor": {
+            "descriptor_id": "descriptor:source-001",
+            "device": 42,
+            "inode": 1001,
+            "bytes_utf8": "published-v1\n"
+          },
+          "readback_descriptor": {
+            "descriptor_id": "descriptor:source-001",
+            "device": 42,
+            "inode": 1001,
+            "bytes_utf8": "published-v1\n"
+          }
+        },
+        "authorized_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
-        "second_fstat": {
-          "device": 42,
-          "inode": 2002,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-        },
-        "same_handle_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        "readback_identity": {
+        "authorized_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
-        },
-        "receipt_echo": "complete",
-        "readback": "match",
-        "console_output": "none",
-        "expected_precondition_identity": {
-          "device": 42,
-          "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-        },
-        "expected_result_identity": {
-          "device": 42,
-          "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
         },
         "receipt_precondition_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
         },
         "receipt_result_identity": {
           "device": 42,
           "inode": 1001,
-          "size": 12,
-          "content_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
-        }
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "receipt_echo": "complete",
+        "journal_complete": true,
+        "console_output": "none"
       },
       "recovery": {
         "mode": "none",
         "crash_boundary": null,
         "durable_prefix": [],
         "declared_intent": "resume",
-        "safe_reverse": false,
-        "compensation_authorized": false,
-        "interruption_count": 0
+        "reverse_descriptor": null,
+        "compensation_authorization": null,
+        "interruption_count": 0,
+        "interruption_budget": 3
       },
       "operation_declared": true,
       "caller": {
         "caller_id": "folder-projection:fixture-001",
         "role": "folder_projection"
+      },
+      "authorized_plan": {
+        "plan_id": "mutation-plan:vmg-014",
+        "plan_sha256": "31eb48b2ac6b527585efe2b755f6488b2066d5dd1ce2215c5e268ddfba5ebe44",
+        "operation": "move_projection",
+        "caller_id": "folder-projection:fixture-001",
+        "authority_receipt_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "idempotency_key": "vmg-idem:vmg-014",
+        "recovery_intent": "resume",
+        "projection_scope": "vault",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "compensating_plan": null
+      },
+      "authorization": {
+        "plan_id": "mutation-plan:vmg-014",
+        "plan_sha256": "31eb48b2ac6b527585efe2b755f6488b2066d5dd1ce2215c5e268ddfba5ebe44",
+        "authority_receipt_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "idempotency_key": "vmg-idem:vmg-014"
+      },
+      "idempotency_record": null,
+      "projection_state": {
+        "state": "idle",
+        "active_plan_id": null,
+        "active_plan_sha256": null
       }
     }
   },

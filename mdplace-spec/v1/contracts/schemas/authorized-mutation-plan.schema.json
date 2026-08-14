@@ -4,7 +4,7 @@
   "title": "mdplace Authorized Mutation Plan",
   "type": "object",
   "additionalProperties": false,
-  "required": ["$schema", "schema_id", "plan_id", "plan_version", "vault_id", "trusted_root_id", "operation", "caller", "ownership", "source_components", "target_components", "immutable_inputs", "expected_precondition", "expected_result", "placement_outcome_ref", "durability_policy", "idempotency_key", "recovery_intent", "plan_state"],
+  "required": ["$schema", "schema_id", "plan_id", "plan_version", "vault_id", "trusted_root_id", "operation", "caller", "ownership", "scheduled_work", "projection_scope", "source_components", "target_components", "immutable_inputs", "expected_precondition", "expected_result", "placement_outcome_ref", "durability_policy", "idempotency_key", "recovery_intent", "compensating_plan", "plan_state"],
   "properties": {
     "$schema": {"const": "../schemas/authorized-mutation-plan.schema.json"},
     "schema_id": {"const": "mdplace.authorized-mutation-plan/v1"},
@@ -15,6 +15,8 @@
     "operation": {"enum": ["promote_capture", "move_projection", "create_directory", "remove_empty_owned_directory", "write_managed_frontmatter"]},
     "caller": {"$ref": "#/$defs/caller"},
     "ownership": {"$ref": "#/$defs/ownership"},
+    "scheduled_work": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/scheduledWork"}]},
+    "projection_scope": {"enum": ["vault", null]},
     "source_components": {"$ref": "#/$defs/components"},
     "target_components": {"$ref": "#/$defs/components"},
     "immutable_inputs": {"$ref": "#/$defs/immutableInputs"},
@@ -24,6 +26,7 @@
     "durability_policy": {"const": "sync_journal_data_metadata_receipt_readback_commit"},
     "idempotency_key": {"type": "string", "pattern": "^vmg-idem:[a-z0-9-]{3,64}$"},
     "recovery_intent": {"enum": ["resume", "exact_rollback", "compensate", "terminal_manual_repair"]},
+    "compensating_plan": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/compensatingPlan"}]},
     "plan_state": {"const": "authorized"}
   },
   "allOf": [
@@ -37,7 +40,12 @@
     },
     {
       "if": {"properties": {"caller": {"properties": {"role": {"const": "folder_projection"}}}}},
-      "then": {"properties": {"operation": {"enum": ["move_projection", "create_directory", "remove_empty_owned_directory", "write_managed_frontmatter"]}}}
+      "then": {"properties": {"operation": {"enum": ["move_projection", "create_directory", "remove_empty_owned_directory", "write_managed_frontmatter"]}, "projection_scope": {"const": "vault"}}}
+    },
+    {
+      "if": {"properties": {"recovery_intent": {"const": "compensate"}}, "required": ["recovery_intent"]},
+      "then": {"properties": {"compensating_plan": {"$ref": "#/$defs/compensatingPlan"}}},
+      "else": {"properties": {"compensating_plan": {"type": "null"}}}
     }
   ],
   "$defs": {
@@ -64,6 +72,29 @@
         "agent_id": {"type": "string", "pattern": "^agent:[a-z0-9-]{3,64}$"},
         "exclusive_writer_receipt_sha256": {"$ref": "#/$defs/digest"},
         "writer_epoch": {"type": "integer", "minimum": 1}
+      }
+    },
+    "scheduledWork": {
+      "type": "object", "additionalProperties": false,
+      "required": ["work_id", "work_version", "lease_id", "lease_receipt_sha256", "work_journal_head_sequence", "work_journal_head_sha256"],
+      "properties": {
+        "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
+        "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "lease_id": {"type": "string", "pattern": "^lease:[a-z0-9-]{3,64}$"},
+        "lease_receipt_sha256": {"$ref": "#/$defs/digest"},
+        "work_journal_head_sequence": {"type": "integer", "minimum": 1, "maximum": 500},
+        "work_journal_head_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "compensatingPlan": {
+      "type": "object", "additionalProperties": false,
+      "required": ["plan_id", "plan_sha256", "operation", "effect_sha256", "authority_receipt_sha256"],
+      "properties": {
+        "plan_id": {"type": "string", "pattern": "^mutation-plan:[a-z0-9-]{3,64}$"},
+        "plan_sha256": {"$ref": "#/$defs/digest"},
+        "operation": {"enum": ["promote_capture", "move_projection", "create_directory", "remove_empty_owned_directory", "write_managed_frontmatter"]},
+        "effect_sha256": {"$ref": "#/$defs/digest"},
+        "authority_receipt_sha256": {"$ref": "#/$defs/digest"}
       }
     },
     "immutableInputs": {

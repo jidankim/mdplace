@@ -3,6 +3,7 @@ import {isDeepStrictEqual} from 'node:util';
 
 import {readPackageFile} from './safe-path.mjs';
 import {observeVaultMutationScenario} from './vault-mutation-gate-observer.mjs';
+import {virtualDescriptorIdentity} from './vault-mutation-virtual-vault.mjs';
 
 function isRecord(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -78,13 +79,16 @@ function fixtureBindsEvidence(fixture, evidence, entry, boundary, binding) {
     isDeepStrictEqual(scenario?.recovery?.durable_prefix, boundary.durable_prefix) &&
     scenario?.recovery?.declared_intent === evidence.expected_outcome &&
     fixture.subject.schema === 'contracts/schemas/vault-mutation-scenario.schema.json' &&
-    isDeepStrictEqual(scenario?.probe?.expected_precondition_identity,
+    isDeepStrictEqual(scenario?.probe?.authorized_precondition_identity,
       binding?.expected_precondition_identity) &&
-    isDeepStrictEqual(scenario?.probe?.expected_result_identity, binding?.expected_result_identity) &&
+    isDeepStrictEqual(scenario?.probe?.authorized_result_identity, binding?.expected_result_identity) &&
     isDeepStrictEqual(scenario?.probe?.receipt_precondition_identity,
       binding?.expected_precondition_identity) &&
     isDeepStrictEqual(scenario?.probe?.receipt_result_identity, binding?.expected_result_identity) &&
-    isDeepStrictEqual(scenario?.probe?.readback_identity, binding?.expected_result_identity);
+    isDeepStrictEqual(scenario?.authorized_plan?.scheduled_work, binding?.scheduled_work) &&
+    scenario?.probe?.virtual_vault?.readback_descriptor !== null &&
+    isDeepStrictEqual(virtualDescriptorIdentity(scenario.probe.virtual_vault.readback_descriptor),
+      binding?.expected_result_identity);
 }
 
 async function evidenceRowIsValid(packageRoot, evidence, boundaryById, entryById, plan) {
@@ -105,6 +109,7 @@ async function evidenceRowIsValid(packageRoot, evidence, boundaryById, entryById
     binding?.plan_sha256 === plan?.immutable_inputs?.plan_sha256 &&
     binding?.idempotency_key === plan?.idempotency_key &&
     binding?.ownership_receipt_sha256 === plan?.ownership?.exclusive_writer_receipt_sha256 &&
+    isDeepStrictEqual(binding?.scheduled_work, plan?.scheduled_work) &&
     isDeepStrictEqual(binding?.expected_precondition_identity, plan?.expected_precondition) &&
     isDeepStrictEqual(binding?.expected_result_identity, plan?.expected_result) &&
     isDeepStrictEqual(binding?.observed_effect_identity,

@@ -2,30 +2,18 @@ import {isDeepStrictEqual} from 'node:util';
 
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {readPackageFile} from './safe-path.mjs';
+import {
+  scenarioAuthorizedPlanDigest,
+  scenarioCompensatingPlanDigest,
+} from './vault-mutation-digests.mjs';
+import {
+  observeVirtualVaultProbe,
+  virtualDescriptorIdentity,
+} from './vault-mutation-virtual-vault.mjs';
 
-const denialByFault = new Map([
-  ['symlink_swap', 'path.symlink_detected'],
-  ['pathname_swap', 'descriptor.identity_drift'],
-  ['traversal', 'path.traversal_denied'],
-  ['collision', 'target.collision'],
-  ['ownership_drift', 'ownership.stale'],
-  ['malformed_plan', 'schema.required_field'],
-  ['stale_plan', 'plan.stale'],
-  ['stale_hash', 'descriptor.hash_mismatch'],
-  ['identity_drift', 'descriptor.identity_mismatch'],
-  ['size_drift', 'descriptor.size_mismatch'],
-  ['incomplete_journal', 'journal.incomplete'],
-  ['receipt_echo_mismatch', 'receipt.echo_mismatch'],
-  ['readback_mismatch', 'readback.identity_mismatch'],
-  ['misleading_success', 'receipt.readback_required'],
-  ['idempotency_conflict', 'idempotency.conflict'],
-]);
-
-const recoveryFaults = new Set([
-  'incomplete_journal',
-  'receipt_echo_mismatch',
-  'readback_mismatch',
-  'misleading_success',
+const recoveryCodes = new Set([
+  'journal.incomplete', 'receipt.echo_mismatch',
+  'readback.identity_mismatch', 'receipt.readback_required',
 ]);
 
 const preconditionOperations = [
@@ -47,11 +35,12 @@ const committedOperations = [
   'publish and sync commit evidence',
 ];
 
-function callerMayInvoke(caller, operation, recoveryMode) {
+function callerMayInvoke(caller, plan, recoveryMode) {
   if (recoveryMode !== 'none') return caller.role === 'foreground_recovery';
   if (caller.role === 'foreground_recovery') return false;
-  if (caller.role === 'capture_adapter') return operation === 'promote_capture';
-  if (caller.role === 'folder_projection') return operation !== 'promote_capture';
+  if (caller.caller_id !== plan.caller_id) return false;
+  if (caller.role === 'capture_adapter') return plan.operation === 'promote_capture';
+  if (caller.role === 'folder_projection') return plan.operation !== 'promote_capture';
   return false;
 }
 
@@ -59,7 +48,7 @@ function isRecord(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
-function recoveryEvidenceMatches(recovery, matrix) {
+function recoveryEvidenceMatches(recovery, matrix, plan) {
   const boundaries = Array.isArray(matrix?.boundaries) ? matrix.boundaries.filter(isRecord) : [];
   const boundary = boundaries.find(({boundary_id: id}) => id === recovery.crash_boundary);
   const modeResults = Array.isArray(boundary?.mode_results) ? boundary.mode_results.filter(isRecord) : [];
@@ -67,8 +56,50 @@ function recoveryEvidenceMatches(recovery, matrix) {
   return boundary !== undefined && modeResult !== undefined &&
     isDeepStrictEqual(recovery.durable_prefix, boundary.durable_prefix) &&
     recovery.declared_intent === modeResult.recovery_action &&
-    (modeResult.recovery_action !== 'exact_rollback' || recovery.safe_reverse) &&
-    (modeResult.recovery_action !== 'compensate' || recovery.compensation_authorized);
+    recovery.declared_intent === plan.recovery_intent &&
+    (modeResult.recovery_action !== 'exact_rollback' ||
+      recovery.reverse_descriptor !== null &&
+      isDeepStrictEqual(virtualDescriptorIdentity(recovery.reverse_descriptor),
+        plan.expected_result_identity)) &&
+    (modeResult.recovery_action !== 'compensate' ||
+      plan.compensating_plan !== null && recovery.compensation_authorization !== null &&
+      scenarioCompensatingPlanDigest(plan.compensating_plan) === plan.compensating_plan.plan_sha256 &&
+      isDeepStrictEqual(recovery.compensation_authorization, plan.compensating_plan));
+}
+
+function planAuthorizationCode(scenario) {
+  const plan = scenario.authorized_plan;
+  const authorization = scenario.authorization;
+  if (scenarioAuthorizedPlanDigest(plan) !== plan.plan_sha256 ||
+      plan.plan_id !== authorization.plan_id || plan.plan_sha256 !== authorization.plan_sha256 ||
+      plan.authority_receipt_sha256 !== authorization.authority_receipt_sha256 ||
+      plan.idempotency_key !== authorization.idempotency_key || plan.operation !== scenario.operation ||
+      plan.projection_scope !== (scenario.operation === 'promote_capture' ? null : 'vault') ||
+      !isDeepStrictEqual(plan.expected_precondition_identity,
+        scenario.probe.authorized_precondition_identity) ||
+      !isDeepStrictEqual(plan.expected_result_identity, scenario.probe.authorized_result_identity)) {
+    return 'plan.authorization_invalid';
+  }
+  if (plan.ownership_receipt_sha256 !== authorization.ownership_receipt_sha256) {
+    return 'ownership.stale';
+  }
+  return null;
+}
+
+function projectionSerializationCode(scenario) {
+  if (scenario.authorized_plan.projection_scope !== 'vault') return null;
+  const active = scenario.projection_state.state !== 'idle';
+  if (!active) return scenario.recovery.mode === 'none' ? null : 'recovery.authorization_invalid';
+  const samePlan = scenario.projection_state.active_plan_id === scenario.authorized_plan.plan_id &&
+    scenario.projection_state.active_plan_sha256 === scenario.authorized_plan.plan_sha256;
+  if (scenario.recovery.mode !== 'none') return samePlan ? null : 'recovery.authorization_invalid';
+  return samePlan ? null : 'projection.concurrent_apply_denied';
+}
+
+function idempotencyConflictExists(scenario) {
+  const record = scenario.idempotency_record;
+  return record !== null && record.idempotency_key === scenario.authorized_plan.idempotency_key &&
+    record.plan_sha256 !== scenario.authorized_plan.plan_sha256;
 }
 
 function invalidRecoveryObservation() {
@@ -80,19 +111,27 @@ function invalidRecoveryObservation() {
   };
 }
 
-function descriptorProbeIsValid(probe) {
-  return probe.trusted_root_opened && probe.resolution === 'openat_each_component' && probe.nofollow &&
-    !probe.pathname_reopened && probe.receipt_echo === 'complete' && probe.readback === 'match' &&
-    isDeepStrictEqual(probe.expected_precondition_identity, probe.first_fstat) &&
-    isDeepStrictEqual(probe.first_fstat, probe.second_fstat) &&
-    probe.same_handle_hash === probe.expected_precondition_identity.content_sha256 &&
-    isDeepStrictEqual(probe.receipt_precondition_identity, probe.expected_precondition_identity) &&
-    isDeepStrictEqual(probe.receipt_result_identity, probe.expected_result_identity) &&
-    isDeepStrictEqual(probe.readback_identity, probe.expected_result_identity);
+function invalidRecoveryAuthorizationObservation() {
+  return {
+    verdict: 'fail', codes: ['recovery.authorization_invalid'], outputs: ['recovery denied'],
+    operations: ['authenticate exact Authorized Mutation Plan', 'halt without guessing'],
+    receipts: ['TerminalManualRepairReport'], filesystem_effects: ['preserve observed physical state'],
+    terminal_state: 'terminal_manual_repair', illegal_transition: false,
+  };
 }
 
-function recoveryObservation(recovery, matrix) {
-  if (!recoveryEvidenceMatches(recovery, matrix)) return invalidRecoveryObservation();
+function recoveryBudgetRemainingObservation() {
+  return {
+    verdict: 'fail', codes: ['recovery.interruption_budget_remaining'],
+    outputs: ['Vault Mutation Recovery remains required'],
+    operations: ['persist the advanced interruption count', 'retain exact recovery evidence'],
+    receipts: ['MutationRecoveryRequiredReceipt'], filesystem_effects: ['preserve observed physical state'],
+    terminal_state: 'recovery_required', illegal_transition: false,
+  };
+}
+
+function recoveryObservation(recovery, matrix, plan) {
+  if (!recoveryEvidenceMatches(recovery, matrix, plan)) return invalidRecoveryAuthorizationObservation();
   if (recovery.declared_intent === 'terminal_manual_repair') {
     return {
       verdict: 'fail', codes: ['recovery.manual_repair_required'],
@@ -102,7 +141,7 @@ function recoveryObservation(recovery, matrix) {
       terminal_state: 'terminal_manual_repair', illegal_transition: false,
     };
   }
-  if (recovery.declared_intent === 'exact_rollback' && recovery.safe_reverse) {
+  if (recovery.declared_intent === 'exact_rollback' && recovery.reverse_descriptor !== null) {
     return {
       verdict: 'pass', codes: [], outputs: ['exact rollback completed'],
       operations: ['reconcile exact durable prefix', 'prove reverse Descriptor Identity', 'perform exact rollback'],
@@ -110,7 +149,7 @@ function recoveryObservation(recovery, matrix) {
       terminal_state: 'rolled_back', illegal_transition: false,
     };
   }
-  if (recovery.declared_intent === 'compensate' && recovery.compensation_authorized) {
+  if (recovery.declared_intent === 'compensate' && recovery.compensation_authorization !== null) {
     return {
       verdict: 'pass', codes: [], outputs: ['authorized compensation completed'],
       operations: ['reconcile exact durable prefix', 'validate separate compensation authorization', 'perform compensation'],
@@ -152,16 +191,24 @@ export async function observeVaultMutationScenario(subject, packageRoot) {
       terminal_state: 'denied', illegal_transition: true,
     };
   }
-  if (!callerMayInvoke(scenario.caller, scenario.operation, scenario.recovery.mode)) {
+  if (!callerMayInvoke(scenario.caller, scenario.authorized_plan, scenario.recovery.mode)) {
     return {
       verdict: 'fail', codes: ['authority.denied'], outputs: ['mutation denied'],
       operations: preconditionOperations, receipts: ['MutationDeniedReceipt'], filesystem_effects: ['none'],
       terminal_state: 'denied', illegal_transition: false,
     };
   }
-  const probeValid = descriptorProbeIsValid(scenario.probe);
+  const authorizationCode = planAuthorizationCode(scenario);
+  const projectionCode = projectionSerializationCode(scenario);
+  const probeObservation = observeVirtualVaultProbe(scenario.probe);
   if (scenario.recovery.mode !== 'none') {
-    if (!probeValid) return invalidRecoveryObservation();
+    if (authorizationCode !== null || projectionCode !== null) return invalidRecoveryAuthorizationObservation();
+    if (!probeObservation.valid) return invalidRecoveryObservation();
+    if (scenario.recovery.mode === 'repeated_interruption' &&
+        scenario.recovery.crash_boundary !== 'after_commit' &&
+        scenario.recovery.interruption_count < scenario.recovery.interruption_budget) {
+      return recoveryBudgetRemainingObservation();
+    }
     const matrixRead = await readPackageFile(packageRoot, 'contracts/vault-mutation-gate/crash-boundary-matrix.json');
     if (matrixRead.status !== 'present') return invalidRecoveryObservation();
     let matrix;
@@ -170,14 +217,16 @@ export async function observeVaultMutationScenario(subject, packageRoot) {
     } catch {
       return invalidRecoveryObservation();
     }
-    return recoveryObservation(scenario.recovery, matrix);
+    return recoveryObservation(scenario.recovery, matrix, scenario.authorized_plan);
   }
-  const faultCode = denialByFault.get(scenario.fault);
-  if (faultCode !== undefined || !probeValid || scenario.plan_state !== 'authorized') {
-    const code = faultCode ?? (scenario.plan_state === 'stale' ? 'plan.stale' : 'descriptor.probe_invalid');
-    const requiresRecovery = recoveryFaults.has(scenario.fault);
+  const code = scenario.plan_state === 'stale'
+    ? 'plan.stale'
+    : authorizationCode ?? (idempotencyConflictExists(scenario) ? 'idempotency.conflict' : probeObservation.code);
+  const codes = [...new Set([projectionCode, code].filter((value) => value !== null))];
+  if (codes.length > 0) {
+    const requiresRecovery = codes.every((candidate) => recoveryCodes.has(candidate));
     return {
-      verdict: 'fail', codes: [code], outputs: [requiresRecovery ? 'Vault Mutation Recovery required' : 'mutation denied'],
+      verdict: 'fail', codes, outputs: [requiresRecovery ? 'Vault Mutation Recovery required' : 'mutation denied'],
       operations: preconditionOperations,
       receipts: [requiresRecovery ? 'MutationRecoveryRequiredReceipt' : 'MutationDeniedReceipt'],
       filesystem_effects: [requiresRecovery ? 'preserve only the declared observed effect' : 'none'],
