@@ -34,6 +34,12 @@ export function operationReceiptDigest(receipt) {
   return sha256Json(receiptPayload);
 }
 
+export function workJournalDependencyEntryDigest(entry) {
+  if (!isRecord(entry)) return null;
+  const {entry_sha256: _entryDigest, ...entryPayload} = entry;
+  return sha256Json(entryPayload);
+}
+
 export function scenarioAuthorizedPlanDigest(plan) {
   if (!isRecord(plan)) return null;
   const {plan_sha256: _planDigest, ...planPayload} = plan;

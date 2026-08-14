@@ -1,10 +1,13 @@
 import {isDeepStrictEqual} from 'node:util';
 
+import {verifyControlPlaneReceipt} from './control-plane-authentication.mjs';
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {readPackageFile} from './safe-path.mjs';
 import {
   scenarioAuthorizedPlanDigest,
   scenarioCompensatingPlanDigest,
+  operationReceiptDigest,
+  workJournalDependencyEntryDigest,
 } from './vault-mutation-digests.mjs';
 import {
   observeVirtualVaultProbe,
@@ -14,7 +17,7 @@ import {
 const recoveryCodes = new Set([
   'journal.incomplete', 'receipt.echo_mismatch',
   'readback.identity_mismatch', 'receipt.readback_required',
-  'idempotency.recovery_required', 'projection.recovery_required',
+  'idempotency.receipt_invalid', 'idempotency.recovery_required', 'projection.recovery_required',
 ]);
 
 const preconditionOperations = [
@@ -66,10 +69,35 @@ function compensationAuthorizationMatches(recovery, plan) {
     isDeepStrictEqual(recovery.compensation_authorization, plan.compensating_plan);
 }
 
+function workJournalSnapshotMatches(recovery, plan) {
+  const scheduled = plan.scheduled_work;
+  const snapshot = recovery.work_journal_snapshot;
+  if (scheduled === null || snapshot === null ||
+      snapshot.base_head_sequence !== scheduled.work_journal_head_sequence ||
+      snapshot.base_head_sha256 !== scheduled.work_journal_head_sha256) return false;
+  let previous = snapshot.base_head_sha256;
+  const entriesMatch = snapshot.entries.every((entry, index) => {
+    const matches = entry.journal_sequence === snapshot.base_head_sequence + index + 1 &&
+      entry.previous_sha256 === previous &&
+      workJournalDependencyEntryDigest(entry) === entry.entry_sha256;
+    previous = entry.entry_sha256;
+    return matches;
+  });
+  const head = snapshot.head_receipt;
+  const headMatches = head.journal_id === snapshot.journal_id &&
+    head.head_sequence === snapshot.base_head_sequence + snapshot.entries.length &&
+    head.head_digest === previous && verifyControlPlaneReceipt('work_journal_head', [
+      head.receipt_id, head.journal_id, head.head_sequence, head.head_digest,
+    ], head);
+  const hasLaterDependency = snapshot.entries.some((entry) =>
+    entry.depends_on_plan_ids.includes(plan.plan_id));
+  return entriesMatch && headMatches && !hasLaterDependency;
+}
+
 function recoveryResultEvidenceMatches(recovery, plan) {
   if (recovery.declared_intent === 'exact_rollback') {
     return recovery.reverse_descriptor !== null && recovery.post_recovery_descriptor !== null &&
-      recovery.later_dependency_plan_ids.length === 0 &&
+      workJournalSnapshotMatches(recovery, plan) &&
       isDeepStrictEqual(virtualDescriptorIdentity(recovery.reverse_descriptor),
         plan.expected_result_identity) &&
       isDeepStrictEqual(virtualDescriptorIdentity(recovery.post_recovery_descriptor),
@@ -116,19 +144,35 @@ function idempotencyCode(scenario) {
   const record = scenario.idempotency_record;
   if (record === null || record.idempotency_key !== scenario.authorized_plan.idempotency_key) return null;
   if (record.plan_sha256 !== scenario.authorized_plan.plan_sha256) return 'idempotency.conflict';
-  return record.state === 'recovery_required' ? 'idempotency.recovery_required' : null;
+  if (record.state === 'recovery_required') return 'idempotency.recovery_required';
+  return originalReceiptMatches(record.original_receipt, scenario.authorized_plan)
+    ? null
+    : 'idempotency.receipt_invalid';
+}
+
+function originalReceiptMatches(receipt, plan) {
+  return receipt !== null && operationReceiptDigest(receipt) === receipt.receipt_sha256 &&
+    receipt.plan_id === plan.plan_id && receipt.plan_sha256 === plan.plan_sha256 &&
+    receipt.operation === plan.operation && receipt.caller_id === plan.caller_id &&
+    receipt.ownership_receipt_sha256 === plan.ownership_receipt_sha256 &&
+    isDeepStrictEqual(receipt.scheduled_work, plan.scheduled_work) &&
+    receipt.idempotency_key === plan.idempotency_key &&
+    isDeepStrictEqual(receipt.precondition_identity, plan.expected_precondition_identity) &&
+    isDeepStrictEqual(receipt.result_identity, plan.expected_result_identity) &&
+    receipt.echo_complete === true && receipt.readback_verified === true;
 }
 
 function committedIdempotencyObservation(scenario) {
   const record = scenario.idempotency_record;
   if (record === null || record.idempotency_key !== scenario.authorized_plan.idempotency_key ||
-      record.plan_sha256 !== scenario.authorized_plan.plan_sha256 || record.state !== 'committed') {
+      record.plan_sha256 !== scenario.authorized_plan.plan_sha256 || record.state !== 'committed' ||
+      !originalReceiptMatches(record.original_receipt, scenario.authorized_plan)) {
     return null;
   }
   return {
     verdict: 'pass', codes: [], outputs: ['original Operation Receipt returned'],
     operations: ['authenticate compatible idempotency record', 'return original Operation Receipt'],
-    receipts: ['OperationReceipt'], filesystem_effects: ['none'],
+    receipts: [record.original_receipt.receipt_id], filesystem_effects: ['none'],
     terminal_state: 'committed', illegal_transition: false,
   };
 }
@@ -181,7 +225,8 @@ function recoveryObservation(recovery, matrix, plan) {
     return {
       verdict: 'pass', codes: [], outputs: ['exact rollback completed'],
       operations: ['reconcile exact durable prefix', 'prove reverse Descriptor Identity',
-        'prove no later dependent plan', 'perform exact rollback', 'read back restored Descriptor Identity'],
+        'authenticate complete Work Journal dependency snapshot', 'prove no later dependent plan',
+        'perform exact rollback', 'read back restored Descriptor Identity'],
       receipts: ['MutationRollbackReceipt'], filesystem_effects: ['reverse only the declared effect'],
       terminal_state: 'rolled_back', illegal_transition: false,
     };

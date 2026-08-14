@@ -113,12 +113,28 @@
         "compensation_authorization": null,
         "interruption_count": 1,
         "interruption_budget": 3,
-        "later_dependency_plan_ids": [],
         "post_recovery_descriptor": {
           "descriptor_id": "descriptor:source-001",
           "device": 42,
           "inode": 1001,
           "bytes_utf8": "candidate-v1\n"
+        },
+        "work_journal_snapshot": {
+          "journal_id": "journal:vault-reference-001",
+          "base_head_sequence": 1,
+          "base_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "entries": [],
+          "head_receipt": {
+            "receipt_id": "journal-head-receipt:vmg-022",
+            "journal_id": "journal:vault-reference-001",
+            "head_sequence": 1,
+            "head_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+            "signature_scheme": "hmac-sha256",
+            "signing_key_id": "signer-key:primary-001",
+            "signer_agent_id": "agent:primary-001",
+            "signature_digest": "ba7d5ab34c2f9614cada158484f901f56a83670f5236eea8b68c44b99d41ae48",
+            "authenticated": true
+          }
         }
       },
       "operation_declared": true,
@@ -182,6 +198,7 @@
     "operations": [
       "reconcile exact durable prefix",
       "prove reverse Descriptor Identity",
+      "authenticate complete Work Journal dependency snapshot",
       "prove no later dependent plan",
       "perform exact rollback",
       "read back restored Descriptor Identity"
