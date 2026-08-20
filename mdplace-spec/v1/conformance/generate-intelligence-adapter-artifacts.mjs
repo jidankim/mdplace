@@ -3,7 +3,7 @@
 import {mkdir, readFile, writeFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 
-import {adapterResultDigest, parseReceiptStrings, sha256} from './intelligence-adapter-core.mjs';
+import {adapterEvidenceClaims, adapterResultDigest, parseReceiptStrings, sha256} from './intelligence-adapter-core.mjs';
 import {conformanceDigestForArtifacts} from './digest-bindings.mjs';
 import {observeIntelligenceAdapterScenario} from './intelligence-adapter-observer.mjs';
 import {isReferenceEvidence} from './reference-evidence.mjs';
@@ -485,7 +485,8 @@ async function generateFixturesAndEvidence() {
     const path = `scenarios/intelligence-adapter/${caseId}.json`;
     const bytes = `${JSON.stringify(fixture, null, 2)}\n`;
     await writeFile(`${packageRoot}/conformance/${path}`, bytes);
-    const receiptDigests = parseReceiptStrings(expected.receipts).map(({receipt_sha256: digest}) => digest);
+    const receipts = parseReceiptStrings(expected.receipts);
+    const receiptDigests = receipts.map(({receipt_sha256: digest}) => digest);
     entries.push({
       fixture_id: fixtureId,
       path,
@@ -495,7 +496,7 @@ async function generateFixturesAndEvidence() {
       observable_assertions: {inputs: true, outputs: true, operations: true, receipts: true, filesystem_effects: true, terminal_state: true, illegal_transition: expected.illegal_transition},
     });
     bindings.push({fixture_id: fixtureId, path, fixture_sha256: sha256(bytes), observable_result_sha256: adapterResultDigest(expected), receipt_sha256s: receiptDigests});
-    records.push({fixtureId, caseId, category, expected, document, receiptDigests});
+    records.push({fixtureId, caseId, category, expected, document, receipts, receiptDigests});
   }
   if (entries.length !== 42) throw new Error(`expected 42 fixtures, received ${entries.length}`);
 
@@ -504,7 +505,6 @@ async function generateFixturesAndEvidence() {
   manifest.fixtures = manifest.fixtures.filter(({fixture_id: id}) => !id.startsWith('FIX-IAP-')).concat(entries);
   await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 
-  const ids = (predicate) => records.filter(predicate).map(({fixtureId}) => fixtureId);
   const evidence = {
     schema_id: 'mdplace.intelligence-adapter-evidence/v1',
     package_series: 'mdplace-spec/v1',
@@ -513,22 +513,8 @@ async function generateFixturesAndEvidence() {
     scenario_count: 42,
     approved_context_sha256: sha256(contextBytes),
     fixture_bindings: bindings,
-    claims: {
-      isolation_fixture_ids: ids(({caseId}) => caseId.includes('isolation') || caseId.includes('canary')),
-      canary_fixture_ids: ids(({caseId}) => caseId.includes('canary') || caseId === 'remote-valid-proposal-advice'),
-      instrumented_double_fixture_ids: ids(() => true),
-      retry_fixture_ids: ids(({caseId}) => caseId.includes('retry')),
-      fallback_fixture_ids: ids(({caseId}) => caseId.includes('fallback')),
-      inert_output_fixture_ids: ids(({caseId}) => caseId.includes('proposal') || caseId.includes('output') || caseId.includes('authority')),
-      zero_semantic_effect: records.every(({expected}) =>
-        parseReceiptStrings(expected.receipts).every(({semantic_effects: effects}) => effects.length === 0)),
-      zero_filesystem_effect: records.every(({expected}) => expected.filesystem_effects[0] === 'none' &&
-        parseReceiptStrings(expected.receipts).every(({filesystem_effects: effects}) => effects.length === 0)),
-      zero_tool_effect: records.every(({expected}) =>
-        parseReceiptStrings(expected.receipts).every(({tool_invocations: invocations}) => invocations.length === 0)),
-      exact_transmission_observed: records.every(({expected}) => expected.network_effects[0] === 'none' || expected.observations.length > 0),
-      all_outcomes_receipted: records.every(({expected}) => expected.receipts.length > 0),
-    },
+    claims: adapterEvidenceClaims(records.map(({fixtureId, document, expected: observed, receipts}) =>
+      ({fixtureId, document, observed, receipts}))),
   };
   await writeFile(`${packageRoot}/conformance/evidence/intelligence-adapter-evidence.json`, `${JSON.stringify(evidence, null, 2)}\n`);
 

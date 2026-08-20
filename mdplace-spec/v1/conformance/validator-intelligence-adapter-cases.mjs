@@ -79,6 +79,7 @@ test('CLI validates the complete Intelligence Adapter proposal protocol pack', (
 });
 
 test('protocol evidence recomputes claim indexes and every recovery report fact', async () => {
+  const trustedEvidence = await readJson('conformance/evidence/intelligence-adapter-evidence.json');
   const [recoveryRoot, claimRoot] = await Promise.all([copyCommittedPackage(), copyCommittedPackage()]);
   const recoveryPath = 'conformance/evidence/intelligence-adapter-recovery-report.json';
   const evidencePath = 'conformance/evidence/intelligence-adapter-evidence.json';
@@ -109,6 +110,9 @@ test('protocol evidence recomputes claim indexes and every recovery report fact'
 
   assert.ok(recoveryCheck.codes.includes('adapter.recovery_evidence_invalid'));
   assert.ok(claimCheck.codes.includes('adapter.evidence_claim_invalid'));
+  assert.ok(trustedEvidence.claims.retry_fixture_ids.includes('FIX-IAP-POS-004'));
+  assert.ok(trustedEvidence.claims.retry_fixture_ids.includes('FIX-IAP-NEG-007'));
+  assert.ok(!trustedEvidence.claims.retry_fixture_ids.includes('FIX-IAP-ILLEGAL-001'));
 });
 
 test('attempt authorization denies an unapproved model before transmission', async () => {
@@ -652,6 +656,34 @@ test('recovery mismatch receipts bind same-length raw response and validated pro
     assert.equal(receipts[index].raw_response_sha256, sha256(rawOutput));
     assert.equal(receipts[index].proposal_sha256, canonicalDigest(JSON.parse(rawOutput)));
     assert.equal(observations[index].raw_output_sha256, sha256(rawOutput));
+  }
+});
+
+test('output budgets deny oversized bytes before proposal parsing in execution and recovery', async () => {
+  const execution = await scenario('remote-valid-proposal-advice');
+  execution.attempts[0].envelope.ceilings.output_bytes = 100;
+  const recovery = await scenario('crash-after-receipt-preserves-receipt');
+  recovery.attempts[0].envelope.ceilings.output_bytes = 100;
+  const recoveryBytes = canonicalJson(recovery.attempts[0].envelope);
+  recovery.recovery.prior_transmission = {
+    destination: recovery.attempts[0].envelope.destination.endpoint,
+    sha256: sha256(recoveryBytes),
+    byte_length: Buffer.byteLength(recoveryBytes),
+  };
+
+  const results = await Promise.all([execution, recovery]
+    .map((document) => observeIntelligenceAdapterScenario(document, packageRoot)));
+  const receipts = results.map(({receipts: values}) => parseReceiptStrings(values)[0]);
+
+  assert.deepEqual(results.map(({codes}) => codes[0]), [
+    'adapter.output_budget_exhausted',
+    'adapter.output_budget_exhausted',
+  ]);
+  for (const [index, document] of [execution, recovery].entries()) {
+    const rawOutput = document.attempts[0].double.raw_output;
+    assert.equal(receipts[index].raw_response_sha256, sha256(rawOutput));
+    assert.equal(receipts[index].proposal_sha256, null);
+    assert.ok(!results[index].operations.some((operation) => operation.startsWith('validate inert Intelligence Proposal')));
   }
 });
 

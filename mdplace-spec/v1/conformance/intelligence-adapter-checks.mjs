@@ -1,7 +1,7 @@
 import {createHash} from 'node:crypto';
 import {isDeepStrictEqual} from 'node:util';
 
-import {adapterReceiptDigest, adapterResultDigest, parseReceiptStrings, sha256} from './intelligence-adapter-core.mjs';
+import {adapterEvidenceClaims, adapterReceiptDigest, adapterResultDigest, parseReceiptStrings, sha256} from './intelligence-adapter-core.mjs';
 import {observeIntelligenceAdapterScenario} from './intelligence-adapter-observer.mjs';
 import {adapterOutcomePrecedence} from './intelligence-adapter-validation.mjs';
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
@@ -230,35 +230,16 @@ export async function checkIntelligenceAdapterProtocol(packageRoot, manifest, co
     }
   }
   const claims = evidence?.claims;
-  const fixtureIdsMatching = (predicate) => [...fixtureRecords.entries()]
-    .filter(([, record]) => predicate(record.fixture.subject.document.case_id))
-    .map(([fixtureId]) => fixtureId);
-  const expectedClaimIndexes = {
-    isolation_fixture_ids: fixtureIdsMatching((caseId) => caseId.includes('isolation') || caseId.includes('canary')),
-    canary_fixture_ids: fixtureIdsMatching((caseId) => caseId.includes('canary') || caseId === 'remote-valid-proposal-advice'),
-    instrumented_double_fixture_ids: fixtureIds,
-    retry_fixture_ids: fixtureIdsMatching((caseId) => caseId.includes('retry')),
-    fallback_fixture_ids: fixtureIdsMatching((caseId) => caseId.includes('fallback')),
-    inert_output_fixture_ids: fixtureIdsMatching((caseId) =>
-      caseId.includes('proposal') || caseId.includes('output') || caseId.includes('authority')),
-  };
-  const fixtureRecordValues = [...fixtureRecords.values()];
-  const expectedClaimTruth = {
-    zero_semantic_effect: fixtureRecordValues.every(({receipts}) =>
-      receipts.every(({semantic_effects: effects}) => effects.length === 0)),
-    zero_filesystem_effect: fixtureRecordValues.every(({observed, receipts}) =>
-      observed.filesystem_effects.every((effect) => effect === 'none') &&
-      receipts.every(({filesystem_effects: effects}) => effects.length === 0)),
-    zero_tool_effect: fixtureRecordValues.every(({receipts}) =>
-      receipts.every(({tool_invocations: invocations}) => invocations.length === 0)),
-    exact_transmission_observed: fixtureRecordValues.every(({observed}) =>
-      observed.network_effects[0] === 'none' || observed.observations.length > 0),
-    all_outcomes_receipted: fixtureRecordValues.every(({observed}) => observed.receipts.length > 0),
-  };
-  if (Object.entries(expectedClaimIndexes).some(([claim, expected]) =>
-    !isDeepStrictEqual(claims?.[claim], expected)) ||
-      Object.entries(expectedClaimTruth).some(([claim, expected]) =>
-        expected !== true || claims?.[claim] !== expected)) codes.push('adapter.evidence_claim_invalid');
+  const expectedClaims = adapterEvidenceClaims([...fixtureRecords.entries()].map(([fixtureId, record]) => ({
+    fixtureId,
+    document: record.fixture.subject.document,
+    observed: record.observed,
+    receipts: record.receipts,
+  })));
+  if (Object.entries(expectedClaims).some(([claim, expected]) =>
+    (expected !== true && !Array.isArray(expected)) || !isDeepStrictEqual(claims?.[claim], expected))) {
+    codes.push('adapter.evidence_claim_invalid');
+  }
 
   const outcomeRows = rulesResult.document?.outcome_precedence ?? [];
   const ruleCodes = outcomeRows.map(({code}) => code);

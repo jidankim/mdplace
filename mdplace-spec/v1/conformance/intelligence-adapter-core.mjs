@@ -85,3 +85,56 @@ export function adapterResultDigest(result) {
 export function parseReceiptStrings(receipts) {
   return receipts.map((receipt) => JSON.parse(receipt));
 }
+
+function parsedObservations(observed) {
+  return observed.observations.flatMap((value) => {
+    try {
+      return [typeof value === 'string' ? JSON.parse(value) : value];
+    } catch {
+      return [];
+    }
+  });
+}
+
+export function adapterEvidenceClaims(records) {
+  const fixtureIdsMatching = (predicate) => records.filter(predicate).map(({fixtureId}) => fixtureId);
+  const observationsByRecord = new Map(records.map((record) => [record.fixtureId, parsedObservations(record.observed)]));
+  const hasReason = (record, reasons) => record.receipts.some(({reason}) => reasons.has(reason));
+  const retryReasons = new Set(['adapter.retry_scheduled', 'adapter.retry_exhausted']);
+  const fallbackReasons = new Set(['adapter.fallback_scheduled', 'adapter.fallback_exhausted']);
+  const isolationReasons = new Set(['adapter.isolation_failed', 'adapter.canary_failed']);
+  const canaryReasons = new Set(['adapter.canary_failed']);
+  const exactTransmissionObserved = records.every((record) => record.receipts
+    .filter(({transmitted_bytes: bytes}) => bytes > 0)
+    .every((receipt) => observationsByRecord.get(record.fixtureId).some((observation) =>
+      observation.exact_transmitted_sha256 === receipt.transmission_sha256 &&
+      observation.exact_transmitted_bytes === receipt.transmitted_bytes &&
+      observation.exact_destination === receipt.observed_destination) ||
+      (record.document.operation === 'recover' && record.document.recovery.crash_point === 'after_receipt' &&
+        record.document.recovery.prior_receipts.some(({receipt_sha256: digest}) => digest === receipt.receipt_sha256))));
+  return {
+    isolation_fixture_ids: fixtureIdsMatching((record) => hasReason(record, isolationReasons)),
+    canary_fixture_ids: fixtureIdsMatching((record) => hasReason(record, canaryReasons) ||
+      observationsByRecord.get(record.fixtureId).some((observation) => observation.isolation?.canary !== undefined)),
+    instrumented_double_fixture_ids: fixtureIdsMatching((record) =>
+      observationsByRecord.get(record.fixtureId).some((observation) => observation.measured_budget !== undefined)),
+    retry_fixture_ids: fixtureIdsMatching((record) =>
+      record.document.attempts.some(({attempt_class: attemptClass}) => attemptClass === 'retry') ||
+      hasReason(record, retryReasons)),
+    fallback_fixture_ids: fixtureIdsMatching((record) =>
+      record.document.attempts.some(({attempt_class: attemptClass}) => attemptClass === 'fallback') ||
+      hasReason(record, fallbackReasons)),
+    inert_output_fixture_ids: fixtureIdsMatching((record) => record.receipts.some((receipt) =>
+      receipt.raw_response_sha256 !== null || receipt.proposal_sha256 !== null)),
+    zero_semantic_effect: records.every(({receipts}) =>
+      receipts.every(({semantic_effects: effects}) => effects.length === 0)),
+    zero_filesystem_effect: records.every(({observed, receipts}) =>
+      observed.filesystem_effects.every((effect) => effect === 'none') &&
+      receipts.every(({filesystem_effects: effects}) => effects.length === 0)),
+    zero_tool_effect: records.every(({receipts}) =>
+      receipts.every(({tool_invocations: invocations}) => invocations.length === 0)),
+    exact_transmission_observed: exactTransmissionObserved,
+    all_outcomes_receipted: records.every((record) =>
+      record.receipts.length === Math.max(1, observationsByRecord.get(record.fixtureId).length)),
+  };
+}

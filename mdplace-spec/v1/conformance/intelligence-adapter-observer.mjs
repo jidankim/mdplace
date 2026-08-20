@@ -174,6 +174,8 @@ async function evaluateTransmittedAttempt({
   const nextTotalOutput = totalOutput + outputBytes;
   const nextTotalRuntime = totalRuntime + budget.runtime_ms;
   const nextTotalCost = totalCost + double.cost_microunits;
+  const outputBudgetExceeded = outputBytes > envelope.ceilings.output_bytes ||
+    nextTotalOutput > subject.chain_budget.output_bytes;
 
   const observedCodes = [
     forbiddenActionCode(double.requested_actions),
@@ -181,9 +183,7 @@ async function evaluateTransmittedAttempt({
         nextTotalRuntime > subject.chain_budget.runtime_ms
       ? 'adapter.timeout'
       : null,
-    outputBytes > envelope.ceilings.output_bytes || nextTotalOutput > subject.chain_budget.output_bytes
-      ? 'adapter.output_budget_exhausted'
-      : null,
+    outputBudgetExceeded ? 'adapter.output_budget_exhausted' : null,
     double.cost_microunits > envelope.ceilings.cost_microunits ||
         nextTotalCost > subject.chain_budget.cost_microunits
       ? 'adapter.cost_budget_exhausted'
@@ -197,7 +197,7 @@ async function evaluateTransmittedAttempt({
       (rawOutput === null && double.behavior !== 'transient_failure' && !recoveryUnknown)) {
     observedCodes.push('adapter.malformed_output');
   }
-  if (rawOutput !== null) {
+  if (rawOutput !== null && !outputBudgetExceeded) {
     const validated = await validateProposal(rawOutput, envelope, packageRoot);
     proposal = validated.proposal;
     observedCodes.push(validated.code);
