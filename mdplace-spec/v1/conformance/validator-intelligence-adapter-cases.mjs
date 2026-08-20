@@ -6,8 +6,9 @@ import test from 'node:test';
 
 import {adapterReceiptDigest, canonicalDigest, parseReceiptStrings, sha256} from './intelligence-adapter-core.mjs';
 import {observeIntelligenceAdapterScenario} from './intelligence-adapter-observer.mjs';
-import {forbiddenActionCode} from './intelligence-adapter-validation.mjs';
+import {forbiddenActionCode, preflightCode} from './intelligence-adapter-validation.mjs';
 import {validateJsonSchema} from './json-schema.mjs';
+import {canonicalJson} from './semantic-kernel-core.mjs';
 
 const packageRoot = fileURLToPath(new URL('../', import.meta.url));
 const validator = fileURLToPath(new URL('./validator.mjs', import.meta.url));
@@ -199,6 +200,11 @@ test('observed timing is canonical and exactly reconciled with measured runtime'
     .map((document) => observeIntelligenceAdapterScenario(document, packageRoot)));
 
   assert.ok(results.every(({codes}) => codes[0] === 'adapter.malformed_output'));
+  for (const observed of results) {
+    const [receipt] = parseReceiptStrings(observed.receipts);
+    assert.equal(Date.parse(receipt.observed_completed_at) - Date.parse(receipt.observed_started_at),
+      receipt.budget.runtime_ms);
+  }
   const scenarioSchema = await readJson('contracts/schemas/intelligence-adapter-scenario.schema.json');
   const receiptSchema = await readJson('contracts/schemas/adapter-run-receipt.schema.json');
   assert.equal(typeof scenarioSchema.$defs.double.properties.observed_started_at.pattern, 'string');
@@ -223,6 +229,10 @@ test('forbidden actions retain precedence before transient scheduling and resour
   assert.ok(results.every(({codes}) => codes[0] === 'adapter.tool_request_denied'));
   assert.equal(results[0].receipts.length, 1);
   assert.equal(results[0].network_effects.length, 1);
+  const [receipt] = parseReceiptStrings(results[0].receipts);
+  assert.equal(Date.parse(receipt.observed_completed_at) - Date.parse(receipt.observed_started_at),
+    receipt.budget.runtime_ms);
+  assert.equal(receipt.budget.runtime_ms, 500);
 });
 
 test('retry scheduling requires the next attempt exact authorization to remain valid', async () => {
@@ -246,10 +256,21 @@ test('destination schemas bind HTTPS remote egress and local-only delivery schem
   const context = await readJson('contracts/intelligence-adapter/approved-context.json');
   const remoteAuthorization = context.attempt_authorizations.find(({destination}) => destination.locality === 'remote');
   remoteAuthorization.destination.endpoint = 'http://cleartext.test/process';
+  const credentialContext = await readJson('contracts/intelligence-adapter/approved-context.json');
+  const credentialDocument = await scenario('remote-valid-proposal-advice');
+  const credentialAuthorization = credentialContext.attempt_authorizations
+    .find(({authorization_id: id}) => id === credentialDocument.attempts[0].envelope.authorization_id);
+  const credentialEndpoint = 'https://alice:secret@credential-leak.test/process';
+  credentialAuthorization.destination.endpoint = credentialEndpoint;
+  credentialDocument.attempts[0].envelope.destination.endpoint = credentialEndpoint;
+  credentialDocument.attempts[0].isolation.network_scope = [credentialEndpoint];
 
   assert.ok(validateJsonSchema(envelopeSchema, remote.attempts[0].envelope).length > 0);
   assert.ok(validateJsonSchema(envelopeSchema, local.attempts[0].envelope).length > 0);
   assert.ok(validateJsonSchema(contextSchema, context).length > 0);
+  assert.ok(validateJsonSchema(envelopeSchema, credentialDocument.attempts[0].envelope).length > 0);
+  assert.ok(validateJsonSchema(contextSchema, credentialContext).length > 0);
+  assert.equal(preflightCode(credentialDocument.attempts[0], credentialContext), 'adapter.destination_denied');
 });
 
 test('local adapter delivery is observed without claiming network egress', async () => {
@@ -262,6 +283,78 @@ test('local adapter delivery is observed without claiming network egress', async
   assert.deepEqual(observed.network_effects, ['none']);
   assert.ok(receipt.transmitted_bytes > 0);
   assert.equal(observed.observations.length, 1);
+});
+
+test('crash behavior and recovery evidence are fail-closed and shape-compatible', async () => {
+  const executeBeforeTransmit = await scenario('remote-valid-proposal-advice');
+  executeBeforeTransmit.attempts[0].double.behavior = 'crash_before_transmit';
+  executeBeforeTransmit.attempts[0].double.raw_output = null;
+  const contradictoryRecovery = await scenario('crash-after-receipt-preserves-receipt');
+  contradictoryRecovery.attempts[0].double.behavior = 'crash_after_transmit';
+  contradictoryRecovery.attempts[0].double.raw_output = null;
+  const priorReceipt = contradictoryRecovery.recovery.prior_receipts[0];
+  priorReceipt.raw_response_sha256 = null;
+  priorReceipt.proposal_sha256 = null;
+  priorReceipt.budget.output_bytes = 0;
+  priorReceipt.outcome = 'malformed_output';
+  priorReceipt.reason = 'adapter.malformed_output';
+  priorReceipt.receipt_sha256 = adapterReceiptDigest(priorReceipt);
+
+  const [beforeResult, contradictoryResult] = await Promise.all([
+    observeIntelligenceAdapterScenario(executeBeforeTransmit, packageRoot),
+    observeIntelligenceAdapterScenario(contradictoryRecovery, packageRoot),
+  ]);
+  const scenarioSchema = await readJson('contracts/schemas/intelligence-adapter-scenario.schema.json');
+
+  assert.deepEqual(beforeResult.codes, ['adapter.recovery_before_transmission_denied']);
+  assert.deepEqual(beforeResult.network_effects, ['none']);
+  assert.deepEqual(contradictoryResult.codes, ['adapter.recovery_unknown_completion']);
+  assert.deepEqual(contradictoryResult.network_effects, ['none']);
+  assert.ok(validateJsonSchema(scenarioSchema, executeBeforeTransmit).length > 0);
+  assert.ok(validateJsonSchema(scenarioSchema, contradictoryRecovery).length > 0);
+});
+
+test('combined failures select the first declared global outcome precedence', async () => {
+  const filesystemAndSemantic = await scenario('remote-valid-proposal-advice');
+  const authorityProposal = JSON.parse(filesystemAndSemantic.attempts[0].double.raw_output);
+  authorityProposal.authority.filesystem = 'write';
+  authorityProposal.authority.semantic = 'establish_truth';
+  filesystemAndSemantic.attempts[0].double.raw_output = JSON.stringify(authorityProposal);
+  const staleCacheAndIsolation = await scenario('stale-cached-proposal-denied');
+  staleCacheAndIsolation.attempts[0].isolation.filesystem = 'present';
+  const stalePolicyAndChainOverflow = await scenario('remote-valid-proposal-advice');
+  stalePolicyAndChainOverflow.attempts[0].envelope.bindings.policy.sha256 = 'b'.repeat(64);
+  stalePolicyAndChainOverflow.chain_budget.max_attempts = 0;
+  const providerAndContract = await scenario('remote-valid-proposal-advice');
+  providerAndContract.attempts[0].envelope.bindings.provider_id = 'provider:other';
+  providerAndContract.attempts[0].envelope.contracts.adapter_contract_version = '2.0.0';
+
+  const results = await Promise.all([
+    filesystemAndSemantic,
+    staleCacheAndIsolation,
+    stalePolicyAndChainOverflow,
+    providerAndContract,
+  ].map((document) => observeIntelligenceAdapterScenario(document, packageRoot)));
+
+  assert.deepEqual(results.map(({codes}) => codes[0]), [
+    'adapter.filesystem_authority_denied',
+    'adapter.isolation_failed',
+    'adapter.policy_binding_denied',
+    'adapter.policy_binding_denied',
+  ]);
+});
+
+test('retry scheduling denies known aggregate input exhaustion before emitting a schedule receipt', async () => {
+  const document = await scenario('authorized-retry-succeeds');
+  const exactChainInput = document.attempts.reduce((total, {envelope}) =>
+    total + Buffer.byteLength(canonicalJson(envelope)), 0);
+  document.chain_budget.input_bytes = exactChainInput - 1;
+
+  const observed = await observeIntelligenceAdapterScenario(document, packageRoot);
+
+  assert.deepEqual(observed.codes, ['adapter.retry_exhausted']);
+  assert.equal(observed.receipts.length, 1);
+  assert.equal(observed.network_effects.length, 1);
 });
 
 test('forbidden-action precedence is independent of caller array order', () => {

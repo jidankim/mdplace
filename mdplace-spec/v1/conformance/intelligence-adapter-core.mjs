@@ -32,16 +32,21 @@ export function adapterIsolationReceipt(isolation) {
   };
 }
 
-function observedCompletionForBudget(attempt, budget) {
-  if (budget.runtime_ms === attempt.double.duration_ms) return attempt.double.observed_completed_at;
-  const started = Date.parse(attempt.double.observed_started_at);
-  return Number.isFinite(started)
-    ? new Date(started + budget.runtime_ms).toISOString()
-    : attempt.double.observed_completed_at;
+export function adapterReceiptTiming(attempt, budget) {
+  const candidate = attempt.double.observed_started_at;
+  const parsed = Date.parse(candidate);
+  const observedStartedAt = Number.isFinite(parsed) && new Date(parsed).toISOString() === candidate
+    ? candidate
+    : '1970-01-01T00:00:00.000Z';
+  return {
+    observed_started_at: observedStartedAt,
+    observed_completed_at: new Date(Date.parse(observedStartedAt) + budget.runtime_ms).toISOString(),
+  };
 }
 
 export function createAdapterReceipt({attempt, transmission, isolation, budget, rawOutput, proposal, outcome, reason}) {
   const envelope = attempt.envelope;
+  const timing = adapterReceiptTiming(attempt, budget);
   const body = {
     schema_id: 'mdplace.adapter-run-receipt/v1',
     receipt_id: `adapter-receipt:${envelope.attempt_id.slice('adapter-attempt:'.length)}`,
@@ -64,8 +69,7 @@ export function createAdapterReceipt({attempt, transmission, isolation, budget, 
     credential_boundary_sha256: canonicalDigest(envelope.credential_boundary),
     isolation: adapterIsolationReceipt(isolation),
     budget,
-    observed_started_at: attempt.double.observed_started_at,
-    observed_completed_at: observedCompletionForBudget(attempt, budget),
+    ...timing,
     provider_request_id: transmission === null ? null : attempt.double.provider_request_id,
     raw_response_sha256: rawOutput === null ? null : sha256(rawOutput),
     proposal_sha256: proposal === null ? null : canonicalDigest(proposal),

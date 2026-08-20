@@ -3,6 +3,7 @@ import {isDeepStrictEqual} from 'node:util';
 
 import {adapterReceiptDigest, adapterResultDigest, parseReceiptStrings, sha256} from './intelligence-adapter-core.mjs';
 import {observeIntelligenceAdapterScenario} from './intelligence-adapter-observer.mjs';
+import {adapterOutcomePrecedence} from './intelligence-adapter-validation.mjs';
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {readPackageFile} from './safe-path.mjs';
 
@@ -234,7 +235,8 @@ export async function checkIntelligenceAdapterProtocol(packageRoot, manifest, co
   const outcomeRows = rulesResult.document?.outcome_precedence ?? [];
   const ruleCodes = outcomeRows.map(({code}) => code);
   if (outcomeRows.some(({order, code, outcome}, index) =>
-    order !== index + 1 || receiptReasonByCode.get(code) !== outcome)) {
+    order !== index + 1 || receiptReasonByCode.get(code) !== outcome) ||
+      !isDeepStrictEqual(ruleCodes, adapterOutcomePrecedence)) {
     codes.push('adapter.receipt_reason_invalid');
   }
   if (receiptReasons.some(({code}) => !observedCodes.has(code))) {

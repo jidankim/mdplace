@@ -4,6 +4,47 @@ import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {canonicalJson} from './semantic-kernel-core.mjs';
 import {sha256} from './intelligence-adapter-core.mjs';
 
+export const adapterOutcomePrecedence = Object.freeze([
+  'adapter.policy_binding_denied',
+  'adapter.source_profile_binding_denied',
+  'adapter.provider_denied',
+  'adapter.purpose_denied',
+  'adapter.destination_denied',
+  'adapter.field_denied',
+  'adapter.artifact_denied',
+  'adapter.redaction_unproven',
+  'adapter.retention_unproven',
+  'adapter.capability_denied',
+  'adapter.credential_boundary_denied',
+  'adapter.input_budget_exhausted',
+  'adapter.isolation_failed',
+  'adapter.canary_failed',
+  'adapter.tool_request_denied',
+  'adapter.secret_request_denied',
+  'adapter.ambient_config_denied',
+  'adapter.filesystem_authority_denied',
+  'adapter.semantic_authority_denied',
+  'adapter.placement_authority_denied',
+  'adapter.timeout',
+  'adapter.output_budget_exhausted',
+  'adapter.cost_budget_exhausted',
+  'adapter.malformed_output',
+  'adapter.proposal_binding_denied',
+  'adapter.cached_proposal_stale',
+  'adapter.retry_exhausted',
+  'adapter.fallback_exhausted',
+  'adapter.recovery_unknown_completion',
+]);
+
+const outcomePrecedenceRank = new Map(adapterOutcomePrecedence.map((code, index) => [code, index]));
+
+export function highestPrecedenceCode(codes) {
+  return codes.filter((code) => code !== null)
+    .reduce((highest, code) => highest === null || outcomePrecedenceRank.get(code) < outcomePrecedenceRank.get(highest)
+      ? code
+      : highest, null);
+}
+
 function equal(left, right) {
   return isDeepStrictEqual(left, right);
 }
@@ -28,9 +69,16 @@ function isSubset(requested, approved, identity = (value) => value) {
 }
 
 function destinationTransportIsValid(destination) {
-  if (destination.locality === 'remote') return /^https:\/\/\S+$/.test(destination.endpoint);
-  if (destination.locality === 'local') return /^local:\/\/\S+$/.test(destination.endpoint);
-  return false;
+  try {
+    const endpoint = new URL(destination.endpoint);
+    const authorityIsSafe = endpoint.hostname.length > 0 && endpoint.username === '' && endpoint.password === '' &&
+      endpoint.search === '' && endpoint.hash === '';
+    if (destination.locality === 'remote') return authorityIsSafe && endpoint.protocol === 'https:';
+    if (destination.locality === 'local') return authorityIsSafe && endpoint.protocol === 'local:';
+    return false;
+  } catch {
+    return false;
+  }
 }
 
 function segmentCode(envelope) {
@@ -74,40 +122,44 @@ export function preflightCode(attempt, context) {
   const matches = context.attempt_authorizations.filter(({authorization_id: id}) => id === envelope.authorization_id);
   if (matches.length !== 1) return 'adapter.policy_binding_denied';
   const authorization = matches[0];
+  const codes = [];
   if (context.policy_binding.lifecycle_state !== 'active' || !context.policy_binding.approved ||
       !equal(envelope.bindings.policy, versionBinding(context.policy_binding))) {
-    return 'adapter.policy_binding_denied';
+    codes.push('adapter.policy_binding_denied');
   }
   if (context.source_profile_binding.lifecycle_state !== 'active' || !context.source_profile_binding.approved ||
       !equal(envelope.bindings.source_profile, versionBinding(context.source_profile_binding))) {
-    return 'adapter.source_profile_binding_denied';
+    codes.push('adapter.source_profile_binding_denied');
   }
   const taxonomyRevision = context.taxonomy_revision_binding;
   if (!equal(envelope.bindings.taxonomy_revision, {
     id: taxonomyRevision.revision_id,
     revision: taxonomyRevision.revision,
     sha256: taxonomyRevision.sha256,
-  })) return 'adapter.policy_binding_denied';
+  })) codes.push('adapter.policy_binding_denied');
   if (envelope.bindings.vault_id !== context.vault_id || envelope.bindings.adapter_id !== authorization.adapter_id ||
       attempt.attempt_class !== authorization.attempt_class || envelope.attempt_sequence !== authorization.position) {
-    return 'adapter.policy_binding_denied';
+    codes.push('adapter.policy_binding_denied');
   }
-  if (envelope.bindings.provider_id !== authorization.provider_id) return 'adapter.provider_denied';
+  if (!equal(envelope.contracts, context.contracts) || !ceilingsNarrower(envelope.ceilings, authorization.ceilings)) {
+    codes.push('adapter.policy_binding_denied');
+  }
+  if (envelope.bindings.provider_id !== authorization.provider_id) codes.push('adapter.provider_denied');
   if (envelope.bindings.model_id !== authorization.model_id ||
-      envelope.bindings.model_version !== authorization.model_version) return 'adapter.provider_denied';
-  if (envelope.purpose_id !== authorization.purpose_id) return 'adapter.purpose_denied';
+      envelope.bindings.model_version !== authorization.model_version) codes.push('adapter.provider_denied');
+  if (envelope.purpose_id !== authorization.purpose_id) codes.push('adapter.purpose_denied');
   if (!destinationTransportIsValid(envelope.destination) ||
       !destinationTransportIsValid(authorization.destination) ||
-      !equal(envelope.destination, authorization.destination)) return 'adapter.destination_denied';
+      !equal(envelope.destination, authorization.destination)) codes.push('adapter.destination_denied');
   if (!isSubset(envelope.transmitted_fields.map(({field_id: id}) => id), authorization.field_ids)) {
-    return 'adapter.field_denied';
+    codes.push('adapter.field_denied');
   }
-  if (!isSubset(envelope.transmitted_artifacts, authorization.artifact_kinds)) return 'adapter.artifact_denied';
+  if (!isSubset(envelope.transmitted_artifacts, authorization.artifact_kinds)) codes.push('adapter.artifact_denied');
   const redactions = envelope.redactions.map(({rule_id, receipt_sha256}) => ({rule_id, receipt_sha256}));
-  if (!isSubset(redactions, authorization.redactions, canonicalJson)) return 'adapter.redaction_unproven';
+  if (!isSubset(redactions, authorization.redactions, canonicalJson)) codes.push('adapter.redaction_unproven');
   const redactionReceipts = new Set(envelope.redactions.map(({receipt_sha256: digest}) => digest));
   if (envelope.transmitted_fields.some(({redaction_receipt_sha256: digest}) => !redactionReceipts.has(digest))) {
-    return 'adapter.redaction_unproven';
+    codes.push('adapter.redaction_unproven');
   }
   for (const field of envelope.transmitted_fields) {
     const obligations = authorization.field_redaction_bindings
@@ -116,28 +168,31 @@ export function preflightCode(attempt, context) {
         field.redaction_receipt_sha256 !== obligations[0].receipt_sha256 ||
         !envelope.redactions.some(({rule_id: ruleId, receipt_sha256: digest}) =>
           ruleId === obligations[0].rule_id && digest === obligations[0].receipt_sha256)) {
-      return 'adapter.redaction_unproven';
+      codes.push('adapter.redaction_unproven');
     }
   }
   if (envelope.retention_facts.length === 0 ||
       !isSubset(envelope.retention_facts, authorization.retention_facts, canonicalJson) ||
-      !isSubset(envelope.retention_artifacts, authorization.retention_artifacts)) return 'adapter.retention_unproven';
+      !isSubset(envelope.retention_artifacts, authorization.retention_artifacts)) {
+    codes.push('adapter.retention_unproven');
+  }
   const requiredCapabilities = envelope.destination.locality === 'remote'
     ? ['capability:produce-proposal', 'capability:fixed-destination-network']
     : ['capability:produce-proposal'];
   if (!isSubset(envelope.capabilities, authorization.capabilities) ||
       requiredCapabilities.some((capability) => !envelope.capabilities.includes(capability))) {
-    return 'adapter.capability_denied';
+    codes.push('adapter.capability_denied');
   }
-  if (!equal(envelope.credential_boundary, authorization.credential_boundary)) return 'adapter.credential_boundary_denied';
-  if (!equal(envelope.contracts, context.contracts) || !ceilingsNarrower(envelope.ceilings, authorization.ceilings)) {
-    return 'adapter.policy_binding_denied';
+  if (!equal(envelope.credential_boundary, authorization.credential_boundary)) {
+    codes.push('adapter.credential_boundary_denied');
   }
   const segments = segmentCode(envelope);
-  if (segments !== null) return segments;
-  if (Buffer.byteLength(canonicalJson(envelope)) > envelope.ceilings.input_bytes) return 'adapter.input_budget_exhausted';
+  if (segments !== null) codes.push(segments);
+  if (Buffer.byteLength(canonicalJson(envelope)) > envelope.ceilings.input_bytes) {
+    codes.push('adapter.input_budget_exhausted');
+  }
   const cached = cachedProposalCode(envelope);
-  if (cached !== null) return cached;
+  if (cached !== null) codes.push(cached);
 
   const isolation = attempt.isolation;
   const expectedNetwork = envelope.destination.locality === 'remote' ? [envelope.destination.endpoint] : [];
@@ -149,12 +204,14 @@ export function preflightCode(attempt, context) {
   if (!isolation.ephemeral || !isolation.fresh_process || isolation.filesystem !== 'none' || isolation.tools !== 'none' ||
       isolation.ambient_configuration !== 'unreadable' || isolation.credential_visibility !== 'none' ||
       !equal(isolation.network_scope, expectedNetwork) || !equal(isolation.effective_capabilities, envelope.capabilities)) {
-    return 'adapter.isolation_failed';
+    codes.push('adapter.isolation_failed');
   }
   if (isolation.canary.canary_id !== expectedCanary.canary_id ||
       isolation.canary.challenge !== expectedCanary.challenge || isolation.canary.expected !== expectedCanary.expected ||
-      !isolation.canary.passed || isolation.canary.observed !== expectedCanary.expected) return 'adapter.canary_failed';
-  return null;
+      !isolation.canary.passed || isolation.canary.observed !== expectedCanary.expected) {
+    codes.push('adapter.canary_failed');
+  }
+  return highestPrecedenceCode(codes);
 }
 
 const actionCodes = new Map([
@@ -201,13 +258,22 @@ export async function validateProposal(rawOutput, envelope, packageRoot) {
   } catch {
     return {proposal: null, code: 'adapter.malformed_output'};
   }
-  if (proposal?.authority?.semantic !== 'none') return {proposal: null, code: 'adapter.semantic_authority_denied'};
-  if (proposal?.authority?.filesystem !== 'none' || proposal?.authority?.projection !== 'none') {
-    return {proposal: null, code: 'adapter.filesystem_authority_denied'};
-  }
-  if (proposal?.authority?.note_placement !== 'none' || proposal?.authority?.taxonomy !== 'none') {
-    return {proposal: null, code: 'adapter.placement_authority_denied'};
-  }
+  const authority = proposal?.authority;
+  const authorityCode = authority === null || typeof authority !== 'object'
+    ? null
+    : highestPrecedenceCode([
+      Object.hasOwn(authority, 'filesystem') && (authority.filesystem !== 'none' || authority.projection !== 'none')
+        ? 'adapter.filesystem_authority_denied'
+        : null,
+      Object.hasOwn(authority, 'semantic') && authority.semantic !== 'none'
+        ? 'adapter.semantic_authority_denied'
+        : null,
+      Object.hasOwn(authority, 'note_placement') &&
+          (authority.note_placement !== 'none' || authority.taxonomy !== 'none')
+        ? 'adapter.placement_authority_denied'
+        : null,
+    ]);
+  if (authorityCode !== null) return {proposal: null, code: authorityCode};
   const errors = await validateAgainstSchemaPath(packageRoot, 'contracts/schemas/intelligence-proposal.schema.json', proposal);
   if (schemaErrorCode(errors) !== null) return {proposal: null, code: 'adapter.malformed_output'};
   if (proposal.envelope_id !== envelope.envelope_id || proposal.attempt_id !== envelope.attempt_id ||
