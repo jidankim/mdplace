@@ -3,7 +3,11 @@
   "schema_id": "mdplace.conformance-fixture/v1",
   "fixture_id": "FIX-VAL-NEG-006",
   "category": "negative",
-  "requirement_ids": ["REQ-VAL-002", "REQ-VAL-003", "REQ-VAL-006"],
+  "requirement_ids": [
+    "REQ-VAL-002",
+    "REQ-VAL-003",
+    "REQ-VAL-006"
+  ],
   "subject": {
     "kind": "extension",
     "extension_id": "mdplace.validator-extension/evidence/v1",
@@ -20,7 +24,7 @@
       "invocation": {
         "invocation_id": "invocation:validator-evidence-reference",
         "path": "conformance/evidence/invocations/validator-evidence-reference.json",
-        "sha256": "f9d480650be1f1678764261f83bc3adc99b10ee704c672c3d914f957b52cbee1"
+        "sha256": "fddc110eac81f6a62e031ec9552ddb491b6007317419d8b3d51acf98b558e68a"
       },
       "requirement_id": "REQ-VAL-003",
       "subject": {
@@ -30,31 +34,83 @@
         "sha256": "0b8835675f0c24acae0207bd4cd34f4b584d742babcefcf6addad3e88bfa1761"
       },
       "input_digests": [
-        {"ordinal": 0, "label": "requirements", "path": "normative/requirements.json", "sha256": "50e8d01238dd93d8011b0f88070108b82526cb70c7f64d63bf17d4c77f4728a2"},
-        {"ordinal": 1, "label": "verdict_table", "path": "contracts/verdicts/validator-verdicts.json", "sha256": "0b8835675f0c24acae0207bd4cd34f4b584d742babcefcf6addad3e88bfa1761"}
+        {
+          "ordinal": 0,
+          "label": "requirements",
+          "path": "normative/requirements.json",
+          "sha256": "4652366fa1bce367194317550c82da9bedbaf23315563aab9d8b6eb4dfd7452f"
+        },
+        {
+          "ordinal": 1,
+          "label": "verdict_table",
+          "path": "contracts/verdicts/validator-verdicts.json",
+          "sha256": "0b8835675f0c24acae0207bd4cd34f4b584d742babcefcf6addad3e88bfa1761"
+        }
       ],
       "output_digests": [
-        {"ordinal": 0, "label": "claim_index", "path": "claims-and-evidence.yaml", "sha256": "57cc759832ddeec0c783deb194d722428c6b9032434b53c7c09351c67b676c7f"}
+        {
+          "ordinal": 0,
+          "label": "claim_index",
+          "path": "claims-and-evidence.yaml",
+          "sha256": "57cc759832ddeec0c783deb194d722428c6b9032434b53c7c09351c67b676c7f"
+        }
       ],
       "receipts": [
-        {"ordinal": 0, "receipt_id": "receipt:validator-evidence-reference", "receipt_type": "EvidenceValidationReceipt", "path": "contracts/validator-extensions.json", "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
+        {
+          "ordinal": 0,
+          "receipt_id": "receipt:validator-evidence-reference",
+          "receipt_type": "EvidenceValidationReceipt",
+          "path": "contracts/validator-extensions.json",
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
       ],
       "artifact_digests": [
-        {"ordinal": 0, "label": "normative_contract", "path": "normative/validator-evidence-contract.md", "sha256": "4b1c8cbccee44802a4173a859977d300fc31703118965b04cec81ec56e7a4f12"},
-        {"ordinal": 1, "label": "extension_registry", "path": "contracts/validator-extensions.json", "sha256": "79de28cb94fe805ba3d790e99075cf5a6face8809a8c2404683328bbb92d26e8"}
+        {
+          "ordinal": 0,
+          "label": "normative_contract",
+          "path": "normative/validator-evidence-contract.md",
+          "sha256": "4b1c8cbccee44802a4173a859977d300fc31703118965b04cec81ec56e7a4f12"
+        },
+        {
+          "ordinal": 1,
+          "label": "extension_registry",
+          "path": "contracts/validator-extensions.json",
+          "sha256": "79de28cb94fe805ba3d790e99075cf5a6face8809a8c2404683328bbb92d26e8"
+        }
       ],
-      "execution_context": {"runner_id": "mdplace.package-validator", "platform": "platform_neutral", "architecture": "architecture_neutral", "filesystem": "package_fixture", "locale": "C.UTF-8", "timezone": "UTC", "network_access": "denied"},
+      "execution_context": {
+        "runner_id": "mdplace.package-validator",
+        "platform": "platform_neutral",
+        "architecture": "architecture_neutral",
+        "filesystem": "package_fixture",
+        "locale": "C.UTF-8",
+        "timezone": "UTC",
+        "network_access": "denied"
+      },
       "verdict": "pass",
       "codes": []
     }
   },
   "expected": {
     "verdict": "fail",
-    "codes": ["evidence.receipt_digest_mismatch"],
-    "outputs": ["evidence envelope rejected"],
-    "operations": ["resolve validator extension", "validate extension document", "verify specification and validator bindings", "recompute referenced artifact digests"],
-    "receipts": ["EvidenceValidationReceipt"],
-    "filesystem_effects": ["none"],
+    "codes": [
+      "evidence.receipt_digest_mismatch"
+    ],
+    "outputs": [
+      "evidence envelope rejected"
+    ],
+    "operations": [
+      "resolve validator extension",
+      "validate extension document",
+      "verify specification and validator bindings",
+      "recompute referenced artifact digests"
+    ],
+    "receipts": [
+      "EvidenceValidationReceipt"
+    ],
+    "filesystem_effects": [
+      "none"
+    ],
     "terminal_state": "rejected",
     "illegal_transition": false
   }

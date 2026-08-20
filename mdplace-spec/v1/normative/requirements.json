@@ -924,6 +924,78 @@
       ],
       "acceptance_gate": "Every requirement preserves issue #7 and issue #26 as input_without_reopening, while every added artifact remains specification or conformance material and performs no real vault mutation.",
       "scope": "vault-mutation-gate"
+    },
+    {
+      "id": "REQ-IAP-001",
+      "title": "Stable requirements use canonical protocol vocabulary",
+      "normative_anchor": "normative/intelligence-adapter-protocol.md#req-iap-001-stable-requirements-use-canonical-protocol-vocabulary",
+      "decision_urls": ["https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"],
+      "canonical_terms": ["Intelligence Adapter", "Processing Envelope", "Intelligence Adapter Attempt", "Intelligence Proposal", "Adapter Run Receipt", "Adapter Isolation Canary"],
+      "acceptance_gate": "All eight stable requirement identifiers and canonical protocol terms resolve without aliases or conflicting meanings.",
+      "scope": "intelligence-adapter-protocol"
+    },
+    {
+      "id": "REQ-IAP-002",
+      "title": "Processing Envelope proposal and receipt contracts are closed",
+      "normative_anchor": "normative/intelligence-adapter-protocol.md#req-iap-002-processing-envelope-proposal-and-receipt-contracts-are-closed",
+      "decision_urls": ["https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"],
+      "canonical_terms": ["Processing Envelope", "Intelligence Proposal", "Adapter Run Receipt", "Processing Policy", "Source Profile"],
+      "acceptance_gate": "Every structured protocol artifact validates against a closed schema and binds the exact approved versions and transmitted facts.",
+      "scope": "intelligence-adapter-protocol"
+    },
+    {
+      "id": "REQ-IAP-003",
+      "title": "Policy binding isolation and canary checks precede transmission",
+      "normative_anchor": "normative/intelligence-adapter-protocol.md#req-iap-003-policy-binding-isolation-and-canary-checks-precede-transmission",
+      "decision_urls": ["https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"],
+      "canonical_terms": ["Processing Policy", "Source Profile", "Processing Envelope", "Adapter Isolation Canary", "Intelligence Adapter Attempt"],
+      "acceptance_gate": "Any stale authorization, widening, isolation defect, or failed canary records a deterministic denial and transmits zero bytes.",
+      "scope": "intelligence-adapter-protocol"
+    },
+    {
+      "id": "REQ-IAP-004",
+      "title": "Every initial retry and fallback attempt is independently bounded",
+      "normative_anchor": "normative/intelligence-adapter-protocol.md#req-iap-004-every-initial-retry-and-fallback-attempt-is-independently-bounded",
+      "decision_urls": ["https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"],
+      "canonical_terms": ["Intelligence Adapter Attempt", "Processing Envelope", "Adapter Run Receipt", "Processing Policy"],
+      "acceptance_gate": "All seven complete lifecycle tables and instrumented budgets deny any unbound retry, fallback, timeout, or ceiling excess.",
+      "scope": "intelligence-adapter-protocol"
+    },
+    {
+      "id": "REQ-IAP-005",
+      "title": "Returned output is inert and adapters have zero authority",
+      "normative_anchor": "normative/intelligence-adapter-protocol.md#req-iap-005-returned-output-is-inert-and-adapters-have-zero-authority",
+      "decision_urls": ["https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"],
+      "canonical_terms": ["Intelligence Adapter", "Intelligence Proposal", "Semantic Kernel", "Vault Mutation Gate", "Folder Projection"],
+      "acceptance_gate": "Output remains inert through closed validation and no valid or invalid proposal creates semantic, tool, or filesystem effects.",
+      "scope": "intelligence-adapter-protocol"
+    },
+    {
+      "id": "REQ-IAP-006",
+      "title": "Outcomes and recovery have deterministic receipts",
+      "normative_anchor": "normative/intelligence-adapter-protocol.md#req-iap-006-outcomes-and-recovery-have-deterministic-receipts",
+      "decision_urls": ["https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"],
+      "canonical_terms": ["Adapter Run Receipt", "Intelligence Adapter Attempt", "Processing Envelope", "Intelligence Proposal"],
+      "acceptance_gate": "Every terminal, retry, fallback, timeout, denial, malformed, budget, isolation, and recovery outcome has one recomputable receipt.",
+      "scope": "intelligence-adapter-protocol"
+    },
+    {
+      "id": "REQ-IAP-007",
+      "title": "Public fixtures and evidence prove the protocol",
+      "normative_anchor": "normative/intelligence-adapter-protocol.md#req-iap-007-public-fixtures-and-evidence-prove-the-protocol",
+      "decision_urls": ["https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"],
+      "canonical_terms": ["Conformance Fixture", "Traceability Record", "Processing Envelope", "Intelligence Proposal", "Adapter Run Receipt", "Adapter Isolation Canary"],
+      "acceptance_gate": "Exactly 42 public fixtures and digest-bound instrumented, isolation, canary, and recovery evidence cover every required observable boundary.",
+      "scope": "intelligence-adapter-protocol"
+    },
+    {
+      "id": "REQ-IAP-008",
+      "title": "Decision and specification boundaries remain closed",
+      "normative_anchor": "normative/intelligence-adapter-protocol.md#req-iap-008-decision-and-specification-boundaries-remain-closed",
+      "decision_urls": ["https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"],
+      "canonical_terms": ["Specification Package", "Normative Material", "Conformance Fixture", "Intelligence Adapter", "Processing Policy", "Source Profile"],
+      "acceptance_gate": "Decision DEC-008 is the sole input, no product or adapter-profile claim changes, and every added artifact remains specification or conformance material.",
+      "scope": "intelligence-adapter-protocol"
     }
   ]
 }

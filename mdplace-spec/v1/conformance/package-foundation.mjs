@@ -70,6 +70,14 @@ export const requiredSchemaPaths = [
   'contracts/schemas/vault-mutation-scenario.schema.json',
   'contracts/schemas/vault-mutation-recovery-report.schema.json',
   'contracts/schemas/vault-mutation-crash-matrix.schema.json',
+  'contracts/schemas/intelligence-adapter-approved-context.schema.json',
+  'contracts/schemas/processing-envelope.schema.json',
+  'contracts/schemas/intelligence-proposal.schema.json',
+  'contracts/schemas/adapter-run-receipt.schema.json',
+  'contracts/schemas/intelligence-adapter-scenario.schema.json',
+  'contracts/schemas/intelligence-adapter-protocol-rules.schema.json',
+  'contracts/schemas/intelligence-adapter-evidence.schema.json',
+  'contracts/schemas/intelligence-adapter-recovery-report.schema.json',
 ];
 
 export const requiredCandidateFoundationSlots = [

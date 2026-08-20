@@ -21,8 +21,9 @@
         {"$ref": "#/$defs/recoverySubject"},
         {"$ref": "#/$defs/semanticKernelSubject"},
         {"$ref": "#/$defs/controlPlaneSubject"},
-        {"$ref": "#/$defs/processingPolicySubject"}
-        ,{"$ref": "#/$defs/vaultMutationGateSubject"}
+        {"$ref": "#/$defs/processingPolicySubject"},
+        {"$ref": "#/$defs/vaultMutationGateSubject"},
+        {"$ref": "#/$defs/intelligenceAdapterSubject"}
       ]
     },
     "expected": {"$ref": "#/$defs/expected"}
@@ -274,6 +275,16 @@
         "document": {"description": "Closed descriptor-bound scenario validated against subject.schema before observation."}
       }
     },
+    "intelligenceAdapterSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "schema", "document"],
+      "properties": {
+        "kind": {"const": "intelligence_adapter"},
+        "schema": {"const": "contracts/schemas/intelligence-adapter-scenario.schema.json"},
+        "document": {"description": "Closed stateless Intelligence Adapter protocol scenario validated against subject.schema before observation."}
+      }
+    },
     "expected": {
       "type": "object",
       "additionalProperties": false,
@@ -286,6 +297,7 @@
         "receipts": {"$ref": "#/$defs/stringList"},
         "filesystem_effects": {"$ref": "#/$defs/stringList"},
         "network_effects": {"$ref": "#/$defs/stringList"},
+        "observations": {"$ref": "#/$defs/stringList"},
         "terminal_state": {"type": "string", "minLength": 1},
         "illegal_transition": {"type": "boolean"}
       }

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:adapter-run-receipt:v1",
+  "title": "mdplace deterministic Adapter Run Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_id", "receipt_id", "receipt_version", "chain_id", "attempt_id", "attempt_class", "attempt_sequence", "authorization_id", "policy_binding", "source_profile_binding", "envelope_id", "envelope_sha256", "transmission_sha256", "transmitted_bytes", "observed_destination", "effective_capabilities", "retention_artifact_sha256s", "credential_boundary_sha256", "isolation", "budget", "raw_response_sha256", "proposal_sha256", "outcome", "reason", "semantic_effects", "filesystem_effects", "tool_invocations", "receipt_sha256"],
+  "properties": {
+    "schema_id": {"const": "mdplace.adapter-run-receipt/v1"}, "receipt_id": {"type": "string", "pattern": "^adapter-receipt:[a-z0-9-]{3,64}$"}, "receipt_version": {"const": "1.0.0"},
+    "chain_id": {"type": "string", "minLength": 1}, "attempt_id": {"type": "string", "minLength": 1}, "attempt_class": {"enum": ["primary", "retry", "fallback"]}, "attempt_sequence": {"type": "integer", "minimum": 0, "maximum": 2}, "authorization_id": {"type": "string", "minLength": 1},
+    "policy_binding": {"$ref": "#/$defs/versionBinding"}, "source_profile_binding": {"$ref": "#/$defs/versionBinding"},
+    "envelope_id": {"type": "string", "minLength": 1}, "envelope_sha256": {"$ref": "#/$defs/digest"}, "transmission_sha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]}, "transmitted_bytes": {"type": "integer", "minimum": 0},
+    "observed_destination": {"type": ["string", "null"]}, "effective_capabilities": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}, "retention_artifact_sha256s": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}}, "credential_boundary_sha256": {"$ref": "#/$defs/digest"},
+    "isolation": {"$ref": "#/$defs/isolation"}, "budget": {"$ref": "#/$defs/budget"},
+    "raw_response_sha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]}, "proposal_sha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+    "outcome": {"enum": ["accepted", "denied", "timeout", "retry_scheduled", "retry_exhausted", "fallback_scheduled", "fallback_exhausted", "malformed_output", "budget_exhausted", "isolation_failure", "recovery_required", "recovered"]},
+    "reason": {"type": "string", "pattern": "^adapter\\.[a-z0-9_.]+$"},
+    "semantic_effects": {"type": "array", "maxItems": 0, "items": {"type": "string"}}, "filesystem_effects": {"type": "array", "maxItems": 0, "items": {"type": "string"}}, "tool_invocations": {"type": "array", "maxItems": 0, "items": {"type": "string"}},
+    "receipt_sha256": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "versionBinding": {"type": "object", "additionalProperties": false, "required": ["id", "version", "sha256"], "properties": {"id": {"type": "string", "minLength": 1}, "version": {"type": "string", "minLength": 1}, "sha256": {"$ref": "#/$defs/digest"}}},
+    "isolation": {"type": "object", "additionalProperties": false, "required": ["ephemeral", "fresh_process", "filesystem", "tools", "ambient_configuration", "credential_visibility", "network_scope", "canary_id", "canary_passed"], "properties": {"ephemeral": {"type": "boolean"}, "fresh_process": {"type": "boolean"}, "filesystem": {"enum": ["none", "present"]}, "tools": {"enum": ["none", "present"]}, "ambient_configuration": {"enum": ["unreadable", "readable"]}, "credential_visibility": {"enum": ["none", "visible"]}, "network_scope": {"type": "array", "uniqueItems": true, "items": {"type": "string"}}, "canary_id": {"type": "string", "minLength": 1}, "canary_passed": {"type": "boolean"}}},
+    "budget": {"type": "object", "additionalProperties": false, "required": ["input_bytes", "output_bytes", "runtime_ms", "cost_microunits"], "properties": {"input_bytes": {"type": "integer", "minimum": 0}, "output_bytes": {"type": "integer", "minimum": 0}, "runtime_ms": {"type": "integer", "minimum": 0}, "cost_microunits": {"type": "integer", "minimum": 0}}}
+  }
+}

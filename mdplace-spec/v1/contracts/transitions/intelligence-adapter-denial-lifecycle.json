@@ -1,0 +1,111 @@
+{
+  "$schema": "../schemas/transition-table.schema.json",
+  "schema_id": "mdplace.transition-table/v1",
+  "table_id": "TRANS-IAP-DENIAL",
+  "lifecycle": "Intelligence Adapter denial",
+  "version": "1.0.0",
+  "states": [
+    "open",
+    "denied"
+  ],
+  "commands": [
+    "deny_adapter_attempt"
+  ],
+  "transitions": [
+    {
+      "transition_id": "TR-IAPDENY-001",
+      "command_or_event": "deny_adapter_attempt",
+      "from_state": "open",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Processing Envelope or recovery binding",
+        "active approved policy and Source Profile binding"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same receipt or advance once"
+      },
+      "terminal_state": "denied",
+      "failure_result": {
+        "code": "adapter.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "reconcile from the exact receipt and transmission observation"
+    },
+    {
+      "transition_id": "TR-IAPDENY-002",
+      "command_or_event": "deny_adapter_attempt",
+      "from_state": "denied",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "state and command pair is not permitted"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same denial receipt"
+      },
+      "terminal_state": "denied",
+      "failure_result": {
+        "code": "adapter.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "remain unchanged and require a newly authorized command"
+    }
+  ]
+}

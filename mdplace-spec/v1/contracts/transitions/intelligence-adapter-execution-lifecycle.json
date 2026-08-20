@@ -1,0 +1,587 @@
+{
+  "$schema": "../schemas/transition-table.schema.json",
+  "schema_id": "mdplace.transition-table/v1",
+  "table_id": "TRANS-IAP-EXECUTION",
+  "lifecycle": "Intelligence Adapter execution",
+  "version": "1.0.0",
+  "states": [
+    "prepared",
+    "authorized",
+    "running",
+    "terminal"
+  ],
+  "commands": [
+    "authorize_adapter_attempt",
+    "transmit_adapter_payload",
+    "record_adapter_outcome"
+  ],
+  "transitions": [
+    {
+      "transition_id": "TR-IAPEXEC-001",
+      "command_or_event": "authorize_adapter_attempt",
+      "from_state": "prepared",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Processing Envelope or recovery binding",
+        "active approved policy and Source Profile binding"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same receipt or advance once"
+      },
+      "terminal_state": "authorized",
+      "failure_result": {
+        "code": "adapter.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "reconcile from the exact receipt and transmission observation"
+    },
+    {
+      "transition_id": "TR-IAPEXEC-002",
+      "command_or_event": "transmit_adapter_payload",
+      "from_state": "prepared",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "state and command pair is not permitted"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same denial receipt"
+      },
+      "terminal_state": "prepared",
+      "failure_result": {
+        "code": "adapter.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "remain unchanged and require a newly authorized command"
+    },
+    {
+      "transition_id": "TR-IAPEXEC-003",
+      "command_or_event": "record_adapter_outcome",
+      "from_state": "prepared",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "state and command pair is not permitted"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same denial receipt"
+      },
+      "terminal_state": "prepared",
+      "failure_result": {
+        "code": "adapter.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "remain unchanged and require a newly authorized command"
+    },
+    {
+      "transition_id": "TR-IAPEXEC-004",
+      "command_or_event": "authorize_adapter_attempt",
+      "from_state": "authorized",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "state and command pair is not permitted"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same denial receipt"
+      },
+      "terminal_state": "authorized",
+      "failure_result": {
+        "code": "adapter.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "remain unchanged and require a newly authorized command"
+    },
+    {
+      "transition_id": "TR-IAPEXEC-005",
+      "command_or_event": "transmit_adapter_payload",
+      "from_state": "authorized",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Processing Envelope or recovery binding",
+        "active approved policy and Source Profile binding"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same receipt or advance once"
+      },
+      "terminal_state": "running",
+      "failure_result": {
+        "code": "adapter.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "reconcile from the exact receipt and transmission observation"
+    },
+    {
+      "transition_id": "TR-IAPEXEC-006",
+      "command_or_event": "record_adapter_outcome",
+      "from_state": "authorized",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "state and command pair is not permitted"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same denial receipt"
+      },
+      "terminal_state": "authorized",
+      "failure_result": {
+        "code": "adapter.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "remain unchanged and require a newly authorized command"
+    },
+    {
+      "transition_id": "TR-IAPEXEC-007",
+      "command_or_event": "authorize_adapter_attempt",
+      "from_state": "running",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "state and command pair is not permitted"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same denial receipt"
+      },
+      "terminal_state": "running",
+      "failure_result": {
+        "code": "adapter.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "remain unchanged and require a newly authorized command"
+    },
+    {
+      "transition_id": "TR-IAPEXEC-008",
+      "command_or_event": "transmit_adapter_payload",
+      "from_state": "running",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "state and command pair is not permitted"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same denial receipt"
+      },
+      "terminal_state": "running",
+      "failure_result": {
+        "code": "adapter.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "remain unchanged and require a newly authorized command"
+    },
+    {
+      "transition_id": "TR-IAPEXEC-009",
+      "command_or_event": "record_adapter_outcome",
+      "from_state": "running",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Processing Envelope or recovery binding",
+        "active approved policy and Source Profile binding"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same receipt or advance once"
+      },
+      "terminal_state": "terminal",
+      "failure_result": {
+        "code": "adapter.precondition_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "reconcile from the exact receipt and transmission observation"
+    },
+    {
+      "transition_id": "TR-IAPEXEC-010",
+      "command_or_event": "authorize_adapter_attempt",
+      "from_state": "terminal",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "state and command pair is not permitted"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same denial receipt"
+      },
+      "terminal_state": "terminal",
+      "failure_result": {
+        "code": "adapter.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "remain unchanged and require a newly authorized command"
+    },
+    {
+      "transition_id": "TR-IAPEXEC-011",
+      "command_or_event": "transmit_adapter_payload",
+      "from_state": "terminal",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "state and command pair is not permitted"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same denial receipt"
+      },
+      "terminal_state": "terminal",
+      "failure_result": {
+        "code": "adapter.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "remain unchanged and require a newly authorized command"
+    },
+    {
+      "transition_id": "TR-IAPEXEC-012",
+      "command_or_event": "record_adapter_outcome",
+      "from_state": "terminal",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "state and command pair is not permitted"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same denial receipt"
+      },
+      "terminal_state": "terminal",
+      "failure_result": {
+        "code": "adapter.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "remain unchanged and require a newly authorized command"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:intelligence-proposal:v1",
+  "title": "mdplace inert Intelligence Proposal",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_id", "proposal_id", "proposal_version", "kind", "envelope_id", "attempt_id", "bindings", "subject_note_id", "subject_note_version_sha256", "candidates", "taxonomy_hypotheses", "evidence_segment_ids", "rationale", "warnings", "abstention_reason", "scores_calibration", "authority"],
+  "properties": {
+    "schema_id": {"const": "mdplace.intelligence-proposal/v1"},
+    "proposal_id": {"type": "string", "pattern": "^proposal:[a-z0-9-]{3,64}$"},
+    "proposal_version": {"const": "1.0.0"},
+    "kind": {"enum": ["placement_candidates", "taxonomy_hypothesis", "abstention"]},
+    "envelope_id": {"type": "string", "pattern": "^envelope:[a-z0-9-]{3,64}$"},
+    "attempt_id": {"type": "string", "pattern": "^adapter-attempt:[a-z0-9-]{3,64}$"},
+    "bindings": {"$ref": "#/$defs/bindings"},
+    "subject_note_id": {"type": "string", "pattern": "^file:[A-Z0-9]{10,32}$"},
+    "subject_note_version_sha256": {"$ref": "#/$defs/digest"},
+    "candidates": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/candidate"}},
+    "taxonomy_hypotheses": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/hypothesis"}},
+    "evidence_segment_ids": {"$ref": "#/$defs/segmentIds"},
+    "rationale": {"type": "string", "maxLength": 2000},
+    "warnings": {"type": "array", "maxItems": 16, "uniqueItems": true, "items": {"type": "string", "maxLength": 500}},
+    "abstention_reason": {"type": ["string", "null"], "maxLength": 500},
+    "scores_calibration": {"const": "uncalibrated"},
+    "authority": {"$ref": "#/$defs/authority"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "segmentIds": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^segment:[a-z0-9-]{3,64}$"}},
+    "bindings": {
+      "type": "object", "additionalProperties": false,
+      "required": ["policy_id", "policy_version", "policy_sha256", "source_profile_id", "source_profile_version", "source_profile_sha256", "adapter_id", "provider_id", "model_id", "model_version", "adapter_contract_version", "prompt_contract_version", "proposal_schema_version"],
+      "properties": {
+        "policy_id": {"type": "string", "minLength": 1}, "policy_version": {"type": "string", "minLength": 1}, "policy_sha256": {"$ref": "#/$defs/digest"},
+        "source_profile_id": {"type": "string", "minLength": 1}, "source_profile_version": {"type": "string", "minLength": 1}, "source_profile_sha256": {"$ref": "#/$defs/digest"},
+        "adapter_id": {"type": "string", "minLength": 1}, "provider_id": {"type": "string", "minLength": 1}, "model_id": {"type": "string", "minLength": 1}, "model_version": {"type": "string", "minLength": 1},
+        "adapter_contract_version": {"const": "1.0.0"}, "prompt_contract_version": {"const": "1.0.0"}, "proposal_schema_version": {"const": "1.0.0"}
+      }
+    },
+    "candidate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["category_id", "rank", "score", "evidence_segment_ids"],
+      "properties": {"category_id": {"type": "string", "pattern": "^category:[A-Z0-9]{10,32}$"}, "rank": {"type": "integer", "minimum": 1, "maximum": 50}, "score": {"type": "number", "minimum": 0, "maximum": 1}, "evidence_segment_ids": {"$ref": "#/$defs/segmentIds"}}
+    },
+    "hypothesis": {
+      "type": "object", "additionalProperties": false,
+      "required": ["hypothesis_id", "operation", "label", "evidence_segment_ids"],
+      "properties": {"hypothesis_id": {"type": "string", "pattern": "^hypothesis:[a-z0-9-]{3,64}$"}, "operation": {"enum": ["create_leaf", "add_alias", "human_review_only"]}, "label": {"type": "string", "minLength": 1, "maxLength": 200}, "evidence_segment_ids": {"$ref": "#/$defs/segmentIds"}}
+    },
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["semantic", "note_placement", "taxonomy", "filesystem", "projection", "destination_selection", "tool_invocation", "credential_access"],
+      "properties": {"semantic": {"const": "none"}, "note_placement": {"const": "none"}, "taxonomy": {"const": "none"}, "filesystem": {"const": "none"}, "projection": {"const": "none"}, "destination_selection": {"const": "none"}, "tool_invocation": {"const": "none"}, "credential_access": {"const": "none"}}
+    }
+  }
+}

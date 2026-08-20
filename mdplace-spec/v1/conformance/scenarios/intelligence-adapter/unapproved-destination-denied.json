@@ -1,0 +1,241 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-IAP-NEG-009",
+  "category": "negative",
+  "requirement_ids": [
+    "REQ-IAP-001",
+    "REQ-IAP-002",
+    "REQ-IAP-003",
+    "REQ-IAP-004",
+    "REQ-IAP-005",
+    "REQ-IAP-006",
+    "REQ-IAP-007",
+    "REQ-IAP-008"
+  ],
+  "subject": {
+    "kind": "intelligence_adapter",
+    "schema": "contracts/schemas/intelligence-adapter-scenario.schema.json",
+    "document": {
+      "scenario_id": "IAP-018",
+      "case_id": "unapproved-destination-denied",
+      "operation": "execute",
+      "authorization_ref": "contracts/intelligence-adapter/approved-context.json",
+      "chain_budget": {
+        "max_attempts": 3,
+        "max_retries": 1,
+        "max_fallbacks": 1,
+        "input_bytes": 22000,
+        "output_bytes": 11000,
+        "runtime_ms": 2800,
+        "cost_microunits": 20000
+      },
+      "attempts": [
+        {
+          "attempt_class": "primary",
+          "envelope": {
+            "$schema": "contracts/schemas/processing-envelope.schema.json",
+            "schema_id": "mdplace.processing-envelope/v1",
+            "envelope_id": "envelope:iap-018-0",
+            "chain_id": "adapter-chain:iap-018",
+            "attempt_id": "adapter-attempt:iap-018-0",
+            "attempt_sequence": 0,
+            "authorization_id": "adapter-authorization:remote-primary",
+            "bindings": {
+              "vault_id": "vault:fixture-vault",
+              "policy": {
+                "id": "policy:core-processing",
+                "version": "1.0.0",
+                "sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766"
+              },
+              "source_profile": {
+                "id": "source-profile:web-clipper",
+                "version": "1.0.0",
+                "sha256": "e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549"
+              },
+              "source_note_id": "file:01J00000000000000000000000",
+              "source_note_version_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "adapter_id": "adapter:remote-alpha",
+              "provider_id": "provider:remote-alpha",
+              "model_id": "model:remote-alpha",
+              "model_version": "2026-08-01"
+            },
+            "purpose_id": "purpose:placement",
+            "destination": {
+              "destination_id": "destination:other",
+              "endpoint": "https://other.test/v1/process",
+              "locality": "remote"
+            },
+            "transmitted_fields": [
+              {
+                "field_id": "field:source-url",
+                "data_class": "data:source-url",
+                "segment_id": "segment:iap-018-0-source-url",
+                "redaction_receipt_sha256": "5d171a461e2853ec1dc122ca1fc761222ad41caf86ccbb4aead38dfbbc3af110"
+              },
+              {
+                "field_id": "field:title",
+                "data_class": "data:title",
+                "segment_id": "segment:iap-018-0-title",
+                "redaction_receipt_sha256": "24a4845c2cbce985522d61b8b44bf42a0f5fa7b25c6a5e16320729d23b3c43a0"
+              },
+              {
+                "field_id": "field:source-content",
+                "data_class": "data:source-content",
+                "segment_id": "segment:iap-018-0-source-content",
+                "redaction_receipt_sha256": "4a1b52bf2f36e1bc834b20df223c921abb8ea01bb0d673bb08da5d4e6bfda807"
+              }
+            ],
+            "transmitted_artifacts": [
+              "artifact:intelligence-proposal",
+              "artifact:raw-provider-response"
+            ],
+            "redactions": [
+              {
+                "rule_id": "redaction:sanitize-url",
+                "receipt_sha256": "5d171a461e2853ec1dc122ca1fc761222ad41caf86ccbb4aead38dfbbc3af110",
+                "status": "applied"
+              },
+              {
+                "rule_id": "redaction:remove-identifiers",
+                "receipt_sha256": "24a4845c2cbce985522d61b8b44bf42a0f5fa7b25c6a5e16320729d23b3c43a0",
+                "status": "applied"
+              },
+              {
+                "rule_id": "redaction:remove-secrets",
+                "receipt_sha256": "4a1b52bf2f36e1bc834b20df223c921abb8ea01bb0d673bb08da5d4e6bfda807",
+                "status": "applied"
+              }
+            ],
+            "capabilities": [
+              "capability:produce-proposal",
+              "capability:fixed-destination-network"
+            ],
+            "retention_facts": [
+              {
+                "retention_fact_id": "retention:remote-alpha",
+                "status": "known",
+                "max_days": 30,
+                "data_use": "request_only",
+                "region": "global",
+                "subprocessors": [
+                  "none"
+                ]
+              }
+            ],
+            "retention_artifacts": [
+              "artifact:intelligence-proposal",
+              "artifact:raw-provider-response"
+            ],
+            "credential_boundary": {
+              "credential_ref": "credential-ref:remote-alpha",
+              "store": "os_credential_store",
+              "authentication_method": "api_key",
+              "provider_id": "provider:remote-alpha",
+              "purpose_id": "purpose:placement",
+              "adapter_visibility": "none"
+            },
+            "ceilings": {
+              "input_bytes": 8000,
+              "output_bytes": 4000,
+              "runtime_ms": 1000,
+              "cost_microunits": 10000
+            },
+            "contracts": {
+              "adapter_contract_version": "1.0.0",
+              "prompt_contract_version": "1.0.0",
+              "proposal_schema_id": "mdplace.intelligence-proposal/v1",
+              "proposal_schema_version": "1.0.0"
+            },
+            "payload_segments": [
+              {
+                "segment_id": "segment:iap-018-0-source-url",
+                "field_id": "field:source-url",
+                "utf8": "https://example.test/article",
+                "byte_length": 28,
+                "sha256": "e6b7ccaedbf110b1f23a0b27cd070f456bd08ebec74b536a9fb550da3fafdef6"
+              },
+              {
+                "segment_id": "segment:iap-018-0-title",
+                "field_id": "field:title",
+                "utf8": "Fixture title",
+                "byte_length": 13,
+                "sha256": "2567c20ebcb7577aae7cc83921587cc4258f0ad65e982632e0a6bb7916b363e8"
+              },
+              {
+                "segment_id": "segment:iap-018-0-source-content",
+                "field_id": "field:source-content",
+                "utf8": "Untrusted article content.",
+                "byte_length": 26,
+                "sha256": "f629fec861ba22de0a069f1858edf01571e29f6135dd1634a7f80de620835846"
+              }
+            ],
+            "cached_proposal_binding": null
+          },
+          "isolation": {
+            "ephemeral": true,
+            "fresh_process": true,
+            "filesystem": "none",
+            "tools": "none",
+            "ambient_configuration": "unreadable",
+            "credential_visibility": "none",
+            "network_scope": [
+              "https://other.test/v1/process"
+            ],
+            "effective_capabilities": [
+              "capability:produce-proposal",
+              "capability:fixed-destination-network"
+            ],
+            "canary": {
+              "canary_id": "canary:iap-018-0",
+              "challenge": "return inert-canary without actions",
+              "expected": "inert-canary",
+              "observed": "inert-canary",
+              "passed": true
+            }
+          },
+          "double": {
+            "behavior": "proposal",
+            "raw_output": "{\"schema_id\":\"mdplace.intelligence-proposal/v1\",\"proposal_id\":\"proposal:iap-018-0\",\"proposal_version\":\"1.0.0\",\"kind\":\"placement_candidates\",\"envelope_id\":\"envelope:iap-018-0\",\"attempt_id\":\"adapter-attempt:iap-018-0\",\"bindings\":{\"policy_id\":\"policy:core-processing\",\"policy_version\":\"1.0.0\",\"policy_sha256\":\"27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766\",\"source_profile_id\":\"source-profile:web-clipper\",\"source_profile_version\":\"1.0.0\",\"source_profile_sha256\":\"e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549\",\"adapter_id\":\"adapter:remote-alpha\",\"provider_id\":\"provider:remote-alpha\",\"model_id\":\"model:remote-alpha\",\"model_version\":\"2026-08-01\",\"adapter_contract_version\":\"1.0.0\",\"prompt_contract_version\":\"1.0.0\",\"proposal_schema_version\":\"1.0.0\"},\"subject_note_id\":\"file:01J00000000000000000000000\",\"subject_note_version_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"candidates\":[{\"category_id\":\"category:01J00000000000000000000000\",\"rank\":1,\"score\":0.75,\"evidence_segment_ids\":[\"segment:iap-018-0-source-url\"]}],\"taxonomy_hypotheses\":[],\"evidence_segment_ids\":[\"segment:iap-018-0-source-url\"],\"rationale\":\"Bounded fixture rationale.\",\"warnings\":[],\"abstention_reason\":null,\"scores_calibration\":\"uncalibrated\",\"authority\":{\"semantic\":\"none\",\"note_placement\":\"none\",\"taxonomy\":\"none\",\"filesystem\":\"none\",\"projection\":\"none\",\"destination_selection\":\"none\",\"tool_invocation\":\"none\",\"credential_access\":\"none\"}}",
+            "duration_ms": 500,
+            "cost_microunits": 1000,
+            "requested_actions": []
+          }
+        }
+      ],
+      "recovery": {
+        "crash_point": "none",
+        "transmission_observed": false,
+        "prior_receipts": []
+      },
+      "illegal_transition": null
+    }
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": [
+      "adapter.destination_denied"
+    ],
+    "outputs": [
+      "Intelligence Adapter Attempt denied: adapter.destination_denied"
+    ],
+    "operations": [
+      "read trusted Intelligence Adapter authorization context",
+      "bind exact Processing Envelope envelope:iap-018-0",
+      "verify isolation and Adapter Isolation Canary adapter-attempt:iap-018-0",
+      "record Adapter Run Receipt adapter-receipt:iap-018-0"
+    ],
+    "receipts": [
+      "{\"schema_id\":\"mdplace.adapter-run-receipt/v1\",\"receipt_id\":\"adapter-receipt:iap-018-0\",\"receipt_version\":\"1.0.0\",\"chain_id\":\"adapter-chain:iap-018\",\"attempt_id\":\"adapter-attempt:iap-018-0\",\"attempt_class\":\"primary\",\"attempt_sequence\":0,\"authorization_id\":\"adapter-authorization:remote-primary\",\"policy_binding\":{\"id\":\"policy:core-processing\",\"version\":\"1.0.0\",\"sha256\":\"27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766\"},\"source_profile_binding\":{\"id\":\"source-profile:web-clipper\",\"version\":\"1.0.0\",\"sha256\":\"e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549\"},\"envelope_id\":\"envelope:iap-018-0\",\"envelope_sha256\":\"ceb405d63d0508dd15d5b0522a6ebaaa4840d08b1adfcdf0b1d20b12581c241f\",\"transmission_sha256\":null,\"transmitted_bytes\":0,\"observed_destination\":null,\"effective_capabilities\":[\"capability:produce-proposal\",\"capability:fixed-destination-network\"],\"retention_artifact_sha256s\":[\"dd8208b47690ad24644eeff31d5dd9f1aa017cc4e0ef2d5deddeb151bfe68be6\",\"34aa5b7a7bd33ed586521e1e34782caf83a20e8216c0610f7ea8ec5d98afb2f7\"],\"credential_boundary_sha256\":\"009a7241f9616eea9d03d90e83669de9abd9550e952b135e489f4fc1d01c891d\",\"isolation\":{\"ephemeral\":true,\"fresh_process\":true,\"filesystem\":\"none\",\"tools\":\"none\",\"ambient_configuration\":\"unreadable\",\"credential_visibility\":\"none\",\"network_scope\":[\"https://other.test/v1/process\"],\"canary_id\":\"canary:iap-018-0\",\"canary_passed\":true},\"budget\":{\"input_bytes\":3713,\"output_bytes\":0,\"runtime_ms\":500,\"cost_microunits\":1000},\"raw_response_sha256\":null,\"proposal_sha256\":null,\"outcome\":\"denied\",\"reason\":\"adapter.destination_denied\",\"semantic_effects\":[],\"filesystem_effects\":[],\"tool_invocations\":[],\"receipt_sha256\":\"5ac9788f803f521941f1c820bc5cdfad0f51013e7d6051d1c1e057d904049634\"}"
+    ],
+    "filesystem_effects": [
+      "none"
+    ],
+    "network_effects": [
+      "none"
+    ],
+    "observations": [],
+    "terminal_state": "denied",
+    "illegal_transition": false
+  }
+}

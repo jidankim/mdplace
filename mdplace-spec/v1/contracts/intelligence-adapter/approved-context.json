@@ -1,0 +1,103 @@
+{
+  "$schema": "../schemas/intelligence-adapter-approved-context.schema.json",
+  "schema_id": "mdplace.intelligence-adapter-approved-context/v1",
+  "context_id": "adapter-context:fixture-approved",
+  "vault_id": "vault:fixture-vault",
+  "policy_binding": {
+    "policy_id": "policy:core-processing",
+    "policy_version": "1.0.0",
+    "policy_sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766",
+    "lifecycle_state": "active",
+    "approved": true
+  },
+  "source_profile_binding": {
+    "profile_id": "source-profile:web-clipper",
+    "profile_version": "1.0.0",
+    "profile_sha256": "e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549",
+    "lifecycle_state": "active",
+    "approved": true
+  },
+  "contracts": {
+    "adapter_contract_version": "1.0.0",
+    "prompt_contract_version": "1.0.0",
+    "proposal_schema_id": "mdplace.intelligence-proposal/v1",
+    "proposal_schema_version": "1.0.0"
+  },
+  "attempt_authorizations": [
+    {
+      "authorization_id": "adapter-authorization:remote-primary",
+      "attempt_class": "primary",
+      "position": 0,
+      "adapter_id": "adapter:remote-alpha",
+      "provider_id": "provider:remote-alpha",
+      "purpose_id": "purpose:placement",
+      "destination": {
+        "destination_id": "destination:remote-alpha",
+        "endpoint": "https://api.remote-alpha.test/v1/process",
+        "locality": "remote"
+      },
+      "field_ids": ["field:source-url", "field:title", "field:source-content"],
+      "artifact_kinds": ["artifact:intelligence-proposal", "artifact:raw-provider-response"],
+      "redactions": [
+        {"rule_id": "redaction:sanitize-url", "receipt_sha256": "5d171a461e2853ec1dc122ca1fc761222ad41caf86ccbb4aead38dfbbc3af110"},
+        {"rule_id": "redaction:remove-identifiers", "receipt_sha256": "24a4845c2cbce985522d61b8b44bf42a0f5fa7b25c6a5e16320729d23b3c43a0"},
+        {"rule_id": "redaction:remove-secrets", "receipt_sha256": "4a1b52bf2f36e1bc834b20df223c921abb8ea01bb0d673bb08da5d4e6bfda807"}
+      ],
+      "capabilities": ["capability:produce-proposal", "capability:fixed-destination-network"],
+      "retention_facts": [{"retention_fact_id": "retention:remote-alpha", "status": "known", "max_days": 30, "data_use": "request_only", "region": "global", "subprocessors": ["none"]}],
+      "retention_artifacts": ["artifact:intelligence-proposal", "artifact:raw-provider-response"],
+      "credential_boundary": {"credential_ref": "credential-ref:remote-alpha", "store": "os_credential_store", "authentication_method": "api_key", "provider_id": "provider:remote-alpha", "purpose_id": "purpose:placement", "adapter_visibility": "none"},
+      "ceilings": {"input_bytes": 8000, "output_bytes": 4000, "runtime_ms": 1000, "cost_microunits": 10000}
+    },
+    {
+      "authorization_id": "adapter-authorization:remote-retry",
+      "attempt_class": "retry",
+      "position": 1,
+      "adapter_id": "adapter:remote-alpha",
+      "provider_id": "provider:remote-alpha",
+      "purpose_id": "purpose:placement",
+      "destination": {
+        "destination_id": "destination:remote-alpha",
+        "endpoint": "https://api.remote-alpha.test/v1/process",
+        "locality": "remote"
+      },
+      "field_ids": ["field:source-url", "field:title", "field:source-content"],
+      "artifact_kinds": ["artifact:intelligence-proposal", "artifact:raw-provider-response"],
+      "redactions": [
+        {"rule_id": "redaction:sanitize-url", "receipt_sha256": "5d171a461e2853ec1dc122ca1fc761222ad41caf86ccbb4aead38dfbbc3af110"},
+        {"rule_id": "redaction:remove-identifiers", "receipt_sha256": "24a4845c2cbce985522d61b8b44bf42a0f5fa7b25c6a5e16320729d23b3c43a0"},
+        {"rule_id": "redaction:remove-secrets", "receipt_sha256": "4a1b52bf2f36e1bc834b20df223c921abb8ea01bb0d673bb08da5d4e6bfda807"}
+      ],
+      "capabilities": ["capability:produce-proposal", "capability:fixed-destination-network"],
+      "retention_facts": [{"retention_fact_id": "retention:remote-alpha", "status": "known", "max_days": 30, "data_use": "request_only", "region": "global", "subprocessors": ["none"]}],
+      "retention_artifacts": ["artifact:intelligence-proposal", "artifact:raw-provider-response"],
+      "credential_boundary": {"credential_ref": "credential-ref:remote-alpha", "store": "os_credential_store", "authentication_method": "api_key", "provider_id": "provider:remote-alpha", "purpose_id": "purpose:placement", "adapter_visibility": "none"},
+      "ceilings": {"input_bytes": 8000, "output_bytes": 4000, "runtime_ms": 1000, "cost_microunits": 10000}
+    },
+    {
+      "authorization_id": "adapter-authorization:local-fallback",
+      "attempt_class": "fallback",
+      "position": 2,
+      "adapter_id": "adapter:local-alpha",
+      "provider_id": "provider:local-alpha",
+      "purpose_id": "purpose:placement",
+      "destination": {
+        "destination_id": "destination:local-alpha",
+        "endpoint": "local://local-alpha",
+        "locality": "local"
+      },
+      "field_ids": ["field:title", "field:source-content"],
+      "artifact_kinds": ["artifact:intelligence-proposal", "artifact:raw-provider-response"],
+      "redactions": [
+        {"rule_id": "redaction:remove-identifiers", "receipt_sha256": "24a4845c2cbce985522d61b8b44bf42a0f5fa7b25c6a5e16320729d23b3c43a0"},
+        {"rule_id": "redaction:remove-secrets", "receipt_sha256": "4a1b52bf2f36e1bc834b20df223c921abb8ea01bb0d673bb08da5d4e6bfda807"}
+      ],
+      "capabilities": ["capability:produce-proposal"],
+      "retention_facts": [{"retention_fact_id": "retention:local-alpha", "status": "known", "max_days": 0, "data_use": "request_only", "region": "local", "subprocessors": ["none"]}],
+      "retention_artifacts": ["artifact:intelligence-proposal", "artifact:raw-provider-response"],
+      "credential_boundary": {"credential_ref": "credential-ref:local-alpha", "store": "os_credential_store", "authentication_method": "local_process", "provider_id": "provider:local-alpha", "purpose_id": "purpose:placement", "adapter_visibility": "none"},
+      "ceilings": {"input_bytes": 6000, "output_bytes": 3000, "runtime_ms": 800, "cost_microunits": 0}
+    }
+  ],
+  "chain_budget": {"max_attempts": 3, "max_retries": 1, "max_fallbacks": 1, "input_bytes": 22000, "output_bytes": 11000, "runtime_ms": 2800, "cost_microunits": 20000}
+}

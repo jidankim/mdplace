@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:intelligence-adapter-protocol-rules:v1",
+  "title": "mdplace Intelligence Adapter default-deny rules",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "decision", "outcome_precedence", "forbidden_actions", "lifecycle_tables"],
+  "properties": {
+    "$schema": {"const": "../schemas/intelligence-adapter-protocol-rules.schema.json"}, "schema_id": {"const": "mdplace.intelligence-adapter-protocol-rules/v1"},
+    "decision": {"const": "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"},
+    "outcome_precedence": {"type": "array", "minItems": 20, "uniqueItems": true, "items": {"$ref": "#/$defs/rule"}},
+    "forbidden_actions": {"type": "array", "minItems": 6, "maxItems": 6, "uniqueItems": true, "items": {"enum": ["invoke_tool", "request_secret", "read_ambient_config", "write_file", "establish_semantic_truth", "choose_note_placement"]}},
+    "lifecycle_tables": {"type": "array", "minItems": 7, "maxItems": 7, "uniqueItems": true, "items": {"type": "string", "pattern": "^contracts/transitions/intelligence-adapter-[a-z-]+\\.json$"}}
+  },
+  "$defs": {"rule": {"type": "object", "additionalProperties": false, "required": ["order", "condition", "code", "outcome"], "properties": {"order": {"type": "integer", "minimum": 1}, "condition": {"type": "string", "minLength": 1}, "code": {"type": "string", "pattern": "^adapter\\.[a-z0-9_.]+$"}, "outcome": {"enum": ["denied", "timeout", "retry_exhausted", "fallback_exhausted", "malformed_output", "budget_exhausted", "isolation_failure", "recovery_required"]}}}}
+}
