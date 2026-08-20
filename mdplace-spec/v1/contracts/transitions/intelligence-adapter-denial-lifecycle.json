@@ -47,11 +47,11 @@
           "attempt_id",
           "envelope_id"
         ],
-        "retry_result": "return the same receipt or advance once"
+        "retry_result": "return the same AdapterRunReceipt or advance once"
       },
       "terminal_state": "denied",
       "failure_result": {
-        "code": "adapter.precondition_failed",
+        "code": "adapter.policy_binding_denied",
         "state_effect": "unchanged",
         "emitted_records": [
           "AdapterRunReceipt"

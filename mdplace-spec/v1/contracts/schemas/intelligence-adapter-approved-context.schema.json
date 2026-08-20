@@ -114,7 +114,7 @@
     },
     "attemptAuthorization": {
       "type": "object", "additionalProperties": false,
-      "required": ["authorization_id", "attempt_class", "position", "adapter_id", "provider_id", "model_id", "model_version", "purpose_id", "destination", "field_ids", "artifact_kinds", "redactions", "capabilities", "retention_facts", "retention_artifacts", "credential_boundary", "ceilings"],
+      "required": ["authorization_id", "attempt_class", "position", "adapter_id", "provider_id", "model_id", "model_version", "purpose_id", "destination", "field_ids", "field_redaction_bindings", "artifact_kinds", "redactions", "capabilities", "retention_facts", "retention_artifacts", "credential_boundary", "ceilings"],
       "properties": {
         "authorization_id": {"type": "string", "pattern": "^adapter-authorization:[a-z0-9-]{3,64}$"},
         "attempt_class": {"enum": ["primary", "retry", "fallback"]},
@@ -126,6 +126,7 @@
         "purpose_id": {"type": "string", "pattern": "^purpose:[a-z0-9-]{3,64}$"},
         "destination": {"$ref": "#/$defs/destination"},
         "field_ids": {"$ref": "#/$defs/stringSet"},
+        "field_redaction_bindings": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/fieldRedactionBinding"}},
         "artifact_kinds": {"$ref": "#/$defs/stringSet"},
         "redactions": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/redaction"}},
         "capabilities": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["capability:produce-proposal", "capability:fixed-destination-network"]}},
@@ -133,6 +134,16 @@
         "retention_artifacts": {"$ref": "#/$defs/stringSet"},
         "credential_boundary": {"$ref": "#/$defs/credentialBoundary"},
         "ceilings": {"$ref": "#/$defs/ceilings"}
+      }
+    },
+    "fieldRedactionBinding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["field_id", "data_class", "rule_id", "receipt_sha256"],
+      "properties": {
+        "field_id": {"type": "string", "pattern": "^field:[a-z0-9-]{3,64}$"},
+        "data_class": {"type": "string", "pattern": "^data:[a-z0-9-]{3,64}$"},
+        "rule_id": {"type": "string", "pattern": "^redaction:[a-z0-9-]{3,64}$"},
+        "receipt_sha256": {"$ref": "#/$defs/digest"}
       }
     },
     "chainBudget": {

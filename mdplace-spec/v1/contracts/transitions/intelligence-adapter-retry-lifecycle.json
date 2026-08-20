@@ -41,7 +41,7 @@
         "AdapterAuthorization"
       ],
       "emitted_records": [
-        "AdapterRunReceipt"
+        "AdapterRetryAuthorizationObservation"
       ],
       "filesystem_effects": [
         "none"
@@ -51,11 +51,11 @@
           "attempt_id",
           "envelope_id"
         ],
-        "retry_result": "return the same receipt or advance once"
+        "retry_result": "return the same AdapterRetryAuthorizationObservation or advance once"
       },
       "terminal_state": "eligible",
       "failure_result": {
-        "code": "adapter.precondition_failed",
+        "code": "adapter.retry_exhausted",
         "state_effect": "unchanged",
         "emitted_records": [
           "AdapterRunReceipt"
@@ -238,7 +238,7 @@
         "AdapterAuthorization"
       ],
       "emitted_records": [
-        "AdapterRunReceipt"
+        "AdapterRetryStartObservation"
       ],
       "filesystem_effects": [
         "none"
@@ -248,11 +248,11 @@
           "attempt_id",
           "envelope_id"
         ],
-        "retry_result": "return the same receipt or advance once"
+        "retry_result": "return the same AdapterRetryStartObservation or advance once"
       },
       "terminal_state": "running",
       "failure_result": {
-        "code": "adapter.precondition_failed",
+        "code": "adapter.retry_exhausted",
         "state_effect": "unchanged",
         "emitted_records": [
           "AdapterRunReceipt"
@@ -298,11 +298,11 @@
           "attempt_id",
           "envelope_id"
         ],
-        "retry_result": "return the same receipt or advance once"
+        "retry_result": "return the same AdapterRunReceipt or advance once"
       },
       "terminal_state": "exhausted",
       "failure_result": {
-        "code": "adapter.precondition_failed",
+        "code": "adapter.retry_exhausted",
         "state_effect": "unchanged",
         "emitted_records": [
           "AdapterRunReceipt"
@@ -446,11 +446,11 @@
           "attempt_id",
           "envelope_id"
         ],
-        "retry_result": "return the same receipt or advance once"
+        "retry_result": "return the same AdapterRunReceipt or advance once"
       },
       "terminal_state": "exhausted",
       "failure_result": {
-        "code": "adapter.precondition_failed",
+        "code": "adapter.retry_exhausted",
         "state_effect": "unchanged",
         "emitted_records": [
           "AdapterRunReceipt"

@@ -3,6 +3,7 @@ import {isDeepStrictEqual} from 'node:util';
 import {canonicalJson} from './semantic-kernel-core.mjs';
 import {
   adapterReceiptDigest,
+  adapterIsolationReceipt,
   canonicalDigest,
   createAdapterReceipt,
   sha256,
@@ -63,6 +64,9 @@ function observedTransmission(attempt, bytes, budget, rawOutput) {
     declared_retention_artifacts: envelope.retention_artifacts,
     isolation: attempt.isolation,
     measured_budget: budget,
+    observed_started_at: attempt.double.observed_started_at,
+    observed_completed_at: attempt.double.observed_completed_at,
+    provider_request_id: attempt.double.provider_request_id,
     raw_output_sha256: rawOutput === null ? null : sha256(rawOutput),
     semantic_effects: [],
     filesystem_effects: [],
@@ -97,6 +101,10 @@ function receiptBudget(inputBytes, outputBytes, double) {
   };
 }
 
+function zeroReceiptBudget() {
+  return {input_bytes: 0, output_bytes: 0, runtime_ms: 0, cost_microunits: 0};
+}
+
 function receiptFor(attempt, transmission, rawOutput, proposal, outcome, reason, budget) {
   return createAdapterReceipt({
     attempt,
@@ -110,7 +118,7 @@ function receiptFor(attempt, transmission, rawOutput, proposal, outcome, reason,
   });
 }
 
-async function observeRecovery(subject) {
+async function observeRecovery(subject, context, packageRoot) {
   const attempt = subject.attempts[0];
   const {recovery} = subject;
   const bytes = canonicalJson(attempt.envelope);
@@ -121,7 +129,23 @@ async function observeRecovery(subject) {
   };
   const observedPriorTransmission = recovery.transmission_observed === true &&
     isDeepStrictEqual(recovery.prior_transmission, expectedTransmission);
-  const receiptMatchesAttempt = (receipt) => receipt.receipt_sha256 === adapterReceiptDigest(receipt) &&
+  const rawOutput = attempt.double.raw_output;
+  const rules = await readJson(packageRoot, 'contracts/intelligence-adapter/protocol-rules.json');
+  const receiptReasonByCode = new Map((rules?.receipt_reasons ?? [])
+    .map(({code, outcome}) => [code, outcome]));
+  const expectedBudget = receiptBudget(expectedTransmission.byte_length,
+    rawOutput === null ? 0 : Buffer.byteLength(rawOutput), attempt.double);
+  const acceptedProposalDigest = (receipt) => {
+    if (receipt.outcome !== 'accepted' || rawOutput === null) return null;
+    try {
+      return canonicalDigest(JSON.parse(rawOutput));
+    } catch {
+      return null;
+    }
+  };
+  const receiptMatchesAttempt = (receipt) => receipt.schema_id === 'mdplace.adapter-run-receipt/v1' &&
+    receipt.receipt_id === `adapter-receipt:${attempt.envelope.attempt_id.slice('adapter-attempt:'.length)}` &&
+    receipt.receipt_version === '1.0.0' && receipt.receipt_sha256 === adapterReceiptDigest(receipt) &&
     receipt.chain_id === attempt.envelope.chain_id && receipt.attempt_id === attempt.envelope.attempt_id &&
     receipt.attempt_class === attempt.attempt_class && receipt.attempt_sequence === attempt.envelope.attempt_sequence &&
     receipt.authorization_id === attempt.envelope.authorization_id && receipt.envelope_id === attempt.envelope.envelope_id &&
@@ -134,9 +158,22 @@ async function observeRecovery(subject) {
     isDeepStrictEqual(receipt.taxonomy_revision_binding, attempt.envelope.bindings.taxonomy_revision) &&
     isDeepStrictEqual(receipt.effective_capabilities, attempt.isolation.effective_capabilities) &&
     isDeepStrictEqual(receipt.retention_artifact_sha256s, attempt.envelope.retention_artifacts.map(sha256)) &&
-    receipt.credential_boundary_sha256 === canonicalDigest(attempt.envelope.credential_boundary);
+    receipt.credential_boundary_sha256 === canonicalDigest(attempt.envelope.credential_boundary) &&
+    isDeepStrictEqual(receipt.isolation, adapterIsolationReceipt(attempt.isolation)) &&
+    isDeepStrictEqual(receipt.budget, expectedBudget) &&
+    receipt.observed_started_at === attempt.double.observed_started_at &&
+    receipt.observed_completed_at === attempt.double.observed_completed_at &&
+    receipt.provider_request_id === attempt.double.provider_request_id &&
+    receipt.raw_response_sha256 === (rawOutput === null ? null : sha256(rawOutput)) &&
+    receipt.proposal_sha256 === acceptedProposalDigest(receipt) &&
+    (receipt.outcome !== 'accepted' || receipt.proposal_sha256 !== null) &&
+    receiptReasonByCode.get(receipt.reason) === receipt.outcome &&
+    isDeepStrictEqual(receipt.semantic_effects, []) && isDeepStrictEqual(receipt.filesystem_effects, []) &&
+    isDeepStrictEqual(receipt.tool_invocations, []);
   if (recovery.crash_point === 'after_receipt' && recovery.prior_receipts.length === 1 &&
-      observedPriorTransmission && receiptMatchesAttempt(recovery.prior_receipts[0])) {
+      observedPriorTransmission && chainPreflightCode(subject, context) === null &&
+      preflightCode(attempt, context) === null &&
+      receiptMatchesAttempt(recovery.prior_receipts[0])) {
     const receipt = recovery.prior_receipts[0];
     return result({
       verdict: 'pass', codes: [], outputs: ['durable Adapter Run Receipt preserved idempotently'],
@@ -147,7 +184,7 @@ async function observeRecovery(subject) {
   }
   if (recovery.crash_point === 'before_transmission' && recovery.transmission_observed === false &&
       recovery.prior_transmission === null && recovery.prior_receipts.length === 0) {
-    const budget = receiptBudget(0, 0, attempt.double);
+    const budget = zeroReceiptBudget();
     const receipt = receiptFor(attempt, null, null, null, 'denied', 'adapter.recovery_before_transmission_denied', budget);
     return result({
       verdict: 'fail', codes: ['adapter.recovery_before_transmission_denied'], outputs: ['pre-transmission crash recovered with zero bytes sent'],
@@ -156,22 +193,21 @@ async function observeRecovery(subject) {
       terminalState: 'denied', illegalTransition: false, networkEffects: ['none'],
     });
   }
-  if (recovery.crash_point === 'after_transmission_before_receipt' || recovery.crash_point === 'after_receipt') {
-    const transmission = observedPriorTransmission ? expectedTransmission : null;
-    const budget = receiptBudget(transmission?.byte_length ?? 0, 0, attempt.double);
-    const code = 'adapter.recovery_unknown_completion';
-    const receipt = receiptFor(attempt, transmission, null, null, 'recovery_required', code, budget);
-    const observations = observedPriorTransmission
-      ? [{...observedTransmission(attempt, bytes, budget, null), new_transmission: false}]
-      : [{attempt_id: attempt.envelope.attempt_id, new_transmission: false, prior_transmission_valid: false}];
-    return result({
-      verdict: 'fail', codes: [code], outputs: [outputFor(code)],
-      operations: ['read exact recovery evidence', 'observe prior transmission without retransmission', 'record Adapter Run Receipt'],
-      receipts: [receipt], transmissions: [], observations, terminalState: 'recovery_required',
-      illegalTransition: false, networkEffects: ['none'],
-    });
-  }
-  return null;
+  const transmission = observedPriorTransmission ? expectedTransmission : null;
+  const budget = transmission === null
+    ? zeroReceiptBudget()
+    : {input_bytes: transmission.byte_length, output_bytes: 0, runtime_ms: 0, cost_microunits: 0};
+  const code = 'adapter.recovery_unknown_completion';
+  const receipt = receiptFor(attempt, transmission, null, null, 'recovery_required', code, budget);
+  const observations = observedPriorTransmission
+    ? [{...observedTransmission(attempt, bytes, budget, null), new_transmission: false}]
+    : [{attempt_id: attempt.envelope.attempt_id, new_transmission: false, prior_transmission_valid: false}];
+  return result({
+    verdict: 'fail', codes: [code], outputs: [outputFor(code)],
+    operations: ['read exact recovery evidence', 'observe prior transmission without retransmission', 'record Adapter Run Receipt'],
+    receipts: [receipt], transmissions: [], observations, terminalState: 'recovery_required',
+    illegalTransition: false, networkEffects: ['none'],
+  });
 }
 
 async function observeIllegalTransition(subject, packageRoot) {
@@ -182,7 +218,7 @@ async function observeIllegalTransition(subject, packageRoot) {
     state === illegal.from_state && command === illegal.command);
   const explicitlyDenied = row?.allowed === false;
   const code = 'adapter.illegal_transition';
-  const budget = receiptBudget(0, 0, attempt.double);
+  const budget = zeroReceiptBudget();
   const receipt = receiptFor(attempt, null, null, null, 'denied', code, budget);
   return result({
     verdict: 'fail', codes: [code], outputs: ['illegal Intelligence Adapter lifecycle transition denied'],
@@ -237,8 +273,7 @@ export async function observeIntelligenceAdapterScenario(subject, packageRoot) {
     return result({verdict: 'fail', codes: ['adapter.policy_binding_denied'], outputs: ['trusted authorization context unavailable'], operations, receipts, transmissions, observations, terminalState: 'denied', illegalTransition: false});
   }
   if (subject.operation === 'recover') {
-    const recovered = await observeRecovery(subject);
-    if (recovered !== null) return recovered;
+    return observeRecovery(subject, context, packageRoot);
   }
   if (subject.operation === 'observe_illegal_transition') {
     return observeIllegalTransition(subject, packageRoot);
@@ -247,7 +282,7 @@ export async function observeIntelligenceAdapterScenario(subject, packageRoot) {
   const chainDenial = chainPreflightCode(subject, context);
   if (chainDenial !== null) {
     const attempt = subject.attempts[0];
-    const budget = receiptBudget(Buffer.byteLength(canonicalJson(attempt.envelope)), 0, attempt.double);
+    const budget = zeroReceiptBudget();
     const receipt = receiptFor(attempt, null, null, null, outcomeForCode(chainDenial), chainDenial, budget);
     return result({
       verdict: 'fail', codes: [chainDenial], outputs: [outputFor(chainDenial)],
@@ -279,7 +314,7 @@ export async function observeIntelligenceAdapterScenario(subject, packageRoot) {
       : null;
     const denial = preflight ?? chainCode;
     if (denial !== null) {
-      const budget = receiptBudget(inputBytes, 0, attempt.double);
+      const budget = zeroReceiptBudget();
       const receipt = receiptFor(attempt, null, null, null, outcomeForCode(denial), denial, budget);
       receipts.push(receipt);
       operations.push(`record Adapter Run Receipt ${receipt.receipt_id}`);

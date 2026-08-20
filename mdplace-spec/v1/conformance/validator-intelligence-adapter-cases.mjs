@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import test from 'node:test';
 
-import {adapterReceiptDigest} from './intelligence-adapter-core.mjs';
+import {adapterReceiptDigest, parseReceiptStrings} from './intelligence-adapter-core.mjs';
 import {observeIntelligenceAdapterScenario} from './intelligence-adapter-observer.mjs';
 import {forbiddenActionCode} from './intelligence-adapter-validation.mjs';
 
@@ -82,8 +82,6 @@ test('one-off envelopes may narrow authorized sets without widening them', async
     .filter(({receipt_sha256: digest}) => digest === keptField.redaction_receipt_sha256);
   attempt.envelope.transmitted_artifacts = [attempt.envelope.transmitted_artifacts[0]];
   attempt.envelope.retention_artifacts = [attempt.envelope.retention_artifacts[0]];
-  attempt.envelope.capabilities = ['capability:produce-proposal'];
-  attempt.isolation.effective_capabilities = structuredClone(attempt.envelope.capabilities);
   const proposal = JSON.parse(attempt.double.raw_output);
   proposal.evidence_segment_ids = [keptField.segment_id];
   proposal.candidates[0].evidence_segment_ids = [keptField.segment_id];
@@ -114,6 +112,60 @@ test('recovery binds the exact attempt and never retransmits prior bytes', async
   assert.ok(transmittedResult.operations.every((operation) => !operation.startsWith('transmit exact')));
 });
 
+test('every recovery evidence mismatch terminates without entering normal execution', async () => {
+  const beforeTransmission = await scenario('crash-before-transmission-recovers-denied');
+  const afterTransmission = await scenario('crash-after-transmission-requires-recovery');
+  beforeTransmission.recovery.transmission_observed = true;
+  beforeTransmission.recovery.prior_transmission = structuredClone(afterTransmission.recovery.prior_transmission);
+
+  const observed = await observeIntelligenceAdapterScenario(beforeTransmission, packageRoot);
+  const [receipt] = parseReceiptStrings(observed.receipts);
+
+  assert.deepEqual(observed.codes, ['adapter.recovery_unknown_completion']);
+  assert.deepEqual(observed.network_effects, ['none']);
+  assert.ok(observed.operations.every((operation) => !operation.startsWith('transmit exact')));
+  assert.deepEqual(receipt.budget, {input_bytes: 0, output_bytes: 0, runtime_ms: 0, cost_microunits: 0});
+});
+
+test('field authorization binds each field to its exact redaction obligation', async () => {
+  const document = await scenario('remote-valid-proposal-advice');
+  const attempt = document.attempts[0];
+  const sourceUrl = attempt.envelope.transmitted_fields.find(({field_id: id}) => id === 'field:source-url');
+  const removeSecrets = attempt.envelope.redactions.find(({rule_id: id}) => id === 'redaction:remove-secrets');
+  sourceUrl.redaction_receipt_sha256 = removeSecrets.receipt_sha256;
+  attempt.envelope.transmitted_fields = [sourceUrl];
+  attempt.envelope.payload_segments = attempt.envelope.payload_segments
+    .filter(({segment_id: id}) => id === sourceUrl.segment_id);
+  attempt.envelope.redactions = [removeSecrets];
+  const proposal = JSON.parse(attempt.double.raw_output);
+  proposal.evidence_segment_ids = [sourceUrl.segment_id];
+  proposal.candidates[0].evidence_segment_ids = [sourceUrl.segment_id];
+  attempt.double.raw_output = JSON.stringify(proposal);
+
+  const observed = await observeIntelligenceAdapterScenario(document, packageRoot);
+
+  assert.deepEqual(observed.codes, ['adapter.redaction_unproven']);
+  assert.deepEqual(observed.network_effects, ['none']);
+});
+
+test('recovery rejects re-digested receipts with changed isolation or measured budget', async () => {
+  const isolationMismatch = await scenario('crash-after-receipt-preserves-receipt');
+  isolationMismatch.recovery.prior_receipts[0].isolation.canary_passed = false;
+  isolationMismatch.recovery.prior_receipts[0].receipt_sha256 = adapterReceiptDigest(isolationMismatch.recovery.prior_receipts[0]);
+  const budgetMismatch = await scenario('crash-after-receipt-preserves-receipt');
+  budgetMismatch.recovery.prior_receipts[0].budget.runtime_ms += 1;
+  budgetMismatch.recovery.prior_receipts[0].receipt_sha256 = adapterReceiptDigest(budgetMismatch.recovery.prior_receipts[0]);
+  const outcomeMismatch = await scenario('crash-after-receipt-preserves-receipt');
+  outcomeMismatch.recovery.prior_receipts[0].reason = 'adapter.timeout';
+  outcomeMismatch.recovery.prior_receipts[0].receipt_sha256 = adapterReceiptDigest(outcomeMismatch.recovery.prior_receipts[0]);
+
+  const results = await Promise.all([isolationMismatch, budgetMismatch, outcomeMismatch]
+    .map((document) => observeIntelligenceAdapterScenario(document, packageRoot)));
+
+  assert.ok(results.every(({codes}) => codes[0] === 'adapter.recovery_unknown_completion'));
+  assert.ok(results.every(({network_effects: effects}) => effects[0] === 'none'));
+});
+
 test('forbidden-action precedence is independent of caller array order', () => {
   assert.equal(forbiddenActionCode(['choose_note_placement', 'invoke_tool']), 'adapter.tool_request_denied');
   assert.equal(forbiddenActionCode(['invoke_tool', 'choose_note_placement']), 'adapter.tool_request_denied');
@@ -140,4 +192,57 @@ test('taxonomy caching, receipt reasons, and transmission dependencies are close
   assert.ok(transmit.preconditions.some((value) => value.includes('isolation')));
   assert.ok(transmit.preconditions.some((value) => value.includes('canary')));
   assert.ok(!transmit.emitted_records.includes('AdapterRunReceipt'));
+});
+
+test('only terminal lifecycle outcomes emit Adapter Run Receipts', async () => {
+  const rules = await readJson('contracts/intelligence-adapter/protocol-rules.json');
+  const terminalStates = new Map([
+    ['TRANS-IAP-EXECUTION', new Set(['terminal'])],
+    ['TRANS-IAP-DENIAL', new Set(['denied'])],
+    ['TRANS-IAP-TIMEOUT', new Set(['timed_out'])],
+    ['TRANS-IAP-RETRY', new Set(['exhausted'])],
+    ['TRANS-IAP-FALLBACK', new Set(['exhausted'])],
+    ['TRANS-IAP-ISOLATION', new Set(['failed'])],
+    ['TRANS-IAP-RECOVERY', new Set(['recovered', 'denied'])],
+  ]);
+  const tables = await Promise.all(rules.lifecycle_tables.map((path) => readJson(path)));
+
+  for (const table of tables) {
+    for (const row of table.transitions.filter(({allowed}) => allowed)) {
+      assert.equal(
+        row.emitted_records.includes('AdapterRunReceipt'),
+        terminalStates.get(table.table_id).has(row.terminal_state),
+        `${table.table_id}:${row.from_state}:${row.command_or_event}`,
+      );
+    }
+  }
+});
+
+test('remote and local envelopes retain their required execution capabilities', async () => {
+  const remote = await scenario('remote-valid-proposal-advice');
+  remote.attempts[0].envelope.capabilities = ['capability:produce-proposal'];
+  remote.attempts[0].isolation.effective_capabilities = ['capability:produce-proposal'];
+  const local = await scenario('local-valid-abstention-advice');
+  local.attempts[0].envelope.capabilities = [];
+  local.attempts[0].isolation.effective_capabilities = [];
+
+  const results = await Promise.all([remote, local]
+    .map((document) => observeIntelligenceAdapterScenario(document, packageRoot)));
+
+  assert.ok(results.every(({codes}) => codes[0] === 'adapter.capability_denied'));
+  assert.ok(results.every(({network_effects: effects}) => effects[0] === 'none'));
+});
+
+test('receipts bind observed timestamps and explicit provider request identity', async () => {
+  const remote = await scenario('remote-valid-proposal-advice');
+  const local = await scenario('local-valid-abstention-advice');
+  const [remoteResult, localResult] = await Promise.all([remote, local]
+    .map((document) => observeIntelligenceAdapterScenario(document, packageRoot)));
+  const [remoteReceipt] = parseReceiptStrings(remoteResult.receipts);
+  const [localReceipt] = parseReceiptStrings(localResult.receipts);
+
+  assert.match(remoteReceipt.observed_started_at, /^2026-08-20T/);
+  assert.match(remoteReceipt.observed_completed_at, /^2026-08-20T/);
+  assert.match(remoteReceipt.provider_request_id, /^provider-request:/);
+  assert.equal(localReceipt.provider_request_id, null);
 });

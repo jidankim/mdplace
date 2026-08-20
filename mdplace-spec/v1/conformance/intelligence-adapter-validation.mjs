@@ -101,10 +101,26 @@ export function preflightCode(attempt, context) {
   if (envelope.transmitted_fields.some(({redaction_receipt_sha256: digest}) => !redactionReceipts.has(digest))) {
     return 'adapter.redaction_unproven';
   }
+  for (const field of envelope.transmitted_fields) {
+    const obligations = authorization.field_redaction_bindings
+      .filter(({field_id: fieldId}) => fieldId === field.field_id);
+    if (obligations.length !== 1 || field.data_class !== obligations[0].data_class ||
+        field.redaction_receipt_sha256 !== obligations[0].receipt_sha256 ||
+        !envelope.redactions.some(({rule_id: ruleId, receipt_sha256: digest}) =>
+          ruleId === obligations[0].rule_id && digest === obligations[0].receipt_sha256)) {
+      return 'adapter.redaction_unproven';
+    }
+  }
   if (envelope.retention_facts.length === 0 ||
       !isSubset(envelope.retention_facts, authorization.retention_facts, canonicalJson) ||
       !isSubset(envelope.retention_artifacts, authorization.retention_artifacts)) return 'adapter.retention_unproven';
-  if (!isSubset(envelope.capabilities, authorization.capabilities)) return 'adapter.capability_denied';
+  const requiredCapabilities = envelope.destination.locality === 'remote'
+    ? ['capability:produce-proposal', 'capability:fixed-destination-network']
+    : ['capability:produce-proposal'];
+  if (!isSubset(envelope.capabilities, authorization.capabilities) ||
+      requiredCapabilities.some((capability) => !envelope.capabilities.includes(capability))) {
+    return 'adapter.capability_denied';
+  }
   if (!equal(envelope.credential_boundary, authorization.credential_boundary)) return 'adapter.credential_boundary_denied';
   if (!equal(envelope.contracts, context.contracts) || !ceilingsNarrower(envelope.ceilings, authorization.ceilings)) {
     return 'adapter.policy_binding_denied';

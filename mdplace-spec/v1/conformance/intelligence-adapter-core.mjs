@@ -11,8 +11,25 @@ export function canonicalDigest(value) {
 }
 
 export function adapterReceiptDigest(receipt) {
-  const {receipt_sha256: ignored, ...body} = receipt;
+  const {receipt_sha256: _receiptSha256, ...body} = receipt;
   return canonicalDigest(body);
+}
+
+export function adapterIsolationReceipt(isolation) {
+  return {
+    ephemeral: isolation.ephemeral,
+    fresh_process: isolation.fresh_process,
+    filesystem: isolation.filesystem,
+    tools: isolation.tools,
+    ambient_configuration: isolation.ambient_configuration,
+    credential_visibility: isolation.credential_visibility,
+    network_scope: isolation.network_scope,
+    canary_id: isolation.canary.canary_id,
+    canary_challenge_sha256: sha256(isolation.canary.challenge),
+    canary_expected_sha256: sha256(isolation.canary.expected),
+    canary_observed_sha256: sha256(isolation.canary.observed),
+    canary_passed: isolation.canary.passed,
+  };
 }
 
 export function createAdapterReceipt({attempt, transmission, isolation, budget, rawOutput, proposal, outcome, reason}) {
@@ -37,21 +54,11 @@ export function createAdapterReceipt({attempt, transmission, isolation, budget, 
     effective_capabilities: isolation.effective_capabilities,
     retention_artifact_sha256s: envelope.retention_artifacts.map(sha256),
     credential_boundary_sha256: canonicalDigest(envelope.credential_boundary),
-    isolation: {
-      ephemeral: isolation.ephemeral,
-      fresh_process: isolation.fresh_process,
-      filesystem: isolation.filesystem,
-      tools: isolation.tools,
-      ambient_configuration: isolation.ambient_configuration,
-      credential_visibility: isolation.credential_visibility,
-      network_scope: isolation.network_scope,
-      canary_id: isolation.canary.canary_id,
-      canary_challenge_sha256: sha256(isolation.canary.challenge),
-      canary_expected_sha256: sha256(isolation.canary.expected),
-      canary_observed_sha256: sha256(isolation.canary.observed),
-      canary_passed: isolation.canary.passed,
-    },
+    isolation: adapterIsolationReceipt(isolation),
     budget,
+    observed_started_at: attempt.double.observed_started_at,
+    observed_completed_at: attempt.double.observed_completed_at,
+    provider_request_id: transmission === null ? null : attempt.double.provider_request_id,
     raw_response_sha256: rawOutput === null ? null : sha256(rawOutput),
     proposal_sha256: proposal === null ? null : canonicalDigest(proposal),
     outcome,

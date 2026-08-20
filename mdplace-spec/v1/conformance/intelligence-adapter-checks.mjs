@@ -11,6 +11,16 @@ const requiredCategories = [
   'authority_denial', 'illegal_transition', 'crash_recovery',
 ];
 
+const receiptTerminalStates = new Map([
+  ['TRANS-IAP-EXECUTION', new Set(['terminal'])],
+  ['TRANS-IAP-DENIAL', new Set(['denied'])],
+  ['TRANS-IAP-TIMEOUT', new Set(['timed_out'])],
+  ['TRANS-IAP-RETRY', new Set(['exhausted'])],
+  ['TRANS-IAP-FALLBACK', new Set(['exhausted'])],
+  ['TRANS-IAP-ISOLATION', new Set(['failed'])],
+  ['TRANS-IAP-RECOVERY', new Set(['recovered', 'denied'])],
+]);
+
 function result(codes) {
   const uniqueCodes = [...new Set(codes)];
   return {id: 'intelligence-adapter-protocol', verdict: uniqueCodes.length === 0 ? 'pass' : 'fail', codes: uniqueCodes};
@@ -75,6 +85,9 @@ function observationMatchesReceipt(observation, receipt) {
       receipt.retention_artifact_sha256s,
     ) &&
     isDeepStrictEqual(observation.measured_budget, receipt.budget) &&
+    observation.observed_started_at === receipt.observed_started_at &&
+    observation.observed_completed_at === receipt.observed_completed_at &&
+    observation.provider_request_id === receipt.provider_request_id &&
     observation.raw_output_sha256 === receipt.raw_response_sha256 &&
     isolationMatchesReceipt(observation, receipt.isolation) &&
     observation.semantic_effects.length === 0 && observation.filesystem_effects.length === 0 &&
@@ -113,6 +126,13 @@ export async function checkIntelligenceAdapterProtocol(packageRoot, manifest, co
     const table = (await readJson(packageRoot, path)).document;
     if (await schemaCode(packageRoot, 'contracts/schemas/transition-table.schema.json', table) !== null || !tableComplete(table)) {
       codes.push('adapter.lifecycle_incomplete');
+    }
+    const terminalStates = receiptTerminalStates.get(table?.table_id);
+    if (terminalStates === undefined || table?.transitions?.some((row) =>
+      (row.allowed && row.emitted_records.includes('AdapterRunReceipt') !== terminalStates.has(row.terminal_state)) ||
+      (row.failure_result.emitted_records.includes('AdapterRunReceipt') &&
+        !receiptReasonByCode.has(row.failure_result.code)))) {
+      codes.push('adapter.lifecycle_receipt_invalid');
     }
   }
 

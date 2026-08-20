@@ -269,7 +269,7 @@ A versioned, strictly validated, inert advisory output from an Intelligence Adap
 _Avoid_: Accepted placement, semantic truth, executable instruction
 
 **Adapter Run Receipt**:
-The deterministic, immutable operational record for one Intelligence Adapter Attempt, binding its Processing Envelope, exact transmission observation, destination, capabilities, retention artifacts, credential boundary, resource use, isolation and canary evidence, output artifacts, outcome, and reason. It contains no credential or secret and grants no semantic or filesystem authority.
+The deterministic, immutable operational record for one Intelligence Adapter Attempt, binding its Processing Envelope, exact transmission observation, destination, capabilities, retention artifacts, credential boundary, observed timestamps, provider request identifier when available, resource use, isolation and canary evidence, output artifacts, outcome, and reason. It contains no credential or secret and grants no semantic or filesystem authority.
 _Avoid_: Provider log, semantic receipt, success message
 
 **Adapter Isolation Canary**:

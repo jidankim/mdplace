@@ -25,6 +25,46 @@ const authorityByCommand = new Map([
   ['recover_adapter_receipt', 'foreground_recovery'], ['deny_adapter_recovery', 'foreground_recovery'],
 ]);
 
+const receiptTerminalStates = new Map([
+  ['TRANS-IAP-EXECUTION', new Set(['terminal'])],
+  ['TRANS-IAP-DENIAL', new Set(['denied'])],
+  ['TRANS-IAP-TIMEOUT', new Set(['timed_out'])],
+  ['TRANS-IAP-RETRY', new Set(['exhausted'])],
+  ['TRANS-IAP-FALLBACK', new Set(['exhausted'])],
+  ['TRANS-IAP-ISOLATION', new Set(['failed'])],
+  ['TRANS-IAP-RECOVERY', new Set(['recovered', 'denied'])],
+]);
+
+const observationRecordByCommand = new Map([
+  ['authorize_adapter_attempt', 'AdapterAuthorizationObservation'],
+  ['transmit_adapter_payload', 'AdapterTransmissionObservation'],
+  ['authorize_adapter_retry', 'AdapterRetryAuthorizationObservation'],
+  ['start_adapter_retry', 'AdapterRetryStartObservation'],
+  ['authorize_adapter_fallback', 'AdapterFallbackAuthorizationObservation'],
+  ['start_adapter_fallback', 'AdapterFallbackStartObservation'],
+  ['verify_adapter_isolation', 'AdapterIsolationObservation'],
+  ['inspect_adapter_recovery', 'AdapterRecoveryObservation'],
+]);
+
+const preconditionFailureByCommand = new Map([
+  ['authorize_adapter_attempt', 'adapter.policy_binding_denied'],
+  ['transmit_adapter_payload', 'adapter.policy_binding_denied'],
+  ['record_adapter_outcome', 'adapter.policy_binding_denied'],
+  ['deny_adapter_attempt', 'adapter.policy_binding_denied'],
+  ['time_out_adapter_attempt', 'adapter.timeout'],
+  ['authorize_adapter_retry', 'adapter.retry_exhausted'],
+  ['start_adapter_retry', 'adapter.retry_exhausted'],
+  ['exhaust_adapter_retry', 'adapter.retry_exhausted'],
+  ['authorize_adapter_fallback', 'adapter.fallback_exhausted'],
+  ['start_adapter_fallback', 'adapter.fallback_exhausted'],
+  ['exhaust_adapter_fallback', 'adapter.fallback_exhausted'],
+  ['verify_adapter_isolation', 'adapter.isolation_failed'],
+  ['fail_adapter_canary', 'adapter.canary_failed'],
+  ['inspect_adapter_recovery', 'adapter.recovery_unknown_completion'],
+  ['recover_adapter_receipt', 'adapter.recovery_unknown_completion'],
+  ['deny_adapter_recovery', 'adapter.recovery_unknown_completion'],
+]);
+
 const tableDefinitions = [
   {
     file: 'intelligence-adapter-execution-lifecycle.json', id: 'TRANS-IAP-EXECUTION', prefix: 'IAPEXEC',
@@ -93,9 +133,12 @@ function transitionRow(definition, state, command, index) {
     ? ['exact Processing Envelope and attempt authorization', 'active approved policy Source Profile and taxonomy revision binding']
     : ['state and command pair is not permitted'];
   let baseReferences = ['ProcessingEnvelope', 'ProcessingPolicy', 'SourceProfile', 'TaxonomyRevision', 'AdapterAuthorization'];
-  let emittedRecords = ['AdapterRunReceipt'];
+  let emittedRecords = allowed
+    ? receiptTerminalStates.get(definition.id).has(terminal)
+      ? ['AdapterRunReceipt']
+      : [observationRecordByCommand.get(command)]
+    : ['AdapterRunReceipt'];
   if (definition.id === 'TRANS-IAP-EXECUTION' && allowed) {
-    if (command === 'authorize_adapter_attempt') emittedRecords = [];
     if (command === 'transmit_adapter_payload') {
       preconditions = [
         'exact Processing Envelope and attempt authorization remain current',
@@ -103,7 +146,6 @@ function transitionRow(definition, state, command, index) {
         'attempt-bound adapter isolation canary passed before transmission',
       ];
       baseReferences = [...baseReferences, 'AdapterIsolationObservation', 'AdapterIsolationCanary'];
-      emittedRecords = ['AdapterTransmissionObservation'];
     }
     if (command === 'record_adapter_outcome') {
       preconditions = ['exact terminal attempt observation and closed receipt reason'];
@@ -120,9 +162,9 @@ function transitionRow(definition, state, command, index) {
     base_references: baseReferences,
     emitted_records: emittedRecords,
     filesystem_effects: ['none'],
-    idempotency: {key_fields: ['attempt_id', 'envelope_id'], retry_result: allowed ? 'return the same receipt or advance once' : 'return the same denial receipt'},
+    idempotency: {key_fields: ['attempt_id', 'envelope_id'], retry_result: allowed ? `return the same ${emittedRecords[0]} or advance once` : 'return the same denial receipt'},
     terminal_state: terminal,
-    failure_result: {code: allowed ? 'adapter.precondition_failed' : 'adapter.illegal_transition', state_effect: 'unchanged', emitted_records: ['AdapterRunReceipt'], filesystem_effects: ['none']},
+    failure_result: {code: allowed ? preconditionFailureByCommand.get(command) : 'adapter.illegal_transition', state_effect: 'unchanged', emitted_records: ['AdapterRunReceipt'], filesystem_effects: ['none']},
     recovery: allowed ? 'reconcile from the exact receipt and transmission observation' : 'remain unchanged and require a newly authorized command',
   };
 }
@@ -147,12 +189,6 @@ async function generateTables() {
 }
 
 const requirementIds = Array.from({length: 8}, (_, index) => `REQ-IAP-${String(index + 1).padStart(3, '0')}`);
-const fieldDataClasses = new Map([
-  ['field:source-url', 'data:source-url'],
-  ['field:title', 'data:title'],
-  ['field:source-content', 'data:source-content'],
-]);
-
 function attemptEnvelope(context, scenarioId, attemptClass, authorizationId = null) {
   const authorization = authorizationId === null
     ? context.attempt_authorizations.find(({attempt_class: value}) => value === attemptClass)
@@ -168,12 +204,8 @@ function attemptEnvelope(context, scenarioId, attemptClass, authorizationId = nu
     const utf8 = values[name];
     return {segment_id: `segment:${suffix}-${name}`, field_id: fieldId, utf8, byte_length: Buffer.byteLength(utf8), sha256: sha256(utf8)};
   });
-  const redactionByRule = new Map(authorization.redactions.map((entry) => [entry.rule_id, entry.receipt_sha256]));
-  const ruleByField = new Map([
-    ['field:source-url', 'redaction:sanitize-url'],
-    ['field:title', 'redaction:remove-identifiers'],
-    ['field:source-content', 'redaction:remove-secrets'],
-  ]);
+  const redactionBindingByField = new Map(authorization.field_redaction_bindings
+    .map((binding) => [binding.field_id, binding]));
   return {
     $schema: 'contracts/schemas/processing-envelope.schema.json',
     schema_id: 'mdplace.processing-envelope/v1',
@@ -197,8 +229,8 @@ function attemptEnvelope(context, scenarioId, attemptClass, authorizationId = nu
     purpose_id: authorization.purpose_id,
     destination: structuredClone(authorization.destination),
     transmitted_fields: authorization.field_ids.map((fieldId) => {
-      const ruleId = ruleByField.get(fieldId);
-      return {field_id: fieldId, data_class: fieldDataClasses.get(fieldId), segment_id: payloadSegments.find(({field_id: id}) => id === fieldId).segment_id, redaction_receipt_sha256: redactionByRule.get(ruleId)};
+      const binding = redactionBindingByField.get(fieldId);
+      return {field_id: fieldId, data_class: binding.data_class, segment_id: payloadSegments.find(({field_id: id}) => id === fieldId).segment_id, redaction_receipt_sha256: binding.receipt_sha256};
     }),
     transmitted_artifacts: structuredClone(authorization.artifact_kinds),
     redactions: authorization.redactions.map(({rule_id, receipt_sha256}) => ({rule_id, receipt_sha256, status: 'applied'})),
@@ -275,6 +307,8 @@ function isolationFor(envelope) {
 
 function attemptFor(context, scenarioId, attemptClass, behavior = 'proposal', authorizationId = null) {
   const envelope = attemptEnvelope(context, scenarioId, attemptClass, authorizationId);
+  const observedStartedAt = new Date(Date.UTC(2026, 7, 20, 0, Number(scenarioId.slice(-3)) - 1,
+    envelope.attempt_sequence)).toISOString();
   return {
     attempt_class: attemptClass,
     envelope,
@@ -284,6 +318,11 @@ function attemptFor(context, scenarioId, attemptClass, behavior = 'proposal', au
       raw_output: behavior === 'proposal' ? JSON.stringify(proposalFor(envelope)) : null,
       duration_ms: 500,
       cost_microunits: attemptClass === 'fallback' ? 0 : 1000,
+      observed_started_at: observedStartedAt,
+      observed_completed_at: new Date(Date.parse(observedStartedAt) + 500).toISOString(),
+      provider_request_id: envelope.destination.locality === 'remote'
+        ? `provider-request:${envelope.attempt_id.slice('adapter-attempt:'.length)}`
+        : null,
       requested_actions: [],
     },
   };
@@ -319,6 +358,13 @@ function setSegmentValue(envelope, fieldId, utf8) {
 function exactInputBoundary(envelope, delta = 0) {
   for (let count = 0; count < 4; count += 1) {
     envelope.ceilings.input_bytes = Buffer.byteLength(canonicalJson(envelope)) + delta;
+  }
+}
+
+function synchronizeObservedTiming(attempts) {
+  for (const attempt of attempts) {
+    attempt.double.observed_completed_at = new Date(Date.parse(attempt.double.observed_started_at) +
+      attempt.double.duration_ms).toISOString();
   }
 }
 
@@ -387,7 +433,7 @@ function definitions(context) {
     ['AUTH', 'filesystem-authority-output-denied', 'authority_denial', (value) => replaceProposal(value.attempts[0], (proposal) => { proposal.authority.filesystem = 'write'; })],
     ['AUTH', 'placement-authority-output-denied', 'authority_denial', (value) => replaceProposal(value.attempts[0], (proposal) => { proposal.authority.note_placement = 'choose'; })],
     ['ILLEGAL', 'retry-after-exhaustion-denied', 'illegal_transition', (value) => { value.operation = 'observe_illegal_transition'; value.illegal_transition = {table: 'contracts/transitions/intelligence-adapter-retry-lifecycle.json', from_state: 'exhausted', command: 'start_adapter_retry'}; }],
-    ['REC', 'crash-before-transmission-recovers-denied', 'crash_recovery', (value) => { value.operation = 'recover'; value.recovery.crash_point = 'before_transmission'; value.attempts[0].double.behavior = 'crash_before_transmit'; value.attempts[0].double.raw_output = null; }],
+    ['REC', 'crash-before-transmission-recovers-denied', 'crash_recovery', (value) => { value.operation = 'recover'; value.recovery.crash_point = 'before_transmission'; value.attempts[0].double.behavior = 'crash_before_transmit'; value.attempts[0].double.raw_output = null; value.attempts[0].double.provider_request_id = null; }],
     ['REC', 'crash-after-transmission-requires-recovery', 'crash_recovery', (value) => {
       const bytes = canonicalJson(value.attempts[0].envelope);
       value.operation = 'recover';
@@ -425,6 +471,7 @@ async function generateFixturesAndEvidence() {
     const document = scenario(context, index + 1);
     document.case_id = caseId;
     await mutate(document);
+    synchronizeObservedTiming(document.attempts);
     const expected = await observeIntelligenceAdapterScenario(document, packageRoot);
     const fixture = {
       $schema: '../../../contracts/schemas/conformance-fixture.schema.json',

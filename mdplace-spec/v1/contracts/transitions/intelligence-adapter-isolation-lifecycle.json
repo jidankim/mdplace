@@ -39,7 +39,7 @@
         "AdapterAuthorization"
       ],
       "emitted_records": [
-        "AdapterRunReceipt"
+        "AdapterIsolationObservation"
       ],
       "filesystem_effects": [
         "none"
@@ -49,11 +49,11 @@
           "attempt_id",
           "envelope_id"
         ],
-        "retry_result": "return the same receipt or advance once"
+        "retry_result": "return the same AdapterIsolationObservation or advance once"
       },
       "terminal_state": "verified",
       "failure_result": {
-        "code": "adapter.precondition_failed",
+        "code": "adapter.isolation_failed",
         "state_effect": "unchanged",
         "emitted_records": [
           "AdapterRunReceipt"
@@ -99,11 +99,11 @@
           "attempt_id",
           "envelope_id"
         ],
-        "retry_result": "return the same receipt or advance once"
+        "retry_result": "return the same AdapterRunReceipt or advance once"
       },
       "terminal_state": "failed",
       "failure_result": {
-        "code": "adapter.precondition_failed",
+        "code": "adapter.canary_failed",
         "state_effect": "unchanged",
         "emitted_records": [
           "AdapterRunReceipt"
