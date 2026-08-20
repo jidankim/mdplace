@@ -1,0 +1,205 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-VMG-CRASH-009",
+  "category": "crash_recovery",
+  "requirement_ids": [
+    "REQ-VMG-007",
+    "REQ-VMG-008",
+    "REQ-VMG-009"
+  ],
+  "subject": {
+    "kind": "vault_mutation_gate",
+    "schema": "contracts/schemas/vault-mutation-scenario.schema.json",
+    "document": {
+      "schema_id": "mdplace.vault-mutation-scenario/v1",
+      "scenario_id": "VMG-033",
+      "operation": "move_projection",
+      "operation_declared": true,
+      "caller": {
+        "caller_id": "foreground-recovery:fixture-001",
+        "role": "foreground_recovery"
+      },
+      "plan_state": "authorized",
+      "fault": "none",
+      "probe": {
+        "virtual_vault": {
+          "trusted_root": {
+            "descriptor_id": "descriptor:root-001",
+            "device": 42,
+            "inode": 1
+          },
+          "source_components": [
+            "Inbox",
+            "candidate.md"
+          ],
+          "component_kinds": [
+            "directory",
+            "file"
+          ],
+          "source_descriptor": {
+            "descriptor_id": "descriptor:source-001",
+            "device": 42,
+            "inode": 1001,
+            "bytes_utf8": "candidate-v1\n"
+          },
+          "second_observation": {
+            "descriptor_id": "descriptor:source-001",
+            "device": 42,
+            "inode": 1001,
+            "bytes_utf8": "candidate-v1\n"
+          },
+          "path_descriptor_after_validation": "descriptor:source-001",
+          "target_exists": false,
+          "result_descriptor": {
+            "descriptor_id": "descriptor:source-001",
+            "device": 42,
+            "inode": 1001,
+            "bytes_utf8": "published-v1\n"
+          },
+          "readback_descriptor": {
+            "descriptor_id": "descriptor:source-001",
+            "device": 42,
+            "inode": 1001,
+            "bytes_utf8": "published-v1\n"
+          }
+        },
+        "authorized_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "authorized_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "receipt_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "receipt_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "receipt_echo": "complete",
+        "journal_complete": true,
+        "console_output": "none"
+      },
+      "recovery": {
+        "mode": "cancel",
+        "crash_boundary": "before_validation",
+        "durable_prefix": [
+          "journal"
+        ],
+        "declared_intent": "exact_rollback",
+        "reverse_descriptor": {
+          "descriptor_id": "descriptor:source-001",
+          "device": 42,
+          "inode": 1001,
+          "bytes_utf8": "published-v1\n"
+        },
+        "compensation_authorization": null,
+        "interruption_count": 1,
+        "interruption_budget": 3,
+        "post_recovery_descriptor": {
+          "descriptor_id": "descriptor:source-001",
+          "device": 42,
+          "inode": 1001,
+          "bytes_utf8": "candidate-v1\n"
+        },
+        "work_journal_snapshot": {
+          "journal_id": "journal:vault-reference-001",
+          "base_head_sequence": 1,
+          "base_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "entries": [],
+          "head_receipt": {
+            "receipt_id": "journal-head-receipt:vmg-033",
+            "journal_id": "journal:vault-reference-001",
+            "head_sequence": 1,
+            "head_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+            "signature_scheme": "hmac-sha256",
+            "signing_key_id": "signer-key:primary-001",
+            "signer_agent_id": "agent:primary-001",
+            "signature_digest": "213de9cae2185398d7ac084f22b1c068ed812bf1615605fac459e7062097742b",
+            "authenticated": true
+          }
+        }
+      },
+      "authorized_plan": {
+        "plan_id": "mutation-plan:vmg-033",
+        "plan_sha256": "e841fe6eba2c9c75b52813572dfcc737475448ed2ceac69ffccdb709956b00cd",
+        "operation": "move_projection",
+        "caller_id": "folder-projection:fixture-001",
+        "authority_receipt_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "idempotency_key": "vmg-idem:vmg-033",
+        "recovery_intent": "exact_rollback",
+        "projection_scope": "vault",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "compensating_plan": null
+      },
+      "authorization": {
+        "plan_id": "mutation-plan:vmg-033",
+        "plan_sha256": "e841fe6eba2c9c75b52813572dfcc737475448ed2ceac69ffccdb709956b00cd",
+        "authority_receipt_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "idempotency_key": "vmg-idem:vmg-033"
+      },
+      "idempotency_record": null,
+      "projection_state": {
+        "state": "recovery_required",
+        "active_plan_id": "mutation-plan:vmg-033",
+        "active_plan_sha256": "e841fe6eba2c9c75b52813572dfcc737475448ed2ceac69ffccdb709956b00cd"
+      }
+    }
+  },
+  "expected": {
+    "verdict": "pass",
+    "codes": [],
+    "outputs": [
+      "exact rollback completed"
+    ],
+    "operations": [
+      "reconcile exact durable prefix",
+      "prove reverse Descriptor Identity",
+      "authenticate complete Work Journal dependency snapshot",
+      "prove no later dependent plan",
+      "perform exact rollback",
+      "read back restored Descriptor Identity"
+    ],
+    "receipts": [
+      "MutationRollbackReceipt"
+    ],
+    "filesystem_effects": [
+      "reverse only the declared effect"
+    ],
+    "terminal_state": "rolled_back",
+    "illegal_transition": false
+  }
+}

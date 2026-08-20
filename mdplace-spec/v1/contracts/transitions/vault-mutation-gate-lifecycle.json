@@ -1,0 +1,5435 @@
+{
+  "$schema": "../schemas/transition-table.schema.json",
+  "schema_id": "mdplace.transition-table/v1",
+  "table_id": "TRANS-VAULT-MUTATION",
+  "lifecycle": "Authorized Mutation Plan application and Vault Mutation Recovery",
+  "version": "1.0.0",
+  "states": [
+    "authorized",
+    "prepared",
+    "validated",
+    "mutated",
+    "receipt_recorded",
+    "readback_verified",
+    "committed",
+    "recovery_required",
+    "rolled_back",
+    "compensated",
+    "terminal_manual_repair"
+  ],
+  "commands": [
+    "prepare",
+    "validate",
+    "mutate",
+    "record_receipt",
+    "verify_readback",
+    "commit",
+    "resume",
+    "rollback",
+    "compensate",
+    "halt_manual_repair"
+  ],
+  "transitions": [
+    {
+      "transition_id": "TR-VMG-001",
+      "command_or_event": "prepare",
+      "from_state": "authorized",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Authorized Mutation Plan and current ownership bind",
+        "durable Mutation Journal prefix and Descriptor Identity validate"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationJournalEntry"
+      ],
+      "filesystem_effects": [
+        "publish and sync declared evidence"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "prepared",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Continue from the next durable event or enter Vault Mutation Recovery without guessing."
+    },
+    {
+      "transition_id": "TR-VMG-002",
+      "command_or_event": "validate",
+      "from_state": "authorized",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "authorized",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain authorized."
+    },
+    {
+      "transition_id": "TR-VMG-003",
+      "command_or_event": "mutate",
+      "from_state": "authorized",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "authorized",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain authorized."
+    },
+    {
+      "transition_id": "TR-VMG-004",
+      "command_or_event": "record_receipt",
+      "from_state": "authorized",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "authorized",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain authorized."
+    },
+    {
+      "transition_id": "TR-VMG-005",
+      "command_or_event": "verify_readback",
+      "from_state": "authorized",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "authorized",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain authorized."
+    },
+    {
+      "transition_id": "TR-VMG-006",
+      "command_or_event": "commit",
+      "from_state": "authorized",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "authorized",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain authorized."
+    },
+    {
+      "transition_id": "TR-VMG-007",
+      "command_or_event": "resume",
+      "from_state": "authorized",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "authorized",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain authorized."
+    },
+    {
+      "transition_id": "TR-VMG-008",
+      "command_or_event": "rollback",
+      "from_state": "authorized",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "authorized",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain authorized."
+    },
+    {
+      "transition_id": "TR-VMG-009",
+      "command_or_event": "compensate",
+      "from_state": "authorized",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "authorized",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain authorized."
+    },
+    {
+      "transition_id": "TR-VMG-010",
+      "command_or_event": "halt_manual_repair",
+      "from_state": "authorized",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "authorized",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain authorized."
+    },
+    {
+      "transition_id": "TR-VMG-011",
+      "command_or_event": "prepare",
+      "from_state": "prepared",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "prepared",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain prepared."
+    },
+    {
+      "transition_id": "TR-VMG-012",
+      "command_or_event": "validate",
+      "from_state": "prepared",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Authorized Mutation Plan and current ownership bind",
+        "durable Mutation Journal prefix and Descriptor Identity validate"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationJournalEntry"
+      ],
+      "filesystem_effects": [
+        "publish and sync declared evidence"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "validated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Continue from the next durable event or enter Vault Mutation Recovery without guessing."
+    },
+    {
+      "transition_id": "TR-VMG-013",
+      "command_or_event": "mutate",
+      "from_state": "prepared",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "prepared",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain prepared."
+    },
+    {
+      "transition_id": "TR-VMG-014",
+      "command_or_event": "record_receipt",
+      "from_state": "prepared",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "prepared",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain prepared."
+    },
+    {
+      "transition_id": "TR-VMG-015",
+      "command_or_event": "verify_readback",
+      "from_state": "prepared",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "prepared",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain prepared."
+    },
+    {
+      "transition_id": "TR-VMG-016",
+      "command_or_event": "commit",
+      "from_state": "prepared",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "prepared",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain prepared."
+    },
+    {
+      "transition_id": "TR-VMG-017",
+      "command_or_event": "resume",
+      "from_state": "prepared",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "prepared",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain prepared."
+    },
+    {
+      "transition_id": "TR-VMG-018",
+      "command_or_event": "rollback",
+      "from_state": "prepared",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "prepared",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain prepared."
+    },
+    {
+      "transition_id": "TR-VMG-019",
+      "command_or_event": "compensate",
+      "from_state": "prepared",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "prepared",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain prepared."
+    },
+    {
+      "transition_id": "TR-VMG-020",
+      "command_or_event": "halt_manual_repair",
+      "from_state": "prepared",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "prepared",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain prepared."
+    },
+    {
+      "transition_id": "TR-VMG-021",
+      "command_or_event": "prepare",
+      "from_state": "validated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "validated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain validated."
+    },
+    {
+      "transition_id": "TR-VMG-022",
+      "command_or_event": "validate",
+      "from_state": "validated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "validated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain validated."
+    },
+    {
+      "transition_id": "TR-VMG-023",
+      "command_or_event": "mutate",
+      "from_state": "validated",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Authorized Mutation Plan and current ownership bind",
+        "durable Mutation Journal prefix and Descriptor Identity validate"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationJournalEntry"
+      ],
+      "filesystem_effects": [
+        "perform only the declared operation"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "mutated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "recovery_required",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Continue from the next durable event or enter Vault Mutation Recovery without guessing."
+    },
+    {
+      "transition_id": "TR-VMG-024",
+      "command_or_event": "record_receipt",
+      "from_state": "validated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "validated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain validated."
+    },
+    {
+      "transition_id": "TR-VMG-025",
+      "command_or_event": "verify_readback",
+      "from_state": "validated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "validated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain validated."
+    },
+    {
+      "transition_id": "TR-VMG-026",
+      "command_or_event": "commit",
+      "from_state": "validated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "validated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain validated."
+    },
+    {
+      "transition_id": "TR-VMG-027",
+      "command_or_event": "resume",
+      "from_state": "validated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "validated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain validated."
+    },
+    {
+      "transition_id": "TR-VMG-028",
+      "command_or_event": "rollback",
+      "from_state": "validated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "validated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain validated."
+    },
+    {
+      "transition_id": "TR-VMG-029",
+      "command_or_event": "compensate",
+      "from_state": "validated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "validated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain validated."
+    },
+    {
+      "transition_id": "TR-VMG-030",
+      "command_or_event": "halt_manual_repair",
+      "from_state": "validated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "validated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain validated."
+    },
+    {
+      "transition_id": "TR-VMG-031",
+      "command_or_event": "prepare",
+      "from_state": "mutated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "mutated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain mutated."
+    },
+    {
+      "transition_id": "TR-VMG-032",
+      "command_or_event": "validate",
+      "from_state": "mutated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "mutated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain mutated."
+    },
+    {
+      "transition_id": "TR-VMG-033",
+      "command_or_event": "mutate",
+      "from_state": "mutated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "mutated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain mutated."
+    },
+    {
+      "transition_id": "TR-VMG-034",
+      "command_or_event": "record_receipt",
+      "from_state": "mutated",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Authorized Mutation Plan and current ownership bind",
+        "durable Mutation Journal prefix and Descriptor Identity validate"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "OperationReceipt"
+      ],
+      "filesystem_effects": [
+        "publish and sync declared evidence"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "receipt_recorded",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "recovery_required",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Continue from the next durable event or enter Vault Mutation Recovery without guessing."
+    },
+    {
+      "transition_id": "TR-VMG-035",
+      "command_or_event": "verify_readback",
+      "from_state": "mutated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "mutated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain mutated."
+    },
+    {
+      "transition_id": "TR-VMG-036",
+      "command_or_event": "commit",
+      "from_state": "mutated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "mutated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain mutated."
+    },
+    {
+      "transition_id": "TR-VMG-037",
+      "command_or_event": "resume",
+      "from_state": "mutated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "mutated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain mutated."
+    },
+    {
+      "transition_id": "TR-VMG-038",
+      "command_or_event": "rollback",
+      "from_state": "mutated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "mutated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain mutated."
+    },
+    {
+      "transition_id": "TR-VMG-039",
+      "command_or_event": "compensate",
+      "from_state": "mutated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "mutated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain mutated."
+    },
+    {
+      "transition_id": "TR-VMG-040",
+      "command_or_event": "halt_manual_repair",
+      "from_state": "mutated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "mutated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain mutated."
+    },
+    {
+      "transition_id": "TR-VMG-041",
+      "command_or_event": "prepare",
+      "from_state": "receipt_recorded",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "receipt_recorded",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain receipt_recorded."
+    },
+    {
+      "transition_id": "TR-VMG-042",
+      "command_or_event": "validate",
+      "from_state": "receipt_recorded",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "receipt_recorded",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain receipt_recorded."
+    },
+    {
+      "transition_id": "TR-VMG-043",
+      "command_or_event": "mutate",
+      "from_state": "receipt_recorded",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "receipt_recorded",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain receipt_recorded."
+    },
+    {
+      "transition_id": "TR-VMG-044",
+      "command_or_event": "record_receipt",
+      "from_state": "receipt_recorded",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "receipt_recorded",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain receipt_recorded."
+    },
+    {
+      "transition_id": "TR-VMG-045",
+      "command_or_event": "verify_readback",
+      "from_state": "receipt_recorded",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Authorized Mutation Plan and current ownership bind",
+        "durable Mutation Journal prefix and Descriptor Identity validate"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationJournalEntry"
+      ],
+      "filesystem_effects": [
+        "publish and sync declared evidence"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "readback_verified",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "recovery_required",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Continue from the next durable event or enter Vault Mutation Recovery without guessing."
+    },
+    {
+      "transition_id": "TR-VMG-046",
+      "command_or_event": "commit",
+      "from_state": "receipt_recorded",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "receipt_recorded",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain receipt_recorded."
+    },
+    {
+      "transition_id": "TR-VMG-047",
+      "command_or_event": "resume",
+      "from_state": "receipt_recorded",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "receipt_recorded",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain receipt_recorded."
+    },
+    {
+      "transition_id": "TR-VMG-048",
+      "command_or_event": "rollback",
+      "from_state": "receipt_recorded",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "receipt_recorded",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain receipt_recorded."
+    },
+    {
+      "transition_id": "TR-VMG-049",
+      "command_or_event": "compensate",
+      "from_state": "receipt_recorded",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "receipt_recorded",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain receipt_recorded."
+    },
+    {
+      "transition_id": "TR-VMG-050",
+      "command_or_event": "halt_manual_repair",
+      "from_state": "receipt_recorded",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "receipt_recorded",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain receipt_recorded."
+    },
+    {
+      "transition_id": "TR-VMG-051",
+      "command_or_event": "prepare",
+      "from_state": "readback_verified",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "readback_verified",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain readback_verified."
+    },
+    {
+      "transition_id": "TR-VMG-052",
+      "command_or_event": "validate",
+      "from_state": "readback_verified",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "readback_verified",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain readback_verified."
+    },
+    {
+      "transition_id": "TR-VMG-053",
+      "command_or_event": "mutate",
+      "from_state": "readback_verified",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "readback_verified",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain readback_verified."
+    },
+    {
+      "transition_id": "TR-VMG-054",
+      "command_or_event": "record_receipt",
+      "from_state": "readback_verified",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "readback_verified",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain readback_verified."
+    },
+    {
+      "transition_id": "TR-VMG-055",
+      "command_or_event": "verify_readback",
+      "from_state": "readback_verified",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "readback_verified",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain readback_verified."
+    },
+    {
+      "transition_id": "TR-VMG-056",
+      "command_or_event": "commit",
+      "from_state": "readback_verified",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Authorized Mutation Plan and current ownership bind",
+        "durable Mutation Journal prefix and Descriptor Identity validate"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationCommitEvidence"
+      ],
+      "filesystem_effects": [
+        "publish and sync declared evidence"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "committed",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "recovery_required",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Continue from the next durable event or enter Vault Mutation Recovery without guessing."
+    },
+    {
+      "transition_id": "TR-VMG-057",
+      "command_or_event": "resume",
+      "from_state": "readback_verified",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "readback_verified",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain readback_verified."
+    },
+    {
+      "transition_id": "TR-VMG-058",
+      "command_or_event": "rollback",
+      "from_state": "readback_verified",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "readback_verified",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain readback_verified."
+    },
+    {
+      "transition_id": "TR-VMG-059",
+      "command_or_event": "compensate",
+      "from_state": "readback_verified",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "readback_verified",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain readback_verified."
+    },
+    {
+      "transition_id": "TR-VMG-060",
+      "command_or_event": "halt_manual_repair",
+      "from_state": "readback_verified",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "readback_verified",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain readback_verified."
+    },
+    {
+      "transition_id": "TR-VMG-061",
+      "command_or_event": "prepare",
+      "from_state": "committed",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "committed",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain committed."
+    },
+    {
+      "transition_id": "TR-VMG-062",
+      "command_or_event": "validate",
+      "from_state": "committed",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "committed",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain committed."
+    },
+    {
+      "transition_id": "TR-VMG-063",
+      "command_or_event": "mutate",
+      "from_state": "committed",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "committed",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain committed."
+    },
+    {
+      "transition_id": "TR-VMG-064",
+      "command_or_event": "record_receipt",
+      "from_state": "committed",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "committed",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain committed."
+    },
+    {
+      "transition_id": "TR-VMG-065",
+      "command_or_event": "verify_readback",
+      "from_state": "committed",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "committed",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain committed."
+    },
+    {
+      "transition_id": "TR-VMG-066",
+      "command_or_event": "commit",
+      "from_state": "committed",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "committed",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain committed."
+    },
+    {
+      "transition_id": "TR-VMG-067",
+      "command_or_event": "resume",
+      "from_state": "committed",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Authorized Mutation Plan and current ownership bind",
+        "durable Mutation Journal prefix and Descriptor Identity validate"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationJournalEntry"
+      ],
+      "filesystem_effects": [
+        "publish and sync declared evidence"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "committed",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Continue from the next durable event or enter Vault Mutation Recovery without guessing."
+    },
+    {
+      "transition_id": "TR-VMG-068",
+      "command_or_event": "rollback",
+      "from_state": "committed",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "committed",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain committed."
+    },
+    {
+      "transition_id": "TR-VMG-069",
+      "command_or_event": "compensate",
+      "from_state": "committed",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "committed",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain committed."
+    },
+    {
+      "transition_id": "TR-VMG-070",
+      "command_or_event": "halt_manual_repair",
+      "from_state": "committed",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "committed",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain committed."
+    },
+    {
+      "transition_id": "TR-VMG-071",
+      "command_or_event": "prepare",
+      "from_state": "recovery_required",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "recovery_required",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain recovery_required."
+    },
+    {
+      "transition_id": "TR-VMG-072",
+      "command_or_event": "validate",
+      "from_state": "recovery_required",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "recovery_required",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain recovery_required."
+    },
+    {
+      "transition_id": "TR-VMG-073",
+      "command_or_event": "mutate",
+      "from_state": "recovery_required",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "recovery_required",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain recovery_required."
+    },
+    {
+      "transition_id": "TR-VMG-074",
+      "command_or_event": "record_receipt",
+      "from_state": "recovery_required",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "recovery_required",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain recovery_required."
+    },
+    {
+      "transition_id": "TR-VMG-075",
+      "command_or_event": "verify_readback",
+      "from_state": "recovery_required",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "recovery_required",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain recovery_required."
+    },
+    {
+      "transition_id": "TR-VMG-076",
+      "command_or_event": "commit",
+      "from_state": "recovery_required",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "recovery_required",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain recovery_required."
+    },
+    {
+      "transition_id": "TR-VMG-077",
+      "command_or_event": "resume",
+      "from_state": "recovery_required",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Authorized Mutation Plan and current ownership bind",
+        "durable Mutation Journal prefix and Descriptor Identity validate"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationJournalEntry"
+      ],
+      "filesystem_effects": [
+        "publish and sync declared evidence"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "prepared",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Continue from the next durable event or enter Vault Mutation Recovery without guessing."
+    },
+    {
+      "transition_id": "TR-VMG-078",
+      "command_or_event": "rollback",
+      "from_state": "recovery_required",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Authorized Mutation Plan and current ownership bind",
+        "durable Mutation Journal prefix and Descriptor Identity validate"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationRollbackReceipt"
+      ],
+      "filesystem_effects": [
+        "perform exact authorized reverse effect"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "rolled_back",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Continue from the next durable event or enter Vault Mutation Recovery without guessing."
+    },
+    {
+      "transition_id": "TR-VMG-079",
+      "command_or_event": "compensate",
+      "from_state": "recovery_required",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Authorized Mutation Plan and current ownership bind",
+        "durable Mutation Journal prefix and Descriptor Identity validate"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationCompensationReceipt"
+      ],
+      "filesystem_effects": [
+        "perform separately authorized compensation"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "compensated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Continue from the next durable event or enter Vault Mutation Recovery without guessing."
+    },
+    {
+      "transition_id": "TR-VMG-080",
+      "command_or_event": "halt_manual_repair",
+      "from_state": "recovery_required",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Authorized Mutation Plan and current ownership bind",
+        "durable Mutation Journal prefix and Descriptor Identity validate"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "TerminalManualRepairReport"
+      ],
+      "filesystem_effects": [
+        "publish and sync declared evidence"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "terminal_manual_repair",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Continue from the next durable event or enter Vault Mutation Recovery without guessing."
+    },
+    {
+      "transition_id": "TR-VMG-081",
+      "command_or_event": "prepare",
+      "from_state": "rolled_back",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "rolled_back",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain rolled_back."
+    },
+    {
+      "transition_id": "TR-VMG-082",
+      "command_or_event": "validate",
+      "from_state": "rolled_back",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "rolled_back",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain rolled_back."
+    },
+    {
+      "transition_id": "TR-VMG-083",
+      "command_or_event": "mutate",
+      "from_state": "rolled_back",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "rolled_back",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain rolled_back."
+    },
+    {
+      "transition_id": "TR-VMG-084",
+      "command_or_event": "record_receipt",
+      "from_state": "rolled_back",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "rolled_back",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain rolled_back."
+    },
+    {
+      "transition_id": "TR-VMG-085",
+      "command_or_event": "verify_readback",
+      "from_state": "rolled_back",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "rolled_back",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain rolled_back."
+    },
+    {
+      "transition_id": "TR-VMG-086",
+      "command_or_event": "commit",
+      "from_state": "rolled_back",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "rolled_back",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain rolled_back."
+    },
+    {
+      "transition_id": "TR-VMG-087",
+      "command_or_event": "resume",
+      "from_state": "rolled_back",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "rolled_back",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain rolled_back."
+    },
+    {
+      "transition_id": "TR-VMG-088",
+      "command_or_event": "rollback",
+      "from_state": "rolled_back",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "rolled_back",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain rolled_back."
+    },
+    {
+      "transition_id": "TR-VMG-089",
+      "command_or_event": "compensate",
+      "from_state": "rolled_back",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "rolled_back",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain rolled_back."
+    },
+    {
+      "transition_id": "TR-VMG-090",
+      "command_or_event": "halt_manual_repair",
+      "from_state": "rolled_back",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "rolled_back",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain rolled_back."
+    },
+    {
+      "transition_id": "TR-VMG-091",
+      "command_or_event": "prepare",
+      "from_state": "compensated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "compensated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain compensated."
+    },
+    {
+      "transition_id": "TR-VMG-092",
+      "command_or_event": "validate",
+      "from_state": "compensated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "compensated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain compensated."
+    },
+    {
+      "transition_id": "TR-VMG-093",
+      "command_or_event": "mutate",
+      "from_state": "compensated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "compensated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain compensated."
+    },
+    {
+      "transition_id": "TR-VMG-094",
+      "command_or_event": "record_receipt",
+      "from_state": "compensated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "compensated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain compensated."
+    },
+    {
+      "transition_id": "TR-VMG-095",
+      "command_or_event": "verify_readback",
+      "from_state": "compensated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "compensated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain compensated."
+    },
+    {
+      "transition_id": "TR-VMG-096",
+      "command_or_event": "commit",
+      "from_state": "compensated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "compensated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain compensated."
+    },
+    {
+      "transition_id": "TR-VMG-097",
+      "command_or_event": "resume",
+      "from_state": "compensated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "compensated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain compensated."
+    },
+    {
+      "transition_id": "TR-VMG-098",
+      "command_or_event": "rollback",
+      "from_state": "compensated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "compensated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain compensated."
+    },
+    {
+      "transition_id": "TR-VMG-099",
+      "command_or_event": "compensate",
+      "from_state": "compensated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "compensated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain compensated."
+    },
+    {
+      "transition_id": "TR-VMG-100",
+      "command_or_event": "halt_manual_repair",
+      "from_state": "compensated",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "compensated",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain compensated."
+    },
+    {
+      "transition_id": "TR-VMG-101",
+      "command_or_event": "prepare",
+      "from_state": "terminal_manual_repair",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "terminal_manual_repair",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain terminal_manual_repair."
+    },
+    {
+      "transition_id": "TR-VMG-102",
+      "command_or_event": "validate",
+      "from_state": "terminal_manual_repair",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "terminal_manual_repair",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain terminal_manual_repair."
+    },
+    {
+      "transition_id": "TR-VMG-103",
+      "command_or_event": "mutate",
+      "from_state": "terminal_manual_repair",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "terminal_manual_repair",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain terminal_manual_repair."
+    },
+    {
+      "transition_id": "TR-VMG-104",
+      "command_or_event": "record_receipt",
+      "from_state": "terminal_manual_repair",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "terminal_manual_repair",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain terminal_manual_repair."
+    },
+    {
+      "transition_id": "TR-VMG-105",
+      "command_or_event": "verify_readback",
+      "from_state": "terminal_manual_repair",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "terminal_manual_repair",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain terminal_manual_repair."
+    },
+    {
+      "transition_id": "TR-VMG-106",
+      "command_or_event": "commit",
+      "from_state": "terminal_manual_repair",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_mutation_gate"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "terminal_manual_repair",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain terminal_manual_repair."
+    },
+    {
+      "transition_id": "TR-VMG-107",
+      "command_or_event": "resume",
+      "from_state": "terminal_manual_repair",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "terminal_manual_repair",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain terminal_manual_repair."
+    },
+    {
+      "transition_id": "TR-VMG-108",
+      "command_or_event": "rollback",
+      "from_state": "terminal_manual_repair",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "terminal_manual_repair",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain terminal_manual_repair."
+    },
+    {
+      "transition_id": "TR-VMG-109",
+      "command_or_event": "compensate",
+      "from_state": "terminal_manual_repair",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "terminal_manual_repair",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain terminal_manual_repair."
+    },
+    {
+      "transition_id": "TR-VMG-110",
+      "command_or_event": "halt_manual_repair",
+      "from_state": "terminal_manual_repair",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "required lifecycle state and exact authority are present"
+      ],
+      "base_references": [
+        "plan_id",
+        "plan_sha256",
+        "journal_sha256",
+        "ownership_receipt_sha256",
+        "idempotency_key"
+      ],
+      "emitted_records": [
+        "MutationDeniedReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "plan_sha256",
+          "idempotency_key"
+        ],
+        "retry_result": "return the original compatible receipt without duplicating an effect"
+      },
+      "terminal_state": "terminal_manual_repair",
+      "failure_result": {
+        "code": "vault_mutation.transition_denied",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "MutationDeniedReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Remain terminal_manual_repair."
+    }
+  ]
+}

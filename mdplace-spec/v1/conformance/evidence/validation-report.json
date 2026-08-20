@@ -3,8 +3,8 @@
   "package_series": "mdplace-spec/v1",
   "release_version": "1.0.0",
   "validator_version": "1.2.0",
-  "normative_digest": "72577e4ec624db31767c0b519de9a27ce2861c25725992db865f9a617a4c6e4c",
-  "conformance_digest": "39c2e5d6e443ae22d7ba67d6a911d0cdfb03ce8f48084be36a7b69d15122d139",
+  "normative_digest": "3b61bbb7245a223c0e7d3e9276f978bfed645c6fd484c21e23fdea4a8b0b4b79",
+  "conformance_digest": "83d1b7b73d927fb2649a11e59811ab1f3f47dede7542b78e817e3138aa349f82",
   "verdict": "pass",
   "checks": [
     {
@@ -48,6 +48,11 @@
       "codes": []
     },
     {
+      "id": "vault-mutation-gate-lifecycle",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
       "id": "contract-schemas",
       "verdict": "pass",
       "codes": []
@@ -79,6 +84,11 @@
     },
     {
       "id": "core-processing-policy-contract",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "vault-mutation-gate-contract",
       "verdict": "pass",
       "codes": []
     },
@@ -926,6 +936,446 @@
     },
     {
       "id": "FIX-CPP-REC-003",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-REC-007",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-REC-004",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-POS-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-NEG-004",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-STATE-003",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-STATE-004",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-BND-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-POS-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-STATE-005",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-REC-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-NEG-005",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-NEG-006",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-AUTH-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-NEG-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-REC-003",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-REC-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-REC-005",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-REC-006",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-STATE-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-STATE-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-NEG-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-NEG-003",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-AUTH-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-ILLEGAL-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-001",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-002",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-003",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-004",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-005",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-006",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-007",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-008",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-009",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-010",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-011",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-012",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-013",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-014",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-015",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-016",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-017",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-018",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-019",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-020",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-021",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-022",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-023",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-024",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-025",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-026",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-027",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-028",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-029",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-030",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-031",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-032",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-033",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-034",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-035",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-036",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-037",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-038",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-039",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-040",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-041",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-042",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-043",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-044",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-045",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-046",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-047",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-048",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-049",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-050",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-051",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-052",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-053",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-054",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-055",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-056",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-057",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-058",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-059",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-060",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-061",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-062",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-063",
+      "verdict": "pass",
+      "codes": []
+    },
+    {
+      "id": "FIX-VMG-CRASH-064",
       "verdict": "pass",
       "codes": []
     }

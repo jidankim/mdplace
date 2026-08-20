@@ -1,0 +1,61 @@
+{
+  "$schema": "../schemas/authorized-mutation-plan.schema.json",
+  "schema_id": "mdplace.authorized-mutation-plan/v1",
+  "plan_id": "mutation-plan:reference-001",
+  "plan_version": 1,
+  "vault_id": "vault:reference",
+  "trusted_root_id": "trusted-root:reference",
+  "operation": "move_projection",
+  "caller": {
+    "caller_id": "folder-projection:reference",
+    "role": "folder_projection",
+    "authority_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "ownership": {
+    "agent_id": "agent:primary-001",
+    "exclusive_writer_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "writer_epoch": 7
+  },
+  "source_components": [
+    "Inbox",
+    "note.md"
+  ],
+  "target_components": [
+    "Research",
+    "note.md"
+  ],
+  "immutable_inputs": {
+    "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
+    "source_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff",
+    "target_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b",
+    "policy_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "semantic_base_sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+  },
+  "expected_precondition": {
+    "device": 42,
+    "inode": 1001,
+    "size": 13,
+    "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+  },
+  "expected_result": {
+    "device": 42,
+    "inode": 1001,
+    "size": 13,
+    "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+  },
+  "placement_outcome_ref": "placement:reference-001",
+  "durability_policy": "sync_journal_data_metadata_receipt_readback_commit",
+  "idempotency_key": "vmg-idem:reference-001",
+  "recovery_intent": "resume",
+  "plan_state": "authorized",
+  "scheduled_work": {
+    "work_id": "work:projection-reference-001",
+    "work_version": 1,
+    "lease_id": "lease:projection-reference-001",
+    "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "work_journal_head_sequence": 1,
+    "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+  },
+  "projection_scope": "vault",
+  "compensating_plan": null
+}

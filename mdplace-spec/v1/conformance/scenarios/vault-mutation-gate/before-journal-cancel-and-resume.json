@@ -1,0 +1,186 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-VMG-CRASH-002",
+  "category": "crash_recovery",
+  "requirement_ids": [
+    "REQ-VMG-007",
+    "REQ-VMG-008",
+    "REQ-VMG-009"
+  ],
+  "subject": {
+    "kind": "vault_mutation_gate",
+    "schema": "contracts/schemas/vault-mutation-scenario.schema.json",
+    "document": {
+      "schema_id": "mdplace.vault-mutation-scenario/v1",
+      "scenario_id": "VMG-026",
+      "operation": "move_projection",
+      "operation_declared": true,
+      "caller": {
+        "caller_id": "foreground-recovery:fixture-001",
+        "role": "foreground_recovery"
+      },
+      "plan_state": "authorized",
+      "fault": "none",
+      "probe": {
+        "virtual_vault": {
+          "trusted_root": {
+            "descriptor_id": "descriptor:root-001",
+            "device": 42,
+            "inode": 1
+          },
+          "source_components": [
+            "Inbox",
+            "candidate.md"
+          ],
+          "component_kinds": [
+            "directory",
+            "file"
+          ],
+          "source_descriptor": {
+            "descriptor_id": "descriptor:source-001",
+            "device": 42,
+            "inode": 1001,
+            "bytes_utf8": "candidate-v1\n"
+          },
+          "second_observation": {
+            "descriptor_id": "descriptor:source-001",
+            "device": 42,
+            "inode": 1001,
+            "bytes_utf8": "candidate-v1\n"
+          },
+          "path_descriptor_after_validation": "descriptor:source-001",
+          "target_exists": false,
+          "result_descriptor": {
+            "descriptor_id": "descriptor:source-001",
+            "device": 42,
+            "inode": 1001,
+            "bytes_utf8": "published-v1\n"
+          },
+          "readback_descriptor": {
+            "descriptor_id": "descriptor:source-001",
+            "device": 42,
+            "inode": 1001,
+            "bytes_utf8": "published-v1\n"
+          }
+        },
+        "authorized_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "authorized_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "receipt_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "receipt_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "receipt_echo": "complete",
+        "journal_complete": true,
+        "console_output": "none"
+      },
+      "recovery": {
+        "mode": "cancel_and_resume",
+        "crash_boundary": "before_journal",
+        "durable_prefix": [],
+        "declared_intent": "resume",
+        "reverse_descriptor": null,
+        "compensation_authorization": null,
+        "interruption_count": 1,
+        "interruption_budget": 3,
+        "post_recovery_descriptor": null,
+        "work_journal_snapshot": null
+      },
+      "authorized_plan": {
+        "plan_id": "mutation-plan:vmg-026",
+        "plan_sha256": "a52c05f441985022ff6bfec653c7d44ed04c21cfeb2a77af723f0d7030c8e12f",
+        "operation": "move_projection",
+        "caller_id": "folder-projection:fixture-001",
+        "authority_receipt_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "idempotency_key": "vmg-idem:vmg-026",
+        "recovery_intent": "resume",
+        "projection_scope": "vault",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "compensating_plan": null
+      },
+      "authorization": {
+        "plan_id": "mutation-plan:vmg-026",
+        "plan_sha256": "a52c05f441985022ff6bfec653c7d44ed04c21cfeb2a77af723f0d7030c8e12f",
+        "authority_receipt_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "idempotency_key": "vmg-idem:vmg-026"
+      },
+      "idempotency_record": null,
+      "projection_state": {
+        "state": "recovery_required",
+        "active_plan_id": "mutation-plan:vmg-026",
+        "active_plan_sha256": "a52c05f441985022ff6bfec653c7d44ed04c21cfeb2a77af723f0d7030c8e12f"
+      }
+    }
+  },
+  "expected": {
+    "verdict": "pass",
+    "codes": [],
+    "outputs": [
+      "operation resumed and committed"
+    ],
+    "operations": [
+      "reconcile exact durable prefix",
+      "resume at the next uncommitted event",
+      "open trusted root descriptor",
+      "resolve every component with openat and O_NOFOLLOW",
+      "capture first fstat",
+      "read and hash content through the same handle",
+      "capture second fstat",
+      "compare device inode size and content hash",
+      "publish and sync validated Mutation Journal entry",
+      "perform only the declared operation through retained descriptors",
+      "sync data metadata and parent directory",
+      "publish and sync Operation Receipt echo",
+      "read back through the retained descriptor",
+      "publish and sync commit evidence"
+    ],
+    "receipts": [
+      "OperationReceipt",
+      "MutationCommitEvidence"
+    ],
+    "filesystem_effects": [
+      "perform the declared effect at most once"
+    ],
+    "terminal_state": "committed",
+    "illegal_transition": false
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "../schemas/operation-receipt.schema.json",
+  "schema_id": "mdplace.operation-receipt/v1",
+  "receipt_id": "mutation-receipt:reference-001",
+  "plan_id": "mutation-plan:reference-001",
+  "plan_sha256": "93a25fae5f232deb4a62103b8f65d8f1404d944b910cf3976b6590ac94f18942",
+  "operation": "move_projection",
+  "caller_id": "folder-projection:reference",
+  "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "source_components": [
+    "Inbox",
+    "note.md"
+  ],
+  "target_components": [
+    "Research",
+    "note.md"
+  ],
+  "precondition_identity": {
+    "device": 42,
+    "inode": 1001,
+    "size": 13,
+    "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+  },
+  "result_identity": {
+    "device": 42,
+    "inode": 1001,
+    "size": 13,
+    "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+  },
+  "journal_sha256": "9003b27919f148e678b0d027172407ac38f617f3d900387eb276fb42b69c5f0f",
+  "idempotency_key": "vmg-idem:reference-001",
+  "echo_complete": true,
+  "readback_verified": true,
+  "receipt_sha256": "efa23d056a98ff8f463083f87195c6e8195648ecb7fbacbecb8b9bd0337a7297",
+  "scheduled_work": {
+    "work_id": "work:projection-reference-001",
+    "work_version": 1,
+    "lease_id": "lease:projection-reference-001",
+    "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "work_journal_head_sequence": 1,
+    "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+  }
+}

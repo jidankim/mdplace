@@ -1,0 +1,250 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:vault-mutation-scenario:v1",
+  "title": "mdplace Vault Mutation Gate conformance scenario",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_id", "scenario_id", "operation", "operation_declared", "caller", "plan_state", "fault", "authorized_plan", "authorization", "idempotency_record", "projection_state", "probe", "recovery"],
+  "properties": {
+    "schema_id": {"const": "mdplace.vault-mutation-scenario/v1"},
+    "scenario_id": {"type": "string", "pattern": "^VMG-[0-9]{3}$"},
+    "operation": {"enum": ["promote_capture", "move_projection", "create_directory", "remove_empty_owned_directory", "write_managed_frontmatter"]},
+    "operation_declared": {"type": "boolean"},
+    "caller": {"$ref": "#/$defs/caller"},
+    "plan_state": {"enum": ["authorized", "stale"]},
+    "fault": {"enum": ["none", "symlink_swap", "pathname_swap", "traversal", "collision", "ownership_drift", "unauthorized_caller", "undeclared_operation", "malformed_plan", "stale_plan", "stale_hash", "identity_drift", "size_drift", "incomplete_journal", "receipt_echo_mismatch", "readback_mismatch", "misleading_success", "idempotency_conflict"]},
+    "authorized_plan": {"$ref": "#/$defs/authorizedPlan"},
+    "authorization": {"$ref": "#/$defs/authorization"},
+    "idempotency_record": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/idempotencyRecord"}]},
+    "projection_state": {"$ref": "#/$defs/projectionState"},
+    "probe": {"$ref": "#/$defs/probe"},
+    "recovery": {"$ref": "#/$defs/recovery"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "caller": {
+      "type": "object", "additionalProperties": false,
+      "required": ["caller_id", "role"],
+      "properties": {
+        "caller_id": {"type": "string", "pattern": "^(capture-adapter|folder-projection|foreground-recovery|intelligence-adapter):[a-z0-9-]{3,64}$"},
+        "role": {"enum": ["capture_adapter", "folder_projection", "foreground_recovery", "intelligence_adapter"]}
+      },
+      "allOf": [
+        {"if": {"properties": {"role": {"const": "capture_adapter"}}}, "then": {"properties": {"caller_id": {"pattern": "^capture-adapter:"}}}},
+        {"if": {"properties": {"role": {"const": "folder_projection"}}}, "then": {"properties": {"caller_id": {"pattern": "^folder-projection:"}}}},
+        {"if": {"properties": {"role": {"const": "foreground_recovery"}}}, "then": {"properties": {"caller_id": {"pattern": "^foreground-recovery:"}}}},
+        {"if": {"properties": {"role": {"const": "intelligence_adapter"}}}, "then": {"properties": {"caller_id": {"pattern": "^intelligence-adapter:"}}}}
+      ]
+    },
+    "identity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["device", "inode", "size", "content_sha256"],
+      "properties": {"device": {"type": "integer", "minimum": 0}, "inode": {"type": "integer", "minimum": 1}, "size": {"type": "integer", "minimum": 0}, "content_sha256": {"$ref": "#/$defs/digest"}}
+    },
+    "scheduledWork": {
+      "type": "object", "additionalProperties": false,
+      "required": ["work_id", "work_version", "lease_id", "lease_receipt_sha256", "work_journal_head_sequence", "work_journal_head_sha256"],
+      "properties": {
+        "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
+        "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "lease_id": {"type": "string", "pattern": "^lease:[a-z0-9-]{3,64}$"},
+        "lease_receipt_sha256": {"$ref": "#/$defs/digest"},
+        "work_journal_head_sequence": {"type": "integer", "minimum": 1, "maximum": 500},
+        "work_journal_head_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "compensatingPlan": {
+      "type": "object", "additionalProperties": false,
+      "required": ["plan_id", "plan_sha256", "operation", "effect_sha256", "expected_result_identity", "authority_receipt_sha256"],
+      "properties": {
+        "plan_id": {"type": "string", "pattern": "^mutation-plan:[a-z0-9-]{3,64}$"},
+        "plan_sha256": {"$ref": "#/$defs/digest"},
+        "operation": {"enum": ["promote_capture", "move_projection", "create_directory", "remove_empty_owned_directory", "write_managed_frontmatter"]},
+        "effect_sha256": {"$ref": "#/$defs/digest"},
+        "expected_result_identity": {"$ref": "#/$defs/identity"},
+        "authority_receipt_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "authorizedPlan": {
+      "type": "object", "additionalProperties": false,
+      "required": ["plan_id", "plan_sha256", "operation", "caller_id", "authority_receipt_sha256", "ownership_receipt_sha256", "idempotency_key", "recovery_intent", "projection_scope", "expected_precondition_identity", "expected_result_identity", "scheduled_work", "compensating_plan"],
+      "properties": {
+        "plan_id": {"type": "string", "pattern": "^mutation-plan:[a-z0-9-]{3,64}$"},
+        "plan_sha256": {"$ref": "#/$defs/digest"},
+        "operation": {"enum": ["promote_capture", "move_projection", "create_directory", "remove_empty_owned_directory", "write_managed_frontmatter"]},
+        "caller_id": {"type": "string", "pattern": "^(capture-adapter|folder-projection):[a-z0-9-]{3,64}$"},
+        "authority_receipt_sha256": {"$ref": "#/$defs/digest"},
+        "ownership_receipt_sha256": {"$ref": "#/$defs/digest"},
+        "idempotency_key": {"type": "string", "pattern": "^vmg-idem:[a-z0-9-]{3,64}$"},
+        "recovery_intent": {"enum": ["resume", "exact_rollback", "compensate", "terminal_manual_repair"]},
+        "projection_scope": {"enum": ["vault", null]},
+        "expected_precondition_identity": {"$ref": "#/$defs/identity"},
+        "expected_result_identity": {"$ref": "#/$defs/identity"},
+        "scheduled_work": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/scheduledWork"}]},
+        "compensating_plan": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/compensatingPlan"}]}
+      }
+    },
+    "authorization": {
+      "type": "object", "additionalProperties": false,
+      "required": ["plan_id", "plan_sha256", "authority_receipt_sha256", "ownership_receipt_sha256", "idempotency_key"],
+      "properties": {
+        "plan_id": {"type": "string", "pattern": "^mutation-plan:[a-z0-9-]{3,64}$"},
+        "plan_sha256": {"$ref": "#/$defs/digest"},
+        "authority_receipt_sha256": {"$ref": "#/$defs/digest"},
+        "ownership_receipt_sha256": {"$ref": "#/$defs/digest"},
+        "idempotency_key": {"type": "string", "pattern": "^vmg-idem:[a-z0-9-]{3,64}$"}
+      }
+    },
+    "idempotencyRecord": {
+      "type": "object", "additionalProperties": false,
+      "required": ["idempotency_key", "plan_sha256", "state", "original_receipt"],
+      "properties": {
+        "idempotency_key": {"type": "string", "pattern": "^vmg-idem:[a-z0-9-]{3,64}$"},
+        "plan_sha256": {"$ref": "#/$defs/digest"},
+        "state": {"enum": ["committed", "recovery_required"]},
+        "original_receipt": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/originalReceipt"}]}
+      },
+      "allOf": [
+        {"if": {"properties": {"state": {"const": "committed"}}}, "then": {"properties": {"original_receipt": {"$ref": "#/$defs/originalReceipt"}}}},
+        {"if": {"properties": {"state": {"const": "recovery_required"}}}, "then": {"properties": {"original_receipt": {"type": "null"}}}}
+      ]
+    },
+    "originalReceipt": {
+      "type": "object", "additionalProperties": false,
+      "required": ["receipt_id", "plan_id", "plan_sha256", "operation", "caller_id", "ownership_receipt_sha256", "scheduled_work", "idempotency_key", "precondition_identity", "result_identity", "journal_sha256", "echo_complete", "readback_verified", "receipt_sha256"],
+      "properties": {
+        "receipt_id": {"type": "string", "pattern": "^mutation-receipt:[a-z0-9-]{3,64}$"},
+        "plan_id": {"type": "string", "pattern": "^mutation-plan:[a-z0-9-]{3,64}$"},
+        "plan_sha256": {"$ref": "#/$defs/digest"},
+        "operation": {"enum": ["promote_capture", "move_projection", "create_directory", "remove_empty_owned_directory", "write_managed_frontmatter"]},
+        "caller_id": {"type": "string", "pattern": "^(capture-adapter|folder-projection):[a-z0-9-]{3,64}$"},
+        "ownership_receipt_sha256": {"$ref": "#/$defs/digest"},
+        "scheduled_work": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/scheduledWork"}]},
+        "idempotency_key": {"type": "string", "pattern": "^vmg-idem:[a-z0-9-]{3,64}$"},
+        "precondition_identity": {"$ref": "#/$defs/identity"},
+        "result_identity": {"$ref": "#/$defs/identity"},
+        "journal_sha256": {"$ref": "#/$defs/digest"},
+        "echo_complete": {"const": true},
+        "readback_verified": {"const": true},
+        "receipt_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "projectionState": {
+      "type": "object", "additionalProperties": false,
+      "required": ["state", "active_plan_id", "active_plan_sha256"],
+      "properties": {
+        "state": {"enum": ["idle", "applying", "recovery_required"]},
+        "active_plan_id": {"type": ["string", "null"], "pattern": "^mutation-plan:[a-z0-9-]{3,64}$"},
+        "active_plan_sha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]}
+      },
+      "allOf": [
+        {"if": {"properties": {"state": {"const": "idle"}}}, "then": {"properties": {"active_plan_id": {"type": "null"}, "active_plan_sha256": {"type": "null"}}}},
+        {"if": {"properties": {"state": {"enum": ["applying", "recovery_required"]}}}, "then": {"properties": {"active_plan_id": {"type": "string"}, "active_plan_sha256": {"$ref": "#/$defs/digest"}}}}
+      ]
+    },
+    "virtualDescriptor": {
+      "type": "object", "additionalProperties": false,
+      "required": ["descriptor_id", "device", "inode", "bytes_utf8"],
+      "properties": {
+        "descriptor_id": {"type": "string", "pattern": "^descriptor:[a-z0-9-]{3,64}$"},
+        "device": {"type": "integer", "minimum": 0},
+        "inode": {"type": "integer", "minimum": 1},
+        "bytes_utf8": {"type": "string", "maxLength": 1048576}
+      }
+    },
+    "workJournalEntry": {
+      "type": "object", "additionalProperties": false,
+      "required": ["journal_sequence", "previous_sha256", "plan_id", "depends_on_plan_ids", "entry_sha256"],
+      "properties": {
+        "journal_sequence": {"type": "integer", "minimum": 2, "maximum": 500},
+        "previous_sha256": {"$ref": "#/$defs/digest"},
+        "plan_id": {"type": "string", "pattern": "^mutation-plan:[a-z0-9-]{3,64}$"},
+        "depends_on_plan_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^mutation-plan:[a-z0-9-]{3,64}$"}},
+        "entry_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "workJournalHeadReceipt": {
+      "type": "object", "additionalProperties": false,
+      "required": ["receipt_id", "journal_id", "head_sequence", "head_digest", "signature_scheme", "signing_key_id", "signer_agent_id", "signature_digest", "authenticated"],
+      "properties": {
+        "receipt_id": {"type": "string", "pattern": "^journal-head-receipt:[a-z0-9-]{3,64}$"},
+        "journal_id": {"type": "string", "pattern": "^journal:[a-z0-9-]{3,64}$"},
+        "head_sequence": {"type": "integer", "minimum": 1, "maximum": 500},
+        "head_digest": {"$ref": "#/$defs/digest"},
+        "signature_scheme": {"const": "hmac-sha256"},
+        "signing_key_id": {"const": "signer-key:primary-001"},
+        "signer_agent_id": {"const": "agent:primary-001"},
+        "signature_digest": {"$ref": "#/$defs/digest"},
+        "authenticated": {"const": true}
+      }
+    },
+    "workJournalSnapshot": {
+      "type": "object", "additionalProperties": false,
+      "required": ["journal_id", "base_head_sequence", "base_head_sha256", "entries", "head_receipt"],
+      "properties": {
+        "journal_id": {"type": "string", "pattern": "^journal:[a-z0-9-]{3,64}$"},
+        "base_head_sequence": {"type": "integer", "minimum": 1, "maximum": 500},
+        "base_head_sha256": {"$ref": "#/$defs/digest"},
+        "entries": {"type": "array", "maxItems": 499, "items": {"$ref": "#/$defs/workJournalEntry"}},
+        "head_receipt": {"$ref": "#/$defs/workJournalHeadReceipt"}
+      }
+    },
+    "virtualVault": {
+      "type": "object", "additionalProperties": false,
+      "required": ["trusted_root", "source_components", "component_kinds", "source_descriptor", "second_observation", "path_descriptor_after_validation", "target_exists", "result_descriptor", "readback_descriptor"],
+      "properties": {
+        "trusted_root": {
+          "type": "object", "additionalProperties": false,
+          "required": ["descriptor_id", "device", "inode"],
+          "properties": {
+            "descriptor_id": {"type": "string", "pattern": "^descriptor:[a-z0-9-]{3,64}$"},
+            "device": {"type": "integer", "minimum": 0},
+            "inode": {"type": "integer", "minimum": 1}
+          }
+        },
+        "source_components": {"type": "array", "minItems": 1, "maxItems": 32, "items": {"type": "string", "minLength": 1, "maxLength": 255}},
+        "component_kinds": {"type": "array", "minItems": 1, "maxItems": 32, "items": {"enum": ["directory", "file", "symlink"]}},
+        "source_descriptor": {"$ref": "#/$defs/virtualDescriptor"},
+        "second_observation": {"$ref": "#/$defs/virtualDescriptor"},
+        "path_descriptor_after_validation": {"type": "string", "pattern": "^descriptor:[a-z0-9-]{3,64}$"},
+        "target_exists": {"type": "boolean"},
+        "result_descriptor": {"$ref": "#/$defs/virtualDescriptor"},
+        "readback_descriptor": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/virtualDescriptor"}]}
+      }
+    },
+    "probe": {
+      "type": "object", "additionalProperties": false,
+      "required": ["virtual_vault", "authorized_precondition_identity", "authorized_result_identity", "receipt_precondition_identity", "receipt_result_identity", "receipt_echo", "journal_complete", "console_output"],
+      "properties": {
+        "virtual_vault": {"$ref": "#/$defs/virtualVault"},
+        "authorized_precondition_identity": {"$ref": "#/$defs/identity"},
+        "authorized_result_identity": {"$ref": "#/$defs/identity"},
+        "receipt_precondition_identity": {"$ref": "#/$defs/identity"},
+        "receipt_result_identity": {"$ref": "#/$defs/identity"},
+        "receipt_echo": {"enum": ["complete", "missing", "mismatch"]},
+        "journal_complete": {"type": "boolean"},
+        "console_output": {"enum": ["none", "success"]}
+      }
+    },
+    "recovery": {
+      "type": "object", "additionalProperties": false,
+      "required": ["mode", "crash_boundary", "durable_prefix", "declared_intent", "reverse_descriptor", "work_journal_snapshot", "compensation_authorization", "post_recovery_descriptor", "interruption_count", "interruption_budget"],
+      "properties": {
+        "mode": {"enum": ["none", "cancel", "cancel_and_resume", "restart", "repeated_interruption"]},
+        "crash_boundary": {"enum": [null, "before_journal", "after_journal", "before_validation", "after_validation", "before_data", "after_data", "before_metadata", "after_metadata", "before_receipt", "after_receipt", "before_echo", "after_echo", "before_readback", "after_readback", "before_commit", "after_commit"]},
+        "durable_prefix": {"type": "array", "uniqueItems": true, "items": {"enum": ["journal", "validation", "data", "metadata", "receipt", "echo", "readback", "commit"]}},
+        "declared_intent": {"enum": ["resume", "exact_rollback", "compensate", "terminal_manual_repair"]},
+        "reverse_descriptor": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/virtualDescriptor"}]},
+        "work_journal_snapshot": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/workJournalSnapshot"}]},
+        "compensation_authorization": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/compensatingPlan"}]},
+        "post_recovery_descriptor": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/virtualDescriptor"}]},
+        "interruption_count": {"type": "integer", "minimum": 0, "maximum": 3},
+        "interruption_budget": {"const": 3}
+      },
+      "allOf": [
+        {"if": {"properties": {"declared_intent": {"const": "exact_rollback"}}}, "then": {"properties": {"reverse_descriptor": {"$ref": "#/$defs/virtualDescriptor"}, "work_journal_snapshot": {"$ref": "#/$defs/workJournalSnapshot"}, "post_recovery_descriptor": {"$ref": "#/$defs/virtualDescriptor"}}}},
+        {"if": {"properties": {"declared_intent": {"const": "compensate"}}}, "then": {"properties": {"compensation_authorization": {"$ref": "#/$defs/compensatingPlan"}, "post_recovery_descriptor": {"$ref": "#/$defs/virtualDescriptor"}}}}
+      ]
+    }
+  }
+}

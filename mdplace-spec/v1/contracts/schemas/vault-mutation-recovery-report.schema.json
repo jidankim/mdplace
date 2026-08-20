@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:vault-mutation-recovery-report:v1",
+  "title": "mdplace Vault Mutation Recovery report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "report_id", "package_series", "release_version", "validator_version", "crash_matrix_ref", "crash_matrix_sha256", "fixture_manifest_ref", "scenario_results", "boundary_mode_results", "boundary_coverage", "interruption_modes", "terminal_manual_repair", "verdict"],
+  "properties": {
+    "$schema": {"const": "../../contracts/schemas/vault-mutation-recovery-report.schema.json"},
+    "schema_id": {"const": "mdplace.vault-mutation-recovery-report/v1"},
+    "report_id": {"type": "string", "pattern": "^vmg-recovery-report:[a-z0-9-]{3,64}$"},
+    "package_series": {"const": "mdplace-spec/v1"},
+    "release_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "validator_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "crash_matrix_ref": {"const": "contracts/vault-mutation-gate/crash-boundary-matrix.json"},
+    "crash_matrix_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "fixture_manifest_ref": {"const": "conformance/manifest.yaml"},
+    "scenario_results": {"type": "array", "minItems": 88, "maxItems": 88, "items": {"$ref": "#/$defs/result"}},
+    "boundary_mode_results": {"type": "array", "minItems": 64, "maxItems": 64, "items": {"$ref": "#/$defs/boundaryModeResult"}},
+    "boundary_coverage": {"type": "array", "minItems": 16, "maxItems": 16, "uniqueItems": true, "items": {"enum": ["before_journal", "after_journal", "before_validation", "after_validation", "before_data", "after_data", "before_metadata", "after_metadata", "before_receipt", "after_receipt", "before_echo", "after_echo", "before_readback", "after_readback", "before_commit", "after_commit"]}},
+    "interruption_modes": {"type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "items": {"enum": ["cancel", "cancel_and_resume", "restart", "repeated_interruption"]}},
+    "terminal_manual_repair": {
+      "type": "object", "additionalProperties": false,
+      "required": ["fixture_id", "unresolved_evidence", "prohibited_inference", "required_authorization"],
+      "properties": {
+        "fixture_id": {"const": "FIX-VMG-REC-007"},
+        "unresolved_evidence": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "prohibited_inference": {"const": "completion and safe reversal remain unknown; success is forbidden"},
+        "required_authorization": {"const": "new explicit vault-owner repair plan bound to the unresolved Descriptor Identity and journal prefix"}
+      }
+    },
+    "verdict": {"const": "pass"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "identity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["device", "inode", "size", "content_sha256"],
+      "properties": {
+        "device": {"type": "integer", "minimum": 0},
+        "inode": {"type": "integer", "minimum": 1},
+        "size": {"type": "integer", "minimum": 0},
+        "content_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "scheduledWork": {
+      "type": "object", "additionalProperties": false,
+      "required": ["work_id", "work_version", "lease_id", "lease_receipt_sha256", "work_journal_head_sequence", "work_journal_head_sha256"],
+      "properties": {
+        "work_id": {"type": "string", "pattern": "^work:[a-z0-9-]{3,64}$"},
+        "work_version": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "lease_id": {"type": "string", "pattern": "^lease:[a-z0-9-]{3,64}$"},
+        "lease_receipt_sha256": {"$ref": "#/$defs/digest"},
+        "work_journal_head_sequence": {"type": "integer", "minimum": 1, "maximum": 500},
+        "work_journal_head_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "boundaryModeResult": {
+      "type": "object", "additionalProperties": false,
+      "required": ["fixture_id", "fixture_sha256", "boundary_id", "mode", "durable_prefix", "observed_evidence", "operation_binding", "receipt_echo_readback", "expected_outcome", "observed_outcome", "terminal_state", "duplicate_effect", "pathname_reopened", "console_success_authoritative", "verdict"],
+      "properties": {
+        "fixture_id": {"type": "string", "pattern": "^FIX-VMG-CRASH-[0-9]{3}$"},
+        "fixture_sha256": {"$ref": "#/$defs/digest"},
+        "boundary_id": {"enum": ["before_journal", "after_journal", "before_validation", "after_validation", "before_data", "after_data", "before_metadata", "after_metadata", "before_receipt", "after_receipt", "before_echo", "after_echo", "before_readback", "after_readback", "before_commit", "after_commit"]},
+        "mode": {"enum": ["cancel", "cancel_and_resume", "restart", "repeated_interruption"]},
+        "durable_prefix": {"type": "array", "uniqueItems": true, "items": {"enum": ["journal", "validation", "data", "metadata", "receipt", "echo", "readback", "commit"]}},
+        "observed_evidence": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["authorized_plan", "ownership", "journal", "descriptor_identity", "data", "metadata", "receipt", "echo", "readback", "commit"]}},
+        "operation_binding": {
+          "type": "object", "additionalProperties": false,
+          "required": ["plan_sha256", "idempotency_key", "ownership_receipt_sha256", "scheduled_work", "expected_precondition_identity", "expected_result_identity", "observed_effect_identity"],
+          "properties": {
+            "plan_sha256": {"$ref": "#/$defs/digest"},
+            "idempotency_key": {"type": "string", "pattern": "^vmg-idem:[a-z0-9-]{3,64}$"},
+            "ownership_receipt_sha256": {"$ref": "#/$defs/digest"},
+            "scheduled_work": {"$ref": "#/$defs/scheduledWork"},
+            "expected_precondition_identity": {"$ref": "#/$defs/identity"},
+            "expected_result_identity": {"$ref": "#/$defs/identity"},
+            "observed_effect_identity": {"$ref": "#/$defs/identity"}
+          }
+        },
+        "receipt_echo_readback": {
+          "type": "object", "additionalProperties": false,
+          "required": ["receipt", "echo", "readback"],
+          "properties": {
+            "receipt": {"enum": ["absent", "present"]},
+            "echo": {"enum": ["absent", "present"]},
+            "readback": {"enum": ["absent", "present"]}
+          }
+        },
+        "expected_outcome": {"enum": ["resume", "exact_rollback", "compensate", "terminal_manual_repair"]},
+        "observed_outcome": {"enum": ["resume", "exact_rollback", "compensate", "terminal_manual_repair"]},
+        "terminal_state": {"enum": ["committed", "rolled_back", "compensated", "terminal_manual_repair"]},
+        "duplicate_effect": {"const": false},
+        "pathname_reopened": {"const": false},
+        "console_success_authoritative": {"const": false},
+        "verdict": {"const": "pass"}
+      }
+    },
+    "result": {
+      "type": "object", "additionalProperties": false,
+      "required": ["fixture_id", "expected_verdict", "observed_verdict", "terminal_state", "recovery_outcome"],
+      "properties": {
+        "fixture_id": {"type": "string", "pattern": "^FIX-VMG-[A-Z][A-Z0-9_]{1,31}-[0-9]{3}$"},
+        "expected_verdict": {"enum": ["pass", "fail"]},
+        "observed_verdict": {"enum": ["pass", "fail"]},
+        "terminal_state": {"enum": ["committed", "denied", "recovery_required", "rolled_back", "compensated", "terminal_manual_repair"]},
+        "recovery_outcome": {"enum": ["not_applicable", "recovered", "denied", "recovery_required", "rolled_back", "compensated", "terminal_manual_repair"]}
+      }
+    }
+  }
+}

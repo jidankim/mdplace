@@ -5,6 +5,12 @@
   "release_version": "1.0.0",
   "decisions": [
     {
+      "decision_id": "DEC-007",
+      "url": "https://github.com/jidankim/mdplace/issues/7#issuecomment-5181591072",
+      "status": "accepted",
+      "use": "input_without_reopening"
+    },
+    {
       "decision_id": "DEC-010",
       "url": "https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153",
       "status": "accepted",
@@ -1754,6 +1760,813 @@
       "evidence_refs": [
         "conformance/evidence/validation-report.json",
         "conformance/evidence/core-processing-policy-recovery-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-VMG-001",
+      "decision_ids": [
+        "DEC-007",
+        "DEC-026"
+      ],
+      "canonical_terms": [
+        "Vault Mutation Gate",
+        "Authorized Mutation Plan",
+        "Descriptor Identity",
+        "Operation Receipt",
+        "Mutation Journal",
+        "Vault Mutation Recovery",
+        "Terminal Manual Repair",
+        "Specification Package"
+      ],
+      "normative_anchors": [
+        "normative/vault-mutation-gate-contract.md#req-vmg-001-stable-requirements-use-canonical-mutation-vocabulary"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/authorized-mutation-plan.schema.json",
+        "contracts/schemas/operation-receipt.schema.json",
+        "contracts/schemas/mutation-journal.schema.json",
+        "contracts/schemas/vault-mutation-scenario.schema.json",
+        "contracts/schemas/vault-mutation-crash-matrix.schema.json",
+        "contracts/schemas/vault-mutation-recovery-report.schema.json",
+        "contracts/transitions/vault-mutation-gate-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-VMG-POS-001",
+        "FIX-VMG-POS-002",
+        "FIX-VMG-BND-001",
+        "FIX-VMG-REC-004",
+        "FIX-VMG-REC-005",
+        "FIX-VMG-REC-006"
+      ],
+      "negative_fixture_ids": [
+        "FIX-VMG-NEG-001",
+        "FIX-VMG-NEG-002",
+        "FIX-VMG-NEG-003",
+        "FIX-VMG-NEG-004",
+        "FIX-VMG-AUTH-001",
+        "FIX-VMG-AUTH-002",
+        "FIX-VMG-ILLEGAL-001",
+        "FIX-VMG-NEG-005",
+        "FIX-VMG-STATE-001",
+        "FIX-VMG-STATE-002",
+        "FIX-VMG-STATE-003",
+        "FIX-VMG-STATE-004",
+        "FIX-VMG-REC-001",
+        "FIX-VMG-REC-002",
+        "FIX-VMG-REC-003",
+        "FIX-VMG-NEG-006",
+        "FIX-VMG-STATE-005",
+        "FIX-VMG-REC-007"
+      ],
+      "acceptance_gate": "Stable REQ-VMG identifiers and all contract artifacts use the canonical mutation vocabulary.",
+      "scope": "vault-mutation-gate",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/vault-mutation-recovery-report.json",
+        "conformance/evidence/traceability-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-VMG-002",
+      "decision_ids": [
+        "DEC-007",
+        "DEC-026"
+      ],
+      "canonical_terms": [
+        "Vault Mutation Gate",
+        "Authorized Mutation Plan",
+        "Descriptor Identity",
+        "Operation Receipt",
+        "Capture Adapter",
+        "Folder Projection",
+        "Placement Outcome"
+      ],
+      "normative_anchors": [
+        "normative/vault-mutation-gate-contract.md#req-vmg-002-the-authorized-mutation-plan-is-closed-and-exact"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/authorized-mutation-plan.schema.json",
+        "contracts/schemas/operation-receipt.schema.json",
+        "contracts/schemas/mutation-journal.schema.json",
+        "contracts/schemas/vault-mutation-scenario.schema.json",
+        "contracts/schemas/vault-mutation-crash-matrix.schema.json",
+        "contracts/schemas/vault-mutation-recovery-report.schema.json",
+        "contracts/transitions/vault-mutation-gate-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-VMG-POS-001",
+        "FIX-VMG-POS-002",
+        "FIX-VMG-BND-001",
+        "FIX-VMG-REC-004",
+        "FIX-VMG-REC-005",
+        "FIX-VMG-REC-006"
+      ],
+      "negative_fixture_ids": [
+        "FIX-VMG-NEG-001",
+        "FIX-VMG-NEG-002",
+        "FIX-VMG-NEG-003",
+        "FIX-VMG-NEG-004",
+        "FIX-VMG-AUTH-001",
+        "FIX-VMG-AUTH-002",
+        "FIX-VMG-ILLEGAL-001",
+        "FIX-VMG-NEG-005",
+        "FIX-VMG-STATE-001",
+        "FIX-VMG-STATE-002",
+        "FIX-VMG-STATE-003",
+        "FIX-VMG-STATE-004",
+        "FIX-VMG-REC-001",
+        "FIX-VMG-REC-002",
+        "FIX-VMG-REC-003",
+        "FIX-VMG-NEG-006",
+        "FIX-VMG-STATE-005",
+        "FIX-VMG-REC-007"
+      ],
+      "acceptance_gate": "The closed Authorized Mutation Plan rejects every missing, unknown, stale, undeclared, unauthorized, unsafe, colliding, or incompatible binding before unsafe mutation.",
+      "scope": "vault-mutation-gate",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/vault-mutation-recovery-report.json",
+        "conformance/evidence/traceability-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-VMG-003",
+      "decision_ids": [
+        "DEC-007",
+        "DEC-026"
+      ],
+      "canonical_terms": [
+        "Vault Mutation Gate",
+        "Authorized Mutation Plan",
+        "Descriptor Identity"
+      ],
+      "normative_anchors": [
+        "normative/vault-mutation-gate-contract.md#req-vmg-003-every-authoritative-read-is-descriptor-relative-and-same-handle"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/authorized-mutation-plan.schema.json",
+        "contracts/schemas/operation-receipt.schema.json",
+        "contracts/schemas/mutation-journal.schema.json",
+        "contracts/schemas/vault-mutation-scenario.schema.json",
+        "contracts/schemas/vault-mutation-crash-matrix.schema.json",
+        "contracts/schemas/vault-mutation-recovery-report.schema.json",
+        "contracts/transitions/vault-mutation-gate-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-VMG-POS-001",
+        "FIX-VMG-POS-002",
+        "FIX-VMG-BND-001",
+        "FIX-VMG-REC-004",
+        "FIX-VMG-REC-005",
+        "FIX-VMG-REC-006"
+      ],
+      "negative_fixture_ids": [
+        "FIX-VMG-NEG-001",
+        "FIX-VMG-NEG-002",
+        "FIX-VMG-NEG-003",
+        "FIX-VMG-NEG-004",
+        "FIX-VMG-AUTH-001",
+        "FIX-VMG-AUTH-002",
+        "FIX-VMG-ILLEGAL-001",
+        "FIX-VMG-NEG-005",
+        "FIX-VMG-STATE-001",
+        "FIX-VMG-STATE-002",
+        "FIX-VMG-STATE-003",
+        "FIX-VMG-STATE-004",
+        "FIX-VMG-REC-001",
+        "FIX-VMG-REC-002",
+        "FIX-VMG-REC-003",
+        "FIX-VMG-NEG-006",
+        "FIX-VMG-STATE-005",
+        "FIX-VMG-REC-007"
+      ],
+      "acceptance_gate": "The executable probe begins from a trusted-root descriptor, uses openat with O_NOFOLLOW for every component, hashes through the same handle, reruns fstat, and never reopens a validated pathname as authority.",
+      "scope": "vault-mutation-gate",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/vault-mutation-recovery-report.json",
+        "conformance/evidence/traceability-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-VMG-004",
+      "decision_ids": [
+        "DEC-007",
+        "DEC-026"
+      ],
+      "canonical_terms": [
+        "Authorized Mutation Plan",
+        "Descriptor Identity",
+        "Operation Receipt",
+        "Vault Mutation Recovery"
+      ],
+      "normative_anchors": [
+        "normative/vault-mutation-gate-contract.md#req-vmg-004-preconditions-receipt-echo-and-readback-bind-identical-identity"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/authorized-mutation-plan.schema.json",
+        "contracts/schemas/operation-receipt.schema.json",
+        "contracts/schemas/mutation-journal.schema.json",
+        "contracts/schemas/vault-mutation-scenario.schema.json",
+        "contracts/schemas/vault-mutation-crash-matrix.schema.json",
+        "contracts/schemas/vault-mutation-recovery-report.schema.json",
+        "contracts/transitions/vault-mutation-gate-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-VMG-POS-001",
+        "FIX-VMG-POS-002",
+        "FIX-VMG-BND-001",
+        "FIX-VMG-REC-004",
+        "FIX-VMG-REC-005",
+        "FIX-VMG-REC-006"
+      ],
+      "negative_fixture_ids": [
+        "FIX-VMG-NEG-001",
+        "FIX-VMG-NEG-002",
+        "FIX-VMG-NEG-003",
+        "FIX-VMG-NEG-004",
+        "FIX-VMG-AUTH-001",
+        "FIX-VMG-AUTH-002",
+        "FIX-VMG-ILLEGAL-001",
+        "FIX-VMG-NEG-005",
+        "FIX-VMG-STATE-001",
+        "FIX-VMG-STATE-002",
+        "FIX-VMG-STATE-003",
+        "FIX-VMG-STATE-004",
+        "FIX-VMG-REC-001",
+        "FIX-VMG-REC-002",
+        "FIX-VMG-REC-003",
+        "FIX-VMG-NEG-006",
+        "FIX-VMG-STATE-005",
+        "FIX-VMG-REC-007"
+      ],
+      "acceptance_gate": "The precondition, Operation Receipt echo, and retained-descriptor readback bind the identical device, inode, size, and hash tuple; every mismatch is non-success.",
+      "scope": "vault-mutation-gate",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/vault-mutation-recovery-report.json",
+        "conformance/evidence/traceability-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-VMG-005",
+      "decision_ids": [
+        "DEC-007",
+        "DEC-026"
+      ],
+      "canonical_terms": [
+        "Vault Mutation Gate",
+        "Authorized Mutation Plan",
+        "Mutation Journal",
+        "Operation Receipt",
+        "Exclusive Writer Lock",
+        "mdplace Agent"
+      ],
+      "normative_anchors": [
+        "normative/vault-mutation-gate-contract.md#req-vmg-005-exclusive-ownership-and-durability-precede-effects"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/authorized-mutation-plan.schema.json",
+        "contracts/schemas/operation-receipt.schema.json",
+        "contracts/schemas/mutation-journal.schema.json",
+        "contracts/schemas/vault-mutation-scenario.schema.json",
+        "contracts/schemas/vault-mutation-crash-matrix.schema.json",
+        "contracts/schemas/vault-mutation-recovery-report.schema.json",
+        "contracts/transitions/vault-mutation-gate-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-VMG-POS-001",
+        "FIX-VMG-POS-002",
+        "FIX-VMG-BND-001",
+        "FIX-VMG-REC-004",
+        "FIX-VMG-REC-005",
+        "FIX-VMG-REC-006"
+      ],
+      "negative_fixture_ids": [
+        "FIX-VMG-NEG-001",
+        "FIX-VMG-NEG-002",
+        "FIX-VMG-NEG-003",
+        "FIX-VMG-NEG-004",
+        "FIX-VMG-AUTH-001",
+        "FIX-VMG-AUTH-002",
+        "FIX-VMG-ILLEGAL-001",
+        "FIX-VMG-NEG-005",
+        "FIX-VMG-STATE-001",
+        "FIX-VMG-STATE-002",
+        "FIX-VMG-STATE-003",
+        "FIX-VMG-STATE-004",
+        "FIX-VMG-REC-001",
+        "FIX-VMG-REC-002",
+        "FIX-VMG-REC-003",
+        "FIX-VMG-NEG-006",
+        "FIX-VMG-STATE-005",
+        "FIX-VMG-REC-007"
+      ],
+      "acceptance_gate": "Exclusive ownership and the complete journal, data, metadata, receipt, echo, readback, and commit sync order are validator-enforced before success.",
+      "scope": "vault-mutation-gate",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/vault-mutation-recovery-report.json",
+        "conformance/evidence/traceability-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-VMG-006",
+      "decision_ids": [
+        "DEC-007",
+        "DEC-026"
+      ],
+      "canonical_terms": [
+        "Vault Mutation Gate",
+        "Authorized Mutation Plan",
+        "Mutation Journal",
+        "Operation Receipt",
+        "Vault Mutation Recovery"
+      ],
+      "normative_anchors": [
+        "normative/vault-mutation-gate-contract.md#req-vmg-006-mutation-lifecycle-and-idempotency-are-complete"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/authorized-mutation-plan.schema.json",
+        "contracts/schemas/operation-receipt.schema.json",
+        "contracts/schemas/mutation-journal.schema.json",
+        "contracts/schemas/vault-mutation-scenario.schema.json",
+        "contracts/schemas/vault-mutation-crash-matrix.schema.json",
+        "contracts/schemas/vault-mutation-recovery-report.schema.json",
+        "contracts/transitions/vault-mutation-gate-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-VMG-POS-001",
+        "FIX-VMG-POS-002",
+        "FIX-VMG-BND-001",
+        "FIX-VMG-REC-004",
+        "FIX-VMG-REC-005",
+        "FIX-VMG-REC-006"
+      ],
+      "negative_fixture_ids": [
+        "FIX-VMG-NEG-001",
+        "FIX-VMG-NEG-002",
+        "FIX-VMG-NEG-003",
+        "FIX-VMG-NEG-004",
+        "FIX-VMG-AUTH-001",
+        "FIX-VMG-AUTH-002",
+        "FIX-VMG-ILLEGAL-001",
+        "FIX-VMG-NEG-005",
+        "FIX-VMG-STATE-001",
+        "FIX-VMG-STATE-002",
+        "FIX-VMG-STATE-003",
+        "FIX-VMG-STATE-004",
+        "FIX-VMG-REC-001",
+        "FIX-VMG-REC-002",
+        "FIX-VMG-REC-003",
+        "FIX-VMG-NEG-006",
+        "FIX-VMG-STATE-005",
+        "FIX-VMG-REC-007"
+      ],
+      "acceptance_gate": "The complete state-command matrix covers every legal and illegal transition, and compatible retries never duplicate an effect.",
+      "scope": "vault-mutation-gate",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/vault-mutation-recovery-report.json",
+        "conformance/evidence/traceability-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-VMG-007",
+      "decision_ids": [
+        "DEC-007",
+        "DEC-026"
+      ],
+      "canonical_terms": [
+        "Vault Mutation Recovery",
+        "Authorized Mutation Plan",
+        "Mutation Journal",
+        "Operation Receipt",
+        "Descriptor Identity",
+        "Terminal Manual Repair"
+      ],
+      "normative_anchors": [
+        "normative/vault-mutation-gate-contract.md#req-vmg-007-recovery-is-deterministic-at-every-crash-boundary"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/authorized-mutation-plan.schema.json",
+        "contracts/schemas/operation-receipt.schema.json",
+        "contracts/schemas/mutation-journal.schema.json",
+        "contracts/schemas/vault-mutation-scenario.schema.json",
+        "contracts/schemas/vault-mutation-crash-matrix.schema.json",
+        "contracts/schemas/vault-mutation-recovery-report.schema.json",
+        "contracts/transitions/vault-mutation-gate-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-VMG-POS-001",
+        "FIX-VMG-POS-002",
+        "FIX-VMG-BND-001",
+        "FIX-VMG-REC-004",
+        "FIX-VMG-REC-005",
+        "FIX-VMG-REC-006",
+        "FIX-VMG-CRASH-001",
+        "FIX-VMG-CRASH-002",
+        "FIX-VMG-CRASH-003",
+        "FIX-VMG-CRASH-005",
+        "FIX-VMG-CRASH-006",
+        "FIX-VMG-CRASH-007",
+        "FIX-VMG-CRASH-009",
+        "FIX-VMG-CRASH-010",
+        "FIX-VMG-CRASH-011",
+        "FIX-VMG-CRASH-013",
+        "FIX-VMG-CRASH-014",
+        "FIX-VMG-CRASH-015",
+        "FIX-VMG-CRASH-017",
+        "FIX-VMG-CRASH-018",
+        "FIX-VMG-CRASH-019",
+        "FIX-VMG-CRASH-021",
+        "FIX-VMG-CRASH-022",
+        "FIX-VMG-CRASH-023",
+        "FIX-VMG-CRASH-025",
+        "FIX-VMG-CRASH-026",
+        "FIX-VMG-CRASH-027",
+        "FIX-VMG-CRASH-029",
+        "FIX-VMG-CRASH-030",
+        "FIX-VMG-CRASH-031",
+        "FIX-VMG-CRASH-033",
+        "FIX-VMG-CRASH-034",
+        "FIX-VMG-CRASH-035",
+        "FIX-VMG-CRASH-037",
+        "FIX-VMG-CRASH-038",
+        "FIX-VMG-CRASH-039",
+        "FIX-VMG-CRASH-041",
+        "FIX-VMG-CRASH-042",
+        "FIX-VMG-CRASH-043",
+        "FIX-VMG-CRASH-045",
+        "FIX-VMG-CRASH-046",
+        "FIX-VMG-CRASH-047",
+        "FIX-VMG-CRASH-049",
+        "FIX-VMG-CRASH-050",
+        "FIX-VMG-CRASH-051",
+        "FIX-VMG-CRASH-053",
+        "FIX-VMG-CRASH-054",
+        "FIX-VMG-CRASH-055",
+        "FIX-VMG-CRASH-057",
+        "FIX-VMG-CRASH-058",
+        "FIX-VMG-CRASH-059",
+        "FIX-VMG-CRASH-061",
+        "FIX-VMG-CRASH-062",
+        "FIX-VMG-CRASH-063",
+        "FIX-VMG-CRASH-064"
+      ],
+      "negative_fixture_ids": [
+        "FIX-VMG-NEG-001",
+        "FIX-VMG-NEG-002",
+        "FIX-VMG-NEG-003",
+        "FIX-VMG-NEG-004",
+        "FIX-VMG-AUTH-001",
+        "FIX-VMG-AUTH-002",
+        "FIX-VMG-ILLEGAL-001",
+        "FIX-VMG-NEG-005",
+        "FIX-VMG-STATE-001",
+        "FIX-VMG-STATE-002",
+        "FIX-VMG-STATE-003",
+        "FIX-VMG-STATE-004",
+        "FIX-VMG-REC-001",
+        "FIX-VMG-REC-002",
+        "FIX-VMG-REC-003",
+        "FIX-VMG-NEG-006",
+        "FIX-VMG-STATE-005",
+        "FIX-VMG-REC-007",
+        "FIX-VMG-CRASH-004",
+        "FIX-VMG-CRASH-008",
+        "FIX-VMG-CRASH-012",
+        "FIX-VMG-CRASH-016",
+        "FIX-VMG-CRASH-020",
+        "FIX-VMG-CRASH-024",
+        "FIX-VMG-CRASH-028",
+        "FIX-VMG-CRASH-032",
+        "FIX-VMG-CRASH-036",
+        "FIX-VMG-CRASH-040",
+        "FIX-VMG-CRASH-044",
+        "FIX-VMG-CRASH-048",
+        "FIX-VMG-CRASH-052",
+        "FIX-VMG-CRASH-056",
+        "FIX-VMG-CRASH-060"
+      ],
+      "acceptance_gate": "All sixteen before/after crash boundaries and four interruption modes deterministically resume, roll back, compensate, or halt in Terminal Manual Repair.",
+      "scope": "vault-mutation-gate",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/vault-mutation-recovery-report.json",
+        "conformance/evidence/traceability-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-VMG-008",
+      "decision_ids": [
+        "DEC-007",
+        "DEC-026"
+      ],
+      "canonical_terms": [
+        "Conformance Fixture",
+        "Vault Mutation Gate",
+        "Authorized Mutation Plan",
+        "Descriptor Identity",
+        "Operation Receipt"
+      ],
+      "normative_anchors": [
+        "normative/vault-mutation-gate-contract.md#req-vmg-008-public-fixtures-prove-safe-and-unsafe-boundaries"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/authorized-mutation-plan.schema.json",
+        "contracts/schemas/operation-receipt.schema.json",
+        "contracts/schemas/mutation-journal.schema.json",
+        "contracts/schemas/vault-mutation-scenario.schema.json",
+        "contracts/schemas/vault-mutation-crash-matrix.schema.json",
+        "contracts/schemas/vault-mutation-recovery-report.schema.json",
+        "contracts/transitions/vault-mutation-gate-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-VMG-POS-001",
+        "FIX-VMG-POS-002",
+        "FIX-VMG-BND-001",
+        "FIX-VMG-REC-004",
+        "FIX-VMG-REC-005",
+        "FIX-VMG-REC-006",
+        "FIX-VMG-CRASH-001",
+        "FIX-VMG-CRASH-002",
+        "FIX-VMG-CRASH-003",
+        "FIX-VMG-CRASH-005",
+        "FIX-VMG-CRASH-006",
+        "FIX-VMG-CRASH-007",
+        "FIX-VMG-CRASH-009",
+        "FIX-VMG-CRASH-010",
+        "FIX-VMG-CRASH-011",
+        "FIX-VMG-CRASH-013",
+        "FIX-VMG-CRASH-014",
+        "FIX-VMG-CRASH-015",
+        "FIX-VMG-CRASH-017",
+        "FIX-VMG-CRASH-018",
+        "FIX-VMG-CRASH-019",
+        "FIX-VMG-CRASH-021",
+        "FIX-VMG-CRASH-022",
+        "FIX-VMG-CRASH-023",
+        "FIX-VMG-CRASH-025",
+        "FIX-VMG-CRASH-026",
+        "FIX-VMG-CRASH-027",
+        "FIX-VMG-CRASH-029",
+        "FIX-VMG-CRASH-030",
+        "FIX-VMG-CRASH-031",
+        "FIX-VMG-CRASH-033",
+        "FIX-VMG-CRASH-034",
+        "FIX-VMG-CRASH-035",
+        "FIX-VMG-CRASH-037",
+        "FIX-VMG-CRASH-038",
+        "FIX-VMG-CRASH-039",
+        "FIX-VMG-CRASH-041",
+        "FIX-VMG-CRASH-042",
+        "FIX-VMG-CRASH-043",
+        "FIX-VMG-CRASH-045",
+        "FIX-VMG-CRASH-046",
+        "FIX-VMG-CRASH-047",
+        "FIX-VMG-CRASH-049",
+        "FIX-VMG-CRASH-050",
+        "FIX-VMG-CRASH-051",
+        "FIX-VMG-CRASH-053",
+        "FIX-VMG-CRASH-054",
+        "FIX-VMG-CRASH-055",
+        "FIX-VMG-CRASH-057",
+        "FIX-VMG-CRASH-058",
+        "FIX-VMG-CRASH-059",
+        "FIX-VMG-CRASH-061",
+        "FIX-VMG-CRASH-062",
+        "FIX-VMG-CRASH-063",
+        "FIX-VMG-CRASH-064"
+      ],
+      "negative_fixture_ids": [
+        "FIX-VMG-NEG-001",
+        "FIX-VMG-NEG-002",
+        "FIX-VMG-NEG-003",
+        "FIX-VMG-NEG-004",
+        "FIX-VMG-AUTH-001",
+        "FIX-VMG-AUTH-002",
+        "FIX-VMG-ILLEGAL-001",
+        "FIX-VMG-NEG-005",
+        "FIX-VMG-STATE-001",
+        "FIX-VMG-STATE-002",
+        "FIX-VMG-STATE-003",
+        "FIX-VMG-STATE-004",
+        "FIX-VMG-REC-001",
+        "FIX-VMG-REC-002",
+        "FIX-VMG-REC-003",
+        "FIX-VMG-NEG-006",
+        "FIX-VMG-STATE-005",
+        "FIX-VMG-REC-007",
+        "FIX-VMG-CRASH-004",
+        "FIX-VMG-CRASH-008",
+        "FIX-VMG-CRASH-012",
+        "FIX-VMG-CRASH-016",
+        "FIX-VMG-CRASH-020",
+        "FIX-VMG-CRASH-024",
+        "FIX-VMG-CRASH-028",
+        "FIX-VMG-CRASH-032",
+        "FIX-VMG-CRASH-036",
+        "FIX-VMG-CRASH-040",
+        "FIX-VMG-CRASH-044",
+        "FIX-VMG-CRASH-048",
+        "FIX-VMG-CRASH-052",
+        "FIX-VMG-CRASH-056",
+        "FIX-VMG-CRASH-060"
+      ],
+      "acceptance_gate": "Exactly 88 public fixtures include 64 boundary-mode cases plus named success, denial, exact, stale, authority, illegal-transition, and recovery cases with no unsafe filesystem effect.",
+      "scope": "vault-mutation-gate",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/vault-mutation-recovery-report.json",
+        "conformance/evidence/traceability-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-VMG-009",
+      "decision_ids": [
+        "DEC-007",
+        "DEC-026"
+      ],
+      "canonical_terms": [
+        "Traceability Record",
+        "Conformance Fixture",
+        "Specification Package",
+        "Vault Mutation Recovery"
+      ],
+      "normative_anchors": [
+        "normative/vault-mutation-gate-contract.md#req-vmg-009-traceability-and-machine-evidence-are-complete"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/authorized-mutation-plan.schema.json",
+        "contracts/schemas/operation-receipt.schema.json",
+        "contracts/schemas/mutation-journal.schema.json",
+        "contracts/schemas/vault-mutation-scenario.schema.json",
+        "contracts/schemas/vault-mutation-crash-matrix.schema.json",
+        "contracts/schemas/vault-mutation-recovery-report.schema.json",
+        "contracts/transitions/vault-mutation-gate-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-VMG-POS-001",
+        "FIX-VMG-POS-002",
+        "FIX-VMG-BND-001",
+        "FIX-VMG-REC-004",
+        "FIX-VMG-REC-005",
+        "FIX-VMG-REC-006",
+        "FIX-VMG-CRASH-001",
+        "FIX-VMG-CRASH-002",
+        "FIX-VMG-CRASH-003",
+        "FIX-VMG-CRASH-005",
+        "FIX-VMG-CRASH-006",
+        "FIX-VMG-CRASH-007",
+        "FIX-VMG-CRASH-009",
+        "FIX-VMG-CRASH-010",
+        "FIX-VMG-CRASH-011",
+        "FIX-VMG-CRASH-013",
+        "FIX-VMG-CRASH-014",
+        "FIX-VMG-CRASH-015",
+        "FIX-VMG-CRASH-017",
+        "FIX-VMG-CRASH-018",
+        "FIX-VMG-CRASH-019",
+        "FIX-VMG-CRASH-021",
+        "FIX-VMG-CRASH-022",
+        "FIX-VMG-CRASH-023",
+        "FIX-VMG-CRASH-025",
+        "FIX-VMG-CRASH-026",
+        "FIX-VMG-CRASH-027",
+        "FIX-VMG-CRASH-029",
+        "FIX-VMG-CRASH-030",
+        "FIX-VMG-CRASH-031",
+        "FIX-VMG-CRASH-033",
+        "FIX-VMG-CRASH-034",
+        "FIX-VMG-CRASH-035",
+        "FIX-VMG-CRASH-037",
+        "FIX-VMG-CRASH-038",
+        "FIX-VMG-CRASH-039",
+        "FIX-VMG-CRASH-041",
+        "FIX-VMG-CRASH-042",
+        "FIX-VMG-CRASH-043",
+        "FIX-VMG-CRASH-045",
+        "FIX-VMG-CRASH-046",
+        "FIX-VMG-CRASH-047",
+        "FIX-VMG-CRASH-049",
+        "FIX-VMG-CRASH-050",
+        "FIX-VMG-CRASH-051",
+        "FIX-VMG-CRASH-053",
+        "FIX-VMG-CRASH-054",
+        "FIX-VMG-CRASH-055",
+        "FIX-VMG-CRASH-057",
+        "FIX-VMG-CRASH-058",
+        "FIX-VMG-CRASH-059",
+        "FIX-VMG-CRASH-061",
+        "FIX-VMG-CRASH-062",
+        "FIX-VMG-CRASH-063",
+        "FIX-VMG-CRASH-064"
+      ],
+      "negative_fixture_ids": [
+        "FIX-VMG-NEG-001",
+        "FIX-VMG-NEG-002",
+        "FIX-VMG-NEG-003",
+        "FIX-VMG-NEG-004",
+        "FIX-VMG-AUTH-001",
+        "FIX-VMG-AUTH-002",
+        "FIX-VMG-ILLEGAL-001",
+        "FIX-VMG-NEG-005",
+        "FIX-VMG-STATE-001",
+        "FIX-VMG-STATE-002",
+        "FIX-VMG-STATE-003",
+        "FIX-VMG-STATE-004",
+        "FIX-VMG-REC-001",
+        "FIX-VMG-REC-002",
+        "FIX-VMG-REC-003",
+        "FIX-VMG-NEG-006",
+        "FIX-VMG-STATE-005",
+        "FIX-VMG-REC-007",
+        "FIX-VMG-CRASH-004",
+        "FIX-VMG-CRASH-008",
+        "FIX-VMG-CRASH-012",
+        "FIX-VMG-CRASH-016",
+        "FIX-VMG-CRASH-020",
+        "FIX-VMG-CRASH-024",
+        "FIX-VMG-CRASH-028",
+        "FIX-VMG-CRASH-032",
+        "FIX-VMG-CRASH-036",
+        "FIX-VMG-CRASH-040",
+        "FIX-VMG-CRASH-044",
+        "FIX-VMG-CRASH-048",
+        "FIX-VMG-CRASH-052",
+        "FIX-VMG-CRASH-056",
+        "FIX-VMG-CRASH-060"
+      ],
+      "acceptance_gate": "Every requirement binds both accepted decisions, contract artifacts, positive and negative fixtures, acceptance gates, and digest-bound machine recovery evidence.",
+      "scope": "vault-mutation-gate",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/vault-mutation-recovery-report.json",
+        "conformance/evidence/traceability-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-VMG-010",
+      "decision_ids": [
+        "DEC-007",
+        "DEC-026"
+      ],
+      "canonical_terms": [
+        "Folder Projection",
+        "Vault Mutation Gate",
+        "Capture Adapter",
+        "Semantic Kernel",
+        "Specification Package",
+        "Normative Material",
+        "Conformance Fixture"
+      ],
+      "normative_anchors": [
+        "normative/vault-mutation-gate-contract.md#req-vmg-010-accepted-decisions-remain-inputs-and-artifacts-remain-non-production"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/authorized-mutation-plan.schema.json",
+        "contracts/schemas/operation-receipt.schema.json",
+        "contracts/schemas/mutation-journal.schema.json",
+        "contracts/schemas/vault-mutation-scenario.schema.json",
+        "contracts/schemas/vault-mutation-crash-matrix.schema.json",
+        "contracts/schemas/vault-mutation-recovery-report.schema.json",
+        "contracts/transitions/vault-mutation-gate-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-VMG-POS-001",
+        "FIX-VMG-POS-002",
+        "FIX-VMG-BND-001",
+        "FIX-VMG-REC-004",
+        "FIX-VMG-REC-005",
+        "FIX-VMG-REC-006"
+      ],
+      "negative_fixture_ids": [
+        "FIX-VMG-NEG-001",
+        "FIX-VMG-NEG-002",
+        "FIX-VMG-NEG-003",
+        "FIX-VMG-NEG-004",
+        "FIX-VMG-AUTH-001",
+        "FIX-VMG-AUTH-002",
+        "FIX-VMG-ILLEGAL-001",
+        "FIX-VMG-NEG-005",
+        "FIX-VMG-STATE-001",
+        "FIX-VMG-STATE-002",
+        "FIX-VMG-STATE-003",
+        "FIX-VMG-STATE-004",
+        "FIX-VMG-REC-001",
+        "FIX-VMG-REC-002",
+        "FIX-VMG-REC-003",
+        "FIX-VMG-NEG-006",
+        "FIX-VMG-STATE-005",
+        "FIX-VMG-REC-007"
+      ],
+      "acceptance_gate": "Every requirement preserves issue #7 and issue #26 as input_without_reopening, while every added artifact remains specification or conformance material and performs no real vault mutation.",
+      "scope": "vault-mutation-gate",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/vault-mutation-recovery-report.json",
+        "conformance/evidence/traceability-report.json"
       ]
     }
   ]

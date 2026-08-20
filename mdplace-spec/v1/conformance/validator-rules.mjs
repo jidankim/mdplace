@@ -79,6 +79,16 @@ const authorityByCommand = new Map([
   ['invalidate_source_profile', {roles: ['capture_adapter'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
   ['recover_unapproved_source_profile', {roles: ['foreground_recovery'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
   ['recover_approved_source_profile', {roles: ['foreground_recovery'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['prepare', {roles: ['vault_mutation_gate'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['validate', {roles: ['vault_mutation_gate'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['mutate', {roles: ['vault_mutation_gate'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['record_receipt', {roles: ['vault_mutation_gate'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['verify_readback', {roles: ['vault_mutation_gate'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['commit', {roles: ['vault_mutation_gate'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['resume', {roles: ['foreground_recovery'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['rollback', {roles: ['foreground_recovery'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['compensate', {roles: ['foreground_recovery'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['halt_manual_repair', {roles: ['foreground_recovery'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
 ]);
 
 const conformanceExecutables = new Set([
@@ -174,6 +184,12 @@ const conformanceExecutables = new Set([
   'conformance/validator-semantic-kernel-cases.mjs',
   'conformance/validator-semantic-kernel-boundary-cases.mjs',
   'conformance/validator-semantic-kernel-review-cases.mjs',
+  'conformance/vault-mutation-gate-checks.mjs',
+  'conformance/vault-mutation-digests.mjs',
+  'conformance/vault-mutation-gate-observer.mjs',
+  'conformance/vault-mutation-virtual-vault.mjs',
+  'conformance/validator-vault-mutation-gate-cases.mjs',
+  'conformance/vault-mutation-recovery-checks.mjs',
 ]);
 
 export function authorityMatches(command, actual) {

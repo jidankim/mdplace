@@ -3572,6 +3572,1934 @@
         "terminal_state": true,
         "illegal_transition": false
       }
+    },
+    {
+      "fixture_id": "FIX-VMG-REC-007",
+      "path": "scenarios/vault-mutation-gate/all-boundary-repeated-interruption-manual-repair.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-001",
+        "REQ-VMG-002",
+        "REQ-VMG-003",
+        "REQ-VMG-004",
+        "REQ-VMG-005",
+        "REQ-VMG-006",
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009",
+        "REQ-VMG-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-REC-004",
+      "path": "scenarios/vault-mutation-gate/cancel-and-resume-at-most-once.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-001",
+        "REQ-VMG-002",
+        "REQ-VMG-003",
+        "REQ-VMG-004",
+        "REQ-VMG-005",
+        "REQ-VMG-006",
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009",
+        "REQ-VMG-010"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-POS-001",
+      "path": "scenarios/vault-mutation-gate/capture-promotion-commits.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-VMG-001",
+        "REQ-VMG-002",
+        "REQ-VMG-003",
+        "REQ-VMG-004",
+        "REQ-VMG-005",
+        "REQ-VMG-006",
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009",
+        "REQ-VMG-010"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-NEG-004",
+      "path": "scenarios/vault-mutation-gate/collision-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-VMG-001",
+        "REQ-VMG-002",
+        "REQ-VMG-003",
+        "REQ-VMG-004",
+        "REQ-VMG-005",
+        "REQ-VMG-006",
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009",
+        "REQ-VMG-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-STATE-003",
+      "path": "scenarios/vault-mutation-gate/descriptor-identity-drift-denied.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-VMG-001",
+        "REQ-VMG-002",
+        "REQ-VMG-003",
+        "REQ-VMG-004",
+        "REQ-VMG-005",
+        "REQ-VMG-006",
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009",
+        "REQ-VMG-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-STATE-004",
+      "path": "scenarios/vault-mutation-gate/descriptor-size-drift-denied.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-VMG-001",
+        "REQ-VMG-002",
+        "REQ-VMG-003",
+        "REQ-VMG-004",
+        "REQ-VMG-005",
+        "REQ-VMG-006",
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009",
+        "REQ-VMG-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-BND-001",
+      "path": "scenarios/vault-mutation-gate/exact-descriptor-and-idempotency-boundary.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-VMG-001",
+        "REQ-VMG-002",
+        "REQ-VMG-003",
+        "REQ-VMG-004",
+        "REQ-VMG-005",
+        "REQ-VMG-006",
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009",
+        "REQ-VMG-010"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-POS-002",
+      "path": "scenarios/vault-mutation-gate/folder-projection-commits.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-VMG-001",
+        "REQ-VMG-002",
+        "REQ-VMG-003",
+        "REQ-VMG-004",
+        "REQ-VMG-005",
+        "REQ-VMG-006",
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009",
+        "REQ-VMG-010"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-STATE-005",
+      "path": "scenarios/vault-mutation-gate/idempotency-conflict-denied.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-VMG-001",
+        "REQ-VMG-002",
+        "REQ-VMG-003",
+        "REQ-VMG-004",
+        "REQ-VMG-005",
+        "REQ-VMG-006",
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009",
+        "REQ-VMG-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-REC-001",
+      "path": "scenarios/vault-mutation-gate/incomplete-journal-requires-recovery.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-001",
+        "REQ-VMG-002",
+        "REQ-VMG-003",
+        "REQ-VMG-004",
+        "REQ-VMG-005",
+        "REQ-VMG-006",
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009",
+        "REQ-VMG-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-NEG-005",
+      "path": "scenarios/vault-mutation-gate/malformed-plan-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-VMG-001",
+        "REQ-VMG-002",
+        "REQ-VMG-003",
+        "REQ-VMG-004",
+        "REQ-VMG-005",
+        "REQ-VMG-006",
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009",
+        "REQ-VMG-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-NEG-006",
+      "path": "scenarios/vault-mutation-gate/misleading-success-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-VMG-001",
+        "REQ-VMG-002",
+        "REQ-VMG-003",
+        "REQ-VMG-004",
+        "REQ-VMG-005",
+        "REQ-VMG-006",
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009",
+        "REQ-VMG-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-AUTH-001",
+      "path": "scenarios/vault-mutation-gate/ownership-drift-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-VMG-001",
+        "REQ-VMG-002",
+        "REQ-VMG-003",
+        "REQ-VMG-004",
+        "REQ-VMG-005",
+        "REQ-VMG-006",
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009",
+        "REQ-VMG-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-NEG-002",
+      "path": "scenarios/vault-mutation-gate/pathname-swap-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-VMG-001",
+        "REQ-VMG-002",
+        "REQ-VMG-003",
+        "REQ-VMG-004",
+        "REQ-VMG-005",
+        "REQ-VMG-006",
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009",
+        "REQ-VMG-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-REC-003",
+      "path": "scenarios/vault-mutation-gate/readback-mismatch-requires-recovery.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-001",
+        "REQ-VMG-002",
+        "REQ-VMG-003",
+        "REQ-VMG-004",
+        "REQ-VMG-005",
+        "REQ-VMG-006",
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009",
+        "REQ-VMG-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-REC-002",
+      "path": "scenarios/vault-mutation-gate/receipt-echo-mismatch-requires-recovery.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-001",
+        "REQ-VMG-002",
+        "REQ-VMG-003",
+        "REQ-VMG-004",
+        "REQ-VMG-005",
+        "REQ-VMG-006",
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009",
+        "REQ-VMG-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-REC-005",
+      "path": "scenarios/vault-mutation-gate/restart-exact-rollback.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-001",
+        "REQ-VMG-002",
+        "REQ-VMG-003",
+        "REQ-VMG-004",
+        "REQ-VMG-005",
+        "REQ-VMG-006",
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009",
+        "REQ-VMG-010"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-REC-006",
+      "path": "scenarios/vault-mutation-gate/restart-explicit-compensation.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-001",
+        "REQ-VMG-002",
+        "REQ-VMG-003",
+        "REQ-VMG-004",
+        "REQ-VMG-005",
+        "REQ-VMG-006",
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009",
+        "REQ-VMG-010"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-STATE-002",
+      "path": "scenarios/vault-mutation-gate/stale-content-hash-denied.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-VMG-001",
+        "REQ-VMG-002",
+        "REQ-VMG-003",
+        "REQ-VMG-004",
+        "REQ-VMG-005",
+        "REQ-VMG-006",
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009",
+        "REQ-VMG-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-STATE-001",
+      "path": "scenarios/vault-mutation-gate/stale-plan-denied.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-VMG-001",
+        "REQ-VMG-002",
+        "REQ-VMG-003",
+        "REQ-VMG-004",
+        "REQ-VMG-005",
+        "REQ-VMG-006",
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009",
+        "REQ-VMG-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-NEG-001",
+      "path": "scenarios/vault-mutation-gate/symlink-swap-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-VMG-001",
+        "REQ-VMG-002",
+        "REQ-VMG-003",
+        "REQ-VMG-004",
+        "REQ-VMG-005",
+        "REQ-VMG-006",
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009",
+        "REQ-VMG-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-NEG-003",
+      "path": "scenarios/vault-mutation-gate/traversal-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-VMG-001",
+        "REQ-VMG-002",
+        "REQ-VMG-003",
+        "REQ-VMG-004",
+        "REQ-VMG-005",
+        "REQ-VMG-006",
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009",
+        "REQ-VMG-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-AUTH-002",
+      "path": "scenarios/vault-mutation-gate/unauthorized-caller-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-VMG-001",
+        "REQ-VMG-002",
+        "REQ-VMG-003",
+        "REQ-VMG-004",
+        "REQ-VMG-005",
+        "REQ-VMG-006",
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009",
+        "REQ-VMG-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-ILLEGAL-001",
+      "path": "scenarios/vault-mutation-gate/undeclared-operation-denied.json",
+      "category": "illegal_transition",
+      "requirement_ids": [
+        "REQ-VMG-001",
+        "REQ-VMG-002",
+        "REQ-VMG-003",
+        "REQ-VMG-004",
+        "REQ-VMG-005",
+        "REQ-VMG-006",
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009",
+        "REQ-VMG-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": true
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-001",
+      "path": "scenarios/vault-mutation-gate/before-journal-cancel.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-002",
+      "path": "scenarios/vault-mutation-gate/before-journal-cancel-and-resume.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-003",
+      "path": "scenarios/vault-mutation-gate/before-journal-restart.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-004",
+      "path": "scenarios/vault-mutation-gate/before-journal-repeated-interruption.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-005",
+      "path": "scenarios/vault-mutation-gate/after-journal-cancel.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-006",
+      "path": "scenarios/vault-mutation-gate/after-journal-cancel-and-resume.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-007",
+      "path": "scenarios/vault-mutation-gate/after-journal-restart.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-008",
+      "path": "scenarios/vault-mutation-gate/after-journal-repeated-interruption.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-009",
+      "path": "scenarios/vault-mutation-gate/before-validation-cancel.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-010",
+      "path": "scenarios/vault-mutation-gate/before-validation-cancel-and-resume.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-011",
+      "path": "scenarios/vault-mutation-gate/before-validation-restart.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-012",
+      "path": "scenarios/vault-mutation-gate/before-validation-repeated-interruption.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-013",
+      "path": "scenarios/vault-mutation-gate/after-validation-cancel.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-014",
+      "path": "scenarios/vault-mutation-gate/after-validation-cancel-and-resume.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-015",
+      "path": "scenarios/vault-mutation-gate/after-validation-restart.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-016",
+      "path": "scenarios/vault-mutation-gate/after-validation-repeated-interruption.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-017",
+      "path": "scenarios/vault-mutation-gate/before-data-cancel.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-018",
+      "path": "scenarios/vault-mutation-gate/before-data-cancel-and-resume.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-019",
+      "path": "scenarios/vault-mutation-gate/before-data-restart.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-020",
+      "path": "scenarios/vault-mutation-gate/before-data-repeated-interruption.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-021",
+      "path": "scenarios/vault-mutation-gate/after-data-cancel.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-022",
+      "path": "scenarios/vault-mutation-gate/after-data-cancel-and-resume.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-023",
+      "path": "scenarios/vault-mutation-gate/after-data-restart.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-024",
+      "path": "scenarios/vault-mutation-gate/after-data-repeated-interruption.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-025",
+      "path": "scenarios/vault-mutation-gate/before-metadata-cancel.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-026",
+      "path": "scenarios/vault-mutation-gate/before-metadata-cancel-and-resume.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-027",
+      "path": "scenarios/vault-mutation-gate/before-metadata-restart.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-028",
+      "path": "scenarios/vault-mutation-gate/before-metadata-repeated-interruption.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-029",
+      "path": "scenarios/vault-mutation-gate/after-metadata-cancel.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-030",
+      "path": "scenarios/vault-mutation-gate/after-metadata-cancel-and-resume.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-031",
+      "path": "scenarios/vault-mutation-gate/after-metadata-restart.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-032",
+      "path": "scenarios/vault-mutation-gate/after-metadata-repeated-interruption.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-033",
+      "path": "scenarios/vault-mutation-gate/before-receipt-cancel.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-034",
+      "path": "scenarios/vault-mutation-gate/before-receipt-cancel-and-resume.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-035",
+      "path": "scenarios/vault-mutation-gate/before-receipt-restart.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-036",
+      "path": "scenarios/vault-mutation-gate/before-receipt-repeated-interruption.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-037",
+      "path": "scenarios/vault-mutation-gate/after-receipt-cancel.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-038",
+      "path": "scenarios/vault-mutation-gate/after-receipt-cancel-and-resume.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-039",
+      "path": "scenarios/vault-mutation-gate/after-receipt-restart.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-040",
+      "path": "scenarios/vault-mutation-gate/after-receipt-repeated-interruption.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-041",
+      "path": "scenarios/vault-mutation-gate/before-echo-cancel.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-042",
+      "path": "scenarios/vault-mutation-gate/before-echo-cancel-and-resume.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-043",
+      "path": "scenarios/vault-mutation-gate/before-echo-restart.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-044",
+      "path": "scenarios/vault-mutation-gate/before-echo-repeated-interruption.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-045",
+      "path": "scenarios/vault-mutation-gate/after-echo-cancel.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-046",
+      "path": "scenarios/vault-mutation-gate/after-echo-cancel-and-resume.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-047",
+      "path": "scenarios/vault-mutation-gate/after-echo-restart.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-048",
+      "path": "scenarios/vault-mutation-gate/after-echo-repeated-interruption.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-049",
+      "path": "scenarios/vault-mutation-gate/before-readback-cancel.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-050",
+      "path": "scenarios/vault-mutation-gate/before-readback-cancel-and-resume.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-051",
+      "path": "scenarios/vault-mutation-gate/before-readback-restart.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-052",
+      "path": "scenarios/vault-mutation-gate/before-readback-repeated-interruption.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-053",
+      "path": "scenarios/vault-mutation-gate/after-readback-cancel.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-054",
+      "path": "scenarios/vault-mutation-gate/after-readback-cancel-and-resume.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-055",
+      "path": "scenarios/vault-mutation-gate/after-readback-restart.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-056",
+      "path": "scenarios/vault-mutation-gate/after-readback-repeated-interruption.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-057",
+      "path": "scenarios/vault-mutation-gate/before-commit-cancel.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-058",
+      "path": "scenarios/vault-mutation-gate/before-commit-cancel-and-resume.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-059",
+      "path": "scenarios/vault-mutation-gate/before-commit-restart.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-060",
+      "path": "scenarios/vault-mutation-gate/before-commit-repeated-interruption.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-061",
+      "path": "scenarios/vault-mutation-gate/after-commit-cancel.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-062",
+      "path": "scenarios/vault-mutation-gate/after-commit-cancel-and-resume.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-063",
+      "path": "scenarios/vault-mutation-gate/after-commit-restart.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-VMG-CRASH-064",
+      "path": "scenarios/vault-mutation-gate/after-commit-repeated-interruption.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-VMG-007",
+        "REQ-VMG-008",
+        "REQ-VMG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
     }
   ]
 }

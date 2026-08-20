@@ -1,0 +1,181 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-VMG-CRASH-044",
+  "category": "crash_recovery",
+  "requirement_ids": [
+    "REQ-VMG-007",
+    "REQ-VMG-008",
+    "REQ-VMG-009"
+  ],
+  "subject": {
+    "kind": "vault_mutation_gate",
+    "schema": "contracts/schemas/vault-mutation-scenario.schema.json",
+    "document": {
+      "schema_id": "mdplace.vault-mutation-scenario/v1",
+      "scenario_id": "VMG-068",
+      "operation": "move_projection",
+      "operation_declared": true,
+      "caller": {
+        "caller_id": "foreground-recovery:fixture-001",
+        "role": "foreground_recovery"
+      },
+      "plan_state": "authorized",
+      "fault": "none",
+      "probe": {
+        "virtual_vault": {
+          "trusted_root": {
+            "descriptor_id": "descriptor:root-001",
+            "device": 42,
+            "inode": 1
+          },
+          "source_components": [
+            "Inbox",
+            "candidate.md"
+          ],
+          "component_kinds": [
+            "directory",
+            "file"
+          ],
+          "source_descriptor": {
+            "descriptor_id": "descriptor:source-001",
+            "device": 42,
+            "inode": 1001,
+            "bytes_utf8": "candidate-v1\n"
+          },
+          "second_observation": {
+            "descriptor_id": "descriptor:source-001",
+            "device": 42,
+            "inode": 1001,
+            "bytes_utf8": "candidate-v1\n"
+          },
+          "path_descriptor_after_validation": "descriptor:source-001",
+          "target_exists": false,
+          "result_descriptor": {
+            "descriptor_id": "descriptor:source-001",
+            "device": 42,
+            "inode": 1001,
+            "bytes_utf8": "published-v1\n"
+          },
+          "readback_descriptor": {
+            "descriptor_id": "descriptor:source-001",
+            "device": 42,
+            "inode": 1001,
+            "bytes_utf8": "published-v1\n"
+          }
+        },
+        "authorized_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "authorized_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "receipt_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "receipt_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "receipt_echo": "complete",
+        "journal_complete": true,
+        "console_output": "none"
+      },
+      "recovery": {
+        "mode": "repeated_interruption",
+        "crash_boundary": "before_echo",
+        "durable_prefix": [
+          "journal",
+          "validation",
+          "data",
+          "metadata",
+          "receipt"
+        ],
+        "declared_intent": "terminal_manual_repair",
+        "reverse_descriptor": null,
+        "compensation_authorization": null,
+        "interruption_count": 3,
+        "interruption_budget": 3,
+        "post_recovery_descriptor": null,
+        "work_journal_snapshot": null
+      },
+      "authorized_plan": {
+        "plan_id": "mutation-plan:vmg-068",
+        "plan_sha256": "cb00afd6e095c6f46d3a402abb9a4c4e7eb30b44b9b7e924b475d9047d865884",
+        "operation": "move_projection",
+        "caller_id": "folder-projection:fixture-001",
+        "authority_receipt_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "idempotency_key": "vmg-idem:vmg-068",
+        "recovery_intent": "terminal_manual_repair",
+        "projection_scope": "vault",
+        "expected_precondition_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 13,
+          "content_sha256": "e7100a0df24bd95895e76cc3f5c881f2243b7c30bf75b6da205cd825402b8cff"
+        },
+        "expected_result_identity": {
+          "device": 42,
+          "inode": 1001,
+          "size": 13,
+          "content_sha256": "fe0c6eb20dc6fc3ed90f93aa5d356cb167dceee4911e4b13eef40ab69ae4f06b"
+        },
+        "scheduled_work": {
+          "work_id": "work:projection-reference-001",
+          "work_version": 1,
+          "lease_id": "lease:projection-reference-001",
+          "lease_receipt_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "work_journal_head_sequence": 1,
+          "work_journal_head_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "compensating_plan": null
+      },
+      "authorization": {
+        "plan_id": "mutation-plan:vmg-068",
+        "plan_sha256": "cb00afd6e095c6f46d3a402abb9a4c4e7eb30b44b9b7e924b475d9047d865884",
+        "authority_receipt_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "ownership_receipt_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "idempotency_key": "vmg-idem:vmg-068"
+      },
+      "idempotency_record": null,
+      "projection_state": {
+        "state": "recovery_required",
+        "active_plan_id": "mutation-plan:vmg-068",
+        "active_plan_sha256": "cb00afd6e095c6f46d3a402abb9a4c4e7eb30b44b9b7e924b475d9047d865884"
+      }
+    }
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": [
+      "recovery.manual_repair_required"
+    ],
+    "outputs": [
+      "Terminal Manual Repair report"
+    ],
+    "operations": [
+      "reconcile exact durable prefix",
+      "halt without guessing or duplicating an effect"
+    ],
+    "receipts": [
+      "TerminalManualRepairReport"
+    ],
+    "filesystem_effects": [
+      "preserve observed physical state"
+    ],
+    "terminal_state": "terminal_manual_repair",
+    "illegal_transition": false
+  }
+}

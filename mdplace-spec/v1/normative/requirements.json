@@ -739,6 +739,191 @@
       ],
       "acceptance_gate": "Every REQ-CPP record cites only the exact accepted issue #8 resolution as input_without_reopening and all additions remain specification and conformance artifacts with zero production or vault effects.",
       "scope": "core-processing-policy"
+    },
+    {
+      "id": "REQ-VMG-001",
+      "title": "Stable requirements use canonical mutation vocabulary",
+      "normative_anchor": "normative/vault-mutation-gate-contract.md#req-vmg-001-stable-requirements-use-canonical-mutation-vocabulary",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/7#issuecomment-5181591072",
+        "https://github.com/jidankim/mdplace/issues/26#issuecomment-5187140948"
+      ],
+      "canonical_terms": [
+        "Vault Mutation Gate",
+        "Authorized Mutation Plan",
+        "Descriptor Identity",
+        "Operation Receipt",
+        "Mutation Journal",
+        "Vault Mutation Recovery",
+        "Terminal Manual Repair",
+        "Specification Package"
+      ],
+      "acceptance_gate": "Stable REQ-VMG identifiers and all contract artifacts use the canonical mutation vocabulary.",
+      "scope": "vault-mutation-gate"
+    },
+    {
+      "id": "REQ-VMG-002",
+      "title": "The Authorized Mutation Plan is closed and exact",
+      "normative_anchor": "normative/vault-mutation-gate-contract.md#req-vmg-002-the-authorized-mutation-plan-is-closed-and-exact",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/7#issuecomment-5181591072",
+        "https://github.com/jidankim/mdplace/issues/26#issuecomment-5187140948"
+      ],
+      "canonical_terms": [
+        "Vault Mutation Gate",
+        "Authorized Mutation Plan",
+        "Descriptor Identity",
+        "Operation Receipt",
+        "Capture Adapter",
+        "Folder Projection",
+        "Placement Outcome"
+      ],
+      "acceptance_gate": "The closed Authorized Mutation Plan rejects every missing, unknown, stale, undeclared, unauthorized, unsafe, colliding, or incompatible binding before unsafe mutation.",
+      "scope": "vault-mutation-gate"
+    },
+    {
+      "id": "REQ-VMG-003",
+      "title": "Every authoritative read is descriptor-relative and same-handle",
+      "normative_anchor": "normative/vault-mutation-gate-contract.md#req-vmg-003-every-authoritative-read-is-descriptor-relative-and-same-handle",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/7#issuecomment-5181591072",
+        "https://github.com/jidankim/mdplace/issues/26#issuecomment-5187140948"
+      ],
+      "canonical_terms": [
+        "Vault Mutation Gate",
+        "Authorized Mutation Plan",
+        "Descriptor Identity"
+      ],
+      "acceptance_gate": "The executable probe begins from a trusted-root descriptor, uses openat with O_NOFOLLOW for every component, hashes through the same handle, reruns fstat, and never reopens a validated pathname as authority.",
+      "scope": "vault-mutation-gate"
+    },
+    {
+      "id": "REQ-VMG-004",
+      "title": "Preconditions receipt echo and readback bind identical identity",
+      "normative_anchor": "normative/vault-mutation-gate-contract.md#req-vmg-004-preconditions-receipt-echo-and-readback-bind-identical-identity",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/7#issuecomment-5181591072",
+        "https://github.com/jidankim/mdplace/issues/26#issuecomment-5187140948"
+      ],
+      "canonical_terms": [
+        "Authorized Mutation Plan",
+        "Descriptor Identity",
+        "Operation Receipt",
+        "Vault Mutation Recovery"
+      ],
+      "acceptance_gate": "The precondition, Operation Receipt echo, and retained-descriptor readback bind the identical device, inode, size, and hash tuple; every mismatch is non-success.",
+      "scope": "vault-mutation-gate"
+    },
+    {
+      "id": "REQ-VMG-005",
+      "title": "Exclusive ownership and durability precede effects",
+      "normative_anchor": "normative/vault-mutation-gate-contract.md#req-vmg-005-exclusive-ownership-and-durability-precede-effects",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/7#issuecomment-5181591072",
+        "https://github.com/jidankim/mdplace/issues/26#issuecomment-5187140948"
+      ],
+      "canonical_terms": [
+        "Vault Mutation Gate",
+        "Authorized Mutation Plan",
+        "Mutation Journal",
+        "Operation Receipt",
+        "Exclusive Writer Lock",
+        "mdplace Agent"
+      ],
+      "acceptance_gate": "Exclusive ownership and the complete journal, data, metadata, receipt, echo, readback, and commit sync order are validator-enforced before success.",
+      "scope": "vault-mutation-gate"
+    },
+    {
+      "id": "REQ-VMG-006",
+      "title": "Mutation lifecycle and idempotency are complete",
+      "normative_anchor": "normative/vault-mutation-gate-contract.md#req-vmg-006-mutation-lifecycle-and-idempotency-are-complete",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/7#issuecomment-5181591072",
+        "https://github.com/jidankim/mdplace/issues/26#issuecomment-5187140948"
+      ],
+      "canonical_terms": [
+        "Vault Mutation Gate",
+        "Authorized Mutation Plan",
+        "Mutation Journal",
+        "Operation Receipt",
+        "Vault Mutation Recovery"
+      ],
+      "acceptance_gate": "The complete state-command matrix covers every legal and illegal transition, and compatible retries never duplicate an effect.",
+      "scope": "vault-mutation-gate"
+    },
+    {
+      "id": "REQ-VMG-007",
+      "title": "Recovery is deterministic at every crash boundary",
+      "normative_anchor": "normative/vault-mutation-gate-contract.md#req-vmg-007-recovery-is-deterministic-at-every-crash-boundary",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/7#issuecomment-5181591072",
+        "https://github.com/jidankim/mdplace/issues/26#issuecomment-5187140948"
+      ],
+      "canonical_terms": [
+        "Vault Mutation Recovery",
+        "Authorized Mutation Plan",
+        "Mutation Journal",
+        "Operation Receipt",
+        "Descriptor Identity",
+        "Terminal Manual Repair"
+      ],
+      "acceptance_gate": "All sixteen before/after crash boundaries and four interruption modes deterministically resume, roll back, compensate, or halt in Terminal Manual Repair.",
+      "scope": "vault-mutation-gate"
+    },
+    {
+      "id": "REQ-VMG-008",
+      "title": "Public fixtures prove safe and unsafe boundaries",
+      "normative_anchor": "normative/vault-mutation-gate-contract.md#req-vmg-008-public-fixtures-prove-safe-and-unsafe-boundaries",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/7#issuecomment-5181591072",
+        "https://github.com/jidankim/mdplace/issues/26#issuecomment-5187140948"
+      ],
+      "canonical_terms": [
+        "Conformance Fixture",
+        "Vault Mutation Gate",
+        "Authorized Mutation Plan",
+        "Descriptor Identity",
+        "Operation Receipt"
+      ],
+      "acceptance_gate": "Exactly 88 public fixtures include 64 boundary-mode cases plus named success, denial, exact, stale, authority, illegal-transition, and recovery cases with no unsafe filesystem effect.",
+      "scope": "vault-mutation-gate"
+    },
+    {
+      "id": "REQ-VMG-009",
+      "title": "Traceability and machine evidence are complete",
+      "normative_anchor": "normative/vault-mutation-gate-contract.md#req-vmg-009-traceability-and-machine-evidence-are-complete",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/7#issuecomment-5181591072",
+        "https://github.com/jidankim/mdplace/issues/26#issuecomment-5187140948"
+      ],
+      "canonical_terms": [
+        "Traceability Record",
+        "Conformance Fixture",
+        "Specification Package",
+        "Vault Mutation Recovery"
+      ],
+      "acceptance_gate": "Every requirement binds both accepted decisions, contract artifacts, positive and negative fixtures, acceptance gates, and digest-bound machine recovery evidence.",
+      "scope": "vault-mutation-gate"
+    },
+    {
+      "id": "REQ-VMG-010",
+      "title": "Accepted decisions remain inputs and artifacts remain non-production",
+      "normative_anchor": "normative/vault-mutation-gate-contract.md#req-vmg-010-accepted-decisions-remain-inputs-and-artifacts-remain-non-production",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/7#issuecomment-5181591072",
+        "https://github.com/jidankim/mdplace/issues/26#issuecomment-5187140948"
+      ],
+      "canonical_terms": [
+        "Folder Projection",
+        "Vault Mutation Gate",
+        "Capture Adapter",
+        "Semantic Kernel",
+        "Specification Package",
+        "Normative Material",
+        "Conformance Fixture"
+      ],
+      "acceptance_gate": "Every requirement preserves issue #7 and issue #26 as input_without_reopening, while every added artifact remains specification or conformance material and performs no real vault mutation.",
+      "scope": "vault-mutation-gate"
     }
   ]
 }

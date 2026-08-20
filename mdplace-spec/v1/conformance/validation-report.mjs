@@ -13,6 +13,7 @@ import {checkSchemaInstances} from './schema-instances.mjs';
 import {checkSemanticKernelContract} from './semantic-kernel-checks.mjs';
 import {checkTraceability, runConformance} from './traceability-checks.mjs';
 import {checkValidatorEvidence} from './validator-evidence-checks.mjs';
+import {checkVaultMutationGateContract} from './vault-mutation-gate-checks.mjs';
 
 function check(id, codes) {
   const uniqueCodes = [...new Set(codes)];
@@ -46,6 +47,7 @@ export async function buildValidationReport(packageRoot, options = {}) {
   const semanticKernelTable = await readJson('contracts/transitions/semantic-kernel-lifecycle.json', true);
   const processingPolicyTable = await readJson('contracts/transitions/processing-policy-lifecycle.json', true);
   const sourceProfileTable = await readJson('contracts/transitions/source-profile-lifecycle.json', true);
+  const vaultMutationTable = await readJson('contracts/transitions/vault-mutation-gate-lifecycle.json', true);
   const conformance = await readJson('conformance/manifest.yaml', true);
   const traceability = await readJson('traceability.yaml', true);
   const checks = [];
@@ -58,6 +60,7 @@ export async function buildValidationReport(packageRoot, options = {}) {
   if (semanticKernelTable !== null) checks.push(checkTransitionTable(semanticKernelTable, 'semantic-kernel-lifecycle'));
   if (processingPolicyTable !== null) checks.push(checkTransitionTable(processingPolicyTable, 'processing-policy-lifecycle'));
   if (sourceProfileTable !== null) checks.push(checkTransitionTable(sourceProfileTable, 'source-profile-lifecycle'));
+  if (vaultMutationTable !== null) checks.push(checkTransitionTable(vaultMutationTable, 'vault-mutation-gate-lifecycle'));
   checks.push(await checkSchemas(packageRoot));
   checks.push(await checkSchemaInstances(packageRoot, conformance ?? {fixtures: []}));
   checks.push(await checkValidatorEvidence(packageRoot));
@@ -65,6 +68,7 @@ export async function buildValidationReport(packageRoot, options = {}) {
   checks.push(await checkControlPlaneContract(packageRoot, manifest, conformance, traceability));
   checks.push(await checkControlPlaneLifecycle(packageRoot));
   checks.push(await checkCoreProcessingPolicyContract(packageRoot, manifest, conformance, traceability));
+  checks.push(await checkVaultMutationGateContract(packageRoot, manifest, conformance, traceability));
   if (traceability !== null) {
     checks.push(await checkTraceability(
       packageRoot,

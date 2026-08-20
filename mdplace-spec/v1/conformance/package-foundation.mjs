@@ -64,6 +64,12 @@ export const requiredSchemaPaths = [
   'contracts/schemas/processing-policy-receipt.schema.json',
   'contracts/schemas/processing-policy-rules.schema.json',
   'contracts/schemas/core-processing-policy-recovery-report.schema.json',
+  'contracts/schemas/authorized-mutation-plan.schema.json',
+  'contracts/schemas/operation-receipt.schema.json',
+  'contracts/schemas/mutation-journal.schema.json',
+  'contracts/schemas/vault-mutation-scenario.schema.json',
+  'contracts/schemas/vault-mutation-recovery-report.schema.json',
+  'contracts/schemas/vault-mutation-crash-matrix.schema.json',
 ];
 
 export const requiredCandidateFoundationSlots = [

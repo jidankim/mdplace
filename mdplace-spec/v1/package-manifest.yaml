@@ -225,7 +225,7 @@
       "path": "conformance/evidence/claims/recovery-snapshot.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "74d596238a6577ab9ba58050f6c344e3ab6ae04b187293f289c74c6e3df7f08b"
+      "sha256": "8ab85d77186077c89f3082b5a1c196b56f92a6695ff16e214aa9b9f1483b0bc8"
     },
     {
       "path": "conformance/evidence/control-plane-doctor-report.json",
@@ -255,25 +255,25 @@
       "path": "conformance/evidence/envelopes/stale-claim-proof.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "590309235159e0789382d436ab9783acd9ed1e829d7ca2543998b1c2a6739d39"
+      "sha256": "37132bc0ac0f6015b4c5990d43c344e3f2b0d0cfaa5227c26d63f43bbe18b92a"
     },
     {
       "path": "conformance/evidence/envelopes/validator-evidence-reference.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "b78af54d1ff81bbf860aac8ef8f5e51be94d277dca4ffee8849c60945d97e82c"
+      "sha256": "6c562f47a69d7880dbd011c5b558a38174303be9ba4f53e69f0554467437f48d"
     },
     {
       "path": "conformance/evidence/evidence-recovery-report.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "f8cb38bc9bb46739e72f1a9fed2c2e9f05d6a36c37b15039e701c2a7eab95b6d"
+      "sha256": "8b2af4138835d67c560821ec2976e00cd128ff77e91df72065abafe4916298dc"
     },
     {
       "path": "conformance/evidence/invocations/validator-evidence-reference.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "c1b585b5d709ada45ba4155e2fb4783d00242cd2a5b5bcd8916bb885f2b0d9e6"
+      "sha256": "f9d480650be1f1678764261f83bc3adc99b10ee704c672c3d914f957b52cbee1"
     },
     {
       "path": "conformance/evidence/recovery-report.json",
@@ -291,13 +291,19 @@
       "path": "conformance/evidence/traceability-report.json",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "e789f7db71c935acda02f2b1d9f4cd9bb70a788a06c919e21f7ec77589d007fc"
+      "sha256": "3ffcc60954aac8cc36b6126bc3fb924782075de646777de453f27d193626d6a7"
     },
     {
       "path": "conformance/evidence/validation-report.json",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "882c7d884551f235d0d08b8050230d1526d9cb34bb21b3fcd168a3d016020292"
+      "sha256": "a2d54b64b3993eac0e9fd670a6893fcb272146790465d6f3e7c67c7fdbefc667"
+    },
+    {
+      "path": "conformance/evidence/vault-mutation-recovery-report.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "ee7b09789d58e306aaa4da750728849f1bfcb2255fd8fa3bb88cbae2fc5af639"
     },
     {
       "path": "conformance/evidence/version-amendment-report.json",
@@ -309,7 +315,7 @@
       "path": "conformance/fixture-observer.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "85a0f9ed01055e8498a952dd81d5a75096ae073d21f2c5eca237f2b3335dcafe"
+      "sha256": "80089af942430acb0af9524aa67395b36afd3db64acc7004268008023a99a2ec"
     },
     {
       "path": "conformance/fixtures/boundary/above-sha256.json",
@@ -369,7 +375,7 @@
       "path": "conformance/fixtures/negative/duplicate-envelope-references.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "1ddb6e9ff9df183441043251bb338d2b995ed40cbecf6e7693416fe4ec8d7f8a"
+      "sha256": "225ed7b6c87ef2f038ba8627e7211552f1cfeee24953ebe68a14ae2f201dc024"
     },
     {
       "path": "conformance/fixtures/negative/duplicate-requirement-id.json",
@@ -381,13 +387,13 @@
       "path": "conformance/fixtures/negative/evidence-receipt-digest-tampered.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "538286d470fbfbcbae86961f710971af237293a3b91abb56c38ed2c2d10094af"
+      "sha256": "75c76f2590c3ba2a8394d44b1bbecfcf4f152e04dea83f929ae9848129e94b39"
     },
     {
       "path": "conformance/fixtures/negative/evidence-receipt-type-tampered.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "646236cc0c6c037845e74d5eb6595418c7cae141be7cc6896ec2d4b09bc26cb2"
+      "sha256": "cf5fd47cdeac674b9bd83d038a7d67bd868d247a43f6544e719ec94f863b6036"
     },
     {
       "path": "conformance/fixtures/negative/idempotency-conflict.json",
@@ -513,7 +519,7 @@
       "path": "conformance/fixtures/positive/valid-evidence-envelope.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "cb495946043893449bca5a6b43678ccd7eac716e982b76644b2110808d6748da"
+      "sha256": "835a46a800412230b35fe2f8ee38c0bbffa82daffb7fd50a0cf4327363b65735"
     },
     {
       "path": "conformance/fixtures/positive/valid-package-amendment.json",
@@ -537,7 +543,7 @@
       "path": "conformance/manifest.yaml",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "a7350828b5996c48c009e4e2606d24407a0c171ca3ae16c995c3122c35508c26"
+      "sha256": "bf65117b7e2aa3fe02671a978b1a753a9b59006fc241fae338ef2515cba220c0"
     },
     {
       "path": "conformance/package-checks.mjs",
@@ -549,7 +555,7 @@
       "path": "conformance/package-foundation.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "bc3f8c96b481ee3302f9919a3ae9576aa1d4947e9502eab7c179d95ae92c651e"
+      "sha256": "d2f5021d80e5dbcb895ae511eb12042d57ef982041275c365becebe5d5ea4e7f"
     },
     {
       "path": "conformance/pattern-evaluation.mjs",
@@ -609,7 +615,7 @@
       "path": "conformance/reference-evidence.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "b5467aa4f614a25457c2f319e6ef186745aa90026bb16503de7d32b3aa247940"
+      "sha256": "997d724becd14eb8f782f57d32e930e51943f4d3725c2d595525427208858093"
     },
     {
       "path": "conformance/release-targets/amendment/releases/README.md",
@@ -1449,7 +1455,7 @@
       "path": "conformance/scenarios/evidence-crash-recovery.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "39d83f6fe90c7a4331fc990e2ecd860d7a8ecdcc5a91712eb84dd95c173d3712"
+      "sha256": "249d93f02c31a76b047f086e916d38e435bc6417801525848a5afdc7ad4422c1"
     },
     {
       "path": "conformance/scenarios/evidence-illegal-awaiting-readback.json",
@@ -1485,19 +1491,19 @@
       "path": "conformance/scenarios/evidence-stale-claim-binding.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "4c3408c33a045df8e652db94bea4ca12ff72b7d2e6f03c1db217e4568dd89504"
+      "sha256": "188afd709c3c7f701b94973b36fcf973ea314b418421a44a020b9a13a1b69e1a"
     },
     {
       "path": "conformance/scenarios/evidence-stale-recovery-pass.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "be57cad3ef787123b9e18265c9e650b3771a1a9026a6611d5a57d89603c0a2eb"
+      "sha256": "f6d615112bb01dbbcb5131f980b649bfe33deb967e688280c549fad7bd432c67"
     },
     {
       "path": "conformance/scenarios/evidence-stale-version.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "c520c609e9f3c249ff509a7cd09664ad9389594908f8010137cea71adf8b4e44"
+      "sha256": "a2505dc009fe4bd35aba76927136ad59c1024f0cbe5b8447f380d7afc079476f"
     },
     {
       "path": "conformance/scenarios/evidence-unsupported-recovery.json",
@@ -1764,6 +1770,534 @@
       "sha256": "0d03c70fde745de9b2abf2a98c0ed7acad2e962c837f0d74b8304b51b7345dc0"
     },
     {
+      "path": "conformance/scenarios/vault-mutation-gate/after-commit-cancel-and-resume.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "270e04eb1d250edb2bba35bceb81824ce23a7fe6ee78571b04e098f7c4f2592c"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-commit-cancel.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "6b490415fa7b52230cb0f774beb0aa770382dab6c19d2d81ff0de7f930a5c85d"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-commit-repeated-interruption.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "78bb41e3d5d2f0480af75485c584d81d018d237067d64a73a7b4ae3f055d67d6"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-commit-restart.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "476d0d2699ea9fe9c2ffd3bbc9ae37224a9a7243136da8efa71e1423f399bbf4"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-data-cancel-and-resume.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "bb70c859f8b4ed9d01bb6f0824b6c0ae45308548cfd1c8f19c136ec60c66d6a8"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-data-cancel.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "2bb346084154dd7454c1d295d3288c7c7f35909e6ece952110897d17ad6ee0f8"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-data-repeated-interruption.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "68604fcf11534f29268b6088e173a3ee075a870984bdfc809c9708958784ee3f"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-data-restart.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "ea04a1687b8d4b8a1f5cdf02ab92e4ba50aa9c08d66192b3845229679fface07"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-echo-cancel-and-resume.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "019f1346eedd6b09bb62a6eb22d7828806924ba66f08531aaa9582f1b22b9210"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-echo-cancel.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "92b73aeaf9b8d3bb55c42cf82cf460400a289a19fea9a474738271a296d2d7c5"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-echo-repeated-interruption.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "bee4dc05ebae13ace6dd2550bf516a29293b4666523ef0451908109a92e5b997"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-echo-restart.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "ff93c1a6453e59f6530cbd48332915ebe2eddcc20943cc78c68dbe7124ab4769"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-journal-cancel-and-resume.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "94b944c65962fb886055a7fc37d6b323cc242b16a6ab7e0564c50cdf15a7d59e"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-journal-cancel.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "70f321157fb03d16a483c0903fdc9888d80ca8ec38ce01f64f8d44af89bc7146"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-journal-repeated-interruption.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "fd30f35237b7185065a756649ee1c68b1b68684d4c53ac3616cda857b768398b"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-journal-restart.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "aba2d15f368295b83d6eec73fbb8b71ea0f08a7a621a250dfc72272702ffb0b6"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-metadata-cancel-and-resume.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "d0650af0db7bd63767eaa33a92ef179c2da2468285fcf009d4086e2108a5c081"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-metadata-cancel.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "e29b2d838fa90be54025d039251a36ba86c546ef63a6e2f709881e6213e9a6f2"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-metadata-repeated-interruption.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "2676dd96d8fb21be866b67afe5a2da358887404459cb5b56cbbb8363c8ea7c9f"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-metadata-restart.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "40b89227e10e721c815aaf2cd0cf584563200e7b1317173ddc36c3f4285f949f"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-readback-cancel-and-resume.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "f3fd16a3cd8d08dede2657dd316c5167a76757085911641d14f852e2e398724a"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-readback-cancel.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "4ee4081ccddbc8e97691fcab9bfd402d8ef18101c87936935073dfd86b3a921a"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-readback-repeated-interruption.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "630bb7047af642de75be401b05fb127622223b235b32406ef4f423e8fd2d9cc4"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-readback-restart.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "80d7ace5d18b45480f46f17a0b051d5c07a95b702f6bb254d24b8e7be66eb6f7"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-receipt-cancel-and-resume.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "21ac7b0d704e70845bd1fd5211b767422daf23f530bf0f140aa97b24363b67d4"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-receipt-cancel.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "ace7d24838251bf9249e6eb33f9998962d170a3a0d471e61bd7ff52a066b5542"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-receipt-repeated-interruption.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "29d9a87b114755ccecc22dcad92e3e1cf851f6d173a93f000cff5b0d45bf307d"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-receipt-restart.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "3ff373cae9d806b57add8b09e727afaeee34eca86299ffe6ee85779b290797c4"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-validation-cancel-and-resume.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "6a48729d67786b36579d71815215e739950b6fcc5fe03f9329a4e651f7577a69"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-validation-cancel.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "87af68c8f05e0a2585f9386d79758ba9e8338d484b31e39c53f16bfb1c8cae01"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-validation-repeated-interruption.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "aec21bc25e1363325783f202ec7cbf5fdc6e71073a642a53f42a466fb8bb0cc4"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/after-validation-restart.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "2b7868e0dae9740639b44e204715ffa1d5d210e3d4cfeb9e3f83e99539c3cea9"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/all-boundary-repeated-interruption-manual-repair.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "15d85208635b1408161e0d0e3c588f458e3bbce34c988892260b3c072315ab7b"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-commit-cancel-and-resume.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "3dd30008df79930af27574dcffbfc2b07b7f5b7a69fa7375f938519349935ca1"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-commit-cancel.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "4dfde331bcc566153873abc5aa31dbba2a18d195163cb65b47413b8b9ab1ab5c"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-commit-repeated-interruption.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "45b7a0bfd832e220ad2e1a7e4cd4f4c0b1a292eb6fc210fdfddf5605468412be"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-commit-restart.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "75290c28ed53567219547cd9c62ff1b7046670369f9be6be15d4f195b730983f"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-data-cancel-and-resume.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "4ddac702a97341e2419c31ba7af54ca9b7f6f77731a5163a3fb1c11cc854951a"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-data-cancel.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "f6143caddbfc05be4e43562580928f25f89c9e802cf5869bb232da1120b2512f"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-data-repeated-interruption.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "af85eaafea8c75822515f0c89aacb9d85db3de1a7cde55b9dabb1c65f8e159b5"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-data-restart.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "4aa9177bd8506ca8ed52e10734486876bc6bf2ac342a26aabcb9a15470999a09"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-echo-cancel-and-resume.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "f7f1d1a8751d280d452b6a6b5b682e7322977be3a43b98f3890acb3670ce124d"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-echo-cancel.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "d20f75b83e584f31b79664f4118fe60352b0cb27c283c4d3ab4a914bcd357422"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-echo-repeated-interruption.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "698458b43018d3de46f46e79715eb604b500fb21632429b567b1ce2294c2830c"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-echo-restart.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "14d8a8dac0658d47255a363532117e1a46ee4aa7e7cf28da752e6ee1925e902f"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-journal-cancel-and-resume.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "40be0282a6bd157eaefef801850b5cc34740828f37a2f1a7a183902bc3caaef8"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-journal-cancel.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "d3ca85dd01c8d49ef570686fb57384690180fe71c2413df3e4b545d1ceff6a02"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-journal-repeated-interruption.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "1535cd3058e790b78a2b3c2c701f1b47fe49c1859e454669a2c2bcadf1bb859d"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-journal-restart.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "34f6c2e101d418df775fba3bccddf99775dd6c200741eccbd16afb47658e46f7"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-metadata-cancel-and-resume.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "9c74adbe18ffd5660200d8b063541f3a578c80db498b5ee2d55e6280cfdb0c31"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-metadata-cancel.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "a4de1aaa9019a21f5e9e23c6fab85aba2dc39edbc227105bb5fb36177caa0119"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-metadata-repeated-interruption.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "ee725d6c12aa8c1da0180e6aeb0917a1301092d9c5bdafdac8845976bd8375d1"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-metadata-restart.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "edc1be42c04ada2a7cf7b873f7605bac24c25a166a4269e3b017a9e63c0d6591"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-readback-cancel-and-resume.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "724d61aae146db678484c04af4d6f75b26247151a24702a6f08f304cf6d93fc6"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-readback-cancel.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "0601ff83bb5ef12c35ebdb4cc7dc59e228193a102fe117148439aa4e38e39f5d"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-readback-repeated-interruption.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "af71f079c6a0b50877d2bfc8718bce14a922096ddb784472e787538036a21f03"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-readback-restart.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "6c6f72acf1d1341a6de33813dcd15afd943197d2ed065d943cddf33316663c4b"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-receipt-cancel-and-resume.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "9ee7dc3880cbe3bb8ac2b14ef883d8dfd27ad11279ce1d634b23dd766b4983e6"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-receipt-cancel.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "7d69f24136adb691a19c93191baa54879a15d48e2223dd2e824fd3b72893dd05"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-receipt-repeated-interruption.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "05bd24dac569d90f0f93b2b1233dce455936fff548736d72003f2635661b78bc"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-receipt-restart.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "edb1b1d1b04f3d175fd3da9903a14c8518ff1acb05780832340b98a58e97166f"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-validation-cancel-and-resume.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "686ada5091b6ec6d6b3ab64316076ac7f20c92cb77a0f3b516e24318da2ffb62"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-validation-cancel.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "ff5536ad8d669f2ebf0bcc17269408fb273ec54ef9d810cc8e8320dc04935a38"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-validation-repeated-interruption.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "e849cee42be7d6e0349f3d6e48c79745339374c9d601d43a93ab111e554ea636"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/before-validation-restart.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "cb8ffeb7b352658b68a135f4daa3d5235a50c73481e50b3d9a57b3eae26db6f1"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/cancel-and-resume-at-most-once.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "e156097d3b0600794643af7edaecb93118c76f94cf147fb823d5673768d0c79a"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/capture-promotion-commits.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "d57e826e683f963202058410b33475236b67214d80de4b29a61c04ea8bb28b23"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/collision-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "a3c3d4536de7d17ad99af5c759a4aa0d7d3d075d61e64361b987b9956c101962"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/descriptor-identity-drift-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "36c7cf3d7b4a99e5d16147930235596d05a8b1b21efe7c4aa3e8c2274cbe5a87"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/descriptor-size-drift-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "4780d60332854961b7884d627df1a1727385cf5960ba7e1836d3985bd0dbca69"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/exact-descriptor-and-idempotency-boundary.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "5a65d709951d8b9ea84dc72e0f7f9d3b341b1c3f208add4fb768b11a4e5ea989"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/folder-projection-commits.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "51b2d4fb2094eea4a27826b1a415b863afed27f37cf5d350009947cfc1b2f6c4"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/idempotency-conflict-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "e94d0a31fcf3020657c1e826353f0b8cd0679f4b375d494355bd72e2567e2657"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/incomplete-journal-requires-recovery.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "3c422690ad2f1c088643d77aefc4f492e53def9f6d8a16acddeb389effdea7a0"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/malformed-plan-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "737a60203364ae1b69eb9d865cbba2be90f8fbfe827274a1c5f970e777c365fe"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/misleading-success-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "909fec95e3768a338074fcf3375e4020e7cd196fa8b2aead26654259a85e9755"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/ownership-drift-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "c6e24ec09c1fa8889d561816ba2a118fca30917a355729abcd69ebeb939aa59f"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/pathname-swap-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "2a2278693557925cda41d9ed2f7eca78793a973649785f1934873ce1e5f42117"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/readback-mismatch-requires-recovery.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "21b407d1f0d6df92389f215c1b981c74a0c6f411df4425b215188bab67b73b64"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/receipt-echo-mismatch-requires-recovery.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "9751aef65ce03fe412e5a8a36c0b06b455eadb59d03f00653095490100a200c7"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/restart-exact-rollback.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "ffbbb16e204f4ef41df622bf4a22f20db2ff76dae014a4ecc12ed740362397d1"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/restart-explicit-compensation.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "2c7e7961ce17589a0820514784695642f89b9621c70da20cd26532b187e52876"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/stale-content-hash-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "0fda76248a3061b3d21f8b61f2bae03db8e95ca129222e2ddc43fed478477629"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/stale-plan-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "1f4182b7def4d11bf1067f15ed4e5649d49f094f0df5e364cb260bd6d098dea0"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/symlink-swap-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "4038f39cc124823af63d60ecc85f123b530d91a98ea50444350db7e47ead8071"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/traversal-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "14f2c88d69b3fca9c2ecfdfd25608fc73eb4418fde2ab84b3800af6cb69fd5f6"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/unauthorized-caller-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "c8c671c3a1f11e84f890223063cdb5308ebdd8be5762ed555be7cc08e29f406a"
+    },
+    {
+      "path": "conformance/scenarios/vault-mutation-gate/undeclared-operation-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "b1294c3f08316eaf4d84520ea69db969f42218990ec08063b623530d5f53256a"
+    },
+    {
       "path": "conformance/schema-error-code.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
@@ -1773,7 +2307,7 @@
       "path": "conformance/schema-instances.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "8985228a1f743e42e293f2ca001cfc1df49c55974959b9da6ba696390c56ab4d"
+      "sha256": "c33184ed3b94714205bc8825709ea5598785d1dc9564455de9282cbe4dcda8c5"
     },
     {
       "path": "conformance/semantic-kernel-authority.mjs",
@@ -1821,25 +2355,25 @@
       "path": "conformance/state-observations/candidate/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "469c9249d478b9e30f9d49ba3257cf113374b36ff11157aaadbd37cec3b81e51"
+      "sha256": "c2c48167004c5f4987b4bae20608508fd0ba4f501d01a8e06bfa472de13fbd33"
     },
     {
       "path": "conformance/state-observations/draft/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "7b46e055de0860c7a5e9c195d8f3b90feb36bc81f2230216296fbc242ce90f6e"
+      "sha256": "de99583465343157cb630a670fdf93c30a3e6a2bd9f42c70a9a9bd30c0b897c9"
     },
     {
       "path": "conformance/state-observations/release-ready/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "fa04be3e4b6b2a341385efd864761c75b60056102d395657c9b71fe93dc48712"
+      "sha256": "cf69186e56d521fff05ea6c5e78019d57b691e296e5841ba1e981a1761adc2d2"
     },
     {
       "path": "conformance/state-observations/released/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "b38186d1cbc13a5dc4424b55ff1b638851b8ca0f08a19a085ffcbc835d4a4e0a"
+      "sha256": "33d0c98eb504ab07d94345a098a5faa86e844997b358e9db56cf3921d6cc7c9f"
     },
     {
       "path": "conformance/traceability-checks.mjs",
@@ -1863,7 +2397,7 @@
       "path": "conformance/validation-report.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "d62cf2e23457e7af4b36de54a79b0ebab17c50e8842018e39ee08f0236439700"
+      "sha256": "63993e617da59da944bdcd90b31d7f6a22f5229f0463aa0f3f640b356f9e0a01"
     },
     {
       "path": "conformance/validator-boundary-cases.mjs",
@@ -1881,7 +2415,7 @@
       "path": "conformance/validator-contract-cases.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "b7d592fdc7a5ac4e1518703f890faac51764b7cf667c33e08c14c05805ea6b86"
+      "sha256": "d82dfc4d5c62d781b5c6e921cc159353da8488554457f0f59a7bdc28da5fa0e4"
     },
     {
       "path": "conformance/validator-control-plane-cases.mjs",
@@ -2073,7 +2607,7 @@
       "path": "conformance/validator-rules.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "af722c2a2e49f9596c655ad4db8ccb584f8fbab6f4fb2fdc7f4365a7be2b91ff"
+      "sha256": "56e38cac5a045af8fe78c39531730b5eabf051f25fb2781f2cd2fbc676b7e4be"
     },
     {
       "path": "conformance/validator-security-cases.mjs",
@@ -2112,6 +2646,12 @@
       "sha256": "2138c8193e76fe353b58b34a1901b4e400f2413f55847a7e52f7412d507b01ea"
     },
     {
+      "path": "conformance/validator-vault-mutation-gate-cases.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "6dbe4007094453fef17ab6a8ca9fa77c38b416b2705a8e6be8cfa0d78d0d6711"
+    },
+    {
       "path": "conformance/validator.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
@@ -2121,7 +2661,37 @@
       "path": "conformance/validator.test.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "306bef1734c6505a631302b09085478510b2a445731d0bfef9b50a2e29103f1e"
+      "sha256": "f15a7832642ea479f16253115e79ff55e652273dc26fd0f19ebe709850c3ce29"
+    },
+    {
+      "path": "conformance/vault-mutation-digests.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "e43d24ee23df72f19564124b2d6d80625aa1a03ccb845ae5a0133942883b3c1c"
+    },
+    {
+      "path": "conformance/vault-mutation-gate-checks.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "06db4fab86987db67cf8d52e524694cdbf2c3113b5971dcd10dfa5a254514e2c"
+    },
+    {
+      "path": "conformance/vault-mutation-gate-observer.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "8fd34bc762f130c29b72caddaa9a6222a99a42613f57d9b88dd18bca19ce2ab6"
+    },
+    {
+      "path": "conformance/vault-mutation-recovery-checks.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "cc5613715bbb21ae3e10090275f37b98ad33b55ba750a1ede67d5c6522d7c155"
+    },
+    {
+      "path": "conformance/vault-mutation-virtual-vault.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "5ef6d8ab12bb760bd9bd989fee7dac9314a0e0b4969df325d575e87c3f0fe3c5"
     },
     {
       "path": "contracts/control-plane/agent-state.json",
@@ -2190,6 +2760,12 @@
       "sha256": "d8c3c1efe3ce983d65afec3281de0beb659812fcfd5de1a6785699ebc2efe893"
     },
     {
+      "path": "contracts/schemas/authorized-mutation-plan.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "e5d74dee2e971fe1466887801b024525c790736818ac050f44434ab6b5a440c2"
+    },
+    {
       "path": "contracts/schemas/child-work-invocation.schema.json",
       "authority": "normative",
       "media_type": "application/json",
@@ -2211,7 +2787,7 @@
       "path": "contracts/schemas/conformance-fixture.schema.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "8a00bdcb80cebfb59875c0cc114d98ca280363a7bc98e006fd8acd176e0ca2d8"
+      "sha256": "121026edeecf206a3f696e78ad9cb1cbacdbbc1641c89a32be0f370bae96f355"
     },
     {
       "path": "contracts/schemas/conformance-manifest.schema.json",
@@ -2284,6 +2860,18 @@
       "authority": "normative",
       "media_type": "application/json",
       "sha256": "270bf071083319024e70876b326d883e4d473c64c9f955a5f84bedc28749f637"
+    },
+    {
+      "path": "contracts/schemas/mutation-journal.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "751ccd41cbc9fb84410b6cc1ef47b2c094272e4e34a2edc12ca2260a1859c3fc"
+    },
+    {
+      "path": "contracts/schemas/operation-receipt.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "7e7b1c7479e94d7bd707ecbd26461ed2cd5151dcd2b9427414c556c21669fe37"
     },
     {
       "path": "contracts/schemas/package-manifest.schema.json",
@@ -2442,6 +3030,24 @@
       "sha256": "9d16948fca626c80e09bd6a548187d358bfac0003cd39fb598facaa2ff5eba9e"
     },
     {
+      "path": "contracts/schemas/vault-mutation-crash-matrix.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "e8d7b69126eff1eb75f1600e6a317567575c2b5e3ced8d24dc503228277f180c"
+    },
+    {
+      "path": "contracts/schemas/vault-mutation-recovery-report.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "4d0b4644ef96fb621b61fb133cb1d42ef10d69e3e1e4c7df4471c42034adaa8e"
+    },
+    {
+      "path": "contracts/schemas/vault-mutation-scenario.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "4c6ad46f2ae3fc09c142eaf1d54175bc67fd53d38ea824259fcf734d8ba01e32"
+    },
+    {
       "path": "contracts/schemas/verdict-table.schema.json",
       "authority": "normative",
       "media_type": "application/json",
@@ -2544,6 +3150,12 @@
       "sha256": "e524f19eea1272d6e760ccf066cb22959a1bb5794be30ef67a878c3f83f45fe6"
     },
     {
+      "path": "contracts/transitions/vault-mutation-gate-lifecycle.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "06d720ceb8952bb617c883e33e3dae9e6bacc53d2bdfb0d3405b483d50a81336"
+    },
+    {
       "path": "contracts/transitions/work-queue-lifecycle.json",
       "authority": "normative",
       "media_type": "application/json",
@@ -2554,6 +3166,30 @@
       "authority": "normative",
       "media_type": "application/json",
       "sha256": "79de28cb94fe805ba3d790e99075cf5a6face8809a8c2404683328bbb92d26e8"
+    },
+    {
+      "path": "contracts/vault-mutation-gate/authorized-plan.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "5e4376324caee3b9d7463c3bd9568352a292d6061bdb994b96720dcc6aacb51d"
+    },
+    {
+      "path": "contracts/vault-mutation-gate/crash-boundary-matrix.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "a044f51f385c2fb7e09473010bc1afe0c9b175dbdd4060714bab3fdffe174de3"
+    },
+    {
+      "path": "contracts/vault-mutation-gate/mutation-journal.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "66ea55a6e99d42a5bf2c6039b8d082403feca4b6e86f6bfa8e821c997642e2ec"
+    },
+    {
+      "path": "contracts/vault-mutation-gate/operation-receipt.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "3ef125a5286f668b9778b930ec88a53b86b814bcd6ad72a87857bb0ab50b2db2"
     },
     {
       "path": "contracts/verdicts/validator-verdicts.json",
@@ -2583,7 +3219,7 @@
       "path": "normative/requirements.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "2ea2cade96b0c890a425a2f2d919cb5bd31846396e89f684dd2276332d1ddd0e"
+      "sha256": "50e8d01238dd93d8011b0f88070108b82526cb70c7f64d63bf17d4c77f4728a2"
     },
     {
       "path": "normative/semantic-kernel-contract.md",
@@ -2598,20 +3234,26 @@
       "sha256": "4b1c8cbccee44802a4173a859977d300fc31703118965b04cec81ec56e7a4f12"
     },
     {
+      "path": "normative/vault-mutation-gate-contract.md",
+      "authority": "normative",
+      "media_type": "text/markdown",
+      "sha256": "f8eee6d64b40484a4fd0345119cef98756f65cf75ca73f1519fb238a6e0d4866"
+    },
+    {
       "path": "README.md",
       "authority": "informative",
       "media_type": "text/markdown",
-      "sha256": "849135ec9992a8686459bfac482d50d6edb05db2d955c48a3a359bcf462e1357"
+      "sha256": "1a46e8e8cf6b54a5e5d3bf7d42bf2113b63aaec30ecdb0272d4d1a616a1e93f5"
     },
     {
       "path": "traceability.yaml",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "f30c8e562cf806f15853a24c0e8c6e732126d25ef69f1692727b7218cfc06cdb"
+      "sha256": "131ef4a1662b21721b6e7502ff72455b759e06978113d20ec03a48100b6f51a1"
     }
   ],
-  "normative_digest": "72577e4ec624db31767c0b519de9a27ce2861c25725992db865f9a617a4c6e4c",
-  "conformance_digest": "39c2e5d6e443ae22d7ba67d6a911d0cdfb03ce8f48084be36a7b69d15122d139",
+  "normative_digest": "3b61bbb7245a223c0e7d3e9276f978bfed645c6fd484c21e23fdea4a8b0b4b79",
+  "conformance_digest": "83d1b7b73d927fb2649a11e59811ab1f3f47dede7542b78e817e3138aa349f82",
   "amendment_policy": {
     "immutable_after_release": true,
     "in_place_mutation": "forbidden",
