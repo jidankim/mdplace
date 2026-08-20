@@ -63,6 +63,17 @@ export async function checkSchemaInstances(packageRoot, conformance) {
     ['conformance/evidence/core-processing-policy-recovery-report.json', 'contracts/schemas/core-processing-policy-recovery-report.schema.json'],
     ['conformance/evidence/vault-mutation-recovery-report.json', 'contracts/schemas/vault-mutation-recovery-report.schema.json'],
     ['conformance/evidence/reference-vault-recovery-report.json', 'contracts/schemas/reference-vault-recovery-report.schema.json'],
+    ['contracts/intelligence-adapter/approved-context.json', 'contracts/schemas/intelligence-adapter-approved-context.schema.json'],
+    ['contracts/intelligence-adapter/protocol-rules.json', 'contracts/schemas/intelligence-adapter-protocol-rules.schema.json'],
+    ['contracts/transitions/intelligence-adapter-execution-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
+    ['contracts/transitions/intelligence-adapter-denial-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
+    ['contracts/transitions/intelligence-adapter-timeout-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
+    ['contracts/transitions/intelligence-adapter-retry-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
+    ['contracts/transitions/intelligence-adapter-fallback-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
+    ['contracts/transitions/intelligence-adapter-isolation-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
+    ['contracts/transitions/intelligence-adapter-recovery-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
+    ['conformance/evidence/intelligence-adapter-evidence.json', 'contracts/schemas/intelligence-adapter-evidence.schema.json'],
+    ['conformance/evidence/intelligence-adapter-recovery-report.json', 'contracts/schemas/intelligence-adapter-recovery-report.schema.json'],
   ];
   const fixtureEntries = Array.isArray(conformance?.fixtures) ? conformance.fixtures : [];
   for (const entry of fixtureEntries) {

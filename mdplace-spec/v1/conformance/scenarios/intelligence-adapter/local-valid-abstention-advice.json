@@ -1,0 +1,213 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-IAP-POS-002",
+  "category": "positive",
+  "requirement_ids": [
+    "REQ-IAP-001",
+    "REQ-IAP-002",
+    "REQ-IAP-003",
+    "REQ-IAP-004",
+    "REQ-IAP-005",
+    "REQ-IAP-006",
+    "REQ-IAP-007",
+    "REQ-IAP-008"
+  ],
+  "subject": {
+    "kind": "intelligence_adapter",
+    "schema": "contracts/schemas/intelligence-adapter-scenario.schema.json",
+    "document": {
+      "scenario_id": "IAP-002",
+      "case_id": "local-valid-abstention-advice",
+      "operation": "execute",
+      "authorization_ref": "contracts/intelligence-adapter/approved-context.json",
+      "chain_budget": {
+        "max_attempts": 3,
+        "max_retries": 1,
+        "max_fallbacks": 1,
+        "input_bytes": 22000,
+        "output_bytes": 11000,
+        "runtime_ms": 2800,
+        "cost_microunits": 20000
+      },
+      "attempts": [
+        {
+          "attempt_class": "primary",
+          "envelope": {
+            "$schema": "contracts/schemas/processing-envelope.schema.json",
+            "schema_id": "mdplace.processing-envelope/v1",
+            "envelope_id": "envelope:iap-002-0",
+            "chain_id": "adapter-chain:iap-002",
+            "attempt_id": "adapter-attempt:iap-002-0",
+            "attempt_sequence": 0,
+            "authorization_id": "adapter-authorization:local-primary",
+            "bindings": {
+              "vault_id": "vault:fixture-vault",
+              "policy": {
+                "id": "policy:core-processing",
+                "version": "1.0.0",
+                "sha256": "27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766"
+              },
+              "source_profile": {
+                "id": "source-profile:web-clipper",
+                "version": "1.0.0",
+                "sha256": "e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549"
+              },
+              "taxonomy_revision": {
+                "id": "taxonomy-revision:fixture-001",
+                "revision": 1,
+                "sha256": "6e77aeb5337715429270fd9c18cd01d388033efade5ce207b834516b2f96b1e6"
+              },
+              "source_note_id": "file:01J00000000000000000000000",
+              "source_note_version_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "adapter_id": "adapter:local-alpha",
+              "provider_id": "provider:local-alpha",
+              "model_id": "model:local-alpha",
+              "model_version": "2026-08-01"
+            },
+            "purpose_id": "purpose:placement",
+            "destination": {
+              "destination_id": "destination:local-alpha",
+              "endpoint": "local://local-alpha",
+              "locality": "local"
+            },
+            "transmitted_fields": [
+              {
+                "field_id": "field:title",
+                "data_class": "data:title",
+                "segment_id": "segment:iap-002-0-title",
+                "redaction_receipt_sha256": "24a4845c2cbce985522d61b8b44bf42a0f5fa7b25c6a5e16320729d23b3c43a0"
+              }
+            ],
+            "transmitted_artifacts": [
+              "artifact:intelligence-proposal"
+            ],
+            "redactions": [
+              {
+                "rule_id": "redaction:remove-identifiers",
+                "receipt_sha256": "24a4845c2cbce985522d61b8b44bf42a0f5fa7b25c6a5e16320729d23b3c43a0",
+                "status": "applied"
+              }
+            ],
+            "capabilities": [
+              "capability:produce-proposal"
+            ],
+            "retention_facts": [
+              {
+                "retention_fact_id": "retention:local-alpha",
+                "status": "known",
+                "max_days": 0,
+                "data_use": "request_only",
+                "region": "local",
+                "subprocessors": [
+                  "none"
+                ]
+              }
+            ],
+            "retention_artifacts": [
+              "artifact:intelligence-proposal"
+            ],
+            "credential_boundary": {
+              "credential_ref": "credential-ref:local-alpha",
+              "store": "os_credential_store",
+              "authentication_method": "local_process",
+              "provider_id": "provider:local-alpha",
+              "purpose_id": "purpose:placement",
+              "adapter_visibility": "none"
+            },
+            "ceilings": {
+              "input_bytes": 6000,
+              "output_bytes": 3000,
+              "runtime_ms": 800,
+              "cost_microunits": 0
+            },
+            "contracts": {
+              "adapter_contract_version": "1.0.0",
+              "prompt_contract_version": "1.0.0",
+              "proposal_schema_id": "mdplace.intelligence-proposal/v1",
+              "proposal_schema_version": "1.0.0"
+            },
+            "payload_segments": [
+              {
+                "segment_id": "segment:iap-002-0-title",
+                "field_id": "field:title",
+                "utf8": "Fixture title",
+                "byte_length": 13,
+                "sha256": "2567c20ebcb7577aae7cc83921587cc4258f0ad65e982632e0a6bb7916b363e8"
+              }
+            ],
+            "cached_proposal_binding": null
+          },
+          "isolation": {
+            "ephemeral": true,
+            "fresh_process": true,
+            "filesystem": "none",
+            "tools": "none",
+            "ambient_configuration": "unreadable",
+            "credential_visibility": "none",
+            "network_scope": [],
+            "effective_capabilities": [
+              "capability:produce-proposal"
+            ],
+            "canary": {
+              "canary_id": "canary:iap-002-0",
+              "challenge": "return inert-canary without actions",
+              "expected": "inert-canary",
+              "observed": "inert-canary",
+              "passed": true
+            }
+          },
+          "double": {
+            "behavior": "proposal",
+            "raw_output": "{\"schema_id\":\"mdplace.intelligence-proposal/v1\",\"proposal_id\":\"proposal:iap-002-0\",\"proposal_version\":\"1.0.0\",\"kind\":\"abstention\",\"envelope_id\":\"envelope:iap-002-0\",\"attempt_id\":\"adapter-attempt:iap-002-0\",\"bindings\":{\"policy_id\":\"policy:core-processing\",\"policy_version\":\"1.0.0\",\"policy_sha256\":\"27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766\",\"source_profile_id\":\"source-profile:web-clipper\",\"source_profile_version\":\"1.0.0\",\"source_profile_sha256\":\"e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549\",\"taxonomy_revision_id\":\"taxonomy-revision:fixture-001\",\"taxonomy_revision\":1,\"taxonomy_revision_sha256\":\"6e77aeb5337715429270fd9c18cd01d388033efade5ce207b834516b2f96b1e6\",\"adapter_id\":\"adapter:local-alpha\",\"provider_id\":\"provider:local-alpha\",\"model_id\":\"model:local-alpha\",\"model_version\":\"2026-08-01\",\"adapter_contract_version\":\"1.0.0\",\"prompt_contract_version\":\"1.0.0\",\"proposal_schema_version\":\"1.0.0\"},\"subject_note_id\":\"file:01J00000000000000000000000\",\"subject_note_version_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"candidates\":[],\"taxonomy_hypotheses\":[],\"evidence_segment_ids\":[\"segment:iap-002-0-title\"],\"rationale\":\"Bounded fixture rationale.\",\"warnings\":[],\"abstention_reason\":\"insufficient_evidence\",\"scores_calibration\":\"uncalibrated\",\"authority\":{\"semantic\":\"none\",\"note_placement\":\"none\",\"taxonomy\":\"none\",\"filesystem\":\"none\",\"projection\":\"none\",\"destination_selection\":\"none\",\"tool_invocation\":\"none\",\"credential_access\":\"none\"}}",
+            "duration_ms": 500,
+            "cost_microunits": 0,
+            "observed_started_at": "2026-08-20T00:01:00.000Z",
+            "observed_completed_at": "2026-08-20T00:01:00.500Z",
+            "provider_request_id": null,
+            "requested_actions": []
+          }
+        }
+      ],
+      "recovery": {
+        "crash_point": "none",
+        "target_attempt_id": null,
+        "target_attempt_sequence": null,
+        "transmission_observed": false,
+        "prior_transmission": null,
+        "prior_receipts": []
+      },
+      "illegal_transition": null
+    }
+  },
+  "expected": {
+    "verdict": "pass",
+    "codes": [],
+    "outputs": [
+      "validated Intelligence Proposal remains inert advice"
+    ],
+    "operations": [
+      "read trusted Intelligence Adapter authorization context",
+      "bind exact Processing Envelope envelope:iap-002-0",
+      "verify isolation and Adapter Isolation Canary adapter-attempt:iap-002-0",
+      "transmit exact Processing Envelope bytes adapter-attempt:iap-002-0",
+      "observe instrumented Intelligence Adapter double adapter-attempt:iap-002-0",
+      "validate inert Intelligence Proposal adapter-attempt:iap-002-0",
+      "record Adapter Run Receipt adapter-receipt:iap-002-0"
+    ],
+    "receipts": [
+      "{\"schema_id\":\"mdplace.adapter-run-receipt/v1\",\"receipt_id\":\"adapter-receipt:iap-002-0\",\"receipt_version\":\"1.0.0\",\"chain_id\":\"adapter-chain:iap-002\",\"attempt_id\":\"adapter-attempt:iap-002-0\",\"attempt_class\":\"primary\",\"attempt_sequence\":0,\"authorization_id\":\"adapter-authorization:local-primary\",\"policy_binding\":{\"id\":\"policy:core-processing\",\"version\":\"1.0.0\",\"sha256\":\"27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766\"},\"source_profile_binding\":{\"id\":\"source-profile:web-clipper\",\"version\":\"1.0.0\",\"sha256\":\"e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549\"},\"taxonomy_revision_binding\":{\"id\":\"taxonomy-revision:fixture-001\",\"revision\":1,\"sha256\":\"6e77aeb5337715429270fd9c18cd01d388033efade5ce207b834516b2f96b1e6\"},\"envelope_id\":\"envelope:iap-002-0\",\"envelope_sha256\":\"6dd823e40696bf835f536b055db1540a0fb63b0b70c831733fbd8cd16dc2a623\",\"transmission_sha256\":\"6dd823e40696bf835f536b055db1540a0fb63b0b70c831733fbd8cd16dc2a623\",\"transmitted_bytes\":2627,\"observed_destination\":\"local://local-alpha\",\"effective_capabilities\":[\"capability:produce-proposal\"],\"retention_artifact_sha256s\":[\"dd8208b47690ad24644eeff31d5dd9f1aa017cc4e0ef2d5deddeb151bfe68be6\"],\"credential_boundary_sha256\":\"fbab4617402e7fe50341cabea6f8077400c365052680a41654788c8bcdb836f1\",\"isolation\":{\"ephemeral\":true,\"fresh_process\":true,\"filesystem\":\"none\",\"tools\":\"none\",\"ambient_configuration\":\"unreadable\",\"credential_visibility\":\"none\",\"network_scope\":[],\"canary_id\":\"canary:iap-002-0\",\"canary_challenge_sha256\":\"658e754b32792e77ae2287bde772227abef23e6bce73443c865ad183dce6fd1f\",\"canary_expected_sha256\":\"63591017065009f4b4c40de15d7575b991de3faaeba086e2e3e96f64ab33a985\",\"canary_observed_sha256\":\"63591017065009f4b4c40de15d7575b991de3faaeba086e2e3e96f64ab33a985\",\"canary_passed\":true},\"budget\":{\"input_bytes\":2627,\"output_bytes\":1516,\"runtime_ms\":500,\"cost_microunits\":0},\"observed_started_at\":\"2026-08-20T00:01:00.000Z\",\"observed_completed_at\":\"2026-08-20T00:01:00.500Z\",\"provider_request_id\":null,\"raw_response_sha256\":\"dbfee180738b32ca578be325c7268d3ae16c9dfa2f25ae3a29302ac811ed4b78\",\"proposal_sha256\":\"6378217e2db6dea3c66b5cc744e86137535103060a108652f04b92db94835406\",\"outcome\":\"accepted\",\"reason\":\"adapter.proposal_accepted_as_advice\",\"semantic_effects\":[],\"filesystem_effects\":[],\"tool_invocations\":[],\"receipt_sha256\":\"13a716a55c41d68dd0b89a4fd5b5d015eaf4acf04255c82ce2239803e7ec7b13\"}"
+    ],
+    "filesystem_effects": [
+      "none"
+    ],
+    "network_effects": [
+      "none"
+    ],
+    "observations": [
+      "{\"attempt_class\":\"primary\",\"attempt_id\":\"adapter-attempt:iap-002-0\",\"declared_retention_artifacts\":[\"artifact:intelligence-proposal\"],\"effective_capabilities\":[\"capability:produce-proposal\"],\"exact_destination\":\"local://local-alpha\",\"exact_transmitted_bytes\":2627,\"exact_transmitted_sha256\":\"6dd823e40696bf835f536b055db1540a0fb63b0b70c831733fbd8cd16dc2a623\",\"exact_transmitted_utf8\":\"{\\\"$schema\\\":\\\"contracts/schemas/processing-envelope.schema.json\\\",\\\"attempt_id\\\":\\\"adapter-attempt:iap-002-0\\\",\\\"attempt_sequence\\\":0,\\\"authorization_id\\\":\\\"adapter-authorization:local-primary\\\",\\\"bindings\\\":{\\\"adapter_id\\\":\\\"adapter:local-alpha\\\",\\\"model_id\\\":\\\"model:local-alpha\\\",\\\"model_version\\\":\\\"2026-08-01\\\",\\\"policy\\\":{\\\"id\\\":\\\"policy:core-processing\\\",\\\"sha256\\\":\\\"27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766\\\",\\\"version\\\":\\\"1.0.0\\\"},\\\"provider_id\\\":\\\"provider:local-alpha\\\",\\\"source_note_id\\\":\\\"file:01J00000000000000000000000\\\",\\\"source_note_version_sha256\\\":\\\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\\",\\\"source_profile\\\":{\\\"id\\\":\\\"source-profile:web-clipper\\\",\\\"sha256\\\":\\\"e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549\\\",\\\"version\\\":\\\"1.0.0\\\"},\\\"taxonomy_revision\\\":{\\\"id\\\":\\\"taxonomy-revision:fixture-001\\\",\\\"revision\\\":1,\\\"sha256\\\":\\\"6e77aeb5337715429270fd9c18cd01d388033efade5ce207b834516b2f96b1e6\\\"},\\\"vault_id\\\":\\\"vault:fixture-vault\\\"},\\\"cached_proposal_binding\\\":null,\\\"capabilities\\\":[\\\"capability:produce-proposal\\\"],\\\"ceilings\\\":{\\\"cost_microunits\\\":0,\\\"input_bytes\\\":6000,\\\"output_bytes\\\":3000,\\\"runtime_ms\\\":800},\\\"chain_id\\\":\\\"adapter-chain:iap-002\\\",\\\"contracts\\\":{\\\"adapter_contract_version\\\":\\\"1.0.0\\\",\\\"prompt_contract_version\\\":\\\"1.0.0\\\",\\\"proposal_schema_id\\\":\\\"mdplace.intelligence-proposal/v1\\\",\\\"proposal_schema_version\\\":\\\"1.0.0\\\"},\\\"credential_boundary\\\":{\\\"adapter_visibility\\\":\\\"none\\\",\\\"authentication_method\\\":\\\"local_process\\\",\\\"credential_ref\\\":\\\"credential-ref:local-alpha\\\",\\\"provider_id\\\":\\\"provider:local-alpha\\\",\\\"purpose_id\\\":\\\"purpose:placement\\\",\\\"store\\\":\\\"os_credential_store\\\"},\\\"destination\\\":{\\\"destination_id\\\":\\\"destination:local-alpha\\\",\\\"endpoint\\\":\\\"local://local-alpha\\\",\\\"locality\\\":\\\"local\\\"},\\\"envelope_id\\\":\\\"envelope:iap-002-0\\\",\\\"payload_segments\\\":[{\\\"byte_length\\\":13,\\\"field_id\\\":\\\"field:title\\\",\\\"segment_id\\\":\\\"segment:iap-002-0-title\\\",\\\"sha256\\\":\\\"2567c20ebcb7577aae7cc83921587cc4258f0ad65e982632e0a6bb7916b363e8\\\",\\\"utf8\\\":\\\"Fixture title\\\"}],\\\"purpose_id\\\":\\\"purpose:placement\\\",\\\"redactions\\\":[{\\\"receipt_sha256\\\":\\\"24a4845c2cbce985522d61b8b44bf42a0f5fa7b25c6a5e16320729d23b3c43a0\\\",\\\"rule_id\\\":\\\"redaction:remove-identifiers\\\",\\\"status\\\":\\\"applied\\\"}],\\\"retention_artifacts\\\":[\\\"artifact:intelligence-proposal\\\"],\\\"retention_facts\\\":[{\\\"data_use\\\":\\\"request_only\\\",\\\"max_days\\\":0,\\\"region\\\":\\\"local\\\",\\\"retention_fact_id\\\":\\\"retention:local-alpha\\\",\\\"status\\\":\\\"known\\\",\\\"subprocessors\\\":[\\\"none\\\"]}],\\\"schema_id\\\":\\\"mdplace.processing-envelope/v1\\\",\\\"transmitted_artifacts\\\":[\\\"artifact:intelligence-proposal\\\"],\\\"transmitted_fields\\\":[{\\\"data_class\\\":\\\"data:title\\\",\\\"field_id\\\":\\\"field:title\\\",\\\"redaction_receipt_sha256\\\":\\\"24a4845c2cbce985522d61b8b44bf42a0f5fa7b25c6a5e16320729d23b3c43a0\\\",\\\"segment_id\\\":\\\"segment:iap-002-0-title\\\"}]}\",\"filesystem_effects\":[],\"isolation\":{\"ambient_configuration\":\"unreadable\",\"canary\":{\"canary_id\":\"canary:iap-002-0\",\"challenge\":\"return inert-canary without actions\",\"expected\":\"inert-canary\",\"observed\":\"inert-canary\",\"passed\":true},\"credential_visibility\":\"none\",\"effective_capabilities\":[\"capability:produce-proposal\"],\"ephemeral\":true,\"filesystem\":\"none\",\"fresh_process\":true,\"network_scope\":[],\"tools\":\"none\"},\"measured_budget\":{\"cost_microunits\":0,\"input_bytes\":2627,\"output_bytes\":1516,\"runtime_ms\":500},\"observed_completed_at\":\"2026-08-20T00:01:00.500Z\",\"observed_started_at\":\"2026-08-20T00:01:00.000Z\",\"provider_request_id\":null,\"raw_output_sha256\":\"dbfee180738b32ca578be325c7268d3ae16c9dfa2f25ae3a29302ac811ed4b78\",\"semantic_effects\":[],\"tool_invocations\":[]}"
+    ],
+    "terminal_state": "proposal_advice_available",
+    "illegal_transition": false
+  }
+}

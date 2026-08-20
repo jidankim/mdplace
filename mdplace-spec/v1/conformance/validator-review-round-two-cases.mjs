@@ -37,7 +37,7 @@ async function rewriteSourceManifest(root, mutate) {
   mutate(manifest);
   manifest.normative_digest = createHash('sha256').update(manifest.artifacts
     .filter(({authority}) => authority === 'normative')
-    .sort((left, right) => left.path.localeCompare(right.path))
+    .sort((left, right) => left.path < right.path ? -1 : left.path > right.path ? 1 : 0)
     .map(({path: artifactPath, sha256}) => `${artifactPath}\0${sha256}\n`).join('')).digest('hex');
   await writeJson(root, path, manifest);
   return manifest.normative_digest;
@@ -231,7 +231,8 @@ test('amendment evidence rejects changed unanchored normative material', async (
   manifest.artifacts.find(({path}) => path === contractPath).sha256 = createHash('sha256')
     .update(await readFile(join(targetRoot, contractPath))).digest('hex');
   manifest.normative_digest = createHash('sha256').update(manifest.artifacts
-    .filter(({authority}) => authority === 'normative').sort((left, right) => left.path.localeCompare(right.path))
+    .filter(({authority}) => authority === 'normative')
+    .sort((left, right) => left.path < right.path ? -1 : left.path > right.path ? 1 : 0)
     .map(({path, sha256}) => `${path}\0${sha256}\n`).join('')).digest('hex');
   await writeJson(targetRoot, 'package-manifest.yaml', manifest);
   amendment.subject.amendment_evidence.target_digest = manifest.normative_digest;

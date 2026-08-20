@@ -1,0 +1,611 @@
+{
+  "$schema": "../schemas/transition-table.schema.json",
+  "schema_id": "mdplace.transition-table/v1",
+  "table_id": "TRANS-IAP-RECOVERY",
+  "lifecycle": "Intelligence Adapter recovery",
+  "version": "1.0.0",
+  "states": [
+    "interrupted",
+    "recovery_required",
+    "recovered",
+    "denied"
+  ],
+  "commands": [
+    "inspect_adapter_recovery",
+    "recover_adapter_receipt",
+    "deny_adapter_recovery"
+  ],
+  "transitions": [
+    {
+      "transition_id": "TR-IAPREC-001",
+      "command_or_event": "inspect_adapter_recovery",
+      "from_state": "interrupted",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Processing Envelope and attempt authorization",
+        "active approved policy Source Profile and taxonomy revision binding"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
+      ],
+      "emitted_records": [
+        "AdapterRecoveryObservation"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same AdapterRecoveryObservation or advance once"
+      },
+      "terminal_state": "recovery_required",
+      "failure_result": {
+        "code": "adapter.recovery_unknown_completion",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "reconcile from the exact receipt and transmission observation"
+    },
+    {
+      "transition_id": "TR-IAPREC-002",
+      "command_or_event": "recover_adapter_receipt",
+      "from_state": "interrupted",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "state and command pair is not permitted"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same denial receipt"
+      },
+      "terminal_state": "interrupted",
+      "failure_result": {
+        "code": "adapter.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "remain unchanged and require a newly authorized command"
+    },
+    {
+      "transition_id": "TR-IAPREC-003",
+      "command_or_event": "deny_adapter_recovery",
+      "from_state": "interrupted",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "state and command pair is not permitted"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same denial receipt"
+      },
+      "terminal_state": "interrupted",
+      "failure_result": {
+        "code": "adapter.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "remain unchanged and require a newly authorized command"
+    },
+    {
+      "transition_id": "TR-IAPREC-004",
+      "command_or_event": "inspect_adapter_recovery",
+      "from_state": "recovery_required",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "state and command pair is not permitted"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same denial receipt"
+      },
+      "terminal_state": "recovery_required",
+      "failure_result": {
+        "code": "adapter.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "remain unchanged and require a newly authorized command"
+    },
+    {
+      "transition_id": "TR-IAPREC-005",
+      "command_or_event": "recover_adapter_receipt",
+      "from_state": "recovery_required",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Processing Envelope and attempt authorization",
+        "active approved policy Source Profile and taxonomy revision binding"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same AdapterRunReceipt or advance once"
+      },
+      "terminal_state": "recovered",
+      "failure_result": {
+        "code": "adapter.recovery_unknown_completion",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "reconcile from the exact receipt and transmission observation"
+    },
+    {
+      "transition_id": "TR-IAPREC-006",
+      "command_or_event": "deny_adapter_recovery",
+      "from_state": "recovery_required",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Processing Envelope and attempt authorization",
+        "active approved policy Source Profile and taxonomy revision binding"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same AdapterRunReceipt or advance once"
+      },
+      "terminal_state": "denied",
+      "failure_result": {
+        "code": "adapter.recovery_unknown_completion",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "reconcile from the exact receipt and transmission observation"
+    },
+    {
+      "transition_id": "TR-IAPREC-007",
+      "command_or_event": "inspect_adapter_recovery",
+      "from_state": "recovered",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "state and command pair is not permitted"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same denial receipt"
+      },
+      "terminal_state": "recovered",
+      "failure_result": {
+        "code": "adapter.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "remain unchanged and require a newly authorized command"
+    },
+    {
+      "transition_id": "TR-IAPREC-008",
+      "command_or_event": "recover_adapter_receipt",
+      "from_state": "recovered",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "state and command pair is not permitted"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same denial receipt"
+      },
+      "terminal_state": "recovered",
+      "failure_result": {
+        "code": "adapter.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "remain unchanged and require a newly authorized command"
+    },
+    {
+      "transition_id": "TR-IAPREC-009",
+      "command_or_event": "deny_adapter_recovery",
+      "from_state": "recovered",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "state and command pair is not permitted"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same denial receipt"
+      },
+      "terminal_state": "recovered",
+      "failure_result": {
+        "code": "adapter.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "remain unchanged and require a newly authorized command"
+    },
+    {
+      "transition_id": "TR-IAPREC-010",
+      "command_or_event": "inspect_adapter_recovery",
+      "from_state": "denied",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "state and command pair is not permitted"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same denial receipt"
+      },
+      "terminal_state": "denied",
+      "failure_result": {
+        "code": "adapter.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "remain unchanged and require a newly authorized command"
+    },
+    {
+      "transition_id": "TR-IAPREC-011",
+      "command_or_event": "recover_adapter_receipt",
+      "from_state": "denied",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "state and command pair is not permitted"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same denial receipt"
+      },
+      "terminal_state": "denied",
+      "failure_result": {
+        "code": "adapter.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "remain unchanged and require a newly authorized command"
+    },
+    {
+      "transition_id": "TR-IAPREC-012",
+      "command_or_event": "deny_adapter_recovery",
+      "from_state": "denied",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "state and command pair is not permitted"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same denial receipt"
+      },
+      "terminal_state": "denied",
+      "failure_result": {
+        "code": "adapter.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "remain unchanged and require a newly authorized command"
+    }
+  ]
+}

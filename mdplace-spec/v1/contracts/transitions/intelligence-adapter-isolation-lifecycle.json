@@ -1,0 +1,314 @@
+{
+  "$schema": "../schemas/transition-table.schema.json",
+  "schema_id": "mdplace.transition-table/v1",
+  "table_id": "TRANS-IAP-ISOLATION",
+  "lifecycle": "Intelligence Adapter isolation failure",
+  "version": "1.0.0",
+  "states": [
+    "unverified",
+    "verified",
+    "failed"
+  ],
+  "commands": [
+    "verify_adapter_isolation",
+    "fail_adapter_canary"
+  ],
+  "transitions": [
+    {
+      "transition_id": "TR-IAPISO-001",
+      "command_or_event": "verify_adapter_isolation",
+      "from_state": "unverified",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Processing Envelope and attempt authorization",
+        "active approved policy Source Profile and taxonomy revision binding"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
+      ],
+      "emitted_records": [
+        "AdapterIsolationObservation"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same AdapterIsolationObservation or advance once"
+      },
+      "terminal_state": "verified",
+      "failure_result": {
+        "code": "adapter.isolation_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "reconcile from the exact receipt and transmission observation"
+    },
+    {
+      "transition_id": "TR-IAPISO-002",
+      "command_or_event": "fail_adapter_canary",
+      "from_state": "unverified",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Processing Envelope and attempt authorization",
+        "active approved policy Source Profile and taxonomy revision binding"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same AdapterRunReceipt or advance once"
+      },
+      "terminal_state": "failed",
+      "failure_result": {
+        "code": "adapter.canary_failed",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "reconcile from the exact receipt and transmission observation"
+    },
+    {
+      "transition_id": "TR-IAPISO-003",
+      "command_or_event": "verify_adapter_isolation",
+      "from_state": "verified",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "state and command pair is not permitted"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same denial receipt"
+      },
+      "terminal_state": "verified",
+      "failure_result": {
+        "code": "adapter.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "remain unchanged and require a newly authorized command"
+    },
+    {
+      "transition_id": "TR-IAPISO-004",
+      "command_or_event": "fail_adapter_canary",
+      "from_state": "verified",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "state and command pair is not permitted"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same denial receipt"
+      },
+      "terminal_state": "verified",
+      "failure_result": {
+        "code": "adapter.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "remain unchanged and require a newly authorized command"
+    },
+    {
+      "transition_id": "TR-IAPISO-005",
+      "command_or_event": "verify_adapter_isolation",
+      "from_state": "failed",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "state and command pair is not permitted"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same denial receipt"
+      },
+      "terminal_state": "failed",
+      "failure_result": {
+        "code": "adapter.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "remain unchanged and require a newly authorized command"
+    },
+    {
+      "transition_id": "TR-IAPISO-006",
+      "command_or_event": "fail_adapter_canary",
+      "from_state": "failed",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "state and command pair is not permitted"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same denial receipt"
+      },
+      "terminal_state": "failed",
+      "failure_result": {
+        "code": "adapter.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "remain unchanged and require a newly authorized command"
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "$schema": "../schemas/transition-table.schema.json",
+  "schema_id": "mdplace.transition-table/v1",
+  "table_id": "TRANS-IAP-TIMEOUT",
+  "lifecycle": "Intelligence Adapter timeout",
+  "version": "1.0.0",
+  "states": [
+    "running",
+    "timed_out"
+  ],
+  "commands": [
+    "time_out_adapter_attempt"
+  ],
+  "transitions": [
+    {
+      "transition_id": "TR-IAPTIME-001",
+      "command_or_event": "time_out_adapter_attempt",
+      "from_state": "running",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "operating_system"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Processing Envelope and attempt authorization",
+        "active approved policy Source Profile and taxonomy revision binding"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same AdapterRunReceipt or advance once"
+      },
+      "terminal_state": "timed_out",
+      "failure_result": {
+        "code": "adapter.timeout",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "reconcile from the exact receipt and transmission observation"
+    },
+    {
+      "transition_id": "TR-IAPTIME-002",
+      "command_or_event": "time_out_adapter_attempt",
+      "from_state": "timed_out",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "operating_system"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "state and command pair is not permitted"
+      ],
+      "base_references": [
+        "ProcessingEnvelope",
+        "ProcessingPolicy",
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
+      ],
+      "emitted_records": [
+        "AdapterRunReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "attempt_id",
+          "envelope_id"
+        ],
+        "retry_result": "return the same denial receipt"
+      },
+      "terminal_state": "timed_out",
+      "failure_result": {
+        "code": "adapter.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "AdapterRunReceipt"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "remain unchanged and require a newly authorized command"
+    }
+  ]
+}

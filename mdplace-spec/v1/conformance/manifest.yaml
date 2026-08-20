@@ -6178,6 +6178,1056 @@
         "terminal_state": true,
         "illegal_transition": false
       }
+    },
+    {
+      "fixture_id": "FIX-IAP-POS-001",
+      "path": "scenarios/intelligence-adapter/remote-valid-proposal-advice.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-POS-002",
+      "path": "scenarios/intelligence-adapter/local-valid-abstention-advice.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-POS-003",
+      "path": "scenarios/intelligence-adapter/authorized-retry-succeeds.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-POS-004",
+      "path": "scenarios/intelligence-adapter/authorized-local-fallback-succeeds.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-POS-005",
+      "path": "scenarios/intelligence-adapter/hostile-instructions-remain-inert-data.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-BND-001",
+      "path": "scenarios/intelligence-adapter/exact-input-ceiling-accepted.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-BND-002",
+      "path": "scenarios/intelligence-adapter/exact-output-ceiling-accepted.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-BND-003",
+      "path": "scenarios/intelligence-adapter/exact-runtime-ceiling-accepted.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-BND-004",
+      "path": "scenarios/intelligence-adapter/exact-cost-ceiling-accepted.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-NEG-001",
+      "path": "scenarios/intelligence-adapter/malformed-output-rejected.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-NEG-002",
+      "path": "scenarios/intelligence-adapter/unknown-proposal-field-rejected.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-NEG-003",
+      "path": "scenarios/intelligence-adapter/cost-budget-exhausted.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-NEG-004",
+      "path": "scenarios/intelligence-adapter/input-budget-exhausted.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-NEG-005",
+      "path": "scenarios/intelligence-adapter/timeout-recorded.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-NEG-006",
+      "path": "scenarios/intelligence-adapter/retry-exhaustion-recorded.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-NEG-007",
+      "path": "scenarios/intelligence-adapter/forbidden-fallback-recorded.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-NEG-008",
+      "path": "scenarios/intelligence-adapter/missing-retention-facts-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-NEG-009",
+      "path": "scenarios/intelligence-adapter/unapproved-destination-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-NEG-010",
+      "path": "scenarios/intelligence-adapter/unapproved-capability-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-NEG-011",
+      "path": "scenarios/intelligence-adapter/missing-redaction-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-NEG-012",
+      "path": "scenarios/intelligence-adapter/credential-boundary-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-NEG-013",
+      "path": "scenarios/intelligence-adapter/failed-canary-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-NEG-014",
+      "path": "scenarios/intelligence-adapter/failed-isolation-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-NEG-015",
+      "path": "scenarios/intelligence-adapter/embedded-tool-call-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-NEG-016",
+      "path": "scenarios/intelligence-adapter/secret-request-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-NEG-017",
+      "path": "scenarios/intelligence-adapter/ambient-configuration-read-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-NEG-018",
+      "path": "scenarios/intelligence-adapter/provider-mismatch-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-NEG-019",
+      "path": "scenarios/intelligence-adapter/purpose-mismatch-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-NEG-020",
+      "path": "scenarios/intelligence-adapter/field-set-mismatch-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-NEG-021",
+      "path": "scenarios/intelligence-adapter/artifact-set-mismatch-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-NEG-022",
+      "path": "scenarios/intelligence-adapter/attempt-output-budget-exhausted.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-NEG-023",
+      "path": "scenarios/intelligence-adapter/proposal-binding-mismatch-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-STATE-001",
+      "path": "scenarios/intelligence-adapter/stale-policy-binding-denied.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-STATE-002",
+      "path": "scenarios/intelligence-adapter/stale-source-profile-binding-denied.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-STATE-003",
+      "path": "scenarios/intelligence-adapter/stale-cached-proposal-denied.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-AUTH-001",
+      "path": "scenarios/intelligence-adapter/semantic-authority-output-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-AUTH-002",
+      "path": "scenarios/intelligence-adapter/filesystem-authority-output-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-AUTH-003",
+      "path": "scenarios/intelligence-adapter/placement-authority-output-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-ILLEGAL-001",
+      "path": "scenarios/intelligence-adapter/retry-after-exhaustion-denied.json",
+      "category": "illegal_transition",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": true
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-REC-001",
+      "path": "scenarios/intelligence-adapter/crash-before-transmission-recovers-denied.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-REC-002",
+      "path": "scenarios/intelligence-adapter/crash-after-transmission-requires-recovery.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-IAP-REC-003",
+      "path": "scenarios/intelligence-adapter/crash-after-receipt-preserves-receipt.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-IAP-001",
+        "REQ-IAP-002",
+        "REQ-IAP-003",
+        "REQ-IAP-004",
+        "REQ-IAP-005",
+        "REQ-IAP-006",
+        "REQ-IAP-007",
+        "REQ-IAP-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
     }
   ]
 }

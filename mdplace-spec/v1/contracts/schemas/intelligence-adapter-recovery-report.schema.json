@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:intelligence-adapter-recovery-report:v1",
+  "title": "mdplace Intelligence Adapter recovery report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_id", "package_series", "release_version", "validator_version", "case_count", "cases", "verdict"],
+  "properties": {
+    "schema_id": {"const": "mdplace.intelligence-adapter-recovery-report/v1"}, "package_series": {"const": "mdplace-spec/v1"}, "release_version": {"const": "1.0.0"}, "validator_version": {"type": "string", "minLength": 1}, "case_count": {"const": 3}, "cases": {"type": "array", "minItems": 3, "maxItems": 3, "uniqueItems": true, "items": {"$ref": "#/$defs/case"}}, "verdict": {"const": "pass"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "case": {"type": "object", "additionalProperties": false, "required": ["fixture_id", "crash_point", "target_attempt_id", "target_attempt_sequence", "terminal_state", "transmitted_bytes", "receipt_sha256s", "observable_result_sha256"], "properties": {"fixture_id": {"type": "string", "pattern": "^FIX-IAP-REC-[0-9]{3}$"}, "crash_point": {"enum": ["before_transmission", "after_transmission_before_receipt", "after_receipt"]}, "target_attempt_id": {"type": "string", "pattern": "^adapter-attempt:[a-z0-9-]{3,64}$"}, "target_attempt_sequence": {"type": "integer", "minimum": 0, "maximum": 2}, "terminal_state": {"enum": ["denied", "recovery_required", "recovered"]}, "transmitted_bytes": {"type": "integer", "minimum": 0}, "receipt_sha256s": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}}, "observable_result_sha256": {"$ref": "#/$defs/digest"}}}
+  }
+}

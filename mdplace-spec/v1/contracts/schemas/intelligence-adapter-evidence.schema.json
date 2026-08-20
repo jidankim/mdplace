@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:intelligence-adapter-evidence:v1",
+  "title": "mdplace Intelligence Adapter instrumented conformance evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_id", "package_series", "release_version", "validator_version", "scenario_count", "approved_context_sha256", "fixture_bindings", "claims"],
+  "properties": {
+    "schema_id": {"const": "mdplace.intelligence-adapter-evidence/v1"}, "package_series": {"const": "mdplace-spec/v1"}, "release_version": {"const": "1.0.0"}, "validator_version": {"type": "string", "minLength": 1}, "scenario_count": {"const": 42}, "approved_context_sha256": {"$ref": "#/$defs/digest"},
+    "fixture_bindings": {"type": "array", "minItems": 42, "maxItems": 42, "uniqueItems": true, "items": {"$ref": "#/$defs/binding"}}, "claims": {"$ref": "#/$defs/claims"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "fixtureIds": {"type": "array", "minItems": 1, "maxItems": 42, "uniqueItems": true, "items": {"type": "string", "pattern": "^FIX-IAP-[A-Z][A-Z0-9_]{1,31}-[0-9]{3}$"}},
+    "binding": {"type": "object", "additionalProperties": false, "required": ["fixture_id", "path", "fixture_sha256", "observable_result_sha256", "receipt_sha256s"], "properties": {"fixture_id": {"type": "string", "pattern": "^FIX-IAP-[A-Z][A-Z0-9_]{1,31}-[0-9]{3}$"}, "path": {"type": "string", "pattern": "^scenarios/intelligence-adapter/[a-z0-9][a-z0-9-]*\\.json$"}, "fixture_sha256": {"$ref": "#/$defs/digest"}, "observable_result_sha256": {"$ref": "#/$defs/digest"}, "receipt_sha256s": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}}}},
+    "claims": {"type": "object", "additionalProperties": false, "required": ["isolation_fixture_ids", "canary_fixture_ids", "instrumented_double_fixture_ids", "retry_fixture_ids", "fallback_fixture_ids", "inert_output_fixture_ids", "zero_semantic_effect", "zero_filesystem_effect", "zero_tool_effect", "exact_transmission_observed", "all_outcomes_receipted"], "properties": {"isolation_fixture_ids": {"$ref": "#/$defs/fixtureIds"}, "canary_fixture_ids": {"$ref": "#/$defs/fixtureIds"}, "instrumented_double_fixture_ids": {"$ref": "#/$defs/fixtureIds"}, "retry_fixture_ids": {"$ref": "#/$defs/fixtureIds"}, "fallback_fixture_ids": {"$ref": "#/$defs/fixtureIds"}, "inert_output_fixture_ids": {"$ref": "#/$defs/fixtureIds"}, "zero_semantic_effect": {"const": true}, "zero_filesystem_effect": {"const": true}, "zero_tool_effect": {"const": true}, "exact_transmission_observed": {"const": true}, "all_outcomes_receipted": {"const": true}}}
+  }
+}

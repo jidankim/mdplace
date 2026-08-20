@@ -10,6 +10,7 @@ import {observeControlPlaneScenario} from './control-plane-observer.mjs';
 import {observeTransition} from './transition-observer.mjs';
 import {observeVaultMutationScenario} from './vault-mutation-gate-observer.mjs';
 import {observeReferenceVaultScenario} from './reference-vault-observer.mjs';
+import {observeIntelligenceAdapterScenario} from './intelligence-adapter-observer.mjs';
 import {authorityMatches, manifestFields, packageArtifactPathAllowed, transitionFields} from './validator-rules.mjs';
 
 const operationBySchema = new Map([
@@ -183,6 +184,8 @@ export async function observeFixture(fixture, packageRoot, options = {}) {
       return observeVaultMutationScenario(fixture.subject, packageRoot);
     case 'reference_vault':
       return observeReferenceVaultScenario(fixture.subject, packageRoot);
+    case 'intelligence_adapter':
+      return observeIntelligenceAdapterScenario(fixture.subject.document, packageRoot);
     default:
       return {
         verdict: 'fail',

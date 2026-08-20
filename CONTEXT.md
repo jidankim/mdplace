@@ -256,6 +256,26 @@ _Avoid_: Privacy setting, blanket consent
 A local or remote reasoning integration that produces evidence, placement candidates, or taxonomy-change proposals under the Processing Policy. It treats Captured Tab Notes only as untrusted data, has no tool or credential access by default, and returns schema-constrained outputs. It neither establishes semantic truth nor causes external effects without separate explicit authorization.
 _Avoid_: Source of truth, taxonomy authority
 
+**Processing Envelope**:
+A closed, immutable, least-privilege input for one Intelligence Adapter Attempt that binds the exact approved Processing Policy and Source Profile versions, provider, purpose, destination, transmitted fields and artifacts, applied redactions, effective capabilities, retention facts, credential boundary, contract versions, and input/output/runtime/cost ceilings before any payload byte is transmitted. A remote destination uses only its bound credential-free HTTPS endpoint with a lowercase, normalization-stable, multi-label DNS-style authority outside the `localhost` namespace, a name-bearing final label, and default port; a local destination uses only its equivalently closed local endpoint and is not network egress. It contains untrusted data, never instructions or authority.
+_Avoid_: Prompt, ambient context, blanket provider request
+
+**Intelligence Adapter Attempt**:
+One independently authorized, isolated, ephemeral execution of an Intelligence Adapter against exactly one Processing Envelope. Initial, retry, and fallback attempts each have distinct immutable bindings, ceilings, isolation evidence, canary evidence, and an Adapter Run Receipt.
+_Avoid_: Persistent adapter session, retry loop, semantic operation
+
+**Intelligence Proposal**:
+A versioned, strictly validated, inert advisory output from an Intelligence Adapter, bound to one exact Processing Envelope and containing only the closed proposal vocabulary. Even a valid Intelligence Proposal remains non-authoritative data until a separately authorized consumer evaluates it under that consumer's own authority.
+_Avoid_: Accepted placement, semantic truth, executable instruction
+
+**Adapter Run Receipt**:
+The deterministic, immutable operational record for one Intelligence Adapter Attempt, binding its Processing Envelope, exact transmission observation, destination, capabilities, retention artifacts, credential boundary, canonical observed timestamps reconciled exactly with measured runtime, provider request identifier when available, resource use, isolation and canary evidence, output artifacts, outcome, and reason. Invalid or calendar-impossible observation timestamps are rejected before an attempt observation and are never replaced with invented facts. Its reason is the earliest applicable condition in the closed global precedence, even when several failures are observed. Recovery names one exact initial, retry, or fallback attempt by identity and sequence and accepts its receipt only when a compatible crash boundary and the same closed evaluator recompute the preceding cumulative chain state, safely observed measurements, and complete target receipt. It contains no credential or secret and grants no semantic or filesystem authority.
+_Avoid_: Provider log, semantic receipt, success message
+
+**Adapter Isolation Canary**:
+A deterministic pre-transmission challenge proving that one Intelligence Adapter Attempt is fresh, ephemeral, least-privilege, advisory-only, limited to its declared destination, and unable to invoke tools, read ambient configuration, acquire credentials, or access filesystem or semantic writers. Failure prevents transmission.
+_Avoid_: Health check, provider ping, post-execution audit
+
 **Taxonomy Proposal**:
 A provenance-bearing, non-authoritative candidate for any change to the accepted taxonomy. It has no semantic or projection effect until promoted.
 _Avoid_: Pending truth, automatic fact

@@ -97,6 +97,22 @@ const authorityByCommand = new Map([
   ['apply_redistribution', {roles: ['reference_vault_generator'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
   ['recover_redistribution', {roles: ['foreground_recovery'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
   ['seal_redistribution', {roles: ['conformance_validator'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['authorize_adapter_attempt', {roles: ['mdplace_agent'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['transmit_adapter_payload', {roles: ['mdplace_agent'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['record_adapter_outcome', {roles: ['mdplace_agent'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['deny_adapter_attempt', {roles: ['mdplace_agent'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['time_out_adapter_attempt', {roles: ['operating_system'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['authorize_adapter_retry', {roles: ['mdplace_agent'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['start_adapter_retry', {roles: ['mdplace_agent'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['exhaust_adapter_retry', {roles: ['mdplace_agent'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['authorize_adapter_fallback', {roles: ['mdplace_agent'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['start_adapter_fallback', {roles: ['mdplace_agent'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['exhaust_adapter_fallback', {roles: ['mdplace_agent'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['verify_adapter_isolation', {roles: ['mdplace_agent'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['fail_adapter_canary', {roles: ['mdplace_agent'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['inspect_adapter_recovery', {roles: ['foreground_recovery'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['recover_adapter_receipt', {roles: ['foreground_recovery'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['deny_adapter_recovery', {roles: ['foreground_recovery'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
 ]);
 
 const conformanceExecutables = new Set([
@@ -203,6 +219,12 @@ const conformanceExecutables = new Set([
   'conformance/reference-vault-observer.mjs',
   'conformance/reference-vault-evidence.mjs',
   'conformance/validator-reference-vault-cases.mjs',
+  'conformance/generate-intelligence-adapter-artifacts.mjs',
+  'conformance/intelligence-adapter-core.mjs',
+  'conformance/intelligence-adapter-validation.mjs',
+  'conformance/intelligence-adapter-observer.mjs',
+  'conformance/intelligence-adapter-checks.mjs',
+  'conformance/validator-intelligence-adapter-cases.mjs',
 ]);
 
 export function authorityMatches(command, actual) {

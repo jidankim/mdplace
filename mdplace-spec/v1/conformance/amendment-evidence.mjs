@@ -106,7 +106,7 @@ function unchangedUnanchoredNormativeArtifacts(sourcePackage, targetPackage, ent
   anchoredPaths.add('normative/requirements.json');
   const bindings = ({artifacts}) => artifacts.filter(({authority, path}) =>
     authority === 'normative' && !anchoredPaths.has(path))
-    .sort((left, right) => left.path.localeCompare(right.path))
+    .sort((left, right) => left.path < right.path ? -1 : left.path > right.path ? 1 : 0)
     .map(({path, sha256}) => `${path}\0${sha256}`);
   return isDeepStrictEqual(bindings(sourcePackage), bindings(targetPackage));
 }

@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:processing-envelope:v1",
+  "title": "mdplace Intelligence Adapter Processing Envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "envelope_id", "chain_id", "attempt_id", "attempt_sequence", "authorization_id", "bindings", "purpose_id", "destination", "transmitted_fields", "transmitted_artifacts", "redactions", "capabilities", "retention_facts", "retention_artifacts", "credential_boundary", "ceilings", "contracts", "payload_segments", "cached_proposal_binding"],
+  "properties": {
+    "$schema": {"const": "contracts/schemas/processing-envelope.schema.json"},
+    "schema_id": {"const": "mdplace.processing-envelope/v1"},
+    "envelope_id": {"type": "string", "pattern": "^envelope:[a-z0-9-]{3,64}$"},
+    "chain_id": {"type": "string", "pattern": "^adapter-chain:[a-z0-9-]{3,64}$"},
+    "attempt_id": {"type": "string", "pattern": "^adapter-attempt:[a-z0-9-]{3,64}$"},
+    "attempt_sequence": {"type": "integer", "minimum": 0, "maximum": 2},
+    "authorization_id": {"type": "string", "pattern": "^adapter-authorization:[a-z0-9-]{3,64}$"},
+    "bindings": {"$ref": "#/$defs/bindings"},
+    "purpose_id": {"type": "string", "pattern": "^purpose:[a-z0-9-]{3,64}$"},
+    "destination": {"$ref": "#/$defs/destination"},
+    "transmitted_fields": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/field"}},
+    "transmitted_artifacts": {"$ref": "#/$defs/stringSet"},
+    "redactions": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/redaction"}},
+    "capabilities": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["capability:produce-proposal", "capability:fixed-destination-network"]}},
+    "retention_facts": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/retention"}},
+    "retention_artifacts": {"$ref": "#/$defs/stringSet"},
+    "credential_boundary": {"$ref": "#/$defs/credentialBoundary"},
+    "ceilings": {"$ref": "#/$defs/ceilings"},
+    "contracts": {"$ref": "#/$defs/contracts"},
+    "payload_segments": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/segment"}},
+    "cached_proposal_binding": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/cachedProposal"}]}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "stringSet": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "versionBinding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "version", "sha256"],
+      "properties": {"id": {"type": "string", "minLength": 1}, "version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"}, "sha256": {"$ref": "#/$defs/digest"}}
+    },
+    "bindings": {
+      "type": "object", "additionalProperties": false,
+      "required": ["vault_id", "policy", "source_profile", "taxonomy_revision", "source_note_id", "source_note_version_sha256", "adapter_id", "provider_id", "model_id", "model_version"],
+      "properties": {
+        "vault_id": {"type": "string", "pattern": "^vault:[a-z0-9-]{3,64}$"},
+        "policy": {"$ref": "#/$defs/versionBinding"}, "source_profile": {"$ref": "#/$defs/versionBinding"},
+        "taxonomy_revision": {"$ref": "#/$defs/taxonomyRevisionBinding"},
+        "source_note_id": {"type": "string", "pattern": "^file:[A-Z0-9]{10,32}$"},
+        "source_note_version_sha256": {"$ref": "#/$defs/digest"},
+        "adapter_id": {"type": "string", "pattern": "^adapter:[a-z0-9-]{3,64}$"},
+        "provider_id": {"type": "string", "pattern": "^provider:[a-z0-9-]{3,64}$"},
+        "model_id": {"type": "string", "pattern": "^model:[a-z0-9.-]{3,64}$"},
+        "model_version": {"type": "string", "minLength": 1}
+      }
+    },
+    "taxonomyRevisionBinding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "revision", "sha256"],
+      "properties": {"id": {"type": "string", "pattern": "^taxonomy-revision:[a-z0-9-]{3,64}$"}, "revision": {"type": "integer", "minimum": 0}, "sha256": {"$ref": "#/$defs/digest"}}
+    },
+    "destination": {
+      "type": "object", "additionalProperties": false,
+      "required": ["destination_id", "endpoint", "locality"],
+      "properties": {"destination_id": {"type": "string", "pattern": "^destination:[a-z0-9-]{3,64}$"}, "endpoint": {"type": "string", "minLength": 1}, "locality": {"enum": ["local", "remote"]}},
+      "allOf": [
+        {"if": {"properties": {"locality": {"const": "remote"}}, "required": ["locality"]}, "then": {"properties": {"endpoint": {"allOf": [
+          {"pattern": "^https://(?:[a-z0-9][a-z0-9.-]{0,252}|[a-z0-9][a-z0-9.-]{0,252}/[A-Za-z0-9._~!$&'()*+,;=:@/-]*)$"},
+          {"pattern": "^https://[^/]+\\.[^/]+(?:/|$)"},
+          {"pattern": "^https://(?![^/]*\\.localhost(?:/|$))"},
+          {"pattern": "^https://(?![^/]*\\.\\.)"},
+          {"pattern": "^https://(?![^/]*(?:\\.-|-\\.))"},
+          {"pattern": "^https://(?![^/]*(?:\\.|-)(?:/|$))"},
+          {"pattern": "^https://(?![^/]*[a-z0-9-]{64})"},
+          {"pattern": "^https://(?:(?=[a-z][a-z0-9-]*(?:/|$))|(?=[^/]*\\.[a-z][a-z0-9-]*(?:/|$)))"},
+          {"pattern": "^https://(?!.*\/\\.\\.?(?:/|$))"}
+        ]}}}},
+        {"if": {"properties": {"locality": {"const": "local"}}, "required": ["locality"]}, "then": {"properties": {"endpoint": {"allOf": [
+          {"pattern": "^local://(?:[a-z0-9][a-z0-9.-]{0,252}|[a-z0-9][a-z0-9.-]{0,252}/[A-Za-z0-9._~!$&'()*+,;=:@/-]*)$"},
+          {"pattern": "^local://(?![^/]*\\.\\.)"},
+          {"pattern": "^local://(?![^/]*(?:\\.-|-\\.))"},
+          {"pattern": "^local://(?![^/]*(?:\\.|-)(?:/|$))"},
+          {"pattern": "^local://(?![^/]*[a-z0-9-]{64})"},
+          {"pattern": "^local://(?:(?=[a-z][a-z0-9-]*(?:/|$))|(?=[^/]*\\.[a-z][a-z0-9-]*(?:/|$)))"},
+          {"pattern": "^local://(?!.*\/\\.\\.?(?:/|$))"}
+        ]}}}}
+      ]
+    },
+    "field": {
+      "type": "object", "additionalProperties": false,
+      "required": ["field_id", "data_class", "segment_id", "redaction_receipt_sha256"],
+      "properties": {"field_id": {"type": "string", "pattern": "^field:[a-z0-9-]{3,64}$"}, "data_class": {"type": "string", "pattern": "^data:[a-z0-9-]{3,64}$"}, "segment_id": {"type": "string", "pattern": "^segment:[a-z0-9-]{3,64}$"}, "redaction_receipt_sha256": {"$ref": "#/$defs/digest"}}
+    },
+    "redaction": {
+      "type": "object", "additionalProperties": false,
+      "required": ["rule_id", "receipt_sha256", "status"],
+      "properties": {"rule_id": {"type": "string", "pattern": "^redaction:[a-z0-9-]{3,64}$"}, "receipt_sha256": {"$ref": "#/$defs/digest"}, "status": {"const": "applied"}}
+    },
+    "retention": {
+      "type": "object", "additionalProperties": false,
+      "required": ["retention_fact_id", "status", "max_days", "data_use", "region", "subprocessors"],
+      "properties": {"retention_fact_id": {"type": "string", "pattern": "^retention:[a-z0-9-]{3,64}$"}, "status": {"enum": ["known", "unknown_acknowledged"]}, "max_days": {"type": "integer", "minimum": 0, "maximum": 36500}, "data_use": {"enum": ["request_only", "provider_training_unknown"]}, "region": {"type": "string", "minLength": 1}, "subprocessors": {"$ref": "#/$defs/stringSet"}}
+    },
+    "credentialBoundary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["credential_ref", "store", "authentication_method", "provider_id", "purpose_id", "adapter_visibility"],
+      "properties": {"credential_ref": {"type": "string", "pattern": "^credential-ref:[a-z0-9-]{3,64}$"}, "store": {"const": "os_credential_store"}, "authentication_method": {"enum": ["api_key", "local_process"]}, "provider_id": {"type": "string", "pattern": "^provider:[a-z0-9-]{3,64}$"}, "purpose_id": {"type": "string", "pattern": "^purpose:[a-z0-9-]{3,64}$"}, "adapter_visibility": {"const": "none"}}
+    },
+    "ceilings": {
+      "type": "object", "additionalProperties": false,
+      "required": ["input_bytes", "output_bytes", "runtime_ms", "cost_microunits"],
+      "properties": {"input_bytes": {"type": "integer", "minimum": 1}, "output_bytes": {"type": "integer", "minimum": 1}, "runtime_ms": {"type": "integer", "minimum": 1}, "cost_microunits": {"type": "integer", "minimum": 0}}
+    },
+    "contracts": {
+      "type": "object", "additionalProperties": false,
+      "required": ["adapter_contract_version", "prompt_contract_version", "proposal_schema_id", "proposal_schema_version"],
+      "properties": {"adapter_contract_version": {"const": "1.0.0"}, "prompt_contract_version": {"const": "1.0.0"}, "proposal_schema_id": {"const": "mdplace.intelligence-proposal/v1"}, "proposal_schema_version": {"const": "1.0.0"}}
+    },
+    "segment": {
+      "type": "object", "additionalProperties": false,
+      "required": ["segment_id", "field_id", "utf8", "byte_length", "sha256"],
+      "properties": {"segment_id": {"type": "string", "pattern": "^segment:[a-z0-9-]{3,64}$"}, "field_id": {"type": "string", "pattern": "^field:[a-z0-9-]{3,64}$"}, "utf8": {"type": "string"}, "byte_length": {"type": "integer", "minimum": 0}, "sha256": {"$ref": "#/$defs/digest"}}
+    },
+    "cachedProposal": {
+      "type": "object", "additionalProperties": false,
+      "required": ["proposal_sha256", "policy_sha256", "source_profile_sha256", "taxonomy_revision_id", "taxonomy_revision", "taxonomy_revision_sha256", "source_note_version_sha256", "adapter_contract_version", "prompt_contract_version", "proposal_schema_version"],
+      "properties": {"proposal_sha256": {"$ref": "#/$defs/digest"}, "policy_sha256": {"$ref": "#/$defs/digest"}, "source_profile_sha256": {"$ref": "#/$defs/digest"}, "taxonomy_revision_id": {"type": "string", "minLength": 1}, "taxonomy_revision": {"type": "integer", "minimum": 0}, "taxonomy_revision_sha256": {"$ref": "#/$defs/digest"}, "source_note_version_sha256": {"$ref": "#/$defs/digest"}, "adapter_contract_version": {"type": "string", "minLength": 1}, "prompt_contract_version": {"type": "string", "minLength": 1}, "proposal_schema_version": {"type": "string", "minLength": 1}}
+    }
+  }
+}

@@ -41,7 +41,7 @@ export async function preparePackage(files) {
   const normativeDigest = createHash('sha256').update(
     artifacts
       .filter(({authority}) => authority === 'normative')
-      .sort((left, right) => left.path.localeCompare(right.path))
+      .sort((left, right) => left.path < right.path ? -1 : left.path > right.path ? 1 : 0)
       .map(({path, sha256}) => `${path}\0${sha256}\n`)
       .join(''),
   ).digest('hex');
