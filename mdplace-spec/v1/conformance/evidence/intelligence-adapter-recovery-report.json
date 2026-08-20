@@ -8,6 +8,7 @@
     {
       "fixture_id": "FIX-IAP-REC-001",
       "crash_point": "before_transmission",
+      "target_attempt_id": "adapter-attempt:iap-040-0",
       "terminal_state": "denied",
       "transmitted_bytes": 0,
       "receipt_sha256s": [
@@ -18,6 +19,7 @@
     {
       "fixture_id": "FIX-IAP-REC-002",
       "crash_point": "after_transmission_before_receipt",
+      "target_attempt_id": "adapter-attempt:iap-041-0",
       "terminal_state": "recovery_required",
       "transmitted_bytes": 3879,
       "receipt_sha256s": [
@@ -28,6 +30,7 @@
     {
       "fixture_id": "FIX-IAP-REC-003",
       "crash_point": "after_receipt",
+      "target_attempt_id": "adapter-attempt:iap-042-0",
       "terminal_state": "recovered",
       "transmitted_bytes": 3879,
       "receipt_sha256s": [

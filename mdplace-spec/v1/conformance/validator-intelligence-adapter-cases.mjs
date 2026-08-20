@@ -185,7 +185,10 @@ test('recovery recomputes proposal validity and terminal outcome from bound obse
   const results = await Promise.all([malformedAccepted, falseDenial]
     .map((document) => observeIntelligenceAdapterScenario(document, packageRoot)));
 
-  assert.ok(results.every(({codes}) => codes[0] === 'adapter.recovery_unknown_completion'));
+  assert.deepEqual(results.map(({codes}) => codes[0]), [
+    'adapter.malformed_output',
+    'adapter.recovery_unknown_completion',
+  ]);
   assert.ok(results.every(({network_effects: effects}) => effects[0] === 'none'));
 });
 
@@ -193,22 +196,26 @@ test('observed timing is canonical and exactly reconciled with measured runtime'
   const malformed = await scenario('remote-valid-proposal-advice');
   malformed.attempts[0].double.observed_started_at = 'not-a-time';
   malformed.attempts[0].double.observed_completed_at = 'also-not-a-time';
+  const calendarInvalid = await scenario('remote-valid-proposal-advice');
+  calendarInvalid.attempts[0].double.observed_started_at = '2026-02-31T00:00:00.000Z';
+  calendarInvalid.attempts[0].double.observed_completed_at = '2026-02-31T00:00:00.500Z';
   const inconsistent = await scenario('remote-valid-proposal-advice');
   inconsistent.attempts[0].double.observed_completed_at = inconsistent.attempts[0].double.observed_started_at;
 
-  const results = await Promise.all([malformed, inconsistent]
+  const results = await Promise.all([malformed, calendarInvalid, inconsistent]
     .map((document) => observeIntelligenceAdapterScenario(document, packageRoot)));
 
   assert.ok(results.every(({codes}) => codes[0] === 'adapter.malformed_output'));
-  for (const observed of results) {
-    const [receipt] = parseReceiptStrings(observed.receipts);
-    assert.equal(Date.parse(receipt.observed_completed_at) - Date.parse(receipt.observed_started_at),
-      receipt.budget.runtime_ms);
-  }
+  assert.equal(results[0].receipts.length, 0);
+  assert.equal(results[1].receipts.length, 0);
+  assert.deepEqual(results[0].network_effects, ['none']);
+  assert.deepEqual(results[1].network_effects, ['none']);
+  const [receipt] = parseReceiptStrings(results[2].receipts);
+  assert.equal(Date.parse(receipt.observed_completed_at) - Date.parse(receipt.observed_started_at),
+    receipt.budget.runtime_ms);
   const scenarioSchema = await readJson('contracts/schemas/intelligence-adapter-scenario.schema.json');
   const receiptSchema = await readJson('contracts/schemas/adapter-run-receipt.schema.json');
-  assert.equal(typeof scenarioSchema.$defs.double.properties.observed_started_at.pattern, 'string');
-  assert.equal(typeof scenarioSchema.$defs.double.properties.observed_completed_at.pattern, 'string');
+  assert.equal(typeof scenarioSchema.$defs.timestamp.pattern, 'string');
   assert.equal(typeof receiptSchema.$defs.timestamp.pattern, 'string');
 });
 
@@ -249,6 +256,8 @@ test('retry scheduling requires the next attempt exact authorization to remain v
 test('destination schemas bind HTTPS remote egress and local-only delivery schemes', async () => {
   const envelopeSchema = await readJson('contracts/schemas/processing-envelope.schema.json');
   const contextSchema = await readJson('contracts/schemas/intelligence-adapter-approved-context.schema.json');
+  const validRemote = await scenario('remote-valid-proposal-advice');
+  const validContext = await readJson('contracts/intelligence-adapter/approved-context.json');
   const remote = await scenario('remote-valid-proposal-advice');
   remote.attempts[0].envelope.destination.endpoint = 'http://cleartext.test/process';
   const local = await scenario('local-valid-abstention-advice');
@@ -264,13 +273,37 @@ test('destination schemas bind HTTPS remote egress and local-only delivery schem
   credentialAuthorization.destination.endpoint = credentialEndpoint;
   credentialDocument.attempts[0].envelope.destination.endpoint = credentialEndpoint;
   credentialDocument.attempts[0].isolation.network_scope = [credentialEndpoint];
+  const malformedEndpoints = [
+    'https:///missing-host',
+    'https://:443/path',
+    'https://host:abc/path',
+    'https://[broken/path',
+    'https://percent%zz.test/path',
+    'https://host.test/path?',
+    'https://host.test/path#',
+    'https://@host.test/path',
+  ];
 
+  assert.equal(validateJsonSchema(envelopeSchema, validRemote.attempts[0].envelope).length, 0);
+  assert.equal(validateJsonSchema(contextSchema, validContext).length, 0);
   assert.ok(validateJsonSchema(envelopeSchema, remote.attempts[0].envelope).length > 0);
   assert.ok(validateJsonSchema(envelopeSchema, local.attempts[0].envelope).length > 0);
   assert.ok(validateJsonSchema(contextSchema, context).length > 0);
   assert.ok(validateJsonSchema(envelopeSchema, credentialDocument.attempts[0].envelope).length > 0);
   assert.ok(validateJsonSchema(contextSchema, credentialContext).length > 0);
   assert.equal(preflightCode(credentialDocument.attempts[0], credentialContext), 'adapter.destination_denied');
+  for (const endpoint of malformedEndpoints) {
+    const endpointContext = await readJson('contracts/intelligence-adapter/approved-context.json');
+    const endpointDocument = await scenario('remote-valid-proposal-advice');
+    const authorization = endpointContext.attempt_authorizations
+      .find(({authorization_id: id}) => id === endpointDocument.attempts[0].envelope.authorization_id);
+    authorization.destination.endpoint = endpoint;
+    endpointDocument.attempts[0].envelope.destination.endpoint = endpoint;
+    endpointDocument.attempts[0].isolation.network_scope = [endpoint];
+    assert.ok(validateJsonSchema(envelopeSchema, endpointDocument.attempts[0].envelope).length > 0, endpoint);
+    assert.ok(validateJsonSchema(contextSchema, endpointContext).length > 0, endpoint);
+    assert.equal(preflightCode(endpointDocument.attempts[0], endpointContext), 'adapter.destination_denied', endpoint);
+  }
 });
 
 test('local adapter delivery is observed without claiming network egress', async () => {
@@ -328,12 +361,30 @@ test('combined failures select the first declared global outcome precedence', as
   const providerAndContract = await scenario('remote-valid-proposal-advice');
   providerAndContract.attempts[0].envelope.bindings.provider_id = 'provider:other';
   providerAndContract.attempts[0].envelope.contracts.adapter_contract_version = '2.0.0';
+  const fieldAndSegmentIntegrity = await scenario('remote-valid-proposal-advice');
+  fieldAndSegmentIntegrity.attempts[0].envelope.transmitted_fields[0].segment_id =
+    fieldAndSegmentIntegrity.attempts[0].envelope.payload_segments[1].segment_id;
+  fieldAndSegmentIntegrity.attempts[0].envelope.payload_segments[0].sha256 = 'b'.repeat(64);
+  const malformedKindAndBinding = await scenario('remote-valid-proposal-advice');
+  const malformedBindingProposal = JSON.parse(malformedKindAndBinding.attempts[0].double.raw_output);
+  malformedBindingProposal.kind = 'abstention';
+  malformedBindingProposal.bindings.policy_sha256 = 'b'.repeat(64);
+  malformedKindAndBinding.attempts[0].double.raw_output = JSON.stringify(malformedBindingProposal);
+  const timingAndFilesystem = await scenario('remote-valid-proposal-advice');
+  timingAndFilesystem.attempts[0].double.observed_completed_at =
+    timingAndFilesystem.attempts[0].double.observed_started_at;
+  const filesystemProposal = JSON.parse(timingAndFilesystem.attempts[0].double.raw_output);
+  filesystemProposal.authority.filesystem = 'write';
+  timingAndFilesystem.attempts[0].double.raw_output = JSON.stringify(filesystemProposal);
 
   const results = await Promise.all([
     filesystemAndSemantic,
     staleCacheAndIsolation,
     stalePolicyAndChainOverflow,
     providerAndContract,
+    fieldAndSegmentIntegrity,
+    malformedKindAndBinding,
+    timingAndFilesystem,
   ].map((document) => observeIntelligenceAdapterScenario(document, packageRoot)));
 
   assert.deepEqual(results.map(({codes}) => codes[0]), [
@@ -341,7 +392,63 @@ test('combined failures select the first declared global outcome precedence', as
     'adapter.isolation_failed',
     'adapter.policy_binding_denied',
     'adapter.policy_binding_denied',
+    'adapter.field_denied',
+    'adapter.malformed_output',
+    'adapter.filesystem_authority_denied',
   ]);
+});
+
+test('crash recovery applies earlier observed denials before unknown completion', async () => {
+  const stalePolicy = await scenario('crash-after-transmission-requires-recovery');
+  stalePolicy.attempts[0].envelope.bindings.policy.sha256 = 'b'.repeat(64);
+  const staleBytes = canonicalJson(stalePolicy.attempts[0].envelope);
+  stalePolicy.recovery.prior_transmission = {
+    destination: stalePolicy.attempts[0].envelope.destination.endpoint,
+    sha256: sha256(staleBytes),
+    byte_length: Buffer.byteLength(staleBytes),
+  };
+  const toolRequest = await scenario('crash-after-transmission-requires-recovery');
+  toolRequest.attempts[0].double.requested_actions = ['invoke_tool'];
+
+  const results = await Promise.all([stalePolicy, toolRequest]
+    .map((document) => observeIntelligenceAdapterScenario(document, packageRoot)));
+
+  assert.deepEqual(results.map(({codes}) => codes[0]), [
+    'adapter.policy_binding_denied',
+    'adapter.tool_request_denied',
+  ]);
+  assert.ok(results.every(({network_effects: effects}) => effects[0] === 'none'));
+});
+
+test('after-receipt recovery targets an exact retry or fallback with cumulative chain state', async () => {
+  const scenarioSchema = await readJson('contracts/schemas/intelligence-adapter-scenario.schema.json');
+  for (const [caseId, targetIndex] of [
+    ['authorized-retry-succeeds', 1],
+    ['authorized-local-fallback-succeeds', 2],
+  ]) {
+    const document = await scenario(caseId);
+    const executed = await observeIntelligenceAdapterScenario(document, packageRoot);
+    const targetAttempt = document.attempts[targetIndex];
+    const targetBytes = canonicalJson(targetAttempt.envelope);
+    document.operation = 'recover';
+    document.recovery = {
+      crash_point: 'after_receipt',
+      target_attempt_id: targetAttempt.envelope.attempt_id,
+      transmission_observed: true,
+      prior_transmission: {
+        destination: targetAttempt.envelope.destination.endpoint,
+        sha256: sha256(targetBytes),
+        byte_length: Buffer.byteLength(targetBytes),
+      },
+      prior_receipts: [parseReceiptStrings(executed.receipts)[targetIndex]],
+    };
+
+    const observed = await observeIntelligenceAdapterScenario(document, packageRoot);
+    assert.equal(validateJsonSchema(scenarioSchema, document).length, 0, caseId);
+    assert.equal(observed.verdict, 'pass', caseId);
+    assert.equal(observed.terminal_state, 'recovered', caseId);
+    assert.deepEqual(observed.network_effects, ['none'], caseId);
+  }
 });
 
 test('retry scheduling denies known aggregate input exhaustion before emitting a schedule receipt', async () => {

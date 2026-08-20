@@ -68,11 +68,19 @@ function isSubset(requested, approved, identity = (value) => value) {
     requestedIdentities.every((value) => approvedIdentities.has(value));
 }
 
+const remoteEndpointPattern = /^https:\/\/[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*(?:\/[A-Za-z0-9._~!$&'()*+,;=:@/-]*)?$/;
+const localEndpointPattern = /^local:\/\/[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*(?:\/[A-Za-z0-9._~!$&'()*+,;=:@/-]*)?$/;
+
 function destinationTransportIsValid(destination) {
   try {
+    const rawPattern = destination.locality === 'remote'
+      ? remoteEndpointPattern
+      : destination.locality === 'local' ? localEndpointPattern : null;
+    if (rawPattern === null || !rawPattern.test(destination.endpoint)) return false;
     const endpoint = new URL(destination.endpoint);
-    const authorityIsSafe = endpoint.hostname.length > 0 && endpoint.username === '' && endpoint.password === '' &&
-      endpoint.search === '' && endpoint.hash === '';
+    const authorityIsSafe = endpoint.hostname.length > 0 && endpoint.hostname.length <= 253 &&
+      endpoint.username === '' && endpoint.password === '' &&
+      endpoint.port === '' && endpoint.search === '' && endpoint.hash === '';
     if (destination.locality === 'remote') return authorityIsSafe && endpoint.protocol === 'https:';
     if (destination.locality === 'local') return authorityIsSafe && endpoint.protocol === 'local:';
     return false;
@@ -81,21 +89,22 @@ function destinationTransportIsValid(destination) {
   }
 }
 
-function segmentCode(envelope) {
+function segmentCodes(envelope) {
+  const codes = [];
   const segments = new Map(envelope.payload_segments.map((segment) => [segment.segment_id, segment]));
   if (segments.size !== envelope.payload_segments.length || segments.size !== envelope.transmitted_fields.length) {
-    return 'adapter.field_denied';
+    codes.push('adapter.field_denied');
   }
   for (const segment of envelope.payload_segments) {
     if (Buffer.byteLength(segment.utf8) !== segment.byte_length || sha256(segment.utf8) !== segment.sha256) {
-      return 'adapter.input_budget_exhausted';
+      codes.push('adapter.input_budget_exhausted');
     }
   }
   for (const field of envelope.transmitted_fields) {
     const segment = segments.get(field.segment_id);
-    if (segment?.field_id !== field.field_id) return 'adapter.field_denied';
+    if (segment?.field_id !== field.field_id) codes.push('adapter.field_denied');
   }
-  return null;
+  return codes;
 }
 
 function cachedProposalCode(envelope) {
@@ -186,8 +195,7 @@ export function preflightCode(attempt, context) {
   if (!equal(envelope.credential_boundary, authorization.credential_boundary)) {
     codes.push('adapter.credential_boundary_denied');
   }
-  const segments = segmentCode(envelope);
-  if (segments !== null) codes.push(segments);
+  codes.push(...segmentCodes(envelope));
   if (Buffer.byteLength(canonicalJson(envelope)) > envelope.ceilings.input_bytes) {
     codes.push('adapter.input_budget_exhausted');
   }
@@ -258,39 +266,44 @@ export async function validateProposal(rawOutput, envelope, packageRoot) {
   } catch {
     return {proposal: null, code: 'adapter.malformed_output'};
   }
+  const codes = [];
   const authority = proposal?.authority;
-  const authorityCode = authority === null || typeof authority !== 'object'
-    ? null
-    : highestPrecedenceCode([
-      Object.hasOwn(authority, 'filesystem') && (authority.filesystem !== 'none' || authority.projection !== 'none')
-        ? 'adapter.filesystem_authority_denied'
-        : null,
-      Object.hasOwn(authority, 'semantic') && authority.semantic !== 'none'
-        ? 'adapter.semantic_authority_denied'
-        : null,
-      Object.hasOwn(authority, 'note_placement') &&
-          (authority.note_placement !== 'none' || authority.taxonomy !== 'none')
-        ? 'adapter.placement_authority_denied'
-        : null,
-    ]);
-  if (authorityCode !== null) return {proposal: null, code: authorityCode};
+  if (authority !== null && typeof authority === 'object') {
+    if ((Object.hasOwn(authority, 'filesystem') && authority.filesystem !== 'none') ||
+        (Object.hasOwn(authority, 'projection') && authority.projection !== 'none')) {
+      codes.push('adapter.filesystem_authority_denied');
+    }
+    if (Object.hasOwn(authority, 'semantic') && authority.semantic !== 'none') {
+      codes.push('adapter.semantic_authority_denied');
+    }
+    if ((Object.hasOwn(authority, 'note_placement') && authority.note_placement !== 'none') ||
+        (Object.hasOwn(authority, 'taxonomy') && authority.taxonomy !== 'none')) {
+      codes.push('adapter.placement_authority_denied');
+    }
+  }
   const errors = await validateAgainstSchemaPath(packageRoot, 'contracts/schemas/intelligence-proposal.schema.json', proposal);
-  if (schemaErrorCode(errors) !== null) return {proposal: null, code: 'adapter.malformed_output'};
-  if (proposal.envelope_id !== envelope.envelope_id || proposal.attempt_id !== envelope.attempt_id ||
-      proposal.subject_note_id !== envelope.bindings.source_note_id ||
-      proposal.subject_note_version_sha256 !== envelope.bindings.source_note_version_sha256 ||
-      !equal(proposal.bindings, proposalBinding(envelope))) {
-    return {proposal: null, code: 'adapter.proposal_binding_denied'};
+  if (schemaErrorCode(errors) !== null) codes.push('adapter.malformed_output');
+  if (proposal !== null && typeof proposal === 'object' &&
+      (proposal.envelope_id !== envelope.envelope_id || proposal.attempt_id !== envelope.attempt_id ||
+        proposal.subject_note_id !== envelope.bindings.source_note_id ||
+        proposal.subject_note_version_sha256 !== envelope.bindings.source_note_version_sha256 ||
+        !equal(proposal.bindings, proposalBinding(envelope)))) {
+    codes.push('adapter.proposal_binding_denied');
   }
   const segments = new Set(envelope.payload_segments.map(({segment_id: id}) => id));
-  const references = [proposal.evidence_segment_ids, ...proposal.candidates.map((item) => item.evidence_segment_ids),
-    ...proposal.taxonomy_hypotheses.map((item) => item.evidence_segment_ids)].flat();
-  if (references.some((id) => !segments.has(id))) return {proposal: null, code: 'adapter.proposal_binding_denied'};
-  const validKind = (proposal.kind === 'placement_candidates' && proposal.candidates.length > 0 &&
-      proposal.taxonomy_hypotheses.length === 0 && proposal.abstention_reason === null) ||
-    (proposal.kind === 'taxonomy_hypothesis' && proposal.candidates.length === 0 &&
-      proposal.taxonomy_hypotheses.length > 0 && proposal.abstention_reason === null) ||
-    (proposal.kind === 'abstention' && proposal.candidates.length === 0 &&
-      proposal.taxonomy_hypotheses.length === 0 && typeof proposal.abstention_reason === 'string');
-  return validKind ? {proposal, code: null} : {proposal: null, code: 'adapter.malformed_output'};
+  const candidates = Array.isArray(proposal?.candidates) ? proposal.candidates : [];
+  const hypotheses = Array.isArray(proposal?.taxonomy_hypotheses) ? proposal.taxonomy_hypotheses : [];
+  const evidence = Array.isArray(proposal?.evidence_segment_ids) ? proposal.evidence_segment_ids : [];
+  const references = [evidence, ...candidates.map((item) => item?.evidence_segment_ids ?? []),
+    ...hypotheses.map((item) => item?.evidence_segment_ids ?? [])].flat();
+  if (references.some((id) => !segments.has(id))) codes.push('adapter.proposal_binding_denied');
+  const validKind = (proposal?.kind === 'placement_candidates' && candidates.length > 0 &&
+      hypotheses.length === 0 && proposal.abstention_reason === null) ||
+    (proposal?.kind === 'taxonomy_hypothesis' && candidates.length === 0 &&
+      hypotheses.length > 0 && proposal.abstention_reason === null) ||
+    (proposal?.kind === 'abstention' && candidates.length === 0 &&
+      hypotheses.length === 0 && typeof proposal.abstention_reason === 'string');
+  if (!validKind) codes.push('adapter.malformed_output');
+  const code = highestPrecedenceCode(codes);
+  return code === null ? {proposal, code: null} : {proposal: null, code};
 }

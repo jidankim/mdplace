@@ -70,8 +70,20 @@
         "locality": {"enum": ["local", "remote"]}
       },
       "allOf": [
-        {"if": {"properties": {"locality": {"const": "remote"}}, "required": ["locality"]}, "then": {"properties": {"endpoint": {"pattern": "^https://[^@/?#\\s]+(?:/[^?#\\s]*)?$"}}}},
-        {"if": {"properties": {"locality": {"const": "local"}}, "required": ["locality"]}, "then": {"properties": {"endpoint": {"pattern": "^local://[^@/?#\\s]+(?:/[^?#\\s]*)?$"}}}}
+        {"if": {"properties": {"locality": {"const": "remote"}}, "required": ["locality"]}, "then": {"properties": {"endpoint": {"allOf": [
+          {"pattern": "^https://(?:[A-Za-z0-9][A-Za-z0-9.-]{0,252}|[A-Za-z0-9][A-Za-z0-9.-]{0,252}/[A-Za-z0-9._~!$&'()*+,;=:@/-]*)$"},
+          {"pattern": "^https://(?![^/]*\\.\\.)"},
+          {"pattern": "^https://(?![^/]*(?:\\.-|-\\.))"},
+          {"pattern": "^https://(?![^/]*(?:\\.|-)(?:/|$))"},
+          {"pattern": "^https://(?![^/]*[A-Za-z0-9-]{64})"}
+        ]}}}},
+        {"if": {"properties": {"locality": {"const": "local"}}, "required": ["locality"]}, "then": {"properties": {"endpoint": {"allOf": [
+          {"pattern": "^local://(?:[A-Za-z0-9][A-Za-z0-9.-]{0,252}|[A-Za-z0-9][A-Za-z0-9.-]{0,252}/[A-Za-z0-9._~!$&'()*+,;=:@/-]*)$"},
+          {"pattern": "^local://(?![^/]*\\.\\.)"},
+          {"pattern": "^local://(?![^/]*(?:\\.-|-\\.))"},
+          {"pattern": "^local://(?![^/]*(?:\\.|-)(?:/|$))"},
+          {"pattern": "^local://(?![^/]*[A-Za-z0-9-]{64})"}
+        ]}}}}
       ]
     },
     "redaction": {

@@ -250,6 +250,7 @@ export async function checkIntelligenceAdapterProtocol(packageRoot, manifest, co
   if (recoveryCases.length !== 3 || recoveryCases.some((entry) => {
     const record = fixtureRecords.get(entry.fixture_id);
     return record === undefined || entry.observable_result_sha256 !== adapterResultDigest(record.observed) ||
+      entry.target_attempt_id !== record.fixture.subject.document.recovery.target_attempt_id ||
       !isDeepStrictEqual(entry.receipt_sha256s, record.receipts.map(({receipt_sha256: digest}) => digest));
   })) codes.push('adapter.recovery_evidence_invalid');
 

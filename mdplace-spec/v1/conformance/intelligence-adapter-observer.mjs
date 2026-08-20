@@ -132,9 +132,19 @@ function measuredRuntime(double) {
     : 0;
 }
 
+function timestampIsCanonical(value) {
+  const parsed = Date.parse(value);
+  return canonicalTimestampPattern.test(value) && Number.isFinite(parsed) && new Date(parsed).toISOString() === value;
+}
+
+function scenarioTimestampsAreCanonical(subject) {
+  return subject.attempts.every(({double}) =>
+    timestampIsCanonical(double.observed_started_at) && timestampIsCanonical(double.observed_completed_at));
+}
+
 function observedTimingIsValid(double) {
   const {observed_started_at: startedAt, observed_completed_at: completedAt} = double;
-  if (!canonicalTimestampPattern.test(startedAt) || !canonicalTimestampPattern.test(completedAt)) return false;
+  if (!timestampIsCanonical(startedAt) || !timestampIsCanonical(completedAt)) return false;
   const started = Date.parse(startedAt);
   const completed = Date.parse(completedAt);
   return Number.isFinite(started) && Number.isFinite(completed) &&
@@ -155,6 +165,7 @@ async function evaluateTransmittedAttempt({
   totalCost,
   retriesUsed,
   fallbacksUsed,
+  recoveryUnknown = false,
 }) {
   const {double, envelope} = attempt;
   const rawOutput = double.raw_output;
@@ -164,7 +175,7 @@ async function evaluateTransmittedAttempt({
   const nextTotalRuntime = totalRuntime + budget.runtime_ms;
   const nextTotalCost = totalCost + double.cost_microunits;
 
-  let code = highestPrecedenceCode([
+  const observedCodes = [
     forbiddenActionCode(double.requested_actions),
     double.behavior === 'timeout' || budget.runtime_ms > envelope.ceilings.runtime_ms ||
         nextTotalRuntime > subject.chain_budget.runtime_ms
@@ -178,7 +189,21 @@ async function evaluateTransmittedAttempt({
       ? 'adapter.cost_budget_exhausted'
       : null,
     observedTimingIsValid(double) ? null : 'adapter.malformed_output',
-  ]);
+    recoveryUnknown ? 'adapter.recovery_unknown_completion' : null,
+  ];
+  let proposal = null;
+  let proposalValidated = false;
+  if (double.behavior === 'malformed_output' ||
+      (rawOutput === null && double.behavior !== 'transient_failure' && !recoveryUnknown)) {
+    observedCodes.push('adapter.malformed_output');
+  }
+  if (rawOutput !== null) {
+    const validated = await validateProposal(rawOutput, envelope, packageRoot);
+    proposal = validated.proposal;
+    observedCodes.push(validated.code);
+    proposalValidated = true;
+  }
+  let code = highestPrecedenceCode(observedCodes);
 
   if (code === null && double.behavior === 'transient_failure') {
     const nextClass = nextAttempt?.attempt_class;
@@ -207,17 +232,6 @@ async function evaluateTransmittedAttempt({
     };
   }
 
-  let proposal = null;
-  let proposalValidated = false;
-  if (code === null) {
-    if (double.behavior === 'malformed_output' || rawOutput === null) code = 'adapter.malformed_output';
-    else {
-      const validated = await validateProposal(rawOutput, envelope, packageRoot);
-      proposal = validated.proposal;
-      code = validated.code;
-      proposalValidated = true;
-    }
-  }
   return {
     rawOutput,
     proposal,
@@ -233,8 +247,51 @@ async function evaluateTransmittedAttempt({
   };
 }
 
-function recoveryBehaviorMatches(subject) {
-  const behavior = subject.attempts[0].double.behavior;
+async function recoveryStateBeforeTarget(subject, context, packageRoot, targetIndex) {
+  const state = {
+    totalInput: 0,
+    totalOutput: 0,
+    totalRuntime: 0,
+    totalCost: 0,
+    retriesUsed: 0,
+    fallbacksUsed: 0,
+  };
+  for (let index = 0; index < targetIndex; index += 1) {
+    const attempt = subject.attempts[index];
+    const inputBytes = Buffer.byteLength(canonicalJson(attempt.envelope));
+    const nextTotalInput = state.totalInput + inputBytes;
+    const denial = highestPrecedenceCode([
+      preflightCode(attempt, context),
+      nextTotalInput > subject.chain_budget.input_bytes ? 'adapter.input_budget_exhausted' : null,
+    ]);
+    if (denial !== null || attempt.double.behavior === 'crash_before_transmit') return null;
+    const evaluated = await evaluateTransmittedAttempt({
+      attempt,
+      nextAttempt: subject.attempts[index + 1],
+      context,
+      packageRoot,
+      subject,
+      inputBytes,
+      totalInput: nextTotalInput,
+      totalOutput: state.totalOutput,
+      totalRuntime: state.totalRuntime,
+      totalCost: state.totalCost,
+      retriesUsed: state.retriesUsed,
+      fallbacksUsed: state.fallbacksUsed,
+    });
+    if (!evaluated.continueChain) return null;
+    state.totalInput = nextTotalInput;
+    state.totalOutput = evaluated.totalOutput;
+    state.totalRuntime = evaluated.totalRuntime;
+    state.totalCost = evaluated.totalCost;
+    if (evaluated.scheduledClass === 'retry') state.retriesUsed += 1;
+    if (evaluated.scheduledClass === 'fallback') state.fallbacksUsed += 1;
+  }
+  return state;
+}
+
+function recoveryBehaviorMatches(subject, attempt) {
+  const behavior = attempt.double.behavior;
   const crashPoint = subject.recovery.crash_point;
   if (crashPoint === 'before_transmission') return behavior === 'crash_before_transmit';
   if (crashPoint === 'after_transmission_before_receipt') return behavior === 'crash_after_transmit';
@@ -245,8 +302,10 @@ function recoveryBehaviorMatches(subject) {
 }
 
 async function observeRecovery(subject, context, packageRoot) {
-  const attempt = subject.attempts[0];
   const {recovery} = subject;
+  const targetIndex = subject.attempts.findIndex(({envelope}) =>
+    envelope.attempt_id === recovery.target_attempt_id);
+  const attempt = subject.attempts[targetIndex] ?? subject.attempts[0];
   const bytes = canonicalJson(attempt.envelope);
   const expectedTransmission = {
     destination: attempt.envelope.destination.endpoint,
@@ -255,23 +314,33 @@ async function observeRecovery(subject, context, packageRoot) {
   };
   const observedPriorTransmission = recovery.transmission_observed === true &&
     isDeepStrictEqual(recovery.prior_transmission, expectedTransmission);
-  const compatibleBehavior = recoveryBehaviorMatches(subject);
+  const chainCode = chainPreflightCode(subject, context);
+  const state = targetIndex >= 0 && chainCode === null
+    ? await recoveryStateBeforeTarget(subject, context, packageRoot, targetIndex)
+    : null;
+  const targetInputCode = state !== null && state.totalInput + expectedTransmission.byte_length > subject.chain_budget.input_bytes
+    ? 'adapter.input_budget_exhausted'
+    : null;
+  const targetPreflightCode = targetIndex < 0
+    ? 'adapter.policy_binding_denied'
+    : highestPrecedenceCode([preflightCode(attempt, context), targetInputCode]);
+  const targetReady = state !== null && targetPreflightCode === null;
+  const compatibleBehavior = targetIndex >= 0 && recoveryBehaviorMatches(subject, attempt);
   if (recovery.crash_point === 'after_receipt' && recovery.prior_receipts.length === 1 &&
-      compatibleBehavior && observedPriorTransmission && chainPreflightCode(subject, context) === null &&
-      preflightCode(attempt, context) === null) {
+      compatibleBehavior && observedPriorTransmission && chainCode === null && targetReady) {
     const evaluated = await evaluateTransmittedAttempt({
       attempt,
-      nextAttempt: subject.attempts[1],
+      nextAttempt: subject.attempts[targetIndex + 1],
       context,
       packageRoot,
       subject,
       inputBytes: expectedTransmission.byte_length,
-      totalInput: expectedTransmission.byte_length,
-      totalOutput: 0,
-      totalRuntime: 0,
-      totalCost: 0,
-      retriesUsed: 0,
-      fallbacksUsed: 0,
+      totalInput: state.totalInput + expectedTransmission.byte_length,
+      totalOutput: state.totalOutput,
+      totalRuntime: state.totalRuntime,
+      totalCost: state.totalCost,
+      retriesUsed: state.retriesUsed,
+      fallbacksUsed: state.fallbacksUsed,
     });
     const expectedReceipt = evaluated.code === null
       ? receiptFor(attempt, expectedTransmission, evaluated.rawOutput, evaluated.proposal,
@@ -289,7 +358,7 @@ async function observeRecovery(subject, context, packageRoot) {
     }
   }
   if (recovery.crash_point === 'before_transmission' && recovery.transmission_observed === false &&
-      compatibleBehavior && recovery.prior_transmission === null && recovery.prior_receipts.length === 0) {
+      compatibleBehavior && targetReady && recovery.prior_transmission === null && recovery.prior_receipts.length === 0) {
     const budget = zeroReceiptBudget();
     const receipt = receiptFor(attempt, null, null, null, 'denied', 'adapter.recovery_before_transmission_denied', budget);
     return result({
@@ -299,19 +368,42 @@ async function observeRecovery(subject, context, packageRoot) {
       terminalState: 'denied', illegalTransition: false, networkEffects: ['none'],
     });
   }
+  let recoveryEvaluation = null;
+  if (compatibleBehavior) {
+    recoveryEvaluation = await evaluateTransmittedAttempt({
+      attempt,
+      nextAttempt: subject.attempts[targetIndex + 1],
+      context,
+      packageRoot,
+      subject,
+      inputBytes: expectedTransmission.byte_length,
+      totalInput: (state?.totalInput ?? 0) + expectedTransmission.byte_length,
+      totalOutput: state?.totalOutput ?? 0,
+      totalRuntime: state?.totalRuntime ?? 0,
+      totalCost: state?.totalCost ?? 0,
+      retriesUsed: state?.retriesUsed ?? 0,
+      fallbacksUsed: state?.fallbacksUsed ?? 0,
+      recoveryUnknown: true,
+    });
+  }
   const transmission = observedPriorTransmission ? expectedTransmission : null;
   const budget = transmission === null
     ? zeroReceiptBudget()
     : {input_bytes: transmission.byte_length, output_bytes: 0, runtime_ms: 0, cost_microunits: 0};
-  const code = 'adapter.recovery_unknown_completion';
-  const receipt = receiptFor(attempt, transmission, null, null, 'recovery_required', code, budget);
+  const code = highestPrecedenceCode([
+    chainCode,
+    targetPreflightCode,
+    recoveryEvaluation?.code ?? null,
+    'adapter.recovery_unknown_completion',
+  ]);
+  const receipt = receiptFor(attempt, transmission, null, null, outcomeForCode(code), code, budget);
   const observations = observedPriorTransmission
     ? [{...observedTransmission(attempt, bytes, budget, null), new_transmission: false}]
     : [{attempt_id: attempt.envelope.attempt_id, new_transmission: false, prior_transmission_valid: false}];
   return result({
     verdict: 'fail', codes: [code], outputs: [outputFor(code)],
     operations: ['read exact recovery evidence', 'observe prior transmission without retransmission', 'record Adapter Run Receipt'],
-    receipts: [receipt], transmissions: [], observations, terminalState: 'recovery_required',
+    receipts: [receipt], transmissions: [], observations, terminalState: terminalFor(code),
     illegalTransition: false, networkEffects: ['none'],
   });
 }
@@ -370,11 +462,20 @@ function chainPreflightCode(subject, context) {
 }
 
 export async function observeIntelligenceAdapterScenario(subject, packageRoot) {
-  const context = await readJson(packageRoot, subject.authorization_ref);
   const operations = ['read trusted Intelligence Adapter authorization context'];
   const receipts = [];
   const transmissions = [];
   const observations = [];
+  if (!scenarioTimestampsAreCanonical(subject)) {
+    return result({
+      verdict: 'fail', codes: ['adapter.malformed_output'],
+      outputs: ['invalid observed timestamp rejected before adapter observation'],
+      operations: ['validate canonical Intelligence Adapter observation timestamps'],
+      receipts, transmissions, observations, terminalState: 'denied', illegalTransition: false,
+      networkEffects: ['none'],
+    });
+  }
+  const context = await readJson(packageRoot, subject.authorization_ref);
   if (context === null) {
     return result({verdict: 'fail', codes: ['adapter.policy_binding_denied'], outputs: ['trusted authorization context unavailable'], operations, receipts, transmissions, observations, terminalState: 'denied', illegalTransition: false});
   }
@@ -448,16 +549,6 @@ export async function observeIntelligenceAdapterScenario(subject, packageRoot) {
     totalInput = prospectiveInput;
     operations.push(`transmit exact Processing Envelope bytes ${envelope.attempt_id}`);
 
-    if (attempt.double.behavior === 'crash_after_transmit' || subject.recovery.crash_point === 'after_transmission_before_receipt') {
-      const budget = receiptBudget(inputBytes, 0, attempt.double);
-      const code = 'adapter.recovery_unknown_completion';
-      const receipt = receiptFor(attempt, transmission, null, null, 'recovery_required', code, budget);
-      receipts.push(receipt);
-      observations.push(observedTransmission(attempt, bytes, budget, null));
-      operations.push(`record Adapter Run Receipt ${receipt.receipt_id}`);
-      return result({verdict: 'fail', codes: [code], outputs: [outputFor(code)], operations, receipts, transmissions, observations, terminalState: 'recovery_required', illegalTransition: false});
-    }
-
     const evaluated = await evaluateTransmittedAttempt({
       attempt,
       nextAttempt: subject.attempts[index + 1],
@@ -471,6 +562,8 @@ export async function observeIntelligenceAdapterScenario(subject, packageRoot) {
       totalCost,
       retriesUsed,
       fallbacksUsed,
+      recoveryUnknown: attempt.double.behavior === 'crash_after_transmit' ||
+        subject.recovery.crash_point === 'after_transmission_before_receipt',
     });
     totalOutput = evaluated.totalOutput;
     totalRuntime = evaluated.totalRuntime;

@@ -33,11 +33,7 @@ export function adapterIsolationReceipt(isolation) {
 }
 
 export function adapterReceiptTiming(attempt, budget) {
-  const candidate = attempt.double.observed_started_at;
-  const parsed = Date.parse(candidate);
-  const observedStartedAt = Number.isFinite(parsed) && new Date(parsed).toISOString() === candidate
-    ? candidate
-    : '1970-01-01T00:00:00.000Z';
+  const observedStartedAt = attempt.double.observed_started_at;
   return {
     observed_started_at: observedStartedAt,
     observed_completed_at: new Date(Date.parse(observedStartedAt) + budget.runtime_ms).toISOString(),
