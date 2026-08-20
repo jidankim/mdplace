@@ -68,8 +68,8 @@ function isSubset(requested, approved, identity = (value) => value) {
     requestedIdentities.every((value) => approvedIdentities.has(value));
 }
 
-const remoteEndpointPattern = /^https:\/\/[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*(?:\/[A-Za-z0-9._~!$&'()*+,;=:@/-]*)?$/;
-const localEndpointPattern = /^local:\/\/[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*(?:\/[A-Za-z0-9._~!$&'()*+,;=:@/-]*)?$/;
+const remoteEndpointPattern = /^https:\/\/[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*(?:\/[A-Za-z0-9._~!$&'()*+,;=:@/-]*)?$/;
+const localEndpointPattern = /^local:\/\/[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*(?:\/[A-Za-z0-9._~!$&'()*+,;=:@/-]*)?$/;
 
 function destinationTransportIsValid(destination) {
   try {
@@ -78,7 +78,12 @@ function destinationTransportIsValid(destination) {
       : destination.locality === 'local' ? localEndpointPattern : null;
     if (rawPattern === null || !rawPattern.test(destination.endpoint)) return false;
     const endpoint = new URL(destination.endpoint);
+    const lastAuthorityLabel = endpoint.hostname.split('.').at(-1);
+    const parsedEndpoint = `${endpoint.protocol}//${endpoint.hostname}${endpoint.pathname}`;
+    const rawRoundTrips = destination.endpoint === parsedEndpoint ||
+      (endpoint.pathname === '/' && destination.endpoint === `${endpoint.protocol}//${endpoint.hostname}`);
     const authorityIsSafe = endpoint.hostname.length > 0 && endpoint.hostname.length <= 253 &&
+      /^[a-z][a-z0-9-]{0,62}$/.test(lastAuthorityLabel) && rawRoundTrips &&
       endpoint.username === '' && endpoint.password === '' &&
       endpoint.port === '' && endpoint.search === '' && endpoint.hash === '';
     if (destination.locality === 'remote') return authorityIsSafe && endpoint.protocol === 'https:';

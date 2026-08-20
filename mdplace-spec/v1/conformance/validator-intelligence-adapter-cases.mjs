@@ -22,6 +22,27 @@ async function scenario(caseId) {
   return structuredClone(fixture.subject.document);
 }
 
+async function afterReceiptRecovery(caseId, targetIndex) {
+  const document = await scenario(caseId);
+  const executed = await observeIntelligenceAdapterScenario(document, packageRoot);
+  const targetAttempt = document.attempts[targetIndex];
+  const targetBytes = canonicalJson(targetAttempt.envelope);
+  document.operation = 'recover';
+  document.recovery = {
+    crash_point: 'after_receipt',
+    target_attempt_id: targetAttempt.envelope.attempt_id,
+    target_attempt_sequence: targetIndex,
+    transmission_observed: true,
+    prior_transmission: {
+      destination: targetAttempt.envelope.destination.endpoint,
+      sha256: sha256(targetBytes),
+      byte_length: Buffer.byteLength(targetBytes),
+    },
+    prior_receipts: [parseReceiptStrings(executed.receipts)[targetIndex]],
+  };
+  return document;
+}
+
 test('CLI validates the complete Intelligence Adapter proposal protocol pack', () => {
   // Given the candidate Specification Package at the public conformance seam.
   const result = spawnSync(process.execPath, [validator, packageRoot], {encoding: 'utf8'});
@@ -282,6 +303,13 @@ test('destination schemas bind HTTPS remote egress and local-only delivery schem
     'https://host.test/path?',
     'https://host.test/path#',
     'https://@host.test/path',
+    'https://2130706433/path',
+    'https://127.1/path',
+    'https://0x7f000001/path',
+    'https://017700000001/path',
+    'https://a.0/path',
+    'https://host.test/a/../b',
+    'https://HOST.test/path',
   ];
 
   assert.equal(validateJsonSchema(envelopeSchema, validRemote.attempts[0].envelope).length, 0);
@@ -426,22 +454,7 @@ test('after-receipt recovery targets an exact retry or fallback with cumulative 
     ['authorized-retry-succeeds', 1],
     ['authorized-local-fallback-succeeds', 2],
   ]) {
-    const document = await scenario(caseId);
-    const executed = await observeIntelligenceAdapterScenario(document, packageRoot);
-    const targetAttempt = document.attempts[targetIndex];
-    const targetBytes = canonicalJson(targetAttempt.envelope);
-    document.operation = 'recover';
-    document.recovery = {
-      crash_point: 'after_receipt',
-      target_attempt_id: targetAttempt.envelope.attempt_id,
-      transmission_observed: true,
-      prior_transmission: {
-        destination: targetAttempt.envelope.destination.endpoint,
-        sha256: sha256(targetBytes),
-        byte_length: Buffer.byteLength(targetBytes),
-      },
-      prior_receipts: [parseReceiptStrings(executed.receipts)[targetIndex]],
-    };
+    const document = await afterReceiptRecovery(caseId, targetIndex);
 
     const observed = await observeIntelligenceAdapterScenario(document, packageRoot);
     assert.equal(validateJsonSchema(scenarioSchema, document).length, 0, caseId);
@@ -449,6 +462,119 @@ test('after-receipt recovery targets an exact retry or fallback with cumulative 
     assert.equal(observed.terminal_state, 'recovered', caseId);
     assert.deepEqual(observed.network_effects, ['none'], caseId);
   }
+});
+
+test('recovery preserves precedent failures from attempts before an exact retry or fallback target', async () => {
+  const retryPolicy = await afterReceiptRecovery('authorized-retry-succeeds', 1);
+  retryPolicy.attempts[0].envelope.bindings.policy.sha256 = 'b'.repeat(64);
+  const retryAction = await afterReceiptRecovery('authorized-retry-succeeds', 1);
+  retryAction.attempts[0].double.requested_actions = ['invoke_tool'];
+  const fallbackPolicy = await afterReceiptRecovery('authorized-local-fallback-succeeds', 2);
+  fallbackPolicy.attempts[0].envelope.bindings.policy.sha256 = 'b'.repeat(64);
+  const fallbackAction = await afterReceiptRecovery('authorized-local-fallback-succeeds', 2);
+  fallbackAction.attempts[1].double.requested_actions = ['invoke_tool'];
+
+  const results = await Promise.all([retryPolicy, retryAction, fallbackPolicy, fallbackAction]
+    .map((document) => observeIntelligenceAdapterScenario(document, packageRoot)));
+
+  assert.deepEqual(results.map(({codes}) => codes[0]), [
+    'adapter.policy_binding_denied',
+    'adapter.tool_request_denied',
+    'adapter.policy_binding_denied',
+    'adapter.tool_request_denied',
+  ]);
+  assert.ok(results.every(({network_effects: effects}) => effects[0] === 'none'));
+});
+
+test('before-receipt crash shapes bind the exact retry or fallback target and evidence boundary', async () => {
+  const scenarioSchema = await readJson('contracts/schemas/intelligence-adapter-scenario.schema.json');
+  for (const [caseId, targetIndex] of [
+    ['authorized-retry-succeeds', 1],
+    ['authorized-local-fallback-succeeds', 2],
+  ]) {
+    for (const crashPoint of ['before_transmission', 'after_transmission_before_receipt']) {
+      const document = await scenario(caseId);
+      const targetAttempt = document.attempts[targetIndex];
+      const targetBytes = canonicalJson(targetAttempt.envelope);
+      const afterTransmission = crashPoint === 'after_transmission_before_receipt';
+      document.operation = 'recover';
+      targetAttempt.double.behavior = afterTransmission ? 'crash_after_transmit' : 'crash_before_transmit';
+      targetAttempt.double.raw_output = null;
+      if (!afterTransmission) targetAttempt.double.provider_request_id = null;
+      document.recovery = {
+        crash_point: crashPoint,
+        target_attempt_id: targetAttempt.envelope.attempt_id,
+        target_attempt_sequence: targetIndex,
+        transmission_observed: afterTransmission,
+        prior_transmission: afterTransmission ? {
+          destination: targetAttempt.envelope.destination.endpoint,
+          sha256: sha256(targetBytes),
+          byte_length: Buffer.byteLength(targetBytes),
+        } : null,
+        prior_receipts: [],
+      };
+
+      const observed = await observeIntelligenceAdapterScenario(document, packageRoot);
+      assert.equal(validateJsonSchema(scenarioSchema, document).length, 0, `${caseId}:${crashPoint}`);
+      assert.deepEqual(observed.codes, [afterTransmission
+        ? 'adapter.recovery_unknown_completion'
+        : 'adapter.recovery_before_transmission_denied']);
+      assert.deepEqual(observed.network_effects, ['none']);
+
+      const wrongCrashTarget = structuredClone(document);
+      wrongCrashTarget.attempts[targetIndex].double.behavior = 'proposal';
+      wrongCrashTarget.attempts[0].double.behavior = afterTransmission
+        ? 'crash_after_transmit'
+        : 'crash_before_transmit';
+      assert.ok(validateJsonSchema(scenarioSchema, wrongCrashTarget).length > 0,
+        `${caseId}:${crashPoint}:wrong-target`);
+    }
+  }
+});
+
+test('recovery evidence cardinality is closed for execution and every crash boundary', async () => {
+  const scenarioSchema = await readJson('contracts/schemas/intelligence-adapter-scenario.schema.json');
+  const executeWithRecovery = await scenario('remote-valid-proposal-advice');
+  executeWithRecovery.recovery.transmission_observed = true;
+  executeWithRecovery.recovery.prior_transmission = {
+    destination: executeWithRecovery.attempts[0].envelope.destination.endpoint,
+    sha256: 'a'.repeat(64),
+    byte_length: 1,
+  };
+  const beforeWithTransmission = await scenario('crash-before-transmission-recovers-denied');
+  beforeWithTransmission.recovery.transmission_observed = true;
+  beforeWithTransmission.recovery.prior_transmission = {
+    destination: beforeWithTransmission.attempts[0].envelope.destination.endpoint,
+    sha256: 'a'.repeat(64),
+    byte_length: 1,
+  };
+  const afterTransmissionWithReceipt = await scenario('crash-after-transmission-requires-recovery');
+  afterTransmissionWithReceipt.recovery.prior_receipts = [{}];
+  const afterReceiptWithoutReceipt = await scenario('crash-after-receipt-preserves-receipt');
+  afterReceiptWithoutReceipt.recovery.prior_receipts = [];
+
+  assert.ok([executeWithRecovery, beforeWithTransmission, afterTransmissionWithReceipt, afterReceiptWithoutReceipt]
+    .every((document) => validateJsonSchema(scenarioSchema, document).length > 0));
+});
+
+test('recovery receipts retain the measurements that select timeout and cost outcomes', async () => {
+  const timeout = await scenario('crash-after-transmission-requires-recovery');
+  timeout.attempts[0].double.duration_ms = 2000;
+  timeout.attempts[0].double.observed_completed_at = new Date(
+    Date.parse(timeout.attempts[0].double.observed_started_at) + 2000,
+  ).toISOString();
+  const cost = await scenario('crash-after-transmission-requires-recovery');
+  cost.attempts[0].double.cost_microunits = 10001;
+
+  const results = await Promise.all([timeout, cost]
+    .map((document) => observeIntelligenceAdapterScenario(document, packageRoot)));
+  const receipts = results.map(({receipts: values}) => parseReceiptStrings(values)[0]);
+
+  assert.deepEqual(results.map(({codes}) => codes[0]), ['adapter.timeout', 'adapter.cost_budget_exhausted']);
+  assert.equal(receipts[0].budget.runtime_ms, timeout.attempts[0].double.duration_ms);
+  assert.equal(receipts[0].observed_completed_at, timeout.attempts[0].double.observed_completed_at);
+  assert.equal(receipts[1].budget.cost_microunits, cost.attempts[0].double.cost_microunits);
+  assert.equal(receipts[1].observed_completed_at, cost.attempts[0].double.observed_completed_at);
 });
 
 test('retry scheduling denies known aggregate input exhaustion before emitting a schedule receipt', async () => {

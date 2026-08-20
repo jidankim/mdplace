@@ -337,7 +337,7 @@ function scenario(context, index, classes = ['primary']) {
     authorization_ref: 'contracts/intelligence-adapter/approved-context.json',
     chain_budget: structuredClone(context.chain_budget),
     attempts: classes.map((attemptClass) => attemptFor(context, scenarioId, attemptClass)),
-    recovery: {crash_point: 'none', target_attempt_id: null, transmission_observed: false, prior_transmission: null, prior_receipts: []},
+    recovery: {crash_point: 'none', target_attempt_id: null, target_attempt_sequence: null, transmission_observed: false, prior_transmission: null, prior_receipts: []},
     illegal_transition: null,
   };
 }
@@ -433,11 +433,11 @@ function definitions(context) {
     ['AUTH', 'filesystem-authority-output-denied', 'authority_denial', (value) => replaceProposal(value.attempts[0], (proposal) => { proposal.authority.filesystem = 'write'; })],
     ['AUTH', 'placement-authority-output-denied', 'authority_denial', (value) => replaceProposal(value.attempts[0], (proposal) => { proposal.authority.note_placement = 'choose'; })],
     ['ILLEGAL', 'retry-after-exhaustion-denied', 'illegal_transition', (value) => { value.operation = 'observe_illegal_transition'; value.illegal_transition = {table: 'contracts/transitions/intelligence-adapter-retry-lifecycle.json', from_state: 'exhausted', command: 'start_adapter_retry'}; }],
-    ['REC', 'crash-before-transmission-recovers-denied', 'crash_recovery', (value) => { value.operation = 'recover'; value.recovery.crash_point = 'before_transmission'; value.recovery.target_attempt_id = value.attempts[0].envelope.attempt_id; value.attempts[0].double.behavior = 'crash_before_transmit'; value.attempts[0].double.raw_output = null; value.attempts[0].double.provider_request_id = null; }],
+    ['REC', 'crash-before-transmission-recovers-denied', 'crash_recovery', (value) => { value.operation = 'recover'; value.recovery.crash_point = 'before_transmission'; value.recovery.target_attempt_id = value.attempts[0].envelope.attempt_id; value.recovery.target_attempt_sequence = 0; value.attempts[0].double.behavior = 'crash_before_transmit'; value.attempts[0].double.raw_output = null; value.attempts[0].double.provider_request_id = null; }],
     ['REC', 'crash-after-transmission-requires-recovery', 'crash_recovery', (value) => {
       const bytes = canonicalJson(value.attempts[0].envelope);
       value.operation = 'recover';
-      value.recovery = {crash_point: 'after_transmission_before_receipt', target_attempt_id: value.attempts[0].envelope.attempt_id, transmission_observed: true, prior_transmission: {destination: value.attempts[0].envelope.destination.endpoint, sha256: sha256(bytes), byte_length: Buffer.byteLength(bytes)}, prior_receipts: []};
+      value.recovery = {crash_point: 'after_transmission_before_receipt', target_attempt_id: value.attempts[0].envelope.attempt_id, target_attempt_sequence: 0, transmission_observed: true, prior_transmission: {destination: value.attempts[0].envelope.destination.endpoint, sha256: sha256(bytes), byte_length: Buffer.byteLength(bytes)}, prior_receipts: []};
       value.attempts[0].double.behavior = 'crash_after_transmit';
       value.attempts[0].double.raw_output = null;
     }],
@@ -447,7 +447,7 @@ function definitions(context) {
       const observed = await observeIntelligenceAdapterScenario(prior, packageRoot);
       const priorReceipt = parseReceiptStrings(observed.receipts)[0];
       value.operation = 'recover';
-      value.recovery = {crash_point: 'after_receipt', target_attempt_id: value.attempts[0].envelope.attempt_id, transmission_observed: true, prior_transmission: {destination: priorReceipt.observed_destination, sha256: priorReceipt.transmission_sha256, byte_length: priorReceipt.transmitted_bytes}, prior_receipts: [priorReceipt]};
+      value.recovery = {crash_point: 'after_receipt', target_attempt_id: value.attempts[0].envelope.attempt_id, target_attempt_sequence: 0, transmission_observed: true, prior_transmission: {destination: priorReceipt.observed_destination, sha256: priorReceipt.transmission_sha256, byte_length: priorReceipt.transmitted_bytes}, prior_receipts: [priorReceipt]};
     }],
   ];
 }
@@ -543,6 +543,7 @@ async function generateFixturesAndEvidence() {
       fixture_id: fixtureId,
       crash_point: document.recovery.crash_point,
       target_attempt_id: document.recovery.target_attempt_id,
+      target_attempt_sequence: document.recovery.target_attempt_sequence,
       terminal_state: expected.terminal_state,
       transmitted_bytes: parseReceiptStrings(expected.receipts).reduce((total, receipt) => total + receipt.transmitted_bytes, 0),
       receipt_sha256s: receiptDigests,

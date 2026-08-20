@@ -264,7 +264,8 @@ async function recoveryStateBeforeTarget(subject, context, packageRoot, targetIn
       preflightCode(attempt, context),
       nextTotalInput > subject.chain_budget.input_bytes ? 'adapter.input_budget_exhausted' : null,
     ]);
-    if (denial !== null || attempt.double.behavior === 'crash_before_transmit') return null;
+    if (denial !== null) return {state: null, terminalCode: denial};
+    if (attempt.double.behavior === 'crash_before_transmit') return {state: null, terminalCode: null};
     const evaluated = await evaluateTransmittedAttempt({
       attempt,
       nextAttempt: subject.attempts[index + 1],
@@ -279,7 +280,7 @@ async function recoveryStateBeforeTarget(subject, context, packageRoot, targetIn
       retriesUsed: state.retriesUsed,
       fallbacksUsed: state.fallbacksUsed,
     });
-    if (!evaluated.continueChain) return null;
+    if (!evaluated.continueChain) return {state: null, terminalCode: evaluated.code};
     state.totalInput = nextTotalInput;
     state.totalOutput = evaluated.totalOutput;
     state.totalRuntime = evaluated.totalRuntime;
@@ -287,7 +288,7 @@ async function recoveryStateBeforeTarget(subject, context, packageRoot, targetIn
     if (evaluated.scheduledClass === 'retry') state.retriesUsed += 1;
     if (evaluated.scheduledClass === 'fallback') state.fallbacksUsed += 1;
   }
-  return state;
+  return {state, terminalCode: null};
 }
 
 function recoveryBehaviorMatches(subject, attempt) {
@@ -303,8 +304,11 @@ function recoveryBehaviorMatches(subject, attempt) {
 
 async function observeRecovery(subject, context, packageRoot) {
   const {recovery} = subject;
-  const targetIndex = subject.attempts.findIndex(({envelope}) =>
+  const targetIdentityIndex = subject.attempts.findIndex(({envelope}) =>
     envelope.attempt_id === recovery.target_attempt_id);
+  const targetIndex = targetIdentityIndex === recovery.target_attempt_sequence
+    ? targetIdentityIndex
+    : -1;
   const attempt = subject.attempts[targetIndex] ?? subject.attempts[0];
   const bytes = canonicalJson(attempt.envelope);
   const expectedTransmission = {
@@ -315,9 +319,10 @@ async function observeRecovery(subject, context, packageRoot) {
   const observedPriorTransmission = recovery.transmission_observed === true &&
     isDeepStrictEqual(recovery.prior_transmission, expectedTransmission);
   const chainCode = chainPreflightCode(subject, context);
-  const state = targetIndex >= 0 && chainCode === null
+  const replay = targetIndex >= 0 && chainCode === null
     ? await recoveryStateBeforeTarget(subject, context, packageRoot, targetIndex)
-    : null;
+    : {state: null, terminalCode: null};
+  const {state} = replay;
   const targetInputCode = state !== null && state.totalInput + expectedTransmission.byte_length > subject.chain_budget.input_bytes
     ? 'adapter.input_budget_exhausted'
     : null;
@@ -389,9 +394,11 @@ async function observeRecovery(subject, context, packageRoot) {
   const transmission = observedPriorTransmission ? expectedTransmission : null;
   const budget = transmission === null
     ? zeroReceiptBudget()
-    : {input_bytes: transmission.byte_length, output_bytes: 0, runtime_ms: 0, cost_microunits: 0};
+    : recoveryEvaluation?.budget ??
+      {input_bytes: transmission.byte_length, output_bytes: 0, runtime_ms: 0, cost_microunits: 0};
   const code = highestPrecedenceCode([
     chainCode,
+    replay.terminalCode,
     targetPreflightCode,
     recoveryEvaluation?.code ?? null,
     'adapter.recovery_unknown_completion',
