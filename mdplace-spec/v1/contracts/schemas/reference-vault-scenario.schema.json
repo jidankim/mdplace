@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:reference-vault-scenario:v1",
+  "title": "mdplace Reference Vault conformance scenario",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_id",
+    "scenario_id",
+    "operation",
+    "actor_role",
+    "generator_binding",
+    "current_binding",
+    "binding_registry",
+    "scale",
+    "partition_lineages",
+    "coverage_accounts",
+    "redistribution",
+    "recovery",
+    "lifecycle"
+  ],
+  "properties": {
+    "$schema": {"const": "../../../contracts/schemas/reference-vault-scenario.schema.json"},
+    "schema_id": {"const": "mdplace.reference-vault-scenario/v1"},
+    "scenario_id": {"type": "string", "pattern": "^RVG-[0-9]{3}$"},
+    "operation": {"enum": ["generate", "redistribute", "recover", "validate_lifecycle"]},
+    "actor_role": {"enum": ["reference_vault_generator", "vault_owner", "foreground_recovery", "conformance_validator", "semantic_kernel"]},
+    "generator_binding": {"$ref": "#/$defs/generatorBinding"},
+    "current_binding": {"$ref": "#/$defs/currentBinding"},
+    "binding_registry": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "items": {"$ref": "#/$defs/registryEntry"}
+    },
+    "scale": {"$ref": "#/$defs/scale"},
+    "partition_lineages": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {"$ref": "#/$defs/partitionLineages"}
+    },
+    "coverage_accounts": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/coverageAccount"}
+    },
+    "redistribution": {"type": ["object", "null"], "additionalProperties": false, "required": ["source_partition", "target_partition", "source_shard", "target_shard", "lineage_group_id", "whole_lineage", "expected_base_manifest_sha256", "observed_base_manifest_sha256"], "properties": {
+      "source_partition": {"enum": ["train", "calibration", "test"]},
+      "target_partition": {"enum": ["train", "calibration", "test"]},
+      "source_shard": {"type": "string", "pattern": "^(train|calibration|test)-[ab]$"},
+      "target_shard": {"type": "string", "pattern": "^(train|calibration|test)-[ab]$"},
+      "lineage_group_id": {"type": "string", "pattern": "^lineage:[a-z0-9-]{3,64}$"},
+      "whole_lineage": {"type": "boolean"},
+      "expected_base_manifest_sha256": {"$ref": "#/$defs/sha256"},
+      "observed_base_manifest_sha256": {"$ref": "#/$defs/sha256"}
+    }},
+    "recovery": {"type": ["object", "null"], "additionalProperties": false, "required": ["evidence_id", "evidence_sha256", "crash_stage", "decision"], "properties": {
+      "evidence_id": {"type": "string", "pattern": "^RVG-RECOVERY-[A-Z-]{3,48}$"},
+      "evidence_sha256": {"$ref": "#/$defs/sha256"},
+      "crash_stage": {"enum": ["before_manifest", "after_manifest", "before_redistribution", "after_redistribution"]},
+      "decision": {"enum": ["restart_from_binding", "retain_sealed_manifest", "discard_unsealed_plan", "retain_redistributed_manifest"]}
+    }},
+    "lifecycle": {"type": ["object", "null"], "additionalProperties": false, "required": ["table_ref", "transition_sha256", "from_state", "command"], "properties": {
+      "table_ref": {"enum": ["contracts/transitions/reference-vault-generation-lifecycle.json", "contracts/transitions/reference-vault-redistribution-lifecycle.json"]},
+      "transition_sha256": {"$ref": "#/$defs/sha256"},
+      "from_state": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+      "command": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}
+    }}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "generatorBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generator_id", "generator_version", "seed", "seed_sha256", "binding_sha256"],
+      "properties": {
+        "generator_id": {"const": "mdplace.reference-vault-generator/v1"},
+        "generator_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+        "seed": {"type": "string", "minLength": 16, "maxLength": 128},
+        "seed_sha256": {"$ref": "#/$defs/sha256"},
+        "binding_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "currentBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generator_version", "binding_sha256"],
+      "properties": {
+        "generator_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+        "binding_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "registryEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generator_version", "seed_sha256", "binding_sha256"],
+      "properties": {
+        "generator_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+        "seed_sha256": {"$ref": "#/$defs/sha256"},
+        "binding_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["captured_tab_notes", "observed_note_versions", "categories", "canonical_events", "queued_candidates"],
+      "properties": {
+        "captured_tab_notes": {"type": "integer", "minimum": 0, "maximum": 25001},
+        "observed_note_versions": {"type": "integer", "minimum": 0, "maximum": 100001},
+        "categories": {"type": "integer", "minimum": 0, "maximum": 1001},
+        "canonical_events": {"type": "integer", "minimum": 0, "maximum": 1000001},
+        "queued_candidates": {"type": "integer", "minimum": 0, "maximum": 1001}
+      }
+    },
+    "scale": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["counts", "candidate_size_limit_bytes", "candidate_bytes", "deferred_localized_images_excluded"],
+      "properties": {
+        "counts": {"$ref": "#/$defs/counts"},
+        "candidate_size_limit_bytes": {"const": 5242880},
+        "candidate_bytes": {"type": "integer", "minimum": 0, "maximum": 5242881},
+        "deferred_localized_images_excluded": {"const": true}
+      }
+    },
+    "partitionLineages": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["partition_id", "membership_sha256_before", "membership_sha256_after", "lineage_group_ids"],
+      "properties": {
+        "partition_id": {"enum": ["train", "calibration", "test"]},
+        "membership_sha256_before": {"$ref": "#/$defs/sha256"},
+        "membership_sha256_after": {"$ref": "#/$defs/sha256"},
+        "lineage_group_ids": {"type": "array", "minItems": 1, "maxItems": 4, "uniqueItems": true, "items": {"type": "string", "pattern": "^lineage:[0-9]{6}$"}}
+      }
+    },
+    "coverageAccount": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dimension", "accounted"],
+      "properties": {
+        "dimension": {"enum": ["captured_tab_notes", "observed_note_versions", "categories", "canonical_events", "queued_candidates"]},
+        "accounted": {"type": "integer", "minimum": 0, "maximum": 1000001}
+      }
+    }
+  }
+}

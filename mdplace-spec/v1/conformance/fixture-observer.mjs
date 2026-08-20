@@ -9,6 +9,7 @@ import {observeSemanticKernelScenario} from './semantic-kernel-observer.mjs';
 import {observeControlPlaneScenario} from './control-plane-observer.mjs';
 import {observeTransition} from './transition-observer.mjs';
 import {observeVaultMutationScenario} from './vault-mutation-gate-observer.mjs';
+import {observeReferenceVaultScenario} from './reference-vault-observer.mjs';
 import {observeIntelligenceAdapterScenario} from './intelligence-adapter-observer.mjs';
 import {authorityMatches, manifestFields, packageArtifactPathAllowed, transitionFields} from './validator-rules.mjs';
 
@@ -181,6 +182,8 @@ export async function observeFixture(fixture, packageRoot, options = {}) {
       return observeProcessingPolicyScenario(fixture.subject, packageRoot);
     case 'vault_mutation_gate':
       return observeVaultMutationScenario(fixture.subject, packageRoot);
+    case 'reference_vault':
+      return observeReferenceVaultScenario(fixture.subject, packageRoot);
     case 'intelligence_adapter':
       return observeIntelligenceAdapterScenario(fixture.subject.document, packageRoot);
     default:

@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:scale-manifest:v1",
+  "title": "mdplace Reference Vault scale manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_id",
+    "scale_id",
+    "counts",
+    "candidate_size_limit_bytes",
+    "deferred_localized_images",
+    "materialization",
+    "performance_claim",
+    "scale_sha256"
+  ],
+  "properties": {
+    "$schema": {"const": "../schemas/scale-manifest.schema.json"},
+    "schema_id": {"const": "mdplace.scale-manifest/v1"},
+    "scale_id": {"const": "mdplace.reference-vault-scale/v1"},
+    "counts": {"$ref": "#/$defs/counts"},
+    "candidate_size_limit_bytes": {"const": 5242880},
+    "deferred_localized_images": {"$ref": "#/$defs/deferredImages"},
+    "materialization": {"const": "deferred"},
+    "performance_claim": {"const": "none"},
+    "scale_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "captured_tab_notes",
+        "observed_note_versions",
+        "categories",
+        "canonical_events",
+        "queued_candidates"
+      ],
+      "properties": {
+        "captured_tab_notes": {"const": 25000},
+        "observed_note_versions": {"const": 100000},
+        "categories": {"const": 1000},
+        "canonical_events": {"const": 1000000},
+        "queued_candidates": {"const": 1000}
+      }
+    },
+    "deferredImages": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["excluded_from_candidate_size_limit", "excluded_from_ticket_materialization"],
+      "properties": {
+        "excluded_from_candidate_size_limit": {"const": true},
+        "excluded_from_ticket_materialization": {"const": true}
+      }
+    }
+  }
+}

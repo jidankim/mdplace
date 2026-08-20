@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:reference-vault-generator:v1",
+  "title": "mdplace Reference Vault generator interface",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_id",
+    "generator_id",
+    "generator_version",
+    "determinism",
+    "scale_manifest",
+    "inputs",
+    "outputs",
+    "partitions",
+    "generation_table",
+    "redistribution_table",
+    "recovery_table",
+    "materialization",
+    "performance_claim"
+  ],
+  "properties": {
+    "$schema": {"const": "../schemas/reference-vault-generator.schema.json"},
+    "schema_id": {"const": "mdplace.reference-vault-generator/v1"},
+    "generator_id": {"const": "mdplace.reference-vault-generator/v1"},
+    "generator_version": {"const": "1.0.0"},
+    "determinism": {"$ref": "#/$defs/determinism"},
+    "scale_manifest": {"$ref": "#/$defs/scaleBinding"},
+    "inputs": {
+      "type": "array",
+      "minItems": 5,
+      "uniqueItems": true,
+      "items": {"enum": ["seed", "generator_version", "scale_manifest_sha256", "corpus_schema_id", "redistribution_request"]}
+    },
+    "outputs": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {"enum": ["corpus_manifest", "generator_receipt", "recovery_report"]}
+    },
+    "partitions": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {"enum": ["train", "calibration", "test"]}
+    },
+    "generation_table": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {"$ref": "#/$defs/generationRow"}
+    },
+    "redistribution_table": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "items": {"$ref": "#/$defs/redistributionRow"}
+    },
+    "recovery_table": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {"$ref": "#/$defs/recoveryRow"}
+    },
+    "materialization": {"const": "deferred"},
+    "performance_claim": {"const": "none"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "stringList": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "determinism": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "canonicalization", "seed", "seed_sha256", "binding_sha256", "repeat_result"],
+      "properties": {
+        "algorithm": {"const": "sha256-counter-v1"},
+        "canonicalization": {"const": "sorted-key-json-v1"},
+        "seed": {"type": "string", "minLength": 16, "maxLength": 128},
+        "seed_sha256": {"$ref": "#/$defs/sha256"},
+        "binding_sha256": {"$ref": "#/$defs/sha256"},
+        "repeat_result": {"const": "digest_identical"}
+      }
+    },
+    "scaleBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "sha256"],
+      "properties": {
+        "ref": {"const": "contracts/reference-vault/scale-manifest.json"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "generationRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["step_id", "order", "inputs", "deterministic_rule", "output", "failure_code"],
+      "properties": {
+        "step_id": {"type": "string", "pattern": "^GEN-[0-9]{3}$"},
+        "order": {"type": "integer", "minimum": 1, "maximum": 6},
+        "inputs": {"$ref": "#/$defs/stringList"},
+        "deterministic_rule": {"type": "string", "minLength": 1},
+        "output": {"type": "string", "minLength": 1},
+        "failure_code": {"type": "string", "pattern": "^generator\\.[a-z0-9_]+$"}
+      }
+    },
+    "redistributionRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rule_id", "condition", "allowed", "identity_effect", "failure_code", "recovery"],
+      "properties": {
+        "rule_id": {"type": "string", "pattern": "^RED-[0-9]{3}$"},
+        "condition": {"type": "string", "minLength": 1},
+        "allowed": {"type": "boolean"},
+        "identity_effect": {"enum": ["preserve_partition_and_lineage", "none"]},
+        "failure_code": {"type": ["string", "null"], "pattern": "^corpus\\.[a-z0-9_]+$"},
+        "recovery": {"type": "string", "minLength": 1}
+      }
+    },
+    "recoveryRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["crash_stage", "required_evidence", "result", "filesystem_effects"],
+      "properties": {
+        "crash_stage": {"enum": ["before_manifest", "after_manifest", "before_redistribution", "after_redistribution"]},
+        "required_evidence": {"$ref": "#/$defs/stringList"},
+        "result": {"enum": ["restart_from_binding", "retain_sealed_manifest", "discard_unsealed_plan", "retain_redistributed_manifest"]},
+        "filesystem_effects": {"const": "none"}
+      }
+    }
+  }
+}

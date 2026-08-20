@@ -23,6 +23,7 @@
         {"$ref": "#/$defs/controlPlaneSubject"},
         {"$ref": "#/$defs/processingPolicySubject"},
         {"$ref": "#/$defs/vaultMutationGateSubject"},
+        {"$ref": "#/$defs/referenceVaultSubject"},
         {"$ref": "#/$defs/intelligenceAdapterSubject"}
       ]
     },
@@ -273,6 +274,16 @@
         "kind": {"const": "vault_mutation_gate"},
         "schema": {"const": "contracts/schemas/vault-mutation-scenario.schema.json"},
         "document": {"description": "Closed descriptor-bound scenario validated against subject.schema before observation."}
+      }
+    },
+    "referenceVaultSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "schema", "document"],
+      "properties": {
+        "kind": {"const": "reference_vault"},
+        "schema": {"const": "contracts/schemas/reference-vault-scenario.schema.json"},
+        "document": {"description": "Closed Reference Vault generation, redistribution, lineage, boundary, or recovery scenario."}
       }
     },
     "intelligenceAdapterSubject": {
