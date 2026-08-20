@@ -4,388 +4,387 @@
   "release_version": "1.0.0",
   "validator_version": "1.2.0",
   "scenario_count": 42,
-  "approved_context_sha256": "ea885867a89c39445ca7ec7c49108fd4d110a198356d746ef3f36a5a0b936eae",
+  "approved_context_sha256": "2002f5d20db25ca0e4b255cbe4942baf697d4da27646ef3495415c3b28b23461",
   "fixture_bindings": [
     {
       "fixture_id": "FIX-IAP-POS-001",
       "path": "scenarios/intelligence-adapter/remote-valid-proposal-advice.json",
-      "fixture_sha256": "c5d1f15461e0281170fcd8caf541a9683a0c4bde4181e2d7495ba38e532ae175",
-      "observable_result_sha256": "1e9116d271173fee3e70ea3cbdeeee2e8490ebd4283301ebccb32b24861aef26",
+      "fixture_sha256": "fa896cd8249b00179f048ccc7c09262e959b5cedd2e2608a543f11d209b875f7",
+      "observable_result_sha256": "119b4d152a44531869eb6e78f8dbdbd29e403d5c8000c3eabddf069b6553e2db",
       "receipt_sha256s": [
-        "e132dbe1afb93733edba50bd060f4303ed1d4c790a9a6f5071330d835f4beb6a"
+        "7a751f251a61b727826d46db84491b80e5e965dabf00f559d8280a0731515cf8"
       ]
     },
     {
       "fixture_id": "FIX-IAP-POS-002",
       "path": "scenarios/intelligence-adapter/local-valid-abstention-advice.json",
-      "fixture_sha256": "f633af2f617d8af18dae813f54e3bcd8c08fd6069aac792387d8ed3e97f01414",
-      "observable_result_sha256": "6ae2f69c3eb9b22e4acd64ac21fe9af22372311bed39c091409a39439327023a",
+      "fixture_sha256": "50bf90260f2dfcaaf028a381cf21188ab78a6dd2738153083fc904e11d3e5b42",
+      "observable_result_sha256": "ca5544cf1e6e30dcde45767af8555efeb93da3a2d1fb382eac488aadf360e66b",
       "receipt_sha256s": [
-        "330fd7849449331ad0491069b5ed4675fb54dab9f742f5c753f12ee89edd34c7"
+        "e3331c08508f8cb27c6a713197c5d15302cea55d70b7ef1868f98439568edbd4"
       ]
     },
     {
       "fixture_id": "FIX-IAP-POS-003",
       "path": "scenarios/intelligence-adapter/authorized-retry-succeeds.json",
-      "fixture_sha256": "e477ca0ed619aa6220d70aeb92c6bfde16ed0b44aa868ec54ed2c2816b24c4d1",
-      "observable_result_sha256": "274c291f222950e5a732c683e44a9a7558c01860ece1b0fc8c02213250a11865",
+      "fixture_sha256": "66687f30200b8f7904475bc7633b7747ce96b788295b71ddb0306934aabbde9d",
+      "observable_result_sha256": "4e06246b2ddda357be5354bd5b7e650685040f6efacc7a87e1f35d3c6e6cac3b",
       "receipt_sha256s": [
-        "400c7a6daf1319e49e2c5bc44b3f458d6257a3eac319a7e3403769c65c506fbe",
-        "c1a98a6c533c4e876dbc2d06d45b646d3dc676b72b0eea02557d1696aea01059"
+        "bad11c467a7804750763c225d2c572a18d91ffd9adce0746219332639b10a330",
+        "f691f007a67cbe640d038980760e0c395953b1b981b9771ee474270b3e6bd8aa"
       ]
     },
     {
       "fixture_id": "FIX-IAP-POS-004",
       "path": "scenarios/intelligence-adapter/authorized-local-fallback-succeeds.json",
-      "fixture_sha256": "bfc9a0e532535df7ae54be2471b96775aad661f498e3cc91dc6113328c3a8339",
-      "observable_result_sha256": "e70ec088224af7e4cf93034a4b7c001db11a911d8bde6c74c6864e425a0126bb",
+      "fixture_sha256": "88c91e8ce22890cf4893aa616d6801318866bb83ce12815030046d8cb2904048",
+      "observable_result_sha256": "09708f5562798a3e2dedcb93281ae1069397901deb9f79e3358efdd9a91a1974",
       "receipt_sha256s": [
-        "8002226dccb6107e408ea30b3320654536278f8837ad95ff9bafdb14c999a391",
-        "1f72806a62cac92d735fdea6cceb6b65814389bca31500544a06b3436ca3c1a4",
-        "6e23d07278bc939efb83f2c403a14efa5680c7fc8558a09a8a148c21d318c170"
+        "b2b1795437aecbe07f0ec3d9270602d7790c90af885bf7644d7d75c64f3e71fc",
+        "053fd49819a8b946b10b8223369a92745929f6ea7f49ec32beb35cfb81d39d7d",
+        "9856e6ca6d1c72ff4230018fb33e8cd1f42f87a6f8841fb001fb200476b683e0"
       ]
     },
     {
       "fixture_id": "FIX-IAP-POS-005",
       "path": "scenarios/intelligence-adapter/hostile-instructions-remain-inert-data.json",
-      "fixture_sha256": "eceff1560d43e8daaf3d6a841b5271087529f23b43a378502bd1c718c23328f0",
-      "observable_result_sha256": "f43ff85b5fc7ab9126be96d6b6c607e8cec807d3631213675b66331e07a16e6e",
+      "fixture_sha256": "913c48393c4a289e544944b32a12012d4e4014a182ad9c07185d027b84acff69",
+      "observable_result_sha256": "78bc2ae6c1af679da1ed34ba8a3346b5489ab9b70108dcf09fa213c1bc73e347",
       "receipt_sha256s": [
-        "be7900035050e2afa16e60e53aaaa3514553c388783a20ddd9c69935d43d9782"
+        "ab190484dbbf8c4d5bfab3820b716c212b19970a4ed7e8c3d45fd5886273acc0"
       ]
     },
     {
       "fixture_id": "FIX-IAP-BND-001",
       "path": "scenarios/intelligence-adapter/exact-input-ceiling-accepted.json",
-      "fixture_sha256": "c26f29190975a5d0b0b990fce507745e50dfe9ca0ad426eeb9a05b4f521147ff",
-      "observable_result_sha256": "523f5c8654808d541f8cf58415fe1ed6f47869f310100bd0daaa4487d8a05111",
+      "fixture_sha256": "db1d9343ddc99420526f440b00d0f98f05381d44ab5887b0b6dc8dccaf217325",
+      "observable_result_sha256": "02abfdfdf9b53ee49afc74db16a9bc570ed9c20acb1e16958e76aaadf0472a4d",
       "receipt_sha256s": [
-        "a423a481811fba56b9ea03030d553c0ea57182b21763682ab8ab42f2ff29a461"
+        "b5b12de9a55aefc3ba47da1af2bd249aef364b986b02648ae022b196d0259853"
       ]
     },
     {
       "fixture_id": "FIX-IAP-BND-002",
       "path": "scenarios/intelligence-adapter/exact-output-ceiling-accepted.json",
-      "fixture_sha256": "83ea8e5ffc999221c5376a50c64edfe392c18ce0ed9ff042a217437c72d76edb",
-      "observable_result_sha256": "bb8eafbee8c98a8a53aa018180cf85f2661171a70a639afa8a84921a7da353e6",
+      "fixture_sha256": "31ac4f7b6279dd0e3d90bc0aa91f5a4d730cb3dbd648a7f624a662ec26776e4a",
+      "observable_result_sha256": "c618854caef0931740d17374d9046de393b08513d5da49e912459b781ea0e666",
       "receipt_sha256s": [
-        "f1e39268c1dcd01ae5e6186bb06a6c41b1dd17928b599e994be550abffe3ee68"
+        "a97c524d3b80e0300d45b22208c63cd9c3320755b5e8007d7a0fbc3d8d8fae04"
       ]
     },
     {
       "fixture_id": "FIX-IAP-BND-003",
       "path": "scenarios/intelligence-adapter/exact-runtime-ceiling-accepted.json",
-      "fixture_sha256": "21b1737add0c501d5624fa62fff849b19c41a922c29fcba501550fbce136cfb3",
-      "observable_result_sha256": "1d911f01d66518b37afc6cbfcb4edf3391aa1586f5a83a271ed12963e8208380",
+      "fixture_sha256": "65c4a766063801e15fd2f233754324df6aed57b3f01792c84b4e1719299feaea",
+      "observable_result_sha256": "4fb11a5e3a772744f01b84c64e43016e1fe725ba5def45455e0f3338128d76d4",
       "receipt_sha256s": [
-        "251a46985a89647ecd59b746f34b416ed6519e50eb08510a464d036c729afaee"
+        "14af9ffd1ca87496aa16878bf2cac9b4d9999fe4bca3265bc0ee21a0fe5efd69"
       ]
     },
     {
       "fixture_id": "FIX-IAP-BND-004",
       "path": "scenarios/intelligence-adapter/exact-cost-ceiling-accepted.json",
-      "fixture_sha256": "54f2bc9cb8f57b8b2e8e4cfbe7719d854e058cc86442e494540ea708f3d4fcaf",
-      "observable_result_sha256": "16e584c896c1053c633e88683b293081eeea91a664afdc6b12219c3785c100d2",
+      "fixture_sha256": "e6019edba3e7034231c1c864fc84292224e6ec97c3b922fd4ecdbf91295badb4",
+      "observable_result_sha256": "07e85b7ccc864de58406c94d37a29092e2f6937c61e6a39b6abcbee12f568fd7",
       "receipt_sha256s": [
-        "a617d8bc363d078db8a8ebefa871b75c77f2cbed2678101e22ec1d66954e17e9"
+        "701a9d4a8dce9083814aacda0ae0778621d0ee9094cd7542ae68b1a01bedf3d2"
       ]
     },
     {
       "fixture_id": "FIX-IAP-NEG-001",
       "path": "scenarios/intelligence-adapter/malformed-output-rejected.json",
-      "fixture_sha256": "7647b9f3b43314083c80f324dfe136feb55dd27270a927075ba768e111ca0d71",
-      "observable_result_sha256": "2fdab4b60404d299b870f68fac5269524012532ab17f8858e34e1f8e0c48ee55",
+      "fixture_sha256": "71e037b1dcf59a0097aeb6c606b18cd4b394d3f930775619f4ce5f1f9ed38ed8",
+      "observable_result_sha256": "1ac406415353fb49dfd61cbe1ae4b158d20263041019c0c32f0e8726c6a2c18d",
       "receipt_sha256s": [
-        "9ccb7a263f0f9eab189b676ad4914fb6ffdca5cc3e6b5d66586a33c3e94e7a11"
+        "07e80d13bc06dbcdb967b536388c2c790122ea5d48affaf714cd4192afb8717b"
       ]
     },
     {
       "fixture_id": "FIX-IAP-NEG-002",
       "path": "scenarios/intelligence-adapter/unknown-proposal-field-rejected.json",
-      "fixture_sha256": "1167ee443f48d56d48ac7500b4ceed992ca18371e932625b4ecb5944578cd69f",
-      "observable_result_sha256": "7b896d9ed954cc49bdc961153e26a255ad53be20d283bcc61bb42e14caaf944d",
+      "fixture_sha256": "299ac520cfb00997f56ea44e6e35c4866eb83d6e37793ee20b0bcee7d4df45d1",
+      "observable_result_sha256": "624240c88b4fc553303318c408d66001c4289a1a6808751d8bdba45b48ef7501",
       "receipt_sha256s": [
-        "27f5c4211cf4d028aa96e9d87d03bc185fedc75e529f15dd72254d5597f39f9d"
+        "b81cf0327fba27bcfa3083839c2ff2e0151ef172caad855bb13f4ad22e4317c8"
       ]
     },
     {
       "fixture_id": "FIX-IAP-NEG-003",
       "path": "scenarios/intelligence-adapter/cost-budget-exhausted.json",
-      "fixture_sha256": "93595ae4642043a599e87f8a8afb0cc13471e237a5499d912aff4520b1c3eb28",
-      "observable_result_sha256": "2d9bd3cb0273e5f0d96dda3775f814b39ac14ec2a1aaf449b0b436386f7df173",
+      "fixture_sha256": "7be408b29ab0c3631d82118af72f64336698c13c1ea274c0e79644b63b95c9a7",
+      "observable_result_sha256": "c4b8934b6c12be5252b1835bd2e1a6e5b1a56ec385a6057fc3f6cc9dcc531d9f",
       "receipt_sha256s": [
-        "7e32a257315efd58c686d9819cc3aed8a943c844830f5902f05bd0924419aa3f"
+        "8913ba0109ec28d1f67a3a5e98fbe5af0fe73fb86bcc1bb921878222d6696e5d"
       ]
     },
     {
       "fixture_id": "FIX-IAP-NEG-004",
       "path": "scenarios/intelligence-adapter/input-budget-exhausted.json",
-      "fixture_sha256": "20ba5cfed0667568cded845aadfc05cc5226794e6063ad70993cdcb62cd5c465",
-      "observable_result_sha256": "fa370d7ede32daa2b4554d975bc6ff06960eb03ce301b8a9d67c03d7107c0eb6",
+      "fixture_sha256": "0994802eed690148ce7584f1a9a930e3921cd8a79237cffed6fcac2d9f5030dd",
+      "observable_result_sha256": "a975a26476e050602cf9608ae3ffe39bfb61762958b3bdfbfe66bd76148367b5",
       "receipt_sha256s": [
-        "70820221e6575dab5a683d66f44f517d328f7096abe2f3f03f35295b10420f9b"
+        "01fc5b7667b92caace05e4f29783d10b9a7348e3f89f3a3479add7dcb86fccd7"
       ]
     },
     {
       "fixture_id": "FIX-IAP-NEG-005",
       "path": "scenarios/intelligence-adapter/timeout-recorded.json",
-      "fixture_sha256": "8c677988f90c12473484f52c7f215a771456bcd0bd82ae784c3114cd03240685",
-      "observable_result_sha256": "ca15a8661121cbaf8df7d82bbfa9a35a80166b7e9c0a13b961459d573c2113bd",
+      "fixture_sha256": "d507c9e9356e4372a57c0b0a186c814c9307f506560cdece3e2f07747b086089",
+      "observable_result_sha256": "e79ca49b96a4ca6220dc699d7b76018839e3b72da864d0a9caa2a49a493bfb19",
       "receipt_sha256s": [
-        "00f8acbce9ea8779f7b7e2f0360b3d65185e98f2d568fd4d642f3d2c9dc82f9d"
+        "53e35aea47be338dd72eac8abc859b8657883ce371d1e10ee4de3e2de26f708f"
       ]
     },
     {
       "fixture_id": "FIX-IAP-NEG-006",
       "path": "scenarios/intelligence-adapter/retry-exhaustion-recorded.json",
-      "fixture_sha256": "dab76aee4ae6fe89e66c7f42a5c49a1d8c2444b6ca140c6664fca0996ef35ee2",
-      "observable_result_sha256": "405f26e5d560f0435429cf7852993e4ad65d096bf92e8f13576e7ab2f3f3b396",
+      "fixture_sha256": "533ceb729de40fd1ce27a87a7cf8e8cbf04278ff9285dee55d1c2b9167f778ea",
+      "observable_result_sha256": "40b297ee1410c217802b6f6861b09dbf492436efcd4cb7719262b4c330461bed",
       "receipt_sha256s": [
-        "d6c3f76f3400bb26175f5be92ec2c099532327cdc4382711f4f9a2a4bc26446d"
+        "2d63f03118d3addde5fd2d01be1aaf8b2ee08bc0fc61d228c750c11371ccfd43"
       ]
     },
     {
       "fixture_id": "FIX-IAP-NEG-007",
       "path": "scenarios/intelligence-adapter/forbidden-fallback-recorded.json",
-      "fixture_sha256": "a3d068399cf490650d04e42c7a6139c38d08fd4059840b4d20dde69378eeadff",
-      "observable_result_sha256": "2846e26a214d0806d2815548c54defa9e3a168541d9980e5da9b3418f9776499",
+      "fixture_sha256": "f0494e939e2dbdb9496af8a8be1927deb86d38d33a5046e6501bbbcc851f8ad5",
+      "observable_result_sha256": "90e4e0c84d92fb1799a8b5d7512303bb9d417fefb30cfecab0fef3bbb804621f",
       "receipt_sha256s": [
-        "ce8a55981ea8347ac1760820a6fcd35afd998a6670a901b4c4e581fb2d10d274",
-        "0afb7e24bd6e56a2d97e75a88a609c4a604c93965fe86423cb7b62bda3e4e0a5"
+        "613b3c9386e86f70111dcedf431d20f198c16da4efb980d7e1236ffad025e742"
       ]
     },
     {
       "fixture_id": "FIX-IAP-NEG-008",
       "path": "scenarios/intelligence-adapter/missing-retention-facts-denied.json",
-      "fixture_sha256": "268b9f9ffb0401dec986297aebe02249173b336b493c813ea0678a55a8f713f8",
-      "observable_result_sha256": "5360e92b4839add373e37841343f019b81a6e79f70bab9943ca3e822fa4e921f",
+      "fixture_sha256": "1a5553c7a5b76f38c9a9a07f303896816f73bae70b8f93f9ef7e43daeca6c694",
+      "observable_result_sha256": "d0b7ea57ac3f859268b73c63090172494c2c63cc054a33ad816d6acf190ed44f",
       "receipt_sha256s": [
-        "3cf160b5ba69845ee3e1d471d8d50c6070d8a09b6510863450024dedfebd0e2f"
+        "bbaddba3871da72837db68cdc5ec489a8ed0d040d4c69936c9218c4368938121"
       ]
     },
     {
       "fixture_id": "FIX-IAP-NEG-009",
       "path": "scenarios/intelligence-adapter/unapproved-destination-denied.json",
-      "fixture_sha256": "3cf31b2079f915dee78a712fbcb70616880a75acc10aae65d7298d7a88386f5c",
-      "observable_result_sha256": "79e3ea803a4de6b475cbfd06a731c6ff815f0616f4210cfaaf1cd25083f5695e",
+      "fixture_sha256": "b62778998b39ba4af7ec3b581d1d97e7c5b2d5a78cff1a83e33e571f019d2e34",
+      "observable_result_sha256": "a6739db850e37a719f3694cc568bd35c537e8b8bea1d971b2b4bf14b06094a55",
       "receipt_sha256s": [
-        "5ac9788f803f521941f1c820bc5cdfad0f51013e7d6051d1c1e057d904049634"
+        "67d8e84489589e29e6deea1b26b87cd7634ad057a379504ceb3f878a74b25966"
       ]
     },
     {
       "fixture_id": "FIX-IAP-NEG-010",
       "path": "scenarios/intelligence-adapter/unapproved-capability-denied.json",
-      "fixture_sha256": "de06499bd15eba1234d489395e589f8fbb9abbfcaf60fd23901f0c72baae8d5d",
-      "observable_result_sha256": "b09940d41f7dcecd7d16d13cea4378316fde14bd7545ab0bff9efeb20affd230",
+      "fixture_sha256": "b1ee64160fce01713fefe0143b4c291d0bd816222044c4d05b93f2fb645d61cf",
+      "observable_result_sha256": "e328718fd3bf2202d4d66d47d42c0ac84ad5e3cc37a9a5b79b50934a294511b0",
       "receipt_sha256s": [
-        "fd81d058f20d9275db64f459d703f4b3d9610c52a84414b3ab8aba675eaae8eb"
+        "6035e9c018f8a51f2ffcf62ca85f393e560df93e9b62b7aeb61edcd1a22284b7"
       ]
     },
     {
       "fixture_id": "FIX-IAP-NEG-011",
       "path": "scenarios/intelligence-adapter/missing-redaction-denied.json",
-      "fixture_sha256": "2d87bfa7b4aa07f26788cacd0b34d592fdd1d5317fe97f9d7b43c619bcc83168",
-      "observable_result_sha256": "3c5c13e91a8246bb874c45560489a0d5663866ba4aa35c6d5d0ebfcaa3622f41",
+      "fixture_sha256": "ded15e1561a253fd187f6f60f33b85504434d553b24fe6ba952f47cb43f86f61",
+      "observable_result_sha256": "5037f3161521090d9a6f3549b5fb55b17bf9135ad4965c7b2b8263c791cac49b",
       "receipt_sha256s": [
-        "4779a44f53223d9a40665ce242120ff55f4b07f9a9ca150ed028a0a0ad2ad464"
+        "07fabd1ad86a30857e134b7bba21277232000158136f6d232172f6c64169f0c9"
       ]
     },
     {
       "fixture_id": "FIX-IAP-NEG-012",
       "path": "scenarios/intelligence-adapter/credential-boundary-denied.json",
-      "fixture_sha256": "dec42b2ca781ecf6f681f905a1608a3403667a923c44e68ffb7c3fa1cec68afa",
-      "observable_result_sha256": "c3893c0c221cc9efe0e4ff0654f85393eaf8e5e21abe3db6ad6a308610f09b0a",
+      "fixture_sha256": "6676d08524f75f76ec309abe3bf85c26c5474de8568ace2c0ad27dde3bcff5e4",
+      "observable_result_sha256": "c6d5a9d96b51c449cb84a46e71d9d5d5bdac0bcd3739e66fb9f8e364694c3131",
       "receipt_sha256s": [
-        "b675fe47fe3a251d981410577b968a41763e24e42ab367b83d7bf1913e13233b"
+        "6739f097b585b92d262746eb24372b83e306f8d41f7da4849387924855c8445b"
       ]
     },
     {
       "fixture_id": "FIX-IAP-NEG-013",
       "path": "scenarios/intelligence-adapter/failed-canary-denied.json",
-      "fixture_sha256": "4191a2722c6288ec2f0ff88c571eeff1365f1e4bb16ee884e49bfc82eb8f2467",
-      "observable_result_sha256": "0439bdde4675de45709fc1d3871e3a957ab83fb9fda874e51b4cfd9488b23f25",
+      "fixture_sha256": "62584bbfcda0d7e2fec8dec570d656b3a292cf599f722cc344cc68dbee99707d",
+      "observable_result_sha256": "4bbb62537763271014a0a82db107b5fec8af48d24dd54d2f0e4788ddec99f481",
       "receipt_sha256s": [
-        "64c483a850b07416f55bd603fae9787b807c9e9cebcd93eafa6a478b9e515174"
+        "4aa3aee9ce9a77f68d690e15f6adab3ad2abb2720bd861349a9122b717b85069"
       ]
     },
     {
       "fixture_id": "FIX-IAP-NEG-014",
       "path": "scenarios/intelligence-adapter/failed-isolation-denied.json",
-      "fixture_sha256": "d76b4025ade1076b91fd03e724ac84485d770bdfc38a566ed755af18a49ee3ce",
-      "observable_result_sha256": "476c10e755efb98a0974cfaef7e227847d0efd2d2688055e52b0230b38771146",
+      "fixture_sha256": "5aefe6a8430e032a2278e1772e543b1929a2c1057b615b82581d2b40ba909e1e",
+      "observable_result_sha256": "702588ef560c83a02a2ffa1d168379d101bf733bbb8f4441b0e3b50dc6ff6b36",
       "receipt_sha256s": [
-        "525bed15ad9c2d75a6bf65d64cce454a83a6e4155e14fc40e1b9f6dc55644260"
+        "f4fb1df232a1741d925ae82bb467ac17d6afced5f6acec3253dbdfca6b0fbf19"
       ]
     },
     {
       "fixture_id": "FIX-IAP-NEG-015",
       "path": "scenarios/intelligence-adapter/embedded-tool-call-denied.json",
-      "fixture_sha256": "5fcd5b22364e6705c96ad0e7acafe07631cafbf6a3667aaea95b35c8b930365c",
-      "observable_result_sha256": "9cb42c9bf8e1a3df8bc498aa4908dd79aed4b951a59271d71d088c2bbfcee133",
+      "fixture_sha256": "4e5c985789c058be694cb27f4443d1922c3476625a8a6b2e223c1cd4bcb1b669",
+      "observable_result_sha256": "b5106e3d96a1ca67410fb6ef10b0bb46cbe170d32ca77d9d709fac4e81807149",
       "receipt_sha256s": [
-        "c42ff8f63da713f8cd7bef71228af115f475867b506a398cc89d5a16c46e7fdd"
+        "0aead82c213201693730090d420ada6c09493f385634f583b46cfe03f889d994"
       ]
     },
     {
       "fixture_id": "FIX-IAP-NEG-016",
       "path": "scenarios/intelligence-adapter/secret-request-denied.json",
-      "fixture_sha256": "cd229a795f4bb6f1a74467840a0ba749c87b9f09dbc491772ee5f9cfa1e17932",
-      "observable_result_sha256": "c6962737559b04f83e3f7c8aa7d76bcebe197d7a2919b6c4823afbbdc1de9bc7",
+      "fixture_sha256": "16791878b1e81801581db160bb89a7a1438284f3286b5599f606fb14f80bf0d7",
+      "observable_result_sha256": "aee0478ddcbd4dcc3463dbf0f33b1368e94e07560924609dfe76705fc5382e49",
       "receipt_sha256s": [
-        "28af1f2f35ffed9a4467f258d162aeb9d6ed51b32fac087434b1b85e2e0b426d"
+        "0828d90a5f0f164cdd2e200ee9ddb49eec3907e36ea61188ba5c3da9bd9c1a3a"
       ]
     },
     {
       "fixture_id": "FIX-IAP-NEG-017",
       "path": "scenarios/intelligence-adapter/ambient-configuration-read-denied.json",
-      "fixture_sha256": "0113c40319442f27c39e59e5b9ea422011e76a3a4a412d52a11345f36b19fa7d",
-      "observable_result_sha256": "182c249a07f99b6649586c667641b5a822e94b53c6f0ef1a2d4e0f05e8f4a504",
+      "fixture_sha256": "1b266f2e1040beb98473614987830f63b9ea710cef5dc8dff16bcf3244efec6d",
+      "observable_result_sha256": "e5b163fe23427d5466b3ed05826978b8a3a8e103c66168cd598e7768637f9d5b",
       "receipt_sha256s": [
-        "14f2eb7aee616fc226749e391f4e0c03dfef724f27460437457c91139f1436c3"
+        "17565884179957b2c2b89fab4e3103891364853d6520c2de0a17338d1f7c5df2"
       ]
     },
     {
       "fixture_id": "FIX-IAP-NEG-018",
       "path": "scenarios/intelligence-adapter/provider-mismatch-denied.json",
-      "fixture_sha256": "435e36d7097ad9f8baa3c95824e2af469b286048a4df3f54bf945e43c6a4946d",
-      "observable_result_sha256": "62b42d114fee22d0491bb7b9b700d4bea6ea2335ccdd773c6314d9f142774aa1",
+      "fixture_sha256": "f03113a3ad7616ee40b1f3546253efeeee970f6a0499a72154d50456d110b7d6",
+      "observable_result_sha256": "6d69c7fbd5072e984f9a6d8b26b2df61194a2fbfcaf9a226804b966cd1e61797",
       "receipt_sha256s": [
-        "0abe7dd7e9a2a970dcf23ed7c1df5d93ff6597b79bd7d0b9b8a33bb76f9b31e9"
+        "3a95942bb455f178530cc56d57022693d079dcabac9f083644d3936e4c4c0fa4"
       ]
     },
     {
       "fixture_id": "FIX-IAP-NEG-019",
       "path": "scenarios/intelligence-adapter/purpose-mismatch-denied.json",
-      "fixture_sha256": "992fa8fc56789cfb7b525a7182eb76a8f42b0821d5427f16c76fcc370b37dde3",
-      "observable_result_sha256": "b47fdc739f08c61890aefc29f1fda76f9cb6aa0bac28454f18c6d5fdbc589825",
+      "fixture_sha256": "c0e8d2f80dc1ba609629708ba4af1d410caa314f34886c8993606035ea62403a",
+      "observable_result_sha256": "b0ac65ae40df33c299c59cb2f25cfb8e70926b34c1903a323241fbcb88b634ea",
       "receipt_sha256s": [
-        "1eac6edac6ece61e01eb390e639e76102bb5216b903cc611bb0bc7b4e00fa0fd"
+        "0bdd248bc6c865c3beeefd5426b0717779cfb1cf3660e09df322598a3fd44c53"
       ]
     },
     {
       "fixture_id": "FIX-IAP-NEG-020",
       "path": "scenarios/intelligence-adapter/field-set-mismatch-denied.json",
-      "fixture_sha256": "b60a559c989cef55a4d24aa7979626a8e7e36b2c9a5141910a80fff0c610b984",
-      "observable_result_sha256": "8c8773961dd377401b6585a4b1149889df5f0e15493b5a024ca311906775441c",
+      "fixture_sha256": "420e3a67a15824bc91e525e7ec2248c345fd821eb9b23235b4c3b8ba0cf77db0",
+      "observable_result_sha256": "f4b6f325d1877907ec89ebf2c3dce5c4d42da0c0f87e6d713b5ceddcc54d1e28",
       "receipt_sha256s": [
-        "418f3cd780258f32fb45bef0dc9943e0e86050a2a63414e7d05f4dcbc9c90fe6"
+        "94222ac2825440ecc8a12ba19b536434352fc44295fa709b8e8f458c309582b5"
       ]
     },
     {
       "fixture_id": "FIX-IAP-NEG-021",
       "path": "scenarios/intelligence-adapter/artifact-set-mismatch-denied.json",
-      "fixture_sha256": "6be8e39fb576d5bcd0d92cc373c44f560b61ba1b60b69079aead6645fb9d9816",
-      "observable_result_sha256": "023b2b0a623b89565c9475213f769cf019297f70b0c8fe797e861bb7b49d064a",
+      "fixture_sha256": "1cef5b1f7a9a5dfca260950a03169496d766ff5a4beb0dc9c96b761d82281488",
+      "observable_result_sha256": "1c6d9d0ead2ce7ba856b3391d02ea51cc19bb9b3753af65ebf4ce7b9398f5028",
       "receipt_sha256s": [
-        "c9d7538da9ded26178bf2eb59725710fc7ed757b75716d9f9459df96e55edf84"
+        "226f88999cf38c98720fdad86fd90d2f5861f03a266a791a76d38f15e6b54823"
       ]
     },
     {
       "fixture_id": "FIX-IAP-NEG-022",
       "path": "scenarios/intelligence-adapter/attempt-output-budget-exhausted.json",
-      "fixture_sha256": "1111cd79778836b2faefce8734487a7ac8bda3d213061ee88528e778626b4ab7",
-      "observable_result_sha256": "8179962913631ba7b4b7c7cd2193034066b6cd60659f801c3fffc635aa41a89a",
+      "fixture_sha256": "af995fa774a4a1e2cdf1410fdeac159bc2829ea55f9c3c22c8477562d6077756",
+      "observable_result_sha256": "281757f48d5f2b6aa04f6f106811ea3d2d9f26c5526adc157fd0e3889c0968d2",
       "receipt_sha256s": [
-        "e94fcf51f6767c558274772d22936c26e73cf33dbce680c111aa8ce5d80e99cf"
+        "c537c03f693743465777b8419ce2c6def6257ad9f50aa8d6ffdd839996c1f086"
       ]
     },
     {
       "fixture_id": "FIX-IAP-NEG-023",
       "path": "scenarios/intelligence-adapter/proposal-binding-mismatch-denied.json",
-      "fixture_sha256": "f2a508fd86127dea72a34e1c59eaa55920630fdabc14b6582695b06a79850a02",
-      "observable_result_sha256": "4163a2a9780b8104302d56d90c49fbaec97566389edcb2b57a913507acf39444",
+      "fixture_sha256": "8c9b59ef141301d9ec61be5e6722c011d7065f49657fca0d50f750d68971d258",
+      "observable_result_sha256": "4ad07a814b1e2e45876d6f31ec212dda0007e4e2615cb1305a1806f4e0df8fcc",
       "receipt_sha256s": [
-        "41f9c2ab3df608e2daced87a6093655c7be5075c5fa48866e52f055b940c1e35"
+        "a92e08cb6d54267e6d3a85df4325da8f8642aa72b991fc1e7ee196328700d29a"
       ]
     },
     {
       "fixture_id": "FIX-IAP-STATE-001",
       "path": "scenarios/intelligence-adapter/stale-policy-binding-denied.json",
-      "fixture_sha256": "74806afd4dc03eed70c1143a1cc0d7af6ab11096c4aef251681e8b250d7e56b4",
-      "observable_result_sha256": "e0a4aeaa8e9185d5f4a6936b12ca8bcff44c0ccfb68befcbe116e9e4b9a88cb1",
+      "fixture_sha256": "d11dabd63c9267db2e390e73e90a2d3201cb6df6f35ffad128e8faa0faef27d6",
+      "observable_result_sha256": "420b02e6813b46dddd99d976378c5c2a299ee8c4953e1eb8f35101208d078acf",
       "receipt_sha256s": [
-        "405213165b14a1375398627017f3d7e441bd9dccb683c00a793e36204d6541b4"
+        "31d7d97d133c14815d64416ee207f691a14cf8093e094f6123bfc63ff378391f"
       ]
     },
     {
       "fixture_id": "FIX-IAP-STATE-002",
       "path": "scenarios/intelligence-adapter/stale-source-profile-binding-denied.json",
-      "fixture_sha256": "0cecee1bc39672f3a9bb667dcf437b0acbb78ca5a9227a20b00757ab7e6a1c12",
-      "observable_result_sha256": "7680ecb2f8e9098608aa2fa102728374247706f98fcec74a269cca6daf995ad7",
+      "fixture_sha256": "7e23aab8baa70c4eff73be32bf2b6401f90c9750545d5be730a37466e0977ca1",
+      "observable_result_sha256": "07f405974dd596e25c5c4ce1dc7011d6434507a4f32aefaf9ac6c59ffac78b76",
       "receipt_sha256s": [
-        "532ec91901ee04eb538442c738148ede45731c391f68cc6ab93ed57d84e5d053"
+        "1031d12eaa0a2287b46fe038ea1125f0d95cb5500bfa80211b5c0300aff88027"
       ]
     },
     {
       "fixture_id": "FIX-IAP-STATE-003",
       "path": "scenarios/intelligence-adapter/stale-cached-proposal-denied.json",
-      "fixture_sha256": "0a3ecdb6b2c813e74e60d0275cca55be299ce5c9a5295ed587992219983721cb",
-      "observable_result_sha256": "7a7d1dd6a61434251e6ce578e91cbc21ec9ac2d04b6ca51f078be246abac5726",
+      "fixture_sha256": "cea64891304c61b0d8c4bb04d23a8661c453b5f98d80c3ac340b9c03cb796ee6",
+      "observable_result_sha256": "fde1caa2319f5722b5aa7ed32f9838538e7bcbc506d99e075eb67f7fc064765a",
       "receipt_sha256s": [
-        "e7aedbf6518ec35c29870a4c0a2b699623c5edb6909963a3bd61bee160f5c421"
+        "37def94a07057f78c05225639b67cc36471af435277cde44315be80fe917ed1c"
       ]
     },
     {
       "fixture_id": "FIX-IAP-AUTH-001",
       "path": "scenarios/intelligence-adapter/semantic-authority-output-denied.json",
-      "fixture_sha256": "2ceb792e653f71794862988fd61c8647dea230f430c8adcd33cfad77e3600597",
-      "observable_result_sha256": "1cd28a0157f767ec45d3c510ee75f08bc96ffe7290b681f5f7b6c604d3c080e0",
+      "fixture_sha256": "8db1a40066fac591a155392e676f360fd24626e4293451ad0b96e75835003a6e",
+      "observable_result_sha256": "91915eba1167ba26f17c2b4aea698525c0f995685ac153f0a1ca9ef0df565818",
       "receipt_sha256s": [
-        "bb732044dc536d2704a8e54025836b5e17326540a99edb8403d77f7aa010dd7b"
+        "e6cf300e8314848c89dc1410531434edbc78d469b2e10d6765db2720d87698c3"
       ]
     },
     {
       "fixture_id": "FIX-IAP-AUTH-002",
       "path": "scenarios/intelligence-adapter/filesystem-authority-output-denied.json",
-      "fixture_sha256": "08ca574bd29c31d0829fbd455d2fe3b0c4791b5ebe909e3ebdd53a7d40e922b2",
-      "observable_result_sha256": "82c6242c15d6131c8bbb143d959133b9fe4f315c7455401e114c1b7445912014",
+      "fixture_sha256": "30892bf49313f6ff9ad383fb6cccf4cf60e6faa701e452c4405b2d26a392310c",
+      "observable_result_sha256": "7406e8bef66cdf8c44ad380dd73c4f9e54aaf8513b311af7c00fbb6d8823d58d",
       "receipt_sha256s": [
-        "2bd5a81fcc701fa070e08a975b7492b31e402bbdcc23a3009265712766bc8827"
+        "dc76c9e664c866542e9f8c4253ded92fa77c01d52bb1f4dd06b6b277985344d4"
       ]
     },
     {
       "fixture_id": "FIX-IAP-AUTH-003",
       "path": "scenarios/intelligence-adapter/placement-authority-output-denied.json",
-      "fixture_sha256": "bacd6d7564ea4c37a93c46e87d538fcdffff4c29ec6b20924d5cbb8e57ebd46e",
-      "observable_result_sha256": "94f37b61340ef5bde3f7489136f9c48f4d120693ea32746f9a3f62e775b5e02f",
+      "fixture_sha256": "b32f887d0c98670cf0241b935b8ef0f0c0a7e4e7c702ce15a9d11aedbfdc875d",
+      "observable_result_sha256": "99bd9ab307ce7636f38ae0927a5e13df50939a3ed6b2d8451728462a03b7396c",
       "receipt_sha256s": [
-        "3c26be6a44b23a1f3815b1997a0573aac4a3e5c760be55f2a83f22a8ace4a59f"
+        "258bc9aeaee28017fd51820baed74ff04bc3e61615fcb9ce794200ed98946135"
       ]
     },
     {
       "fixture_id": "FIX-IAP-ILLEGAL-001",
       "path": "scenarios/intelligence-adapter/retry-after-exhaustion-denied.json",
-      "fixture_sha256": "6300d2ff40dcc71a905d9c441004ac7e16d9aa5d04a8982daf8f2c208177c14d",
-      "observable_result_sha256": "bc931d83d402db6fe79de6a5205396c4eb1ffc064f85427b5a39a218178584c9",
+      "fixture_sha256": "aabb67f968515deefaa56889b7f18925042d95ed0625b3c536e99ee3d4fd9f3a",
+      "observable_result_sha256": "8da0d304ede37749ced8e4f21b75a1a179398728eb5f797df4e56d0ad088238d",
       "receipt_sha256s": [
-        "0a4639eaceff027b4683791a71198d2ed44bf930688b8cdb70a9df83421da4e7"
+        "189ff990bd940d9031380f897ac6db5d269253f0b5f7ef82669dc6488fb6023f"
       ]
     },
     {
       "fixture_id": "FIX-IAP-REC-001",
       "path": "scenarios/intelligence-adapter/crash-before-transmission-recovers-denied.json",
-      "fixture_sha256": "0e1ab56b7f53a13c4783e3579fa4c1d141d30b8c0c4f54ad972246b1d692b27b",
-      "observable_result_sha256": "7354df50358e9ea4e06295733cc0c60e8cd5121c59a5da48a1b4006d2c980b20",
+      "fixture_sha256": "d57d3451409fc6087f9338b01ace6b68b3a55552a46b357fbd80491ade7fb823",
+      "observable_result_sha256": "76bd98729b73b5702e524176a2d77d444c7d57fd60580404869626227dccd212",
       "receipt_sha256s": [
-        "71a425bdee50b6474cba0f3aa97f01d587255ca31b9a34bc03ded204443017a2"
+        "2cf100f4711392e75d53bf8a4aa07dad2aeb9099d9264efbddea208a8dac2981"
       ]
     },
     {
       "fixture_id": "FIX-IAP-REC-002",
       "path": "scenarios/intelligence-adapter/crash-after-transmission-requires-recovery.json",
-      "fixture_sha256": "47124f0a6ada06efc6655f2d9ca0002615be67b79ce56fb095985e31777cc68c",
-      "observable_result_sha256": "31f2f8e7378eb1b9a14759ec2f4432fc8ae2ad8666ec70cdb76fc5b3a28d3c6b",
+      "fixture_sha256": "b10754857801074a0e931542a476ee5319093d516c1729a3f3426edd181fd4f7",
+      "observable_result_sha256": "47c7e9af998ffc695db1f671c4ba0b10a800d76ca598b6ded8f9397b9a291915",
       "receipt_sha256s": [
-        "a0f0efb8f3434e3556ca7977373133bb96dc4b2abda9feb6926097e0553e012e"
+        "16bf67dfcaeff0d473e3863cb633afea3dfc55311a0a168377f5f73495498893"
       ]
     },
     {
       "fixture_id": "FIX-IAP-REC-003",
       "path": "scenarios/intelligence-adapter/crash-after-receipt-preserves-receipt.json",
-      "fixture_sha256": "397ecc342f398468e21a109850a2d4687cc0de02fe673c0b18a07eda5f7f36b4",
-      "observable_result_sha256": "3c7a78715b12acec6d80dc4b75c392d8fd7a23193fa9e49e48b7bc1a27ddcc03",
+      "fixture_sha256": "f4831224d115ed3b747c2a98595c341512e4c8b4dfe155796162b4d1e3b56038",
+      "observable_result_sha256": "9b87341f676463b67b192d59302de793ecad168acebca691ac35d5faa6913649",
       "receipt_sha256s": [
-        "e132dbe1afb93733edba50bd060f4303ed1d4c790a9a6f5071330d835f4beb6a"
+        "96b73058dfa41d2fa7dd3ab43eb45386b31b6b188bd284c1a5857c81d5562dd1"
       ]
     }
   ],

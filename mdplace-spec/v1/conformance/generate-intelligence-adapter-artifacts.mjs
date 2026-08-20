@@ -89,17 +89,36 @@ function transitionRow(definition, state, command, index) {
   const terminal = definition.allowed.get(key) ?? state;
   const allowed = definition.allowed.has(key);
   const authority = authorityByCommand.get(command);
+  let preconditions = allowed
+    ? ['exact Processing Envelope and attempt authorization', 'active approved policy Source Profile and taxonomy revision binding']
+    : ['state and command pair is not permitted'];
+  let baseReferences = ['ProcessingEnvelope', 'ProcessingPolicy', 'SourceProfile', 'TaxonomyRevision', 'AdapterAuthorization'];
+  let emittedRecords = ['AdapterRunReceipt'];
+  if (definition.id === 'TRANS-IAP-EXECUTION' && allowed) {
+    if (command === 'authorize_adapter_attempt') emittedRecords = [];
+    if (command === 'transmit_adapter_payload') {
+      preconditions = [
+        'exact Processing Envelope and attempt authorization remain current',
+        'attempt-bound isolation observation passed before transmission',
+        'attempt-bound adapter isolation canary passed before transmission',
+      ];
+      baseReferences = [...baseReferences, 'AdapterIsolationObservation', 'AdapterIsolationCanary'];
+      emittedRecords = ['AdapterTransmissionObservation'];
+    }
+    if (command === 'record_adapter_outcome') {
+      preconditions = ['exact terminal attempt observation and closed receipt reason'];
+      emittedRecords = ['AdapterRunReceipt'];
+    }
+  }
   return {
     transition_id: `TR-${definition.prefix}-${String(index + 1).padStart(3, '0')}`,
     command_or_event: command,
     from_state: state,
     allowed,
     actor_authority: {roles: [authority], quorum: 1, distinct_actors: false, delegation: 'forbidden'},
-    preconditions: allowed
-      ? ['exact Processing Envelope or recovery binding', 'active approved policy and Source Profile binding']
-      : ['state and command pair is not permitted'],
-    base_references: ['ProcessingEnvelope', 'ProcessingPolicy', 'SourceProfile'],
-    emitted_records: ['AdapterRunReceipt'],
+    preconditions,
+    base_references: baseReferences,
+    emitted_records: emittedRecords,
     filesystem_effects: ['none'],
     idempotency: {key_fields: ['attempt_id', 'envelope_id'], retry_result: allowed ? 'return the same receipt or advance once' : 'return the same denial receipt'},
     terminal_state: terminal,
@@ -134,8 +153,10 @@ const fieldDataClasses = new Map([
   ['field:source-content', 'data:source-content'],
 ]);
 
-function attemptEnvelope(context, scenarioId, attemptClass) {
-  const authorization = context.attempt_authorizations.find(({attempt_class: value}) => value === attemptClass);
+function attemptEnvelope(context, scenarioId, attemptClass, authorizationId = null) {
+  const authorization = authorizationId === null
+    ? context.attempt_authorizations.find(({attempt_class: value}) => value === attemptClass)
+    : context.attempt_authorizations.find(({authorization_id: id}) => id === authorizationId);
   const suffix = `${scenarioId.toLowerCase()}-${authorization.position}`;
   const payloadSegments = authorization.field_ids.map((fieldId) => {
     const name = fieldId.slice('field:'.length);
@@ -165,12 +186,13 @@ function attemptEnvelope(context, scenarioId, attemptClass) {
       vault_id: context.vault_id,
       policy: {id: context.policy_binding.policy_id, version: context.policy_binding.policy_version, sha256: context.policy_binding.policy_sha256},
       source_profile: {id: context.source_profile_binding.profile_id, version: context.source_profile_binding.profile_version, sha256: context.source_profile_binding.profile_sha256},
+      taxonomy_revision: {id: context.taxonomy_revision_binding.revision_id, revision: context.taxonomy_revision_binding.revision, sha256: context.taxonomy_revision_binding.sha256},
       source_note_id: 'file:01J00000000000000000000000',
       source_note_version_sha256: 'a'.repeat(64),
       adapter_id: authorization.adapter_id,
       provider_id: authorization.provider_id,
-      model_id: authorization.attempt_class === 'fallback' ? 'model:local-alpha' : 'model:remote-alpha',
-      model_version: '2026-08-01',
+      model_id: authorization.model_id,
+      model_version: authorization.model_version,
     },
     purpose_id: authorization.purpose_id,
     destination: structuredClone(authorization.destination),
@@ -207,6 +229,9 @@ function proposalFor(envelope, kind = 'placement_candidates') {
       source_profile_id: envelope.bindings.source_profile.id,
       source_profile_version: envelope.bindings.source_profile.version,
       source_profile_sha256: envelope.bindings.source_profile.sha256,
+      taxonomy_revision_id: envelope.bindings.taxonomy_revision.id,
+      taxonomy_revision: envelope.bindings.taxonomy_revision.revision,
+      taxonomy_revision_sha256: envelope.bindings.taxonomy_revision.sha256,
       adapter_id: envelope.bindings.adapter_id,
       provider_id: envelope.bindings.provider_id,
       model_id: envelope.bindings.model_id,
@@ -248,8 +273,8 @@ function isolationFor(envelope) {
   };
 }
 
-function attemptFor(context, scenarioId, attemptClass, behavior = 'proposal') {
-  const envelope = attemptEnvelope(context, scenarioId, attemptClass);
+function attemptFor(context, scenarioId, attemptClass, behavior = 'proposal', authorizationId = null) {
+  const envelope = attemptEnvelope(context, scenarioId, attemptClass, authorizationId);
   return {
     attempt_class: attemptClass,
     envelope,
@@ -273,7 +298,7 @@ function scenario(context, index, classes = ['primary']) {
     authorization_ref: 'contracts/intelligence-adapter/approved-context.json',
     chain_budget: structuredClone(context.chain_budget),
     attempts: classes.map((attemptClass) => attemptFor(context, scenarioId, attemptClass)),
-    recovery: {crash_point: 'none', transmission_observed: false, prior_receipts: []},
+    recovery: {crash_point: 'none', transmission_observed: false, prior_transmission: null, prior_receipts: []},
     illegal_transition: null,
   };
 }
@@ -301,8 +326,15 @@ function definitions(context) {
   return [
     ['POS', 'remote-valid-proposal-advice', 'positive', (value) => value],
     ['POS', 'local-valid-abstention-advice', 'positive', (value) => {
-      value.attempts = [attemptFor(context, value.scenario_id, 'fallback')];
-      value.attempts[0].double.raw_output = JSON.stringify(proposalFor(value.attempts[0].envelope, 'abstention'));
+      value.attempts = [attemptFor(context, value.scenario_id, 'primary', 'proposal', 'adapter-authorization:local-primary')];
+      const attempt = value.attempts[0];
+      const keptField = attempt.envelope.transmitted_fields[0];
+      attempt.envelope.transmitted_fields = [keptField];
+      attempt.envelope.payload_segments = attempt.envelope.payload_segments.filter(({segment_id: id}) => id === keptField.segment_id);
+      attempt.envelope.redactions = attempt.envelope.redactions.filter(({receipt_sha256: digest}) => digest === keptField.redaction_receipt_sha256);
+      attempt.envelope.transmitted_artifacts = [attempt.envelope.transmitted_artifacts[0]];
+      attempt.envelope.retention_artifacts = [attempt.envelope.retention_artifacts[0]];
+      attempt.double.raw_output = JSON.stringify(proposalFor(attempt.envelope, 'abstention'));
     }],
     ['POS', 'authorized-retry-succeeds', 'positive', (value) => {
       value.attempts = [attemptFor(context, value.scenario_id, 'primary', 'transient_failure'), attemptFor(context, value.scenario_id, 'retry')];
@@ -327,7 +359,11 @@ function definitions(context) {
     ['NEG', 'forbidden-fallback-recorded', 'negative', (value) => { value.attempts = [attemptFor(context, value.scenario_id, 'primary', 'transient_failure'), attemptFor(context, value.scenario_id, 'retry', 'transient_failure'), attemptFor(context, value.scenario_id, 'fallback')]; value.chain_budget.max_fallbacks = 0; }],
     ['NEG', 'missing-retention-facts-denied', 'negative', (value) => { value.attempts[0].envelope.retention_facts = []; }],
     ['NEG', 'unapproved-destination-denied', 'negative', (value) => { value.attempts[0].envelope.destination = {destination_id: 'destination:other', endpoint: 'https://other.test/v1/process', locality: 'remote'}; value.attempts[0].isolation.network_scope = ['https://other.test/v1/process']; }],
-    ['NEG', 'unapproved-capability-denied', 'negative', (value) => { value.attempts[0].envelope.capabilities = ['capability:produce-proposal']; value.attempts[0].isolation.effective_capabilities = ['capability:produce-proposal']; }],
+    ['NEG', 'unapproved-capability-denied', 'negative', (value) => {
+      value.attempts = [attemptFor(context, value.scenario_id, 'primary', 'proposal', 'adapter-authorization:local-primary')];
+      value.attempts[0].envelope.capabilities.push('capability:fixed-destination-network');
+      value.attempts[0].isolation.effective_capabilities = structuredClone(value.attempts[0].envelope.capabilities);
+    }],
     ['NEG', 'missing-redaction-denied', 'negative', (value) => { value.attempts[0].envelope.redactions = value.attempts[0].envelope.redactions.slice(1); }],
     ['NEG', 'credential-boundary-denied', 'negative', (value) => { value.attempts[0].envelope.credential_boundary.credential_ref = 'credential-ref:other'; }],
     ['NEG', 'failed-canary-denied', 'negative', (value) => { value.attempts[0].isolation.canary.observed = 'wrong'; value.attempts[0].isolation.canary.passed = false; }],
@@ -337,25 +373,35 @@ function definitions(context) {
     ['NEG', 'ambient-configuration-read-denied', 'negative', (value) => { value.attempts[0].double.requested_actions = ['read_ambient_config']; }],
     ['NEG', 'provider-mismatch-denied', 'negative', (value) => { value.attempts[0].envelope.bindings.provider_id = 'provider:other'; }],
     ['NEG', 'purpose-mismatch-denied', 'negative', (value) => { value.attempts[0].envelope.purpose_id = 'purpose:taxonomy'; }],
-    ['NEG', 'field-set-mismatch-denied', 'negative', (value) => { const removed = value.attempts[0].envelope.transmitted_fields.pop(); value.attempts[0].envelope.payload_segments = value.attempts[0].envelope.payload_segments.filter(({segment_id: id}) => id !== removed.segment_id); }],
-    ['NEG', 'artifact-set-mismatch-denied', 'negative', (value) => { value.attempts[0].envelope.transmitted_artifacts = ['artifact:intelligence-proposal']; }],
+    ['NEG', 'field-set-mismatch-denied', 'negative', (value) => {
+      value.attempts[0].envelope.transmitted_fields[0].field_id = 'field:unapproved';
+      value.attempts[0].envelope.payload_segments[0].field_id = 'field:unapproved';
+    }],
+    ['NEG', 'artifact-set-mismatch-denied', 'negative', (value) => { value.attempts[0].envelope.transmitted_artifacts.push('artifact:unapproved'); }],
     ['NEG', 'attempt-output-budget-exhausted', 'negative', (value) => { value.attempts[0].envelope.ceilings.output_bytes = Buffer.byteLength(value.attempts[0].double.raw_output) - 1; }],
     ['NEG', 'proposal-binding-mismatch-denied', 'negative', (value) => replaceProposal(value.attempts[0], (proposal) => { proposal.bindings.policy_sha256 = 'b'.repeat(64); })],
     ['STATE', 'stale-policy-binding-denied', 'stale_state', (value) => { value.attempts[0].envelope.bindings.policy.sha256 = 'b'.repeat(64); }],
     ['STATE', 'stale-source-profile-binding-denied', 'stale_state', (value) => { value.attempts[0].envelope.bindings.source_profile.sha256 = 'b'.repeat(64); }],
-    ['STATE', 'stale-cached-proposal-denied', 'stale_state', (value) => { value.attempts[0].envelope.cached_proposal_binding = {proposal_sha256: 'c'.repeat(64), policy_sha256: 'b'.repeat(64), source_profile_sha256: value.attempts[0].envelope.bindings.source_profile.sha256, source_note_version_sha256: value.attempts[0].envelope.bindings.source_note_version_sha256, adapter_contract_version: '1.0.0', prompt_contract_version: '1.0.0', proposal_schema_version: '1.0.0'}; }],
+    ['STATE', 'stale-cached-proposal-denied', 'stale_state', (value) => { value.attempts[0].envelope.cached_proposal_binding = {proposal_sha256: 'c'.repeat(64), policy_sha256: value.attempts[0].envelope.bindings.policy.sha256, source_profile_sha256: value.attempts[0].envelope.bindings.source_profile.sha256, taxonomy_revision_id: value.attempts[0].envelope.bindings.taxonomy_revision.id, taxonomy_revision: value.attempts[0].envelope.bindings.taxonomy_revision.revision, taxonomy_revision_sha256: 'b'.repeat(64), source_note_version_sha256: value.attempts[0].envelope.bindings.source_note_version_sha256, adapter_contract_version: '1.0.0', prompt_contract_version: '1.0.0', proposal_schema_version: '1.0.0'}; }],
     ['AUTH', 'semantic-authority-output-denied', 'authority_denial', (value) => replaceProposal(value.attempts[0], (proposal) => { proposal.authority.semantic = 'establish_truth'; })],
     ['AUTH', 'filesystem-authority-output-denied', 'authority_denial', (value) => replaceProposal(value.attempts[0], (proposal) => { proposal.authority.filesystem = 'write'; })],
     ['AUTH', 'placement-authority-output-denied', 'authority_denial', (value) => replaceProposal(value.attempts[0], (proposal) => { proposal.authority.note_placement = 'choose'; })],
     ['ILLEGAL', 'retry-after-exhaustion-denied', 'illegal_transition', (value) => { value.operation = 'observe_illegal_transition'; value.illegal_transition = {table: 'contracts/transitions/intelligence-adapter-retry-lifecycle.json', from_state: 'exhausted', command: 'start_adapter_retry'}; }],
     ['REC', 'crash-before-transmission-recovers-denied', 'crash_recovery', (value) => { value.operation = 'recover'; value.recovery.crash_point = 'before_transmission'; value.attempts[0].double.behavior = 'crash_before_transmit'; value.attempts[0].double.raw_output = null; }],
-    ['REC', 'crash-after-transmission-requires-recovery', 'crash_recovery', (value) => { value.operation = 'recover'; value.recovery = {crash_point: 'after_transmission_before_receipt', transmission_observed: true, prior_receipts: []}; value.attempts[0].double.behavior = 'crash_after_transmit'; value.attempts[0].double.raw_output = null; }],
+    ['REC', 'crash-after-transmission-requires-recovery', 'crash_recovery', (value) => {
+      const bytes = canonicalJson(value.attempts[0].envelope);
+      value.operation = 'recover';
+      value.recovery = {crash_point: 'after_transmission_before_receipt', transmission_observed: true, prior_transmission: {destination: value.attempts[0].envelope.destination.endpoint, sha256: sha256(bytes), byte_length: Buffer.byteLength(bytes)}, prior_receipts: []};
+      value.attempts[0].double.behavior = 'crash_after_transmit';
+      value.attempts[0].double.raw_output = null;
+    }],
     ['REC', 'crash-after-receipt-preserves-receipt', 'crash_recovery', async (value) => {
-      const prior = scenario(context, 1);
+      const prior = structuredClone(value);
       prior.case_id = 'prior-accepted-receipt';
       const observed = await observeIntelligenceAdapterScenario(prior, packageRoot);
+      const priorReceipt = parseReceiptStrings(observed.receipts)[0];
       value.operation = 'recover';
-      value.recovery = {crash_point: 'after_receipt', transmission_observed: true, prior_receipts: parseReceiptStrings(observed.receipts)};
+      value.recovery = {crash_point: 'after_receipt', transmission_observed: true, prior_transmission: {destination: priorReceipt.observed_destination, sha256: priorReceipt.transmission_sha256, byte_length: priorReceipt.transmitted_bytes}, prior_receipts: [priorReceipt]};
     }],
   ];
 }

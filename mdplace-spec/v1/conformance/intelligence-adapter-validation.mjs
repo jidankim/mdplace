@@ -20,9 +20,18 @@ function ceilingsNarrower(requested, approved) {
     .every((field) => requested[field] <= approved[field]);
 }
 
+function isSubset(requested, approved, identity = (value) => value) {
+  const requestedIdentities = requested.map(identity);
+  const approvedIdentities = new Set(approved.map(identity));
+  return new Set(requestedIdentities).size === requestedIdentities.length &&
+    requestedIdentities.every((value) => approvedIdentities.has(value));
+}
+
 function segmentCode(envelope) {
   const segments = new Map(envelope.payload_segments.map((segment) => [segment.segment_id, segment]));
-  if (segments.size !== envelope.payload_segments.length) return 'adapter.field_denied';
+  if (segments.size !== envelope.payload_segments.length || segments.size !== envelope.transmitted_fields.length) {
+    return 'adapter.field_denied';
+  }
   for (const segment of envelope.payload_segments) {
     if (Buffer.byteLength(segment.utf8) !== segment.byte_length || sha256(segment.utf8) !== segment.sha256) {
       return 'adapter.input_budget_exhausted';
@@ -41,6 +50,9 @@ function cachedProposalCode(envelope) {
   const expected = {
     policy_sha256: envelope.bindings.policy.sha256,
     source_profile_sha256: envelope.bindings.source_profile.sha256,
+    taxonomy_revision_id: envelope.bindings.taxonomy_revision.id,
+    taxonomy_revision: envelope.bindings.taxonomy_revision.revision,
+    taxonomy_revision_sha256: envelope.bindings.taxonomy_revision.sha256,
     source_note_version_sha256: envelope.bindings.source_note_version_sha256,
     adapter_contract_version: envelope.contracts.adapter_contract_version,
     prompt_contract_version: envelope.contracts.prompt_contract_version,
@@ -64,24 +76,35 @@ export function preflightCode(attempt, context) {
       !equal(envelope.bindings.source_profile, versionBinding(context.source_profile_binding))) {
     return 'adapter.source_profile_binding_denied';
   }
+  const taxonomyRevision = context.taxonomy_revision_binding;
+  if (!equal(envelope.bindings.taxonomy_revision, {
+    id: taxonomyRevision.revision_id,
+    revision: taxonomyRevision.revision,
+    sha256: taxonomyRevision.sha256,
+  })) return 'adapter.policy_binding_denied';
   if (envelope.bindings.vault_id !== context.vault_id || envelope.bindings.adapter_id !== authorization.adapter_id ||
       attempt.attempt_class !== authorization.attempt_class || envelope.attempt_sequence !== authorization.position) {
     return 'adapter.policy_binding_denied';
   }
   if (envelope.bindings.provider_id !== authorization.provider_id) return 'adapter.provider_denied';
+  if (envelope.bindings.model_id !== authorization.model_id ||
+      envelope.bindings.model_version !== authorization.model_version) return 'adapter.provider_denied';
   if (envelope.purpose_id !== authorization.purpose_id) return 'adapter.purpose_denied';
   if (!equal(envelope.destination, authorization.destination)) return 'adapter.destination_denied';
-  if (!equal(envelope.transmitted_fields.map(({field_id: id}) => id), authorization.field_ids)) return 'adapter.field_denied';
-  if (!equal(envelope.transmitted_artifacts, authorization.artifact_kinds)) return 'adapter.artifact_denied';
+  if (!isSubset(envelope.transmitted_fields.map(({field_id: id}) => id), authorization.field_ids)) {
+    return 'adapter.field_denied';
+  }
+  if (!isSubset(envelope.transmitted_artifacts, authorization.artifact_kinds)) return 'adapter.artifact_denied';
   const redactions = envelope.redactions.map(({rule_id, receipt_sha256}) => ({rule_id, receipt_sha256}));
-  if (!equal(redactions, authorization.redactions)) return 'adapter.redaction_unproven';
+  if (!isSubset(redactions, authorization.redactions, canonicalJson)) return 'adapter.redaction_unproven';
   const redactionReceipts = new Set(envelope.redactions.map(({receipt_sha256: digest}) => digest));
   if (envelope.transmitted_fields.some(({redaction_receipt_sha256: digest}) => !redactionReceipts.has(digest))) {
     return 'adapter.redaction_unproven';
   }
-  if (!equal(envelope.retention_facts, authorization.retention_facts) ||
-      !equal(envelope.retention_artifacts, authorization.retention_artifacts)) return 'adapter.retention_unproven';
-  if (!equal(envelope.capabilities, authorization.capabilities)) return 'adapter.capability_denied';
+  if (envelope.retention_facts.length === 0 ||
+      !isSubset(envelope.retention_facts, authorization.retention_facts, canonicalJson) ||
+      !isSubset(envelope.retention_artifacts, authorization.retention_artifacts)) return 'adapter.retention_unproven';
+  if (!isSubset(envelope.capabilities, authorization.capabilities)) return 'adapter.capability_denied';
   if (!equal(envelope.credential_boundary, authorization.credential_boundary)) return 'adapter.credential_boundary_denied';
   if (!equal(envelope.contracts, context.contracts) || !ceilingsNarrower(envelope.ceilings, authorization.ceilings)) {
     return 'adapter.policy_binding_denied';
@@ -94,12 +117,19 @@ export function preflightCode(attempt, context) {
 
   const isolation = attempt.isolation;
   const expectedNetwork = envelope.destination.locality === 'remote' ? [envelope.destination.endpoint] : [];
+  const expectedCanary = {
+    canary_id: `canary:${envelope.attempt_id.slice('adapter-attempt:'.length)}`,
+    challenge: 'return inert-canary without actions',
+    expected: 'inert-canary',
+  };
   if (!isolation.ephemeral || !isolation.fresh_process || isolation.filesystem !== 'none' || isolation.tools !== 'none' ||
       isolation.ambient_configuration !== 'unreadable' || isolation.credential_visibility !== 'none' ||
       !equal(isolation.network_scope, expectedNetwork) || !equal(isolation.effective_capabilities, envelope.capabilities)) {
     return 'adapter.isolation_failed';
   }
-  if (!isolation.canary.passed || isolation.canary.observed !== isolation.canary.expected) return 'adapter.canary_failed';
+  if (isolation.canary.canary_id !== expectedCanary.canary_id ||
+      isolation.canary.challenge !== expectedCanary.challenge || isolation.canary.expected !== expectedCanary.expected ||
+      !isolation.canary.passed || isolation.canary.observed !== expectedCanary.expected) return 'adapter.canary_failed';
   return null;
 }
 
@@ -113,7 +143,10 @@ const actionCodes = new Map([
 ]);
 
 export function forbiddenActionCode(actions) {
-  return actions.length === 0 ? null : actionCodes.get(actions[0]) ?? 'adapter.tool_request_denied';
+  for (const [action, code] of actionCodes) {
+    if (actions.includes(action)) return code;
+  }
+  return null;
 }
 
 function proposalBinding(envelope) {
@@ -124,6 +157,9 @@ function proposalBinding(envelope) {
     source_profile_id: envelope.bindings.source_profile.id,
     source_profile_version: envelope.bindings.source_profile.version,
     source_profile_sha256: envelope.bindings.source_profile.sha256,
+    taxonomy_revision_id: envelope.bindings.taxonomy_revision.id,
+    taxonomy_revision: envelope.bindings.taxonomy_revision.revision,
+    taxonomy_revision_sha256: envelope.bindings.taxonomy_revision.sha256,
     adapter_id: envelope.bindings.adapter_id,
     provider_id: envelope.bindings.provider_id,
     model_id: envelope.bindings.model_id,

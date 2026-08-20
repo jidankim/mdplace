@@ -11,29 +11,29 @@
       "terminal_state": "denied",
       "transmitted_bytes": 0,
       "receipt_sha256s": [
-        "71a425bdee50b6474cba0f3aa97f01d587255ca31b9a34bc03ded204443017a2"
+        "2cf100f4711392e75d53bf8a4aa07dad2aeb9099d9264efbddea208a8dac2981"
       ],
-      "observable_result_sha256": "7354df50358e9ea4e06295733cc0c60e8cd5121c59a5da48a1b4006d2c980b20"
+      "observable_result_sha256": "76bd98729b73b5702e524176a2d77d444c7d57fd60580404869626227dccd212"
     },
     {
       "fixture_id": "FIX-IAP-REC-002",
       "crash_point": "after_transmission_before_receipt",
       "terminal_state": "recovery_required",
-      "transmitted_bytes": 3731,
+      "transmitted_bytes": 3879,
       "receipt_sha256s": [
-        "a0f0efb8f3434e3556ca7977373133bb96dc4b2abda9feb6926097e0553e012e"
+        "16bf67dfcaeff0d473e3863cb633afea3dfc55311a0a168377f5f73495498893"
       ],
-      "observable_result_sha256": "31f2f8e7378eb1b9a14759ec2f4432fc8ae2ad8666ec70cdb76fc5b3a28d3c6b"
+      "observable_result_sha256": "47c7e9af998ffc695db1f671c4ba0b10a800d76ca598b6ded8f9397b9a291915"
     },
     {
       "fixture_id": "FIX-IAP-REC-003",
       "crash_point": "after_receipt",
       "terminal_state": "recovered",
-      "transmitted_bytes": 3731,
+      "transmitted_bytes": 3879,
       "receipt_sha256s": [
-        "e132dbe1afb93733edba50bd060f4303ed1d4c790a9a6f5071330d835f4beb6a"
+        "96b73058dfa41d2fa7dd3ab43eb45386b31b6b188bd284c1a5857c81d5562dd1"
       ],
-      "observable_result_sha256": "3c7a78715b12acec6d80dc4b75c392d8fd7a23193fa9e49e48b7bc1a27ddcc03"
+      "observable_result_sha256": "9b87341f676463b67b192d59302de793ecad168acebca691ac35d5faa6913649"
     }
   ],
   "verdict": "pass"

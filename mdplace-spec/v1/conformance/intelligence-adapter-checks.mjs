@@ -44,10 +44,28 @@ function tableComplete(table) {
     states.every((state) => commands.every((command) => pairs.includes(`${state}:${command}`)));
 }
 
+function isolationMatchesReceipt(observation, receipt) {
+  const isolation = observation.isolation;
+  return isolation.ephemeral === receipt.ephemeral &&
+    isolation.fresh_process === receipt.fresh_process &&
+    isolation.filesystem === receipt.filesystem &&
+    isolation.tools === receipt.tools &&
+    isolation.ambient_configuration === receipt.ambient_configuration &&
+    isolation.credential_visibility === receipt.credential_visibility &&
+    isDeepStrictEqual(isolation.network_scope, receipt.network_scope) &&
+    isolation.canary.canary_id === receipt.canary_id &&
+    sha256(isolation.canary.challenge) === receipt.canary_challenge_sha256 &&
+    sha256(isolation.canary.expected) === receipt.canary_expected_sha256 &&
+    sha256(isolation.canary.observed) === receipt.canary_observed_sha256 &&
+    isolation.canary.passed === receipt.canary_passed;
+}
+
 function observationMatchesReceipt(observation, receipt) {
   return observation.attempt_id === receipt.attempt_id &&
+    observation.attempt_class === receipt.attempt_class &&
     sha256(observation.exact_transmitted_utf8) === observation.exact_transmitted_sha256 &&
     Buffer.byteLength(observation.exact_transmitted_utf8) === observation.exact_transmitted_bytes &&
+    observation.exact_transmitted_sha256 === receipt.envelope_sha256 &&
     observation.exact_transmitted_sha256 === receipt.transmission_sha256 &&
     observation.exact_transmitted_bytes === receipt.transmitted_bytes &&
     observation.exact_destination === receipt.observed_destination &&
@@ -56,6 +74,9 @@ function observationMatchesReceipt(observation, receipt) {
       observation.declared_retention_artifacts.map((artifact) => sha256(artifact)),
       receipt.retention_artifact_sha256s,
     ) &&
+    isDeepStrictEqual(observation.measured_budget, receipt.budget) &&
+    observation.raw_output_sha256 === receipt.raw_response_sha256 &&
+    isolationMatchesReceipt(observation, receipt.isolation) &&
     observation.semantic_effects.length === 0 && observation.filesystem_effects.length === 0 &&
     observation.tool_invocations.length === 0;
 }
@@ -67,6 +88,14 @@ export async function checkIntelligenceAdapterProtocol(packageRoot, manifest, co
   const evidenceResult = await readJson(packageRoot, 'conformance/evidence/intelligence-adapter-evidence.json');
   const recoveryResult = await readJson(packageRoot, 'conformance/evidence/intelligence-adapter-recovery-report.json');
   const claimsResult = await readJson(packageRoot, 'claims-and-evidence.yaml');
+  const receiptSchemaResult = await readJson(packageRoot, 'contracts/schemas/adapter-run-receipt.schema.json');
+  const receiptReasons = rulesResult.document?.receipt_reasons ?? [];
+  const receiptReasonByCode = new Map(receiptReasons.map(({code, outcome}) => [code, outcome]));
+  const receiptSchemaCodes = receiptSchemaResult.document?.properties?.reason?.enum ?? [];
+  if (receiptReasonByCode.size !== receiptReasons.length ||
+      !isDeepStrictEqual(new Set(receiptSchemaCodes), new Set(receiptReasonByCode.keys()))) {
+    codes.push('adapter.receipt_reason_invalid');
+  }
   const roots = [
     [rulesResult.document, 'contracts/schemas/intelligence-adapter-protocol-rules.schema.json'],
     [contextResult.document, 'contracts/schemas/intelligence-adapter-approved-context.schema.json'],
@@ -128,9 +157,11 @@ export async function checkIntelligenceAdapterProtocol(packageRoot, manifest, co
     observed.codes.forEach((code) => observedCodes.add(code));
     const receipts = parseReceiptStrings(observed.receipts);
     for (const receipt of receipts) {
+      observedCodes.add(receipt.reason);
       if (await schemaCode(packageRoot, 'contracts/schemas/adapter-run-receipt.schema.json', receipt) !== null ||
           receipt.receipt_sha256 !== adapterReceiptDigest(receipt) || receipt.semantic_effects.length !== 0 ||
-          receipt.filesystem_effects.length !== 0 || receipt.tool_invocations.length !== 0) {
+          receipt.filesystem_effects.length !== 0 || receipt.tool_invocations.length !== 0 ||
+          receiptReasonByCode.get(receipt.reason) !== receipt.outcome) {
         codes.push('adapter.receipt_invalid');
       }
     }
@@ -171,7 +202,15 @@ export async function checkIntelligenceAdapterProtocol(packageRoot, manifest, co
       claims?.zero_tool_effect !== true || claims?.exact_transmission_observed !== true ||
       claims?.all_outcomes_receipted !== true) codes.push('adapter.evidence_claim_invalid');
 
-  const ruleCodes = rulesResult.document?.outcome_precedence?.map(({code}) => code) ?? [];
+  const outcomeRows = rulesResult.document?.outcome_precedence ?? [];
+  const ruleCodes = outcomeRows.map(({code}) => code);
+  if (outcomeRows.some(({order, code, outcome}, index) =>
+    order !== index + 1 || receiptReasonByCode.get(code) !== outcome)) {
+    codes.push('adapter.receipt_reason_invalid');
+  }
+  if (receiptReasons.some(({code}) => !observedCodes.has(code))) {
+    codes.push('adapter.receipt_reason_coverage_missing');
+  }
   if (ruleCodes.some((code) => !observedCodes.has(code)) ||
       rulesResult.document?.decision !== 'https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093') {
     codes.push('adapter.denial_coverage_missing');

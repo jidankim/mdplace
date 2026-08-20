@@ -4,7 +4,7 @@
   "title": "mdplace trusted Intelligence Adapter authorization context",
   "type": "object",
   "additionalProperties": false,
-  "required": ["$schema", "schema_id", "context_id", "vault_id", "policy_binding", "source_profile_binding", "contracts", "attempt_authorizations", "chain_budget"],
+  "required": ["$schema", "schema_id", "context_id", "vault_id", "policy_binding", "source_profile_binding", "taxonomy_revision_binding", "contracts", "attempt_authorizations", "chain_budget"],
   "properties": {
     "$schema": {"const": "../schemas/intelligence-adapter-approved-context.schema.json"},
     "schema_id": {"const": "mdplace.intelligence-adapter-approved-context/v1"},
@@ -12,8 +12,9 @@
     "vault_id": {"type": "string", "pattern": "^vault:[a-z0-9-]{3,64}$"},
     "policy_binding": {"$ref": "#/$defs/policyBinding"},
     "source_profile_binding": {"$ref": "#/$defs/sourceProfileBinding"},
+    "taxonomy_revision_binding": {"$ref": "#/$defs/taxonomyRevisionBinding"},
     "contracts": {"$ref": "#/$defs/contracts"},
-    "attempt_authorizations": {"type": "array", "minItems": 3, "maxItems": 3, "uniqueItems": true, "items": {"$ref": "#/$defs/attemptAuthorization"}},
+    "attempt_authorizations": {"type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "items": {"$ref": "#/$defs/attemptAuthorization"}},
     "chain_budget": {"$ref": "#/$defs/chainBudget"}
   },
   "$defs": {
@@ -39,6 +40,15 @@
         "profile_sha256": {"$ref": "#/$defs/digest"},
         "lifecycle_state": {"const": "active"},
         "approved": {"const": true}
+      }
+    },
+    "taxonomyRevisionBinding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["revision_id", "revision", "sha256"],
+      "properties": {
+        "revision_id": {"type": "string", "pattern": "^taxonomy-revision:[a-z0-9-]{3,64}$"},
+        "revision": {"type": "integer", "minimum": 0},
+        "sha256": {"$ref": "#/$defs/digest"}
       }
     },
     "contracts": {
@@ -104,13 +114,15 @@
     },
     "attemptAuthorization": {
       "type": "object", "additionalProperties": false,
-      "required": ["authorization_id", "attempt_class", "position", "adapter_id", "provider_id", "purpose_id", "destination", "field_ids", "artifact_kinds", "redactions", "capabilities", "retention_facts", "retention_artifacts", "credential_boundary", "ceilings"],
+      "required": ["authorization_id", "attempt_class", "position", "adapter_id", "provider_id", "model_id", "model_version", "purpose_id", "destination", "field_ids", "artifact_kinds", "redactions", "capabilities", "retention_facts", "retention_artifacts", "credential_boundary", "ceilings"],
       "properties": {
         "authorization_id": {"type": "string", "pattern": "^adapter-authorization:[a-z0-9-]{3,64}$"},
         "attempt_class": {"enum": ["primary", "retry", "fallback"]},
         "position": {"type": "integer", "minimum": 0, "maximum": 2},
         "adapter_id": {"type": "string", "pattern": "^adapter:[a-z0-9-]{3,64}$"},
         "provider_id": {"type": "string", "pattern": "^provider:[a-z0-9-]{3,64}$"},
+        "model_id": {"type": "string", "pattern": "^model:[a-z0-9.-]{3,64}$"},
+        "model_version": {"type": "string", "minLength": 1},
         "purpose_id": {"type": "string", "pattern": "^purpose:[a-z0-9-]{3,64}$"},
         "destination": {"$ref": "#/$defs/destination"},
         "field_ids": {"$ref": "#/$defs/stringSet"},

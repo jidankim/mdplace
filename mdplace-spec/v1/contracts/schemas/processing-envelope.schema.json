@@ -38,10 +38,11 @@
     },
     "bindings": {
       "type": "object", "additionalProperties": false,
-      "required": ["vault_id", "policy", "source_profile", "source_note_id", "source_note_version_sha256", "adapter_id", "provider_id", "model_id", "model_version"],
+      "required": ["vault_id", "policy", "source_profile", "taxonomy_revision", "source_note_id", "source_note_version_sha256", "adapter_id", "provider_id", "model_id", "model_version"],
       "properties": {
         "vault_id": {"type": "string", "pattern": "^vault:[a-z0-9-]{3,64}$"},
         "policy": {"$ref": "#/$defs/versionBinding"}, "source_profile": {"$ref": "#/$defs/versionBinding"},
+        "taxonomy_revision": {"$ref": "#/$defs/taxonomyRevisionBinding"},
         "source_note_id": {"type": "string", "pattern": "^file:[A-Z0-9]{10,32}$"},
         "source_note_version_sha256": {"$ref": "#/$defs/digest"},
         "adapter_id": {"type": "string", "pattern": "^adapter:[a-z0-9-]{3,64}$"},
@@ -49,6 +50,11 @@
         "model_id": {"type": "string", "pattern": "^model:[a-z0-9.-]{3,64}$"},
         "model_version": {"type": "string", "minLength": 1}
       }
+    },
+    "taxonomyRevisionBinding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "revision", "sha256"],
+      "properties": {"id": {"type": "string", "pattern": "^taxonomy-revision:[a-z0-9-]{3,64}$"}, "revision": {"type": "integer", "minimum": 0}, "sha256": {"$ref": "#/$defs/digest"}}
     },
     "destination": {
       "type": "object", "additionalProperties": false,
@@ -92,8 +98,8 @@
     },
     "cachedProposal": {
       "type": "object", "additionalProperties": false,
-      "required": ["proposal_sha256", "policy_sha256", "source_profile_sha256", "source_note_version_sha256", "adapter_contract_version", "prompt_contract_version", "proposal_schema_version"],
-      "properties": {"proposal_sha256": {"$ref": "#/$defs/digest"}, "policy_sha256": {"$ref": "#/$defs/digest"}, "source_profile_sha256": {"$ref": "#/$defs/digest"}, "source_note_version_sha256": {"$ref": "#/$defs/digest"}, "adapter_contract_version": {"type": "string", "minLength": 1}, "prompt_contract_version": {"type": "string", "minLength": 1}, "proposal_schema_version": {"type": "string", "minLength": 1}}
+      "required": ["proposal_sha256", "policy_sha256", "source_profile_sha256", "taxonomy_revision_id", "taxonomy_revision", "taxonomy_revision_sha256", "source_note_version_sha256", "adapter_contract_version", "prompt_contract_version", "proposal_schema_version"],
+      "properties": {"proposal_sha256": {"$ref": "#/$defs/digest"}, "policy_sha256": {"$ref": "#/$defs/digest"}, "source_profile_sha256": {"$ref": "#/$defs/digest"}, "taxonomy_revision_id": {"type": "string", "minLength": 1}, "taxonomy_revision": {"type": "integer", "minimum": 0}, "taxonomy_revision_sha256": {"$ref": "#/$defs/digest"}, "source_note_version_sha256": {"$ref": "#/$defs/digest"}, "adapter_contract_version": {"type": "string", "minLength": 1}, "prompt_contract_version": {"type": "string", "minLength": 1}, "proposal_schema_version": {"type": "string", "minLength": 1}}
     }
   }
 }

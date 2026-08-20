@@ -30,17 +30,17 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "exact Processing Envelope or recovery binding",
-        "active approved policy and Source Profile binding"
+        "exact Processing Envelope and attempt authorization",
+        "active approved policy Source Profile and taxonomy revision binding"
       ],
       "base_references": [
         "ProcessingEnvelope",
         "ProcessingPolicy",
-        "SourceProfile"
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
       ],
-      "emitted_records": [
-        "AdapterRunReceipt"
-      ],
+      "emitted_records": [],
       "filesystem_effects": [
         "none"
       ],
@@ -83,7 +83,9 @@
       "base_references": [
         "ProcessingEnvelope",
         "ProcessingPolicy",
-        "SourceProfile"
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
       ],
       "emitted_records": [
         "AdapterRunReceipt"
@@ -130,7 +132,9 @@
       "base_references": [
         "ProcessingEnvelope",
         "ProcessingPolicy",
-        "SourceProfile"
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
       ],
       "emitted_records": [
         "AdapterRunReceipt"
@@ -177,7 +181,9 @@
       "base_references": [
         "ProcessingEnvelope",
         "ProcessingPolicy",
-        "SourceProfile"
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
       ],
       "emitted_records": [
         "AdapterRunReceipt"
@@ -219,16 +225,21 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "exact Processing Envelope or recovery binding",
-        "active approved policy and Source Profile binding"
+        "exact Processing Envelope and attempt authorization remain current",
+        "attempt-bound isolation observation passed before transmission",
+        "attempt-bound adapter isolation canary passed before transmission"
       ],
       "base_references": [
         "ProcessingEnvelope",
         "ProcessingPolicy",
-        "SourceProfile"
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization",
+        "AdapterIsolationObservation",
+        "AdapterIsolationCanary"
       ],
       "emitted_records": [
-        "AdapterRunReceipt"
+        "AdapterTransmissionObservation"
       ],
       "filesystem_effects": [
         "none"
@@ -272,7 +283,9 @@
       "base_references": [
         "ProcessingEnvelope",
         "ProcessingPolicy",
-        "SourceProfile"
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
       ],
       "emitted_records": [
         "AdapterRunReceipt"
@@ -319,7 +332,9 @@
       "base_references": [
         "ProcessingEnvelope",
         "ProcessingPolicy",
-        "SourceProfile"
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
       ],
       "emitted_records": [
         "AdapterRunReceipt"
@@ -366,7 +381,9 @@
       "base_references": [
         "ProcessingEnvelope",
         "ProcessingPolicy",
-        "SourceProfile"
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
       ],
       "emitted_records": [
         "AdapterRunReceipt"
@@ -408,13 +425,14 @@
         "delegation": "forbidden"
       },
       "preconditions": [
-        "exact Processing Envelope or recovery binding",
-        "active approved policy and Source Profile binding"
+        "exact terminal attempt observation and closed receipt reason"
       ],
       "base_references": [
         "ProcessingEnvelope",
         "ProcessingPolicy",
-        "SourceProfile"
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
       ],
       "emitted_records": [
         "AdapterRunReceipt"
@@ -461,7 +479,9 @@
       "base_references": [
         "ProcessingEnvelope",
         "ProcessingPolicy",
-        "SourceProfile"
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
       ],
       "emitted_records": [
         "AdapterRunReceipt"
@@ -508,7 +528,9 @@
       "base_references": [
         "ProcessingEnvelope",
         "ProcessingPolicy",
-        "SourceProfile"
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
       ],
       "emitted_records": [
         "AdapterRunReceipt"
@@ -555,7 +577,9 @@
       "base_references": [
         "ProcessingEnvelope",
         "ProcessingPolicy",
-        "SourceProfile"
+        "SourceProfile",
+        "TaxonomyRevision",
+        "AdapterAuthorization"
       ],
       "emitted_records": [
         "AdapterRunReceipt"

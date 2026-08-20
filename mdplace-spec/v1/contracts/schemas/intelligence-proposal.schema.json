@@ -29,10 +29,11 @@
     "segmentIds": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^segment:[a-z0-9-]{3,64}$"}},
     "bindings": {
       "type": "object", "additionalProperties": false,
-      "required": ["policy_id", "policy_version", "policy_sha256", "source_profile_id", "source_profile_version", "source_profile_sha256", "adapter_id", "provider_id", "model_id", "model_version", "adapter_contract_version", "prompt_contract_version", "proposal_schema_version"],
+      "required": ["policy_id", "policy_version", "policy_sha256", "source_profile_id", "source_profile_version", "source_profile_sha256", "taxonomy_revision_id", "taxonomy_revision", "taxonomy_revision_sha256", "adapter_id", "provider_id", "model_id", "model_version", "adapter_contract_version", "prompt_contract_version", "proposal_schema_version"],
       "properties": {
         "policy_id": {"type": "string", "minLength": 1}, "policy_version": {"type": "string", "minLength": 1}, "policy_sha256": {"$ref": "#/$defs/digest"},
         "source_profile_id": {"type": "string", "minLength": 1}, "source_profile_version": {"type": "string", "minLength": 1}, "source_profile_sha256": {"$ref": "#/$defs/digest"},
+        "taxonomy_revision_id": {"type": "string", "minLength": 1}, "taxonomy_revision": {"type": "integer", "minimum": 0}, "taxonomy_revision_sha256": {"$ref": "#/$defs/digest"},
         "adapter_id": {"type": "string", "minLength": 1}, "provider_id": {"type": "string", "minLength": 1}, "model_id": {"type": "string", "minLength": 1}, "model_version": {"type": "string", "minLength": 1},
         "adapter_contract_version": {"const": "1.0.0"}, "prompt_contract_version": {"const": "1.0.0"}, "proposal_schema_version": {"const": "1.0.0"}
       }

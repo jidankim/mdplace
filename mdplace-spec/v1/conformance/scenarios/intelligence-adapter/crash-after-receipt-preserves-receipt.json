@@ -53,6 +53,11 @@
                 "version": "1.0.0",
                 "sha256": "e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549"
               },
+              "taxonomy_revision": {
+                "id": "taxonomy-revision:fixture-001",
+                "revision": 1,
+                "sha256": "6e77aeb5337715429270fd9c18cd01d388033efade5ce207b834516b2f96b1e6"
+              },
               "source_note_id": "file:01J00000000000000000000000",
               "source_note_version_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
               "adapter_id": "adapter:remote-alpha",
@@ -196,7 +201,7 @@
           },
           "double": {
             "behavior": "proposal",
-            "raw_output": "{\"schema_id\":\"mdplace.intelligence-proposal/v1\",\"proposal_id\":\"proposal:iap-042-0\",\"proposal_version\":\"1.0.0\",\"kind\":\"placement_candidates\",\"envelope_id\":\"envelope:iap-042-0\",\"attempt_id\":\"adapter-attempt:iap-042-0\",\"bindings\":{\"policy_id\":\"policy:core-processing\",\"policy_version\":\"1.0.0\",\"policy_sha256\":\"27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766\",\"source_profile_id\":\"source-profile:web-clipper\",\"source_profile_version\":\"1.0.0\",\"source_profile_sha256\":\"e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549\",\"adapter_id\":\"adapter:remote-alpha\",\"provider_id\":\"provider:remote-alpha\",\"model_id\":\"model:remote-alpha\",\"model_version\":\"2026-08-01\",\"adapter_contract_version\":\"1.0.0\",\"prompt_contract_version\":\"1.0.0\",\"proposal_schema_version\":\"1.0.0\"},\"subject_note_id\":\"file:01J00000000000000000000000\",\"subject_note_version_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"candidates\":[{\"category_id\":\"category:01J00000000000000000000000\",\"rank\":1,\"score\":0.75,\"evidence_segment_ids\":[\"segment:iap-042-0-source-url\"]}],\"taxonomy_hypotheses\":[],\"evidence_segment_ids\":[\"segment:iap-042-0-source-url\"],\"rationale\":\"Bounded fixture rationale.\",\"warnings\":[],\"abstention_reason\":null,\"scores_calibration\":\"uncalibrated\",\"authority\":{\"semantic\":\"none\",\"note_placement\":\"none\",\"taxonomy\":\"none\",\"filesystem\":\"none\",\"projection\":\"none\",\"destination_selection\":\"none\",\"tool_invocation\":\"none\",\"credential_access\":\"none\"}}",
+            "raw_output": "{\"schema_id\":\"mdplace.intelligence-proposal/v1\",\"proposal_id\":\"proposal:iap-042-0\",\"proposal_version\":\"1.0.0\",\"kind\":\"placement_candidates\",\"envelope_id\":\"envelope:iap-042-0\",\"attempt_id\":\"adapter-attempt:iap-042-0\",\"bindings\":{\"policy_id\":\"policy:core-processing\",\"policy_version\":\"1.0.0\",\"policy_sha256\":\"27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766\",\"source_profile_id\":\"source-profile:web-clipper\",\"source_profile_version\":\"1.0.0\",\"source_profile_sha256\":\"e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549\",\"taxonomy_revision_id\":\"taxonomy-revision:fixture-001\",\"taxonomy_revision\":1,\"taxonomy_revision_sha256\":\"6e77aeb5337715429270fd9c18cd01d388033efade5ce207b834516b2f96b1e6\",\"adapter_id\":\"adapter:remote-alpha\",\"provider_id\":\"provider:remote-alpha\",\"model_id\":\"model:remote-alpha\",\"model_version\":\"2026-08-01\",\"adapter_contract_version\":\"1.0.0\",\"prompt_contract_version\":\"1.0.0\",\"proposal_schema_version\":\"1.0.0\"},\"subject_note_id\":\"file:01J00000000000000000000000\",\"subject_note_version_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"candidates\":[{\"category_id\":\"category:01J00000000000000000000000\",\"rank\":1,\"score\":0.75,\"evidence_segment_ids\":[\"segment:iap-042-0-source-url\"]}],\"taxonomy_hypotheses\":[],\"evidence_segment_ids\":[\"segment:iap-042-0-source-url\"],\"rationale\":\"Bounded fixture rationale.\",\"warnings\":[],\"abstention_reason\":null,\"scores_calibration\":\"uncalibrated\",\"authority\":{\"semantic\":\"none\",\"note_placement\":\"none\",\"taxonomy\":\"none\",\"filesystem\":\"none\",\"projection\":\"none\",\"destination_selection\":\"none\",\"tool_invocation\":\"none\",\"credential_access\":\"none\"}}",
             "duration_ms": 500,
             "cost_microunits": 1000,
             "requested_actions": []
@@ -206,13 +211,18 @@
       "recovery": {
         "crash_point": "after_receipt",
         "transmission_observed": true,
+        "prior_transmission": {
+          "destination": "https://api.remote-alpha.test/v1/process",
+          "sha256": "1ba4517712ae6ed9b36d6f342325bd41f0f703d9827bcc04b32abf87765fa41a",
+          "byte_length": 3879
+        },
         "prior_receipts": [
           {
             "schema_id": "mdplace.adapter-run-receipt/v1",
-            "receipt_id": "adapter-receipt:iap-001-0",
+            "receipt_id": "adapter-receipt:iap-042-0",
             "receipt_version": "1.0.0",
-            "chain_id": "adapter-chain:iap-001",
-            "attempt_id": "adapter-attempt:iap-001-0",
+            "chain_id": "adapter-chain:iap-042",
+            "attempt_id": "adapter-attempt:iap-042-0",
             "attempt_class": "primary",
             "attempt_sequence": 0,
             "authorization_id": "adapter-authorization:remote-primary",
@@ -226,10 +236,15 @@
               "version": "1.0.0",
               "sha256": "e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549"
             },
-            "envelope_id": "envelope:iap-001-0",
-            "envelope_sha256": "68c3d821918c4325d7d99b0a8ac31a69a5db1e6dcb4d14a129650bdfe5173ce1",
-            "transmission_sha256": "68c3d821918c4325d7d99b0a8ac31a69a5db1e6dcb4d14a129650bdfe5173ce1",
-            "transmitted_bytes": 3731,
+            "taxonomy_revision_binding": {
+              "id": "taxonomy-revision:fixture-001",
+              "revision": 1,
+              "sha256": "6e77aeb5337715429270fd9c18cd01d388033efade5ce207b834516b2f96b1e6"
+            },
+            "envelope_id": "envelope:iap-042-0",
+            "envelope_sha256": "1ba4517712ae6ed9b36d6f342325bd41f0f703d9827bcc04b32abf87765fa41a",
+            "transmission_sha256": "1ba4517712ae6ed9b36d6f342325bd41f0f703d9827bcc04b32abf87765fa41a",
+            "transmitted_bytes": 3879,
             "observed_destination": "https://api.remote-alpha.test/v1/process",
             "effective_capabilities": [
               "capability:produce-proposal",
@@ -250,23 +265,26 @@
               "network_scope": [
                 "https://api.remote-alpha.test/v1/process"
               ],
-              "canary_id": "canary:iap-001-0",
+              "canary_id": "canary:iap-042-0",
+              "canary_challenge_sha256": "658e754b32792e77ae2287bde772227abef23e6bce73443c865ad183dce6fd1f",
+              "canary_expected_sha256": "63591017065009f4b4c40de15d7575b991de3faaeba086e2e3e96f64ab33a985",
+              "canary_observed_sha256": "63591017065009f4b4c40de15d7575b991de3faaeba086e2e3e96f64ab33a985",
               "canary_passed": true
             },
             "budget": {
-              "input_bytes": 3731,
-              "output_bytes": 1475,
+              "input_bytes": 3879,
+              "output_bytes": 1646,
               "runtime_ms": 500,
               "cost_microunits": 1000
             },
-            "raw_response_sha256": "236f8a5e00664a6a686e70ba404afe752dfae895f38319d44da0c3233bbba90e",
-            "proposal_sha256": "1d045c4842e2219f1d56ce0e2541a1f8a882d675ed489fda8dd4aec1bb66bc3a",
+            "raw_response_sha256": "6f666d7332a7083f04368ef469f97e738efd02d8a842c4770cdc6abdd05f4cef",
+            "proposal_sha256": "92a0887a694e57e42d99783631f3e95bb194de1b878d395e944a96191831bbd0",
             "outcome": "accepted",
             "reason": "adapter.proposal_accepted_as_advice",
             "semantic_effects": [],
             "filesystem_effects": [],
             "tool_invocations": [],
-            "receipt_sha256": "e132dbe1afb93733edba50bd060f4303ed1d4c790a9a6f5071330d835f4beb6a"
+            "receipt_sha256": "96b73058dfa41d2fa7dd3ab43eb45386b31b6b188bd284c1a5857c81d5562dd1"
           }
         ]
       },
@@ -285,7 +303,7 @@
       "preserve receipt without retransmission"
     ],
     "receipts": [
-      "{\"schema_id\":\"mdplace.adapter-run-receipt/v1\",\"receipt_id\":\"adapter-receipt:iap-001-0\",\"receipt_version\":\"1.0.0\",\"chain_id\":\"adapter-chain:iap-001\",\"attempt_id\":\"adapter-attempt:iap-001-0\",\"attempt_class\":\"primary\",\"attempt_sequence\":0,\"authorization_id\":\"adapter-authorization:remote-primary\",\"policy_binding\":{\"id\":\"policy:core-processing\",\"version\":\"1.0.0\",\"sha256\":\"27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766\"},\"source_profile_binding\":{\"id\":\"source-profile:web-clipper\",\"version\":\"1.0.0\",\"sha256\":\"e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549\"},\"envelope_id\":\"envelope:iap-001-0\",\"envelope_sha256\":\"68c3d821918c4325d7d99b0a8ac31a69a5db1e6dcb4d14a129650bdfe5173ce1\",\"transmission_sha256\":\"68c3d821918c4325d7d99b0a8ac31a69a5db1e6dcb4d14a129650bdfe5173ce1\",\"transmitted_bytes\":3731,\"observed_destination\":\"https://api.remote-alpha.test/v1/process\",\"effective_capabilities\":[\"capability:produce-proposal\",\"capability:fixed-destination-network\"],\"retention_artifact_sha256s\":[\"dd8208b47690ad24644eeff31d5dd9f1aa017cc4e0ef2d5deddeb151bfe68be6\",\"34aa5b7a7bd33ed586521e1e34782caf83a20e8216c0610f7ea8ec5d98afb2f7\"],\"credential_boundary_sha256\":\"009a7241f9616eea9d03d90e83669de9abd9550e952b135e489f4fc1d01c891d\",\"isolation\":{\"ephemeral\":true,\"fresh_process\":true,\"filesystem\":\"none\",\"tools\":\"none\",\"ambient_configuration\":\"unreadable\",\"credential_visibility\":\"none\",\"network_scope\":[\"https://api.remote-alpha.test/v1/process\"],\"canary_id\":\"canary:iap-001-0\",\"canary_passed\":true},\"budget\":{\"input_bytes\":3731,\"output_bytes\":1475,\"runtime_ms\":500,\"cost_microunits\":1000},\"raw_response_sha256\":\"236f8a5e00664a6a686e70ba404afe752dfae895f38319d44da0c3233bbba90e\",\"proposal_sha256\":\"1d045c4842e2219f1d56ce0e2541a1f8a882d675ed489fda8dd4aec1bb66bc3a\",\"outcome\":\"accepted\",\"reason\":\"adapter.proposal_accepted_as_advice\",\"semantic_effects\":[],\"filesystem_effects\":[],\"tool_invocations\":[],\"receipt_sha256\":\"e132dbe1afb93733edba50bd060f4303ed1d4c790a9a6f5071330d835f4beb6a\"}"
+      "{\"schema_id\":\"mdplace.adapter-run-receipt/v1\",\"receipt_id\":\"adapter-receipt:iap-042-0\",\"receipt_version\":\"1.0.0\",\"chain_id\":\"adapter-chain:iap-042\",\"attempt_id\":\"adapter-attempt:iap-042-0\",\"attempt_class\":\"primary\",\"attempt_sequence\":0,\"authorization_id\":\"adapter-authorization:remote-primary\",\"policy_binding\":{\"id\":\"policy:core-processing\",\"version\":\"1.0.0\",\"sha256\":\"27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766\"},\"source_profile_binding\":{\"id\":\"source-profile:web-clipper\",\"version\":\"1.0.0\",\"sha256\":\"e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549\"},\"taxonomy_revision_binding\":{\"id\":\"taxonomy-revision:fixture-001\",\"revision\":1,\"sha256\":\"6e77aeb5337715429270fd9c18cd01d388033efade5ce207b834516b2f96b1e6\"},\"envelope_id\":\"envelope:iap-042-0\",\"envelope_sha256\":\"1ba4517712ae6ed9b36d6f342325bd41f0f703d9827bcc04b32abf87765fa41a\",\"transmission_sha256\":\"1ba4517712ae6ed9b36d6f342325bd41f0f703d9827bcc04b32abf87765fa41a\",\"transmitted_bytes\":3879,\"observed_destination\":\"https://api.remote-alpha.test/v1/process\",\"effective_capabilities\":[\"capability:produce-proposal\",\"capability:fixed-destination-network\"],\"retention_artifact_sha256s\":[\"dd8208b47690ad24644eeff31d5dd9f1aa017cc4e0ef2d5deddeb151bfe68be6\",\"34aa5b7a7bd33ed586521e1e34782caf83a20e8216c0610f7ea8ec5d98afb2f7\"],\"credential_boundary_sha256\":\"009a7241f9616eea9d03d90e83669de9abd9550e952b135e489f4fc1d01c891d\",\"isolation\":{\"ephemeral\":true,\"fresh_process\":true,\"filesystem\":\"none\",\"tools\":\"none\",\"ambient_configuration\":\"unreadable\",\"credential_visibility\":\"none\",\"network_scope\":[\"https://api.remote-alpha.test/v1/process\"],\"canary_id\":\"canary:iap-042-0\",\"canary_challenge_sha256\":\"658e754b32792e77ae2287bde772227abef23e6bce73443c865ad183dce6fd1f\",\"canary_expected_sha256\":\"63591017065009f4b4c40de15d7575b991de3faaeba086e2e3e96f64ab33a985\",\"canary_observed_sha256\":\"63591017065009f4b4c40de15d7575b991de3faaeba086e2e3e96f64ab33a985\",\"canary_passed\":true},\"budget\":{\"input_bytes\":3879,\"output_bytes\":1646,\"runtime_ms\":500,\"cost_microunits\":1000},\"raw_response_sha256\":\"6f666d7332a7083f04368ef469f97e738efd02d8a842c4770cdc6abdd05f4cef\",\"proposal_sha256\":\"92a0887a694e57e42d99783631f3e95bb194de1b878d395e944a96191831bbd0\",\"outcome\":\"accepted\",\"reason\":\"adapter.proposal_accepted_as_advice\",\"semantic_effects\":[],\"filesystem_effects\":[],\"tool_invocations\":[],\"receipt_sha256\":\"96b73058dfa41d2fa7dd3ab43eb45386b31b6b188bd284c1a5857c81d5562dd1\"}"
     ],
     "filesystem_effects": [
       "none"
@@ -294,7 +312,7 @@
       "none"
     ],
     "observations": [
-      "{\"new_transmission\":false,\"receipt_id\":\"adapter-receipt:iap-001-0\"}"
+      "{\"new_transmission\":false,\"receipt_id\":\"adapter-receipt:iap-042-0\"}"
     ],
     "terminal_state": "recovered",
     "illegal_transition": false
