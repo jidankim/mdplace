@@ -27,6 +27,12 @@ function isSubset(requested, approved, identity = (value) => value) {
     requestedIdentities.every((value) => approvedIdentities.has(value));
 }
 
+function destinationTransportIsValid(destination) {
+  if (destination.locality === 'remote') return /^https:\/\/\S+$/.test(destination.endpoint);
+  if (destination.locality === 'local') return /^local:\/\/\S+$/.test(destination.endpoint);
+  return false;
+}
+
 function segmentCode(envelope) {
   const segments = new Map(envelope.payload_segments.map((segment) => [segment.segment_id, segment]));
   if (segments.size !== envelope.payload_segments.length || segments.size !== envelope.transmitted_fields.length) {
@@ -90,7 +96,9 @@ export function preflightCode(attempt, context) {
   if (envelope.bindings.model_id !== authorization.model_id ||
       envelope.bindings.model_version !== authorization.model_version) return 'adapter.provider_denied';
   if (envelope.purpose_id !== authorization.purpose_id) return 'adapter.purpose_denied';
-  if (!equal(envelope.destination, authorization.destination)) return 'adapter.destination_denied';
+  if (!destinationTransportIsValid(envelope.destination) ||
+      !destinationTransportIsValid(authorization.destination) ||
+      !equal(envelope.destination, authorization.destination)) return 'adapter.destination_denied';
   if (!isSubset(envelope.transmitted_fields.map(({field_id: id}) => id), authorization.field_ids)) {
     return 'adapter.field_denied';
   }

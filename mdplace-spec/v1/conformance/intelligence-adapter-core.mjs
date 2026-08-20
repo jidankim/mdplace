@@ -32,6 +32,14 @@ export function adapterIsolationReceipt(isolation) {
   };
 }
 
+function observedCompletionForBudget(attempt, budget) {
+  if (budget.runtime_ms === attempt.double.duration_ms) return attempt.double.observed_completed_at;
+  const started = Date.parse(attempt.double.observed_started_at);
+  return Number.isFinite(started)
+    ? new Date(started + budget.runtime_ms).toISOString()
+    : attempt.double.observed_completed_at;
+}
+
 export function createAdapterReceipt({attempt, transmission, isolation, budget, rawOutput, proposal, outcome, reason}) {
   const envelope = attempt.envelope;
   const body = {
@@ -57,7 +65,7 @@ export function createAdapterReceipt({attempt, transmission, isolation, budget, 
     isolation: adapterIsolationReceipt(isolation),
     budget,
     observed_started_at: attempt.double.observed_started_at,
-    observed_completed_at: attempt.double.observed_completed_at,
+    observed_completed_at: observedCompletionForBudget(attempt, budget),
     provider_request_id: transmission === null ? null : attempt.double.provider_request_id,
     raw_response_sha256: rawOutput === null ? null : sha256(rawOutput),
     proposal_sha256: proposal === null ? null : canonicalDigest(proposal),

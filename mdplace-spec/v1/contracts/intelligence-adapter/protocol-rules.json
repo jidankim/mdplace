@@ -23,7 +23,7 @@
     {"order": 18, "condition": "adapter requested filesystem mutation", "code": "adapter.filesystem_authority_denied", "outcome": "denied"},
     {"order": 19, "condition": "adapter requested semantic truth mutation", "code": "adapter.semantic_authority_denied", "outcome": "denied"},
     {"order": 20, "condition": "adapter requested note placement", "code": "adapter.placement_authority_denied", "outcome": "denied"},
-    {"order": 21, "condition": "runtime reached or exceeded invalid boundary", "code": "adapter.timeout", "outcome": "timeout"},
+    {"order": 21, "condition": "adapter reports timeout or runtime exceeds an attempt or chain ceiling", "code": "adapter.timeout", "outcome": "timeout"},
     {"order": 22, "condition": "output bytes exceed attempt or chain ceiling", "code": "adapter.output_budget_exhausted", "outcome": "budget_exhausted"},
     {"order": 23, "condition": "cost exceeds attempt or chain ceiling", "code": "adapter.cost_budget_exhausted", "outcome": "budget_exhausted"},
     {"order": 24, "condition": "output is malformed partial or schema-invalid", "code": "adapter.malformed_output", "outcome": "malformed_output"},

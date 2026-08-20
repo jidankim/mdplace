@@ -317,7 +317,7 @@ function attemptFor(context, scenarioId, attemptClass, behavior = 'proposal', au
       behavior,
       raw_output: behavior === 'proposal' ? JSON.stringify(proposalFor(envelope)) : null,
       duration_ms: 500,
-      cost_microunits: attemptClass === 'fallback' ? 0 : 1000,
+      cost_microunits: envelope.destination.locality === 'local' || attemptClass === 'fallback' ? 0 : 1000,
       observed_started_at: observedStartedAt,
       observed_completed_at: new Date(Date.parse(observedStartedAt) + 500).toISOString(),
       provider_request_id: envelope.destination.locality === 'remote'

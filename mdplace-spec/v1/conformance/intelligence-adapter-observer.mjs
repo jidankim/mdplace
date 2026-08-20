@@ -2,9 +2,6 @@ import {isDeepStrictEqual} from 'node:util';
 
 import {canonicalJson} from './semantic-kernel-core.mjs';
 import {
-  adapterReceiptDigest,
-  adapterIsolationReceipt,
-  canonicalDigest,
   createAdapterReceipt,
   sha256,
 } from './intelligence-adapter-core.mjs';
@@ -53,6 +50,10 @@ function terminalFor(code) {
 
 function observedTransmission(attempt, bytes, budget, rawOutput) {
   const envelope = attempt.envelope;
+  const observedStarted = Date.parse(attempt.double.observed_started_at);
+  const observedCompletedAt = budget.runtime_ms === attempt.double.duration_ms || !Number.isFinite(observedStarted)
+    ? attempt.double.observed_completed_at
+    : new Date(observedStarted + budget.runtime_ms).toISOString();
   return {
     attempt_id: envelope.attempt_id,
     attempt_class: attempt.attempt_class,
@@ -65,7 +66,7 @@ function observedTransmission(attempt, bytes, budget, rawOutput) {
     isolation: attempt.isolation,
     measured_budget: budget,
     observed_started_at: attempt.double.observed_started_at,
-    observed_completed_at: attempt.double.observed_completed_at,
+    observed_completed_at: observedCompletedAt,
     provider_request_id: attempt.double.provider_request_id,
     raw_output_sha256: rawOutput === null ? null : sha256(rawOutput),
     semantic_effects: [],
@@ -75,6 +76,7 @@ function observedTransmission(attempt, bytes, budget, rawOutput) {
 }
 
 function result({verdict, codes, outputs, operations, receipts, transmissions, observations, terminalState, illegalTransition, networkEffects = null}) {
+  const remoteTransmissions = transmissions.filter(({locality}) => locality === 'remote');
   return {
     verdict,
     codes,
@@ -82,9 +84,9 @@ function result({verdict, codes, outputs, operations, receipts, transmissions, o
     operations,
     receipts: receipts.map((receipt) => JSON.stringify(receipt)),
     filesystem_effects: ['none'],
-    network_effects: networkEffects ?? (transmissions.length === 0
+    network_effects: networkEffects ?? (remoteTransmissions.length === 0
       ? ['none']
-      : transmissions.map(({destination, sha256: digest, byte_length: length}) =>
+      : remoteTransmissions.map(({destination, sha256: digest, byte_length: length}) =>
         `transmit:${destination}:${digest}:${length}`)),
     observations: observations.map(canonicalJson),
     terminal_state: terminalState,
@@ -118,6 +120,105 @@ function receiptFor(attempt, transmission, rawOutput, proposal, outcome, reason,
   });
 }
 
+const canonicalTimestampPattern = /^[0-9]{4}-(0[1-9]|1[0-2])-([0-2][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]\.[0-9]{3}Z$/;
+
+function observedTimingIsValid(double) {
+  const {observed_started_at: startedAt, observed_completed_at: completedAt} = double;
+  if (!canonicalTimestampPattern.test(startedAt) || !canonicalTimestampPattern.test(completedAt)) return false;
+  const started = Date.parse(startedAt);
+  const completed = Date.parse(completedAt);
+  return Number.isFinite(started) && Number.isFinite(completed) &&
+    new Date(started).toISOString() === startedAt && new Date(completed).toISOString() === completedAt &&
+    completed >= started && completed - started === double.duration_ms;
+}
+
+async function evaluateTransmittedAttempt({
+  attempt,
+  nextAttempt,
+  context,
+  packageRoot,
+  subject,
+  inputBytes,
+  totalOutput,
+  totalRuntime,
+  totalCost,
+  retriesUsed,
+  fallbacksUsed,
+}) {
+  const {double, envelope} = attempt;
+  const rawOutput = double.raw_output;
+  const outputBytes = rawOutput === null ? 0 : Buffer.byteLength(rawOutput);
+  const nextTotalOutput = totalOutput + outputBytes;
+  const nextTotalRuntime = totalRuntime + double.duration_ms;
+  const nextTotalCost = totalCost + double.cost_microunits;
+  const budget = receiptBudget(inputBytes, outputBytes, double);
+
+  let code = forbiddenActionCode(double.requested_actions);
+  if (code === null && (double.behavior === 'timeout' || double.duration_ms > envelope.ceilings.runtime_ms ||
+      nextTotalRuntime > subject.chain_budget.runtime_ms)) {
+    code = 'adapter.timeout';
+  }
+  if (code === null && (outputBytes > envelope.ceilings.output_bytes ||
+      nextTotalOutput > subject.chain_budget.output_bytes)) {
+    code = 'adapter.output_budget_exhausted';
+  }
+  if (code === null && (double.cost_microunits > envelope.ceilings.cost_microunits ||
+      nextTotalCost > subject.chain_budget.cost_microunits)) {
+    code = 'adapter.cost_budget_exhausted';
+  }
+  if (code === null && !observedTimingIsValid(double)) code = 'adapter.malformed_output';
+
+  if (code === null && double.behavior === 'transient_failure') {
+    const nextClass = nextAttempt?.attempt_class;
+    const nextAuthorized = nextAttempt !== undefined && preflightCode(nextAttempt, context) === null;
+    const retryPermitted = nextAuthorized && nextClass === 'retry' && attempt.attempt_class === 'primary' &&
+      retriesUsed < subject.chain_budget.max_retries;
+    const fallbackAttempted = nextClass === 'fallback' && attempt.attempt_class === 'retry';
+    const fallbackPermitted = nextAuthorized && fallbackAttempted &&
+      fallbacksUsed < subject.chain_budget.max_fallbacks;
+    code = retryPermitted ? 'adapter.retry_scheduled' : fallbackPermitted ? 'adapter.fallback_scheduled'
+      : fallbackAttempted || attempt.attempt_class === 'fallback' ? 'adapter.fallback_exhausted' : 'adapter.retry_exhausted';
+    return {
+      rawOutput,
+      proposal: null,
+      code,
+      outcome: retryPermitted ? 'retry_scheduled' : fallbackPermitted ? 'fallback_scheduled' : outcomeForCode(code),
+      continueChain: retryPermitted || fallbackPermitted,
+      scheduledClass: retryPermitted ? 'retry' : fallbackPermitted ? 'fallback' : null,
+      proposalValidated: false,
+      budget,
+      totalOutput: nextTotalOutput,
+      totalRuntime: nextTotalRuntime,
+      totalCost: nextTotalCost,
+    };
+  }
+
+  let proposal = null;
+  let proposalValidated = false;
+  if (code === null) {
+    if (double.behavior === 'malformed_output' || rawOutput === null) code = 'adapter.malformed_output';
+    else {
+      const validated = await validateProposal(rawOutput, envelope, packageRoot);
+      proposal = validated.proposal;
+      code = validated.code;
+      proposalValidated = true;
+    }
+  }
+  return {
+    rawOutput,
+    proposal,
+    code,
+    outcome: code === null ? 'accepted' : outcomeForCode(code),
+    continueChain: false,
+    scheduledClass: null,
+    proposalValidated,
+    budget,
+    totalOutput: nextTotalOutput,
+    totalRuntime: nextTotalRuntime,
+    totalCost: nextTotalCost,
+  };
+}
+
 async function observeRecovery(subject, context, packageRoot) {
   const attempt = subject.attempts[0];
   const {recovery} = subject;
@@ -129,51 +230,28 @@ async function observeRecovery(subject, context, packageRoot) {
   };
   const observedPriorTransmission = recovery.transmission_observed === true &&
     isDeepStrictEqual(recovery.prior_transmission, expectedTransmission);
-  const rawOutput = attempt.double.raw_output;
-  const rules = await readJson(packageRoot, 'contracts/intelligence-adapter/protocol-rules.json');
-  const receiptReasonByCode = new Map((rules?.receipt_reasons ?? [])
-    .map(({code, outcome}) => [code, outcome]));
-  const expectedBudget = receiptBudget(expectedTransmission.byte_length,
-    rawOutput === null ? 0 : Buffer.byteLength(rawOutput), attempt.double);
-  const acceptedProposalDigest = (receipt) => {
-    if (receipt.outcome !== 'accepted' || rawOutput === null) return null;
-    try {
-      return canonicalDigest(JSON.parse(rawOutput));
-    } catch {
-      return null;
-    }
-  };
-  const receiptMatchesAttempt = (receipt) => receipt.schema_id === 'mdplace.adapter-run-receipt/v1' &&
-    receipt.receipt_id === `adapter-receipt:${attempt.envelope.attempt_id.slice('adapter-attempt:'.length)}` &&
-    receipt.receipt_version === '1.0.0' && receipt.receipt_sha256 === adapterReceiptDigest(receipt) &&
-    receipt.chain_id === attempt.envelope.chain_id && receipt.attempt_id === attempt.envelope.attempt_id &&
-    receipt.attempt_class === attempt.attempt_class && receipt.attempt_sequence === attempt.envelope.attempt_sequence &&
-    receipt.authorization_id === attempt.envelope.authorization_id && receipt.envelope_id === attempt.envelope.envelope_id &&
-    receipt.envelope_sha256 === canonicalDigest(attempt.envelope) &&
-    receipt.transmission_sha256 === expectedTransmission.sha256 &&
-    receipt.transmitted_bytes === expectedTransmission.byte_length &&
-    receipt.observed_destination === expectedTransmission.destination &&
-    isDeepStrictEqual(receipt.policy_binding, attempt.envelope.bindings.policy) &&
-    isDeepStrictEqual(receipt.source_profile_binding, attempt.envelope.bindings.source_profile) &&
-    isDeepStrictEqual(receipt.taxonomy_revision_binding, attempt.envelope.bindings.taxonomy_revision) &&
-    isDeepStrictEqual(receipt.effective_capabilities, attempt.isolation.effective_capabilities) &&
-    isDeepStrictEqual(receipt.retention_artifact_sha256s, attempt.envelope.retention_artifacts.map(sha256)) &&
-    receipt.credential_boundary_sha256 === canonicalDigest(attempt.envelope.credential_boundary) &&
-    isDeepStrictEqual(receipt.isolation, adapterIsolationReceipt(attempt.isolation)) &&
-    isDeepStrictEqual(receipt.budget, expectedBudget) &&
-    receipt.observed_started_at === attempt.double.observed_started_at &&
-    receipt.observed_completed_at === attempt.double.observed_completed_at &&
-    receipt.provider_request_id === attempt.double.provider_request_id &&
-    receipt.raw_response_sha256 === (rawOutput === null ? null : sha256(rawOutput)) &&
-    receipt.proposal_sha256 === acceptedProposalDigest(receipt) &&
-    (receipt.outcome !== 'accepted' || receipt.proposal_sha256 !== null) &&
-    receiptReasonByCode.get(receipt.reason) === receipt.outcome &&
-    isDeepStrictEqual(receipt.semantic_effects, []) && isDeepStrictEqual(receipt.filesystem_effects, []) &&
-    isDeepStrictEqual(receipt.tool_invocations, []);
+  const evaluated = await evaluateTransmittedAttempt({
+    attempt,
+    nextAttempt: subject.attempts[1],
+    context,
+    packageRoot,
+    subject,
+    inputBytes: expectedTransmission.byte_length,
+    totalOutput: 0,
+    totalRuntime: 0,
+    totalCost: 0,
+    retriesUsed: 0,
+    fallbacksUsed: 0,
+  });
+  const expectedReceipt = evaluated.code === null
+    ? receiptFor(attempt, expectedTransmission, evaluated.rawOutput, evaluated.proposal,
+      'accepted', 'adapter.proposal_accepted_as_advice', evaluated.budget)
+    : receiptFor(attempt, expectedTransmission, evaluated.rawOutput, null,
+      evaluated.outcome, evaluated.code, evaluated.budget);
   if (recovery.crash_point === 'after_receipt' && recovery.prior_receipts.length === 1 &&
       observedPriorTransmission && chainPreflightCode(subject, context) === null &&
       preflightCode(attempt, context) === null &&
-      receiptMatchesAttempt(recovery.prior_receipts[0])) {
+      isDeepStrictEqual(recovery.prior_receipts[0], expectedReceipt)) {
     const receipt = recovery.prior_receipts[0];
     return result({
       verdict: 'pass', codes: [], outputs: ['durable Adapter Run Receipt preserved idempotently'],
@@ -307,8 +385,6 @@ export async function observeIntelligenceAdapterScenario(subject, packageRoot) {
     const bytes = canonicalJson(envelope);
     const inputBytes = Buffer.byteLength(bytes);
     const prospectiveInput = totalInput + inputBytes;
-    const prospectiveRuntime = totalRuntime + attempt.double.duration_ms;
-    const prospectiveCost = totalCost + attempt.double.cost_microunits;
     const chainCode = prospectiveInput > subject.chain_budget.input_bytes
       ? 'adapter.input_budget_exhausted'
       : null;
@@ -321,7 +397,12 @@ export async function observeIntelligenceAdapterScenario(subject, packageRoot) {
       return result({verdict: 'fail', codes: [denial], outputs: [outputFor(denial)], operations, receipts, transmissions, observations, terminalState: terminalFor(denial), illegalTransition: false});
     }
 
-    const transmission = {destination: envelope.destination.endpoint, sha256: sha256(bytes), byte_length: inputBytes};
+    const transmission = {
+      destination: envelope.destination.endpoint,
+      locality: envelope.destination.locality,
+      sha256: sha256(bytes),
+      byte_length: inputBytes,
+    };
     transmissions.push(transmission);
     totalInput = prospectiveInput;
     operations.push(`transmit exact Processing Envelope bytes ${envelope.attempt_id}`);
@@ -336,63 +417,41 @@ export async function observeIntelligenceAdapterScenario(subject, packageRoot) {
       return result({verdict: 'fail', codes: [code], outputs: [outputFor(code)], operations, receipts, transmissions, observations, terminalState: 'recovery_required', illegalTransition: false});
     }
 
-    const rawOutput = attempt.double.raw_output;
-    const outputBytes = rawOutput === null ? 0 : Buffer.byteLength(rawOutput);
-    totalOutput += outputBytes;
-    totalRuntime = prospectiveRuntime;
-    totalCost = prospectiveCost;
-    const budget = receiptBudget(inputBytes, outputBytes, attempt.double);
-    observations.push(observedTransmission(attempt, bytes, budget, rawOutput));
+    const evaluated = await evaluateTransmittedAttempt({
+      attempt,
+      nextAttempt: subject.attempts[index + 1],
+      context,
+      packageRoot,
+      subject,
+      inputBytes,
+      totalOutput,
+      totalRuntime,
+      totalCost,
+      retriesUsed,
+      fallbacksUsed,
+    });
+    totalOutput = evaluated.totalOutput;
+    totalRuntime = evaluated.totalRuntime;
+    totalCost = evaluated.totalCost;
+    observations.push(observedTransmission(attempt, bytes, evaluated.budget, evaluated.rawOutput));
     operations.push(`observe instrumented Intelligence Adapter double ${envelope.attempt_id}`);
 
-    if (attempt.double.behavior === 'transient_failure') {
-      const nextClass = subject.attempts[index + 1]?.attempt_class;
-      const retryPermitted = nextClass === 'retry' && attempt.attempt_class === 'primary' &&
-        retriesUsed < subject.chain_budget.max_retries;
-      const fallbackAttempted = nextClass === 'fallback' && attempt.attempt_class === 'retry';
-      const fallbackPermitted = fallbackAttempted && fallbacksUsed < subject.chain_budget.max_fallbacks;
-      const code = retryPermitted ? 'adapter.retry_scheduled' : fallbackPermitted ? 'adapter.fallback_scheduled'
-        : fallbackAttempted || attempt.attempt_class === 'fallback' ? 'adapter.fallback_exhausted' : 'adapter.retry_exhausted';
-      const outcome = retryPermitted ? 'retry_scheduled' : fallbackPermitted ? 'fallback_scheduled' : outcomeForCode(code);
-      const receipt = receiptFor(attempt, transmission, rawOutput, null, outcome, code, budget);
+    if (evaluated.proposalValidated) operations.push(`validate inert Intelligence Proposal ${envelope.attempt_id}`);
+    if (evaluated.code !== null) {
+      const receipt = receiptFor(attempt, transmission, evaluated.rawOutput, null,
+        evaluated.outcome, evaluated.code, evaluated.budget);
       receipts.push(receipt);
       operations.push(`record Adapter Run Receipt ${receipt.receipt_id}`);
-      if (retryPermitted) retriesUsed += 1;
-      if (fallbackPermitted) fallbacksUsed += 1;
-      if (retryPermitted || fallbackPermitted) continue;
-      return result({verdict: 'fail', codes: [code], outputs: [outputFor(code)], operations, receipts, transmissions, observations, terminalState: terminalFor(code), illegalTransition: false});
-    }
-
-    let code = attempt.double.behavior === 'timeout' || attempt.double.duration_ms > envelope.ceilings.runtime_ms ||
-      totalRuntime > subject.chain_budget.runtime_ms
-      ? 'adapter.timeout'
-      : null;
-    if (code === null && (outputBytes > envelope.ceilings.output_bytes || totalOutput > subject.chain_budget.output_bytes)) {
-      code = 'adapter.output_budget_exhausted';
-    }
-    if (code === null && (attempt.double.cost_microunits > envelope.ceilings.cost_microunits ||
-        totalCost > subject.chain_budget.cost_microunits)) {
-      code = 'adapter.cost_budget_exhausted';
-    }
-    if (code === null) code = forbiddenActionCode(attempt.double.requested_actions);
-    let proposal = null;
-    if (code === null) {
-      if (attempt.double.behavior === 'malformed_output' || rawOutput === null) code = 'adapter.malformed_output';
-      else {
-        const validated = await validateProposal(rawOutput, envelope, packageRoot);
-        proposal = validated.proposal;
-        code = validated.code;
-        operations.push(`validate inert Intelligence Proposal ${envelope.attempt_id}`);
+      if (evaluated.continueChain) {
+        if (evaluated.scheduledClass === 'retry') retriesUsed += 1;
+        if (evaluated.scheduledClass === 'fallback') fallbacksUsed += 1;
+        continue;
       }
-    }
-    if (code !== null) {
-      const receipt = receiptFor(attempt, transmission, rawOutput, null, outcomeForCode(code), code, budget);
-      receipts.push(receipt);
-      operations.push(`record Adapter Run Receipt ${receipt.receipt_id}`);
-      return result({verdict: 'fail', codes: [code], outputs: [outputFor(code)], operations, receipts, transmissions, observations, terminalState: terminalFor(code), illegalTransition: false});
+      return result({verdict: 'fail', codes: [evaluated.code], outputs: [outputFor(evaluated.code)], operations, receipts, transmissions, observations, terminalState: terminalFor(evaluated.code), illegalTransition: false});
     }
 
-    const receipt = receiptFor(attempt, transmission, rawOutput, proposal, 'accepted', 'adapter.proposal_accepted_as_advice', budget);
+    const receipt = receiptFor(attempt, transmission, evaluated.rawOutput, evaluated.proposal,
+      'accepted', 'adapter.proposal_accepted_as_advice', evaluated.budget);
     receipts.push(receipt);
     operations.push(`record Adapter Run Receipt ${receipt.receipt_id}`);
     return result({verdict: 'pass', codes: [], outputs: ['validated Intelligence Proposal remains inert advice'], operations, receipts, transmissions, observations, terminalState: 'proposal_advice_available', illegalTransition: false});

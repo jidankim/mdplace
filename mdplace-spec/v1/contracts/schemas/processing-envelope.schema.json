@@ -59,7 +59,11 @@
     "destination": {
       "type": "object", "additionalProperties": false,
       "required": ["destination_id", "endpoint", "locality"],
-      "properties": {"destination_id": {"type": "string", "pattern": "^destination:[a-z0-9-]{3,64}$"}, "endpoint": {"type": "string", "minLength": 1}, "locality": {"enum": ["local", "remote"]}}
+      "properties": {"destination_id": {"type": "string", "pattern": "^destination:[a-z0-9-]{3,64}$"}, "endpoint": {"type": "string", "minLength": 1}, "locality": {"enum": ["local", "remote"]}},
+      "allOf": [
+        {"if": {"properties": {"locality": {"const": "remote"}}, "required": ["locality"]}, "then": {"properties": {"endpoint": {"pattern": "^https://\\S+$"}}}},
+        {"if": {"properties": {"locality": {"const": "local"}}, "required": ["locality"]}, "then": {"properties": {"endpoint": {"pattern": "^local://\\S+$"}}}}
+      ]
     },
     "field": {
       "type": "object", "additionalProperties": false,

@@ -94,6 +94,15 @@ function observationMatchesReceipt(observation, receipt) {
     observation.tool_invocations.length === 0;
 }
 
+function receiptTimingIsValid(receipt) {
+  const started = Date.parse(receipt.observed_started_at);
+  const completed = Date.parse(receipt.observed_completed_at);
+  return Number.isFinite(started) && Number.isFinite(completed) && completed >= started &&
+    new Date(started).toISOString() === receipt.observed_started_at &&
+    new Date(completed).toISOString() === receipt.observed_completed_at &&
+    completed - started === receipt.budget.runtime_ms;
+}
+
 export async function checkIntelligenceAdapterProtocol(packageRoot, manifest, conformance, traceability) {
   const codes = [];
   const rulesResult = await readJson(packageRoot, 'contracts/intelligence-adapter/protocol-rules.json');
@@ -181,7 +190,7 @@ export async function checkIntelligenceAdapterProtocol(packageRoot, manifest, co
       if (await schemaCode(packageRoot, 'contracts/schemas/adapter-run-receipt.schema.json', receipt) !== null ||
           receipt.receipt_sha256 !== adapterReceiptDigest(receipt) || receipt.semantic_effects.length !== 0 ||
           receipt.filesystem_effects.length !== 0 || receipt.tool_invocations.length !== 0 ||
-          receiptReasonByCode.get(receipt.reason) !== receipt.outcome) {
+          receiptReasonByCode.get(receipt.reason) !== receipt.outcome || !receiptTimingIsValid(receipt)) {
         codes.push('adapter.receipt_invalid');
       }
     }
