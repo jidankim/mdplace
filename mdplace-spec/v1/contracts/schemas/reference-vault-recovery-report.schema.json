@@ -20,6 +20,7 @@
     "digest_identical",
     "generation_table_sha256",
     "redistribution_table_sha256",
+    "recovery_cases",
     "boundary_coverage",
     "lineage_isolation",
     "scenario_results",
@@ -44,12 +45,19 @@
     "digest_identical": {"const": true},
     "generation_table_sha256": {"$ref": "#/$defs/sha256"},
     "redistribution_table_sha256": {"$ref": "#/$defs/sha256"},
+    "recovery_cases": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/recoveryCase"}
+    },
     "boundary_coverage": {"$ref": "#/$defs/boundaryCoverage"},
     "lineage_isolation": {"$ref": "#/$defs/lineageIsolation"},
     "scenario_results": {
       "type": "array",
-      "minItems": 32,
-      "maxItems": 32,
+      "minItems": 35,
+      "maxItems": 35,
       "items": {"$ref": "#/$defs/scenarioResult"}
     },
     "recovery_outcomes": {
@@ -65,6 +73,21 @@
   },
   "$defs": {
     "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "recoveryCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence_id", "crash_stage", "generator_binding_sha256", "manifest_sha256", "required_evidence", "decision", "receipt", "filesystem_effects"],
+      "properties": {
+        "evidence_id": {"type": "string", "pattern": "^RVG-RECOVERY-[A-Z-]{3,48}$"},
+        "crash_stage": {"enum": ["before_manifest", "after_manifest", "before_redistribution", "after_redistribution"]},
+        "generator_binding_sha256": {"$ref": "#/$defs/sha256"},
+        "manifest_sha256": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
+        "required_evidence": {"type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}},
+        "decision": {"enum": ["restart_from_binding", "retain_sealed_manifest", "discard_unsealed_plan", "retain_redistributed_manifest"]},
+        "receipt": {"const": "ReferenceVaultRecoveryReceipt"},
+        "filesystem_effects": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"const": "none"}}
+      }
+    },
     "fixtureIds": {"type": "array", "minItems": 6, "maxItems": 6, "uniqueItems": true, "items": {"type": "string", "pattern": "^FIX-RVG-[A-Z]+-[0-9]{3}$"}},
     "boundaryCoverage": {
       "type": "object",

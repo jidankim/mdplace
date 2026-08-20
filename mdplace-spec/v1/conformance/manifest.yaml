@@ -5888,6 +5888,25 @@
       }
     },
     {
+      "fixture_id": "FIX-RVG-POS-003",
+      "path": "scenarios/reference-vault/generation-lifecycle-command-allowed.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-RVG-007",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
       "fixture_id": "FIX-RVG-NEG-001",
       "path": "scenarios/reference-vault/partition-membership-mutation-denied.json",
       "category": "negative",
@@ -5970,6 +5989,45 @@
       "category": "negative",
       "requirement_ids": [
         "REQ-RVG-002",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-NEG-006",
+      "path": "scenarios/reference-vault/duplicate-coverage-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RVG-005",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-NEG-007",
+      "path": "scenarios/reference-vault/forged-partition-membership-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RVG-002",
+        "REQ-RVG-006",
         "REQ-RVG-008"
       ],
       "expected_verdict": "fail",

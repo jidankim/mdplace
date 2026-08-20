@@ -12,8 +12,50 @@
   "first_manifest_sha256": "d6120ebc26e37b488a5dcbbdaaca663a0051a7ef0c3428bd9b07fb60d665a979",
   "repeated_manifest_sha256": "d6120ebc26e37b488a5dcbbdaaca663a0051a7ef0c3428bd9b07fb60d665a979",
   "digest_identical": true,
-  "generation_table_sha256": "75cc3dcb7584c13fbfcd175b96d4930eddb7590b0165677bb83d281f142a8016",
-  "redistribution_table_sha256": "38d6bb5db5cf6d63b8736b66ec4dd5cbbcd3b020cf6185b0be2adc71f1591840",
+  "generation_table_sha256": "b7ae56c679eb419beadb6fc5c26bbd9b925e51e8f7928c2a206f9f8f1b1562d0",
+  "redistribution_table_sha256": "03701f40c96a2b09703bd0ecb81ffc818a4cffc606f194d0e627b713c2932f4d",
+  "recovery_cases": [
+    {
+      "evidence_id": "RVG-RECOVERY-BEFORE-MANIFEST",
+      "crash_stage": "before_manifest",
+      "generator_binding_sha256": "1a5757fab81f55dd9c600bdc7665c1ce0cb802d9c4be477f244c9f647931699b",
+      "manifest_sha256": null,
+      "required_evidence": ["generator_binding", "scale_manifest_sha256"],
+      "decision": "restart_from_binding",
+      "receipt": "ReferenceVaultRecoveryReceipt",
+      "filesystem_effects": ["none"]
+    },
+    {
+      "evidence_id": "RVG-RECOVERY-AFTER-MANIFEST",
+      "crash_stage": "after_manifest",
+      "generator_binding_sha256": "1a5757fab81f55dd9c600bdc7665c1ce0cb802d9c4be477f244c9f647931699b",
+      "manifest_sha256": "d6120ebc26e37b488a5dcbbdaaca663a0051a7ef0c3428bd9b07fb60d665a979",
+      "required_evidence": ["sealed_manifest_sha256", "generator_receipt"],
+      "decision": "retain_sealed_manifest",
+      "receipt": "ReferenceVaultRecoveryReceipt",
+      "filesystem_effects": ["none"]
+    },
+    {
+      "evidence_id": "RVG-RECOVERY-BEFORE-REDISTRIBUTION",
+      "crash_stage": "before_redistribution",
+      "generator_binding_sha256": "1a5757fab81f55dd9c600bdc7665c1ce0cb802d9c4be477f244c9f647931699b",
+      "manifest_sha256": "d6120ebc26e37b488a5dcbbdaaca663a0051a7ef0c3428bd9b07fb60d665a979",
+      "required_evidence": ["sealed_manifest_sha256", "redistribution_plan_sha256"],
+      "decision": "discard_unsealed_plan",
+      "receipt": "ReferenceVaultRecoveryReceipt",
+      "filesystem_effects": ["none"]
+    },
+    {
+      "evidence_id": "RVG-RECOVERY-AFTER-REDISTRIBUTION",
+      "crash_stage": "after_redistribution",
+      "generator_binding_sha256": "1a5757fab81f55dd9c600bdc7665c1ce0cb802d9c4be477f244c9f647931699b",
+      "manifest_sha256": "d6120ebc26e37b488a5dcbbdaaca663a0051a7ef0c3428bd9b07fb60d665a979",
+      "required_evidence": ["redistributed_manifest_sha256", "redistribution_receipt"],
+      "decision": "retain_redistributed_manifest",
+      "receipt": "ReferenceVaultRecoveryReceipt",
+      "filesystem_effects": ["none"]
+    }
+  ],
   "boundary_coverage": {
     "below": [
       "FIX-RVG-BELOW-001",
@@ -163,6 +205,11 @@
       "recovery_outcome": "not_applicable"
     },
     {
+      "fixture_id": "FIX-RVG-POS-003",
+      "expected_verdict": "pass",
+      "recovery_outcome": "not_applicable"
+    },
+    {
       "fixture_id": "FIX-RVG-NEG-001",
       "expected_verdict": "fail",
       "recovery_outcome": "not_applicable"
@@ -184,6 +231,16 @@
     },
     {
       "fixture_id": "FIX-RVG-NEG-005",
+      "expected_verdict": "fail",
+      "recovery_outcome": "not_applicable"
+    },
+    {
+      "fixture_id": "FIX-RVG-NEG-006",
+      "expected_verdict": "fail",
+      "recovery_outcome": "not_applicable"
+    },
+    {
+      "fixture_id": "FIX-RVG-NEG-007",
       "expected_verdict": "fail",
       "recovery_outcome": "not_applicable"
     },

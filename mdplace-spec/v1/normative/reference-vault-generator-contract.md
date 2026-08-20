@@ -51,7 +51,7 @@ The four-row recovery table covers interruption before and after manifest sealin
 
 ## REQ-RVG-008: Boundary fixtures reject every invalid scale and identity case
 
-The registered Reference Vault suite contains exactly 32 fixtures. It covers below, exact, and over values for all five fixed counts and the candidate-size limit; digest-identical repeated generation; legal and illegal redistribution; immutable membership; total coverage; duplicate and stale Generator Bindings; train/calibration/test lineage isolation; authority denial; illegal lifecycle transitions; and relevant crash and recovery outcomes.
+The registered Reference Vault suite contains exactly 35 fixtures. It covers below, exact, and over values for all five fixed counts and the candidate-size limit; digest-identical repeated generation; legal and illegal redistribution; sealed immutable membership; unique total coverage; duplicate and stale Generator Bindings; train/calibration/test lineage isolation; authority denial; allowed and illegal lifecycle transitions; and artifact-bound crash and recovery outcomes.
 
 Every fixture declares observable inputs, outputs, operations, receipts, filesystem effects, terminal state, and illegal-transition status. No fixture asserts a private helper call, an in-memory implementation shape, or a materialized vault.
 

@@ -1,10 +1,11 @@
 {
   "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
   "schema_id": "mdplace.conformance-fixture/v1",
-  "fixture_id": "FIX-RVG-NEG-002",
+  "fixture_id": "FIX-RVG-NEG-007",
   "category": "negative",
   "requirement_ids": [
-    "REQ-RVG-005",
+    "REQ-RVG-002",
+    "REQ-RVG-006",
     "REQ-RVG-008"
   ],
   "subject": {
@@ -13,9 +14,9 @@
     "document": {
       "$schema": "../../../contracts/schemas/reference-vault-scenario.schema.json",
       "schema_id": "mdplace.reference-vault-scenario/v1",
-      "scenario_id": "RVG-022",
-      "operation": "generate",
-      "actor_role": "reference_vault_generator",
+      "scenario_id": "RVG-034",
+      "operation": "redistribute",
+      "actor_role": "vault_owner",
       "generator_binding": {
         "generator_id": "mdplace.reference-vault-generator/v1",
         "generator_version": "1.0.0",
@@ -49,11 +50,10 @@
       "partition_lineages": [
         {
           "partition_id": "train",
-          "membership_sha256_before": "d5dea1d3685a16c09dca2746e24bd94cd0329f60ead62dde164933a858326c3f",
-          "membership_sha256_after": "d5dea1d3685a16c09dca2746e24bd94cd0329f60ead62dde164933a858326c3f",
+          "membership_sha256_before": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "membership_sha256_after": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
           "lineage_group_ids": [
-            "lineage:000001",
-            "lineage:000002"
+            "lineage:999999"
           ]
         },
         {
@@ -94,10 +94,19 @@
         },
         {
           "dimension": "queued_candidates",
-          "accounted": 999
+          "accounted": 1000
         }
       ],
-      "redistribution": null,
+      "redistribution": {
+        "source_partition": "train",
+        "target_partition": "train",
+        "source_shard": "train-a",
+        "target_shard": "train-b",
+        "lineage_group_id": "lineage:999999",
+        "whole_lineage": true,
+        "expected_base_manifest_sha256": "d6120ebc26e37b488a5dcbbdaaca663a0051a7ef0c3428bd9b07fb60d665a979",
+        "observed_base_manifest_sha256": "d6120ebc26e37b488a5dcbbdaaca663a0051a7ef0c3428bd9b07fb60d665a979"
+      },
       "recovery": null,
       "lifecycle": null
     }
@@ -105,13 +114,13 @@
   "expected": {
     "verdict": "fail",
     "codes": [
-      "corpus.coverage_unaccounted"
+      "corpus.partition_membership_unbound"
     ],
     "outputs": [
       "reference vault operation rejected"
     ],
     "operations": [
-      "observe generate"
+      "observe redistribute"
     ],
     "receipts": [
       "ReferenceVaultDenied"

@@ -1,7 +1,7 @@
 {
   "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
   "schema_id": "mdplace.conformance-fixture/v1",
-  "fixture_id": "FIX-RVG-NEG-002",
+  "fixture_id": "FIX-RVG-NEG-006",
   "category": "negative",
   "requirement_ids": [
     "REQ-RVG-005",
@@ -13,7 +13,7 @@
     "document": {
       "$schema": "../../../contracts/schemas/reference-vault-scenario.schema.json",
       "schema_id": "mdplace.reference-vault-scenario/v1",
-      "scenario_id": "RVG-022",
+      "scenario_id": "RVG-033",
       "operation": "generate",
       "actor_role": "reference_vault_generator",
       "generator_binding": {
@@ -94,7 +94,11 @@
         },
         {
           "dimension": "queued_candidates",
-          "accounted": 999
+          "accounted": 1000
+        },
+        {
+          "dimension": "captured_tab_notes",
+          "accounted": 25000
         }
       ],
       "redistribution": null,
@@ -105,7 +109,7 @@
   "expected": {
     "verdict": "fail",
     "codes": [
-      "corpus.coverage_unaccounted"
+      "schema.constraint"
     ],
     "outputs": [
       "reference vault operation rejected"

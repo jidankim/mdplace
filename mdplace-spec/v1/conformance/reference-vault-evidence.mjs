@@ -35,6 +35,51 @@ function expectedOutcome(fixtureId) {
   return 'not_applicable';
 }
 
+const recoveryEvidenceIdByStage = {
+  before_manifest: 'RVG-RECOVERY-BEFORE-MANIFEST',
+  after_manifest: 'RVG-RECOVERY-AFTER-MANIFEST',
+  before_redistribution: 'RVG-RECOVERY-BEFORE-REDISTRIBUTION',
+  after_redistribution: 'RVG-RECOVERY-AFTER-REDISTRIBUTION',
+};
+
+const requiredFixtureMatrix = {
+  'FIX-RVG-BELOW-001': ['below_boundary', 'generate', 'fail'],
+  'FIX-RVG-BELOW-002': ['below_boundary', 'generate', 'fail'],
+  'FIX-RVG-BELOW-003': ['below_boundary', 'generate', 'fail'],
+  'FIX-RVG-BELOW-004': ['below_boundary', 'generate', 'fail'],
+  'FIX-RVG-BELOW-005': ['below_boundary', 'generate', 'fail'],
+  'FIX-RVG-BELOW-006': ['below_boundary', 'generate', 'pass'],
+  'FIX-RVG-EXACT-001': ['exact_boundary', 'generate', 'pass'],
+  'FIX-RVG-EXACT-002': ['exact_boundary', 'generate', 'pass'],
+  'FIX-RVG-EXACT-003': ['exact_boundary', 'generate', 'pass'],
+  'FIX-RVG-EXACT-004': ['exact_boundary', 'generate', 'pass'],
+  'FIX-RVG-EXACT-005': ['exact_boundary', 'generate', 'pass'],
+  'FIX-RVG-EXACT-006': ['exact_boundary', 'generate', 'pass'],
+  'FIX-RVG-OVER-001': ['over_boundary', 'generate', 'fail'],
+  'FIX-RVG-OVER-002': ['over_boundary', 'generate', 'fail'],
+  'FIX-RVG-OVER-003': ['over_boundary', 'generate', 'fail'],
+  'FIX-RVG-OVER-004': ['over_boundary', 'generate', 'fail'],
+  'FIX-RVG-OVER-005': ['over_boundary', 'generate', 'fail'],
+  'FIX-RVG-OVER-006': ['over_boundary', 'generate', 'fail'],
+  'FIX-RVG-POS-001': ['positive', 'generate', 'pass'],
+  'FIX-RVG-POS-002': ['positive', 'redistribute', 'pass'],
+  'FIX-RVG-POS-003': ['positive', 'validate_lifecycle', 'pass'],
+  'FIX-RVG-NEG-001': ['negative', 'generate', 'fail'],
+  'FIX-RVG-NEG-002': ['negative', 'generate', 'fail'],
+  'FIX-RVG-NEG-003': ['negative', 'redistribute', 'fail'],
+  'FIX-RVG-NEG-004': ['negative', 'generate', 'fail'],
+  'FIX-RVG-NEG-005': ['negative', 'generate', 'fail'],
+  'FIX-RVG-NEG-006': ['negative', 'generate', 'fail'],
+  'FIX-RVG-NEG-007': ['negative', 'redistribute', 'fail'],
+  'FIX-RVG-ILLEGAL-001': ['illegal_transition', 'redistribute', 'fail'],
+  'FIX-RVG-ILLEGAL-002': ['illegal_transition', 'validate_lifecycle', 'fail'],
+  'FIX-RVG-STATE-001': ['stale_state', 'generate', 'fail'],
+  'FIX-RVG-AUTH-001': ['authority_denial', 'generate', 'fail'],
+  'FIX-RVG-REC-001': ['crash_recovery', 'recover', 'pass'],
+  'FIX-RVG-REC-002': ['crash_recovery', 'recover', 'pass'],
+  'FIX-RVG-REC-003': ['crash_recovery', 'recover', 'fail'],
+};
+
 export async function referenceVaultEvidenceCodes(packageRoot, generator, scale, manifest) {
   const codes = [];
   const [
@@ -71,11 +116,23 @@ export async function referenceVaultEvidenceCodes(packageRoot, generator, scale,
     'positive', 'negative', 'below_boundary', 'exact_boundary', 'over_boundary',
     'stale_state', 'authority_denial', 'illegal_transition', 'crash_recovery',
   ];
-  if (fixtures.length !== 32 || requiredCategories.some((category) => !categories.has(category)) ||
+  if (fixtures.length !== Object.keys(requiredFixtureMatrix).length ||
+      requiredCategories.some((category) => !categories.has(category)) ||
       ['below_boundary', 'exact_boundary', 'over_boundary'].some((category) =>
         fixtures.filter((fixture) => fixture.category === category).length !== 6)) {
     codes.push('corpus.fixture_inventory_invalid');
   }
+  const fixtureDocuments = new Map(await Promise.all(fixtures.map(async (fixture) => [
+    fixture.fixture_id,
+    (await readJson(packageRoot, `conformance/${fixture.path}`)).document,
+  ])));
+  if (Object.entries(requiredFixtureMatrix).some(([fixtureId, [category, operation, verdict]]) => {
+    const fixture = fixtures.find(({fixture_id: id}) => id === fixtureId);
+    const document = fixtureDocuments.get(fixtureId);
+    return fixture?.category !== category || fixture?.expected_verdict !== verdict ||
+      document?.fixture_id !== fixtureId || document?.subject?.document?.operation !== operation ||
+      document?.expected?.verdict !== verdict;
+  })) codes.push('corpus.fixture_inventory_invalid');
   const fixtureIds = fixtures.map(({fixture_id: id}) => id);
   const reportResults = recovery.scenario_results ?? [];
   if (!isDeepStrictEqual(reportResults.map(({fixture_id: id}) => id), fixtureIds) ||
@@ -112,6 +169,19 @@ export async function referenceVaultEvidenceCodes(packageRoot, generator, scale,
   if (!isDeepStrictEqual(recovery.recovery_outcomes, [
     'restart_from_binding', 'retain_redistributed_manifest', 'denied',
   ]) || !isDeepStrictEqual(recovery.filesystem_effects, ['none'])) {
+    codes.push('generator.recovery_evidence_invalid');
+  }
+  const expectedRecoveryCases = generator.recovery_table.map((entry) => ({
+    evidence_id: recoveryEvidenceIdByStage[entry.crash_stage],
+    crash_stage: entry.crash_stage,
+    generator_binding_sha256: generator.determinism.binding_sha256,
+    manifest_sha256: entry.crash_stage === 'before_manifest' ? null : manifest.manifest_sha256,
+    required_evidence: entry.required_evidence,
+    decision: entry.result,
+    receipt: 'ReferenceVaultRecoveryReceipt',
+    filesystem_effects: [entry.filesystem_effects],
+  }));
+  if (!isDeepStrictEqual(recovery.recovery_cases, expectedRecoveryCases)) {
     codes.push('generator.recovery_evidence_invalid');
   }
 

@@ -2639,7 +2639,8 @@
       ],
       "negative_fixture_ids": [
         "FIX-RVG-NEG-001",
-        "FIX-RVG-NEG-005"
+        "FIX-RVG-NEG-005",
+        "FIX-RVG-NEG-007"
       ],
       "acceptance_gate": "Train, calibration, and test membership digests are immutable, every lineage belongs to exactly one partition, and redistribution moves only a whole lineage within that partition.",
       "scope": "reference-vault-generator",
@@ -2766,7 +2767,8 @@
         "FIX-RVG-POS-001"
       ],
       "negative_fixture_ids": [
-        "FIX-RVG-NEG-002"
+        "FIX-RVG-NEG-002",
+        "FIX-RVG-NEG-006"
       ],
       "acceptance_gate": "Every fixed count is accounted exactly once by partition sums or one global exact account; omissions and duplicates fail conformance.",
       "scope": "reference-vault-generator",
@@ -2806,6 +2808,7 @@
       "negative_fixture_ids": [
         "FIX-RVG-NEG-001",
         "FIX-RVG-NEG-003",
+        "FIX-RVG-NEG-007",
         "FIX-RVG-ILLEGAL-001"
       ],
       "acceptance_gate": "Only idempotent retries and whole-lineage moves between shards in the same current partition are allowed; every cross-partition, partial, stale, or coverage-changing request is denied.",
@@ -2840,6 +2843,7 @@
         "contracts/transitions/reference-vault-redistribution-lifecycle.json"
       ],
       "positive_fixture_ids": [
+        "FIX-RVG-POS-003",
         "FIX-RVG-REC-001",
         "FIX-RVG-REC-002"
       ],
@@ -2890,7 +2894,8 @@
         "FIX-RVG-EXACT-005",
         "FIX-RVG-EXACT-006",
         "FIX-RVG-POS-001",
-        "FIX-RVG-POS-002"
+        "FIX-RVG-POS-002",
+        "FIX-RVG-POS-003"
       ],
       "negative_fixture_ids": [
         "FIX-RVG-BELOW-001",
@@ -2909,12 +2914,14 @@
         "FIX-RVG-NEG-003",
         "FIX-RVG-NEG-004",
         "FIX-RVG-NEG-005",
+        "FIX-RVG-NEG-006",
+        "FIX-RVG-NEG-007",
         "FIX-RVG-ILLEGAL-001",
         "FIX-RVG-ILLEGAL-002",
         "FIX-RVG-STATE-001",
         "FIX-RVG-AUTH-001"
       ],
-      "acceptance_gate": "Exactly 32 public fixtures cover every fixed boundary plus determinism, identity, coverage, redistribution, stale state, authority, lifecycle, crash, and recovery behavior.",
+      "acceptance_gate": "Exactly 35 public fixtures cover every fixed boundary plus determinism, identity, unique coverage, sealed membership, redistribution, stale state, authority, allowed and denied lifecycle behavior, crash, and artifact-bound recovery.",
       "scope": "reference-vault-generator",
       "evidence_refs": [
         "conformance/evidence/validation-report.json",

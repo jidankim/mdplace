@@ -290,7 +290,7 @@
       "terminal_state": "generated",
       "failure_result": {
         "code": "generator.lifecycle_illegal",
-        "state_effect": "unchanged",
+        "state_effect": "recovery_required",
         "emitted_records": [
           "ReferenceVaultTransitionDenied"
         ],
@@ -525,7 +525,7 @@
       "terminal_state": "sealed",
       "failure_result": {
         "code": "generator.lifecycle_illegal",
-        "state_effect": "unchanged",
+        "state_effect": "recovery_required",
         "emitted_records": [
           "ReferenceVaultTransitionDenied"
         ],

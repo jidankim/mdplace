@@ -43,8 +43,9 @@
     },
     "coverage_accounts": {
       "type": "array",
-      "minItems": 4,
-      "maxItems": 6,
+      "minItems": 5,
+      "maxItems": 5,
+      "uniqueItems": true,
       "items": {"$ref": "#/$defs/coverageAccount"}
     },
     "redistribution": {"type": ["object", "null"], "additionalProperties": false, "required": ["source_partition", "target_partition", "source_shard", "target_shard", "lineage_group_id", "whole_lineage", "expected_base_manifest_sha256", "observed_base_manifest_sha256"], "properties": {
@@ -57,15 +58,15 @@
       "expected_base_manifest_sha256": {"$ref": "#/$defs/sha256"},
       "observed_base_manifest_sha256": {"$ref": "#/$defs/sha256"}
     }},
-    "recovery": {"type": ["object", "null"], "additionalProperties": false, "required": ["crash_stage", "journal_complete", "binding_verified", "manifest_verified", "decision"], "properties": {
+    "recovery": {"type": ["object", "null"], "additionalProperties": false, "required": ["evidence_id", "evidence_sha256", "crash_stage", "decision"], "properties": {
+      "evidence_id": {"type": "string", "pattern": "^RVG-RECOVERY-[A-Z-]{3,48}$"},
+      "evidence_sha256": {"$ref": "#/$defs/sha256"},
       "crash_stage": {"enum": ["before_manifest", "after_manifest", "before_redistribution", "after_redistribution"]},
-      "journal_complete": {"type": "boolean"},
-      "binding_verified": {"type": "boolean"},
-      "manifest_verified": {"type": "boolean"},
       "decision": {"enum": ["restart_from_binding", "retain_sealed_manifest", "discard_unsealed_plan", "retain_redistributed_manifest"]}
     }},
-    "lifecycle": {"type": ["object", "null"], "additionalProperties": false, "required": ["table_ref", "from_state", "command"], "properties": {
+    "lifecycle": {"type": ["object", "null"], "additionalProperties": false, "required": ["table_ref", "transition_sha256", "from_state", "command"], "properties": {
       "table_ref": {"enum": ["contracts/transitions/reference-vault-generation-lifecycle.json", "contracts/transitions/reference-vault-redistribution-lifecycle.json"]},
+      "transition_sha256": {"$ref": "#/$defs/sha256"},
       "from_state": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
       "command": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}
     }}
@@ -134,7 +135,7 @@
         "partition_id": {"enum": ["train", "calibration", "test"]},
         "membership_sha256_before": {"$ref": "#/$defs/sha256"},
         "membership_sha256_after": {"$ref": "#/$defs/sha256"},
-        "lineage_group_ids": {"type": "array", "minItems": 1, "maxItems": 4, "uniqueItems": true, "items": {"type": "string", "pattern": "^lineage:[a-z0-9-]{3,64}$"}}
+        "lineage_group_ids": {"type": "array", "minItems": 1, "maxItems": 4, "uniqueItems": true, "items": {"type": "string", "pattern": "^lineage:[0-9]{6}$"}}
       }
     },
     "coverageAccount": {

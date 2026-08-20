@@ -1,7 +1,7 @@
 import {createHash} from 'node:crypto';
 
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
-import {generatorBindingDigest} from './reference-vault-core.mjs';
+import {corpusManifestDigest, generatorBindingDigest, sha256Json} from './reference-vault-core.mjs';
 import {readPackageFile} from './safe-path.mjs';
 
 const exactCounts = {
@@ -16,17 +16,30 @@ const roleByOperation = {
   generate: 'reference_vault_generator',
   redistribute: 'vault_owner',
   recover: 'foreground_recovery',
-  validate_lifecycle: 'conformance_validator',
 };
 
 async function readJson(packageRoot, path) {
   const read = await readPackageFile(packageRoot, path);
-  if (read.status !== 'present') return null;
+  if (read.status !== 'present') return {status: read.status, document: null, content: null};
   try {
-    return JSON.parse(read.content.toString('utf8'));
+    return {status: 'present', document: JSON.parse(read.content.toString('utf8')), content: read.content};
   } catch {
-    return null;
+    return {status: 'invalid', document: null, content: read.content};
   }
+}
+
+async function validatedArtifact(packageRoot, artifact) {
+  const {path, schemaPath, unavailableCode, invalidCode} = artifact;
+  const read = await readJson(packageRoot, path);
+  if (read.status === 'invalid') return {code: invalidCode, document: null, content: read.content};
+  if (read.status !== 'present') return {code: unavailableCode, document: null, content: null};
+  try {
+    const code = schemaErrorCode(await validateAgainstSchemaPath(packageRoot, schemaPath, read.document));
+    if (code !== null) return {code: invalidCode, document: null, content: read.content};
+  } catch {
+    return {code: invalidCode, document: null, content: read.content};
+  }
+  return {code: null, document: read.document, content: read.content};
 }
 
 function observedFailure(operation, code) {
@@ -43,27 +56,43 @@ function observedFailure(operation, code) {
   };
 }
 
-function observedSuccess(operation, manifestDigest) {
+function observedResult(operation, manifestDigest, lifecycleRow) {
+  if (operation === 'validate_lifecycle' && !lifecycleRow.allowed) {
+    return {
+      verdict: 'fail',
+      codes: [lifecycleRow.failure_result.code],
+      outputs: [`transition_sha256:${sha256Json(lifecycleRow)}`],
+      operations: [`observe ${operation}`],
+      receipts: lifecycleRow.failure_result.emitted_records,
+      filesystem_effects: lifecycleRow.failure_result.filesystem_effects,
+      terminal_state: lifecycleRow.terminal_state,
+      illegal_transition: true,
+    };
+  }
   const resultByOperation = {
-    generate: {output: `manifest_sha256:${manifestDigest}`, receipt: 'GeneratorReceipt', state: 'generated'},
-    redistribute: {output: 'redistribution accepted', receipt: 'RedistributionReceipt', state: 'redistributed'},
-    recover: {output: 'recovery accepted', receipt: 'ReferenceVaultRecoveryReceipt', state: 'recovered'},
-    validate_lifecycle: {output: 'lifecycle transition accepted', receipt: 'ReferenceVaultTransitionReceipt', state: 'validated'},
+    generate: {outputs: [`manifest_sha256:${manifestDigest}`], receipts: ['GeneratorReceipt'], effects: ['none'], state: 'generated'},
+    redistribute: {outputs: ['redistribution accepted'], receipts: ['RedistributionReceipt'], effects: ['none'], state: 'redistributed'},
+    recover: {outputs: ['recovery accepted'], receipts: ['ReferenceVaultRecoveryReceipt'], effects: ['none'], state: 'recovered'},
   };
-  const observed = resultByOperation[operation];
+  const observed = operation === 'validate_lifecycle' ? {
+      outputs: [`transition_sha256:${sha256Json(lifecycleRow)}`],
+      receipts: lifecycleRow.emitted_records,
+      effects: lifecycleRow.filesystem_effects,
+      state: lifecycleRow.terminal_state,
+    } : resultByOperation[operation];
   return {
     verdict: 'pass',
     codes: [],
-    outputs: [observed.output],
+    outputs: observed.outputs,
     operations: [`observe ${operation}`],
-    receipts: [observed.receipt],
-    filesystem_effects: ['none'],
+    receipts: observed.receipts,
+    filesystem_effects: observed.effects,
     terminal_state: observed.state,
     illegal_transition: false,
   };
 }
 
-function bindingCode(document) {
+function bindingCode(document, manifest) {
   const binding = document.generator_binding;
   const seedDigest = createHash('sha256').update(binding.seed).digest('hex');
   const calculatedBinding = generatorBindingDigest({
@@ -81,10 +110,22 @@ function bindingCode(document) {
   if (matching[0].binding_sha256 !== binding.binding_sha256) return 'generator.binding_invalid';
   if (document.current_binding.generator_version !== binding.generator_version ||
       document.current_binding.binding_sha256 !== binding.binding_sha256) return 'generator.binding_stale';
+  if (manifest.generator_binding.generator_id !== binding.generator_id ||
+      manifest.generator_binding.generator_version !== binding.generator_version ||
+      manifest.generator_binding.seed_sha256 !== binding.seed_sha256 ||
+      manifest.generator_binding.binding_sha256 !== binding.binding_sha256) return 'generator.binding_invalid';
   return null;
 }
 
-function corpusCode(document) {
+function lineageBelongsToPartition(lineageId, lineageRange) {
+  const lineage = /^lineage:([0-9]{6})$/.exec(lineageId);
+  const range = /^lineage:([0-9]{6})\.\.lineage:([0-9]{6})$/.exec(lineageRange);
+  if (lineage === null || range === null) return false;
+  const value = Number(lineage[1]);
+  return value >= Number(range[1]) && value <= Number(range[2]);
+}
+
+function corpusCode(document, manifest) {
   for (const [dimension, count] of Object.entries(exactCounts)) {
     if (document.scale.counts[dimension] !== count) return `corpus.${dimension}_count_mismatch`;
   }
@@ -92,15 +133,24 @@ function corpusCode(document) {
     return 'corpus.candidate_size_exceeded';
   }
   const accounts = new Map(document.coverage_accounts.map((entry) => [entry.dimension, entry.accounted]));
-  if (accounts.size !== 5 || Object.entries(exactCounts).some(([dimension, count]) => accounts.get(dimension) !== count)) {
+  if (document.coverage_accounts.length !== 5 || accounts.size !== document.coverage_accounts.length ||
+      Object.entries(exactCounts).some(([dimension, count]) => accounts.get(dimension) !== count)) {
     return 'corpus.coverage_unaccounted';
   }
   const partitions = document.partition_lineages.map(({partition_id: id}) => id);
   const lineages = document.partition_lineages.flatMap(({lineage_group_ids: ids}) => ids);
   if (new Set(partitions).size !== 3 || new Set(lineages).size !== lineages.length) return 'corpus.lineage_crossing';
-  if (document.partition_lineages.some((entry) =>
-    entry.membership_sha256_before !== entry.membership_sha256_after)) {
-    return 'corpus.partition_membership_mutated';
+  const sealedPartitions = new Map(manifest.partitions.map((partition) => [partition.partition_id, partition]));
+  for (const entry of document.partition_lineages) {
+    const sealed = sealedPartitions.get(entry.partition_id);
+    if (sealed === undefined || entry.membership_sha256_before !== sealed.membership_sha256 ||
+        entry.membership_sha256_after !== sealed.membership_sha256) {
+      return entry.membership_sha256_before === entry.membership_sha256_after ?
+        'corpus.partition_membership_unbound' : 'corpus.partition_membership_mutated';
+    }
+    if (entry.lineage_group_ids.some((lineageId) => !lineageBelongsToPartition(lineageId, sealed.lineage_range))) {
+      return 'corpus.lineage_crossing';
+    }
   }
   return null;
 }
@@ -122,29 +172,38 @@ function redistributionCode(redistribution, partitionLineages, sealedManifestDig
   return null;
 }
 
-function recoveryCode(recovery) {
-  if (recovery === null || !recovery.journal_complete || !recovery.binding_verified) {
-    return 'generator.recovery_unproven';
-  }
-  const decisionByStage = {
-    before_manifest: 'restart_from_binding',
-    after_manifest: 'retain_sealed_manifest',
-    before_redistribution: 'discard_unsealed_plan',
-    after_redistribution: 'retain_redistributed_manifest',
-  };
-  if (recovery.decision !== decisionByStage[recovery.crash_stage] ||
-      (recovery.crash_stage !== 'before_manifest' && !recovery.manifest_verified)) {
+function recoveryCode(recovery, evidenceArtifact) {
+  const {report, content, generatorBindingSha256, manifestSha256} = evidenceArtifact;
+  if (recovery === null || content === null ||
+      createHash('sha256').update(content).digest('hex') !== recovery.evidence_sha256 ||
+      report.binding_sha256 !== generatorBindingSha256 ||
+      report.first_manifest_sha256 !== manifestSha256) return 'generator.recovery_unproven';
+  const evidence = report.recovery_cases.find(({evidence_id: id}) => id === recovery.evidence_id);
+  if (evidence === undefined || evidence.crash_stage !== recovery.crash_stage ||
+      evidence.decision !== recovery.decision ||
+      evidence.generator_binding_sha256 !== generatorBindingSha256 ||
+      evidence.manifest_sha256 !== (recovery.crash_stage === 'before_manifest' ? null : manifestSha256)) {
     return 'generator.recovery_unproven';
   }
   return null;
 }
 
-async function lifecycleCode(packageRoot, lifecycle) {
-  if (lifecycle === null) return 'generator.lifecycle_illegal';
-  const table = await readJson(packageRoot, lifecycle.table_ref);
-  const row = table?.transitions?.find(({from_state: state, command_or_event: command}) =>
+async function lifecycleResult(packageRoot, lifecycle, actorRole) {
+  if (lifecycle === null) return {code: 'generator.lifecycle_illegal', row: null};
+  const tableArtifact = await validatedArtifact(packageRoot, {
+    path: lifecycle.table_ref,
+    schemaPath: 'contracts/schemas/transition-table.schema.json',
+    unavailableCode: 'generator.lifecycle_illegal',
+    invalidCode: 'generator.lifecycle_illegal',
+  });
+  if (tableArtifact.code !== null) return {code: tableArtifact.code, row: null};
+  const row = tableArtifact.document.transitions.find(({from_state: state, command_or_event: command}) =>
     state === lifecycle.from_state && command === lifecycle.command);
-  return row?.allowed === true ? null : 'generator.lifecycle_illegal';
+  if (row === undefined || lifecycle.transition_sha256 !== sha256Json(row)) {
+    return {code: 'generator.lifecycle_illegal', row: null};
+  }
+  if (!row.actor_authority.roles.includes(actorRole)) return {code: 'generator.authority_denied', row: null};
+  return {code: null, row};
 }
 
 export async function observeReferenceVaultScenario(subject, packageRoot) {
@@ -152,18 +211,45 @@ export async function observeReferenceVaultScenario(subject, packageRoot) {
   const schemaCode = schemaErrorCode(schemaErrors);
   if (schemaCode !== null) return observedFailure(subject.document?.operation ?? 'unknown', schemaCode);
   const document = subject.document;
-  if (document.actor_role !== roleByOperation[document.operation]) {
+  if (document.operation !== 'validate_lifecycle' && document.actor_role !== roleByOperation[document.operation]) {
     return observedFailure(document.operation, 'generator.authority_denied');
   }
-  const manifest = await readJson(packageRoot, 'contracts/reference-vault/corpus-manifest.json');
-  const firstCode = bindingCode(document) ?? corpusCode(document) ??
-    (document.operation === 'redistribute' ? redistributionCode(
-      document.redistribution,
-      document.partition_lineages,
-      manifest?.manifest_sha256,
-    ) : null) ??
-    (document.operation === 'recover' ? recoveryCode(document.recovery) : null) ??
-    (document.operation === 'validate_lifecycle' ? await lifecycleCode(packageRoot, document.lifecycle) : null);
+  const manifestArtifact = await validatedArtifact(packageRoot, {
+    path: 'contracts/reference-vault/corpus-manifest.json',
+    schemaPath: 'contracts/schemas/corpus-manifest.schema.json',
+    unavailableCode: 'generator.manifest_unavailable',
+    invalidCode: 'generator.manifest_invalid',
+  });
+  if (manifestArtifact.code !== null) return observedFailure(document.operation, manifestArtifact.code);
+  const manifest = manifestArtifact.document;
+  if (manifest.manifest_sha256 !== corpusManifestDigest(manifest)) {
+    return observedFailure(document.operation, 'generator.manifest_invalid');
+  }
+
+  let firstCode = bindingCode(document, manifest) ?? corpusCode(document, manifest);
+  let lifecycleRow = null;
+  if (firstCode === null && document.operation === 'redistribute') {
+    firstCode = redistributionCode(document.redistribution, document.partition_lineages, manifest.manifest_sha256);
+  }
+  if (firstCode === null && document.operation === 'recover') {
+    const evidence = await validatedArtifact(packageRoot, {
+      path: 'conformance/evidence/reference-vault-recovery-report.json',
+      schemaPath: 'contracts/schemas/reference-vault-recovery-report.schema.json',
+      unavailableCode: 'generator.recovery_evidence_invalid',
+      invalidCode: 'generator.recovery_evidence_invalid',
+    });
+    firstCode = evidence.code ?? recoveryCode(document.recovery, {
+      report: evidence.document,
+      content: evidence.content,
+      generatorBindingSha256: document.generator_binding.binding_sha256,
+      manifestSha256: manifest.manifest_sha256,
+    });
+  }
+  if (firstCode === null && document.operation === 'validate_lifecycle') {
+    const lifecycle = await lifecycleResult(packageRoot, document.lifecycle, document.actor_role);
+    firstCode = lifecycle.code;
+    lifecycleRow = lifecycle.row;
+  }
   if (firstCode !== null) return observedFailure(document.operation, firstCode);
-  return observedSuccess(document.operation, manifest?.manifest_sha256 ?? '0'.repeat(64));
+  return observedResult(document.operation, manifest.manifest_sha256, lifecycleRow);
 }

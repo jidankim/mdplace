@@ -41,6 +41,7 @@ function exactScaleIsAccounted(scale, manifest) {
   const partitionTotalsMatch = partitionDimensions.every((dimension) =>
     manifest.partitions.reduce((sum, partition) => sum + partition.counts[dimension], 0) === scale.counts[dimension]);
   return partitionTotalsMatch && manifest.global_counts.categories === scale.counts.categories &&
+    manifest.coverage_accounts.length === accounts.size &&
     Object.entries(scale.counts).every(([dimension, count]) => accounts.get(dimension) === count) &&
     accounts.size === Object.keys(scale.counts).length;
 }
