@@ -1,0 +1,125 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-RVG-OVER-006",
+  "category": "over_boundary",
+  "requirement_ids": [
+    "REQ-RVG-003",
+    "REQ-RVG-008"
+  ],
+  "subject": {
+    "kind": "reference_vault",
+    "schema": "contracts/schemas/reference-vault-scenario.schema.json",
+    "document": {
+      "$schema": "../../../contracts/schemas/reference-vault-scenario.schema.json",
+      "schema_id": "mdplace.reference-vault-scenario/v1",
+      "scenario_id": "RVG-018",
+      "operation": "generate",
+      "actor_role": "reference_vault_generator",
+      "generator_binding": {
+        "generator_id": "mdplace.reference-vault-generator/v1",
+        "generator_version": "1.0.0",
+        "seed": "mdplace-reference-vault-seed-2026-08-v1",
+        "seed_sha256": "45753d4c16f00de6cf8167e5df7b94179bc1a42f8a762a75efc000ae15746ecb",
+        "binding_sha256": "1a5757fab81f55dd9c600bdc7665c1ce0cb802d9c4be477f244c9f647931699b"
+      },
+      "current_binding": {
+        "generator_version": "1.0.0",
+        "binding_sha256": "1a5757fab81f55dd9c600bdc7665c1ce0cb802d9c4be477f244c9f647931699b"
+      },
+      "binding_registry": [
+        {
+          "generator_version": "1.0.0",
+          "seed_sha256": "45753d4c16f00de6cf8167e5df7b94179bc1a42f8a762a75efc000ae15746ecb",
+          "binding_sha256": "1a5757fab81f55dd9c600bdc7665c1ce0cb802d9c4be477f244c9f647931699b"
+        }
+      ],
+      "scale": {
+        "counts": {
+          "captured_tab_notes": 25000,
+          "observed_note_versions": 100000,
+          "categories": 1000,
+          "canonical_events": 1000000,
+          "queued_candidates": 1000
+        },
+        "candidate_size_limit_bytes": 5242880,
+        "candidate_bytes": 5242881,
+        "deferred_localized_images_excluded": true
+      },
+      "partition_lineages": [
+        {
+          "partition_id": "train",
+          "membership_sha256_before": "d5dea1d3685a16c09dca2746e24bd94cd0329f60ead62dde164933a858326c3f",
+          "membership_sha256_after": "d5dea1d3685a16c09dca2746e24bd94cd0329f60ead62dde164933a858326c3f",
+          "lineage_group_ids": [
+            "lineage:000001",
+            "lineage:000002"
+          ]
+        },
+        {
+          "partition_id": "calibration",
+          "membership_sha256_before": "eba6d00fd54787f710f16d604232b73c3017af1323ed47f95442b7cb977de760",
+          "membership_sha256_after": "eba6d00fd54787f710f16d604232b73c3017af1323ed47f95442b7cb977de760",
+          "lineage_group_ids": [
+            "lineage:016001",
+            "lineage:016002"
+          ]
+        },
+        {
+          "partition_id": "test",
+          "membership_sha256_before": "fcb97db6a5beb113f62c901b550293e470e9a967f5006b7c08321c8140b511fb",
+          "membership_sha256_after": "fcb97db6a5beb113f62c901b550293e470e9a967f5006b7c08321c8140b511fb",
+          "lineage_group_ids": [
+            "lineage:019001",
+            "lineage:019002"
+          ]
+        }
+      ],
+      "coverage_accounts": [
+        {
+          "dimension": "captured_tab_notes",
+          "accounted": 25000
+        },
+        {
+          "dimension": "observed_note_versions",
+          "accounted": 100000
+        },
+        {
+          "dimension": "categories",
+          "accounted": 1000
+        },
+        {
+          "dimension": "canonical_events",
+          "accounted": 1000000
+        },
+        {
+          "dimension": "queued_candidates",
+          "accounted": 1000
+        }
+      ],
+      "redistribution": null,
+      "recovery": null,
+      "lifecycle": null
+    }
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": [
+      "corpus.candidate_size_exceeded"
+    ],
+    "outputs": [
+      "reference vault operation rejected"
+    ],
+    "operations": [
+      "observe generate"
+    ],
+    "receipts": [
+      "ReferenceVaultDenied"
+    ],
+    "filesystem_effects": [
+      "none"
+    ],
+    "terminal_state": "unchanged",
+    "illegal_transition": false
+  }
+}

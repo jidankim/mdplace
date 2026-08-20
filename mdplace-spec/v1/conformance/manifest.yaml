@@ -12,7 +12,9 @@
     "stale_state",
     "authority_denial",
     "illegal_transition",
-    "crash_recovery"
+    "crash_recovery",
+    "below_boundary",
+    "over_boundary"
   ],
   "fixtures": [
     {
@@ -5491,6 +5493,682 @@
         "REQ-VMG-009"
       ],
       "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-BELOW-001",
+      "path": "scenarios/reference-vault/below-captured-tab-notes.json",
+      "category": "below_boundary",
+      "requirement_ids": [
+        "REQ-RVG-003",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-BELOW-002",
+      "path": "scenarios/reference-vault/below-observed-note-versions.json",
+      "category": "below_boundary",
+      "requirement_ids": [
+        "REQ-RVG-003",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-BELOW-003",
+      "path": "scenarios/reference-vault/below-categories.json",
+      "category": "below_boundary",
+      "requirement_ids": [
+        "REQ-RVG-003",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-BELOW-004",
+      "path": "scenarios/reference-vault/below-canonical-events.json",
+      "category": "below_boundary",
+      "requirement_ids": [
+        "REQ-RVG-003",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-BELOW-005",
+      "path": "scenarios/reference-vault/below-queued-candidates.json",
+      "category": "below_boundary",
+      "requirement_ids": [
+        "REQ-RVG-003",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-BELOW-006",
+      "path": "scenarios/reference-vault/below-candidate-size-limit.json",
+      "category": "below_boundary",
+      "requirement_ids": [
+        "REQ-RVG-003",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-EXACT-001",
+      "path": "scenarios/reference-vault/exact-captured-tab-notes.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-RVG-003",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-EXACT-002",
+      "path": "scenarios/reference-vault/exact-observed-note-versions.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-RVG-003",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-EXACT-003",
+      "path": "scenarios/reference-vault/exact-categories.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-RVG-003",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-EXACT-004",
+      "path": "scenarios/reference-vault/exact-canonical-events.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-RVG-003",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-EXACT-005",
+      "path": "scenarios/reference-vault/exact-queued-candidates.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-RVG-003",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-EXACT-006",
+      "path": "scenarios/reference-vault/exact-candidate-size-limit.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-RVG-003",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-OVER-001",
+      "path": "scenarios/reference-vault/over-captured-tab-notes.json",
+      "category": "over_boundary",
+      "requirement_ids": [
+        "REQ-RVG-003",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-OVER-002",
+      "path": "scenarios/reference-vault/over-observed-note-versions.json",
+      "category": "over_boundary",
+      "requirement_ids": [
+        "REQ-RVG-003",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-OVER-003",
+      "path": "scenarios/reference-vault/over-categories.json",
+      "category": "over_boundary",
+      "requirement_ids": [
+        "REQ-RVG-003",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-OVER-004",
+      "path": "scenarios/reference-vault/over-canonical-events.json",
+      "category": "over_boundary",
+      "requirement_ids": [
+        "REQ-RVG-003",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-OVER-005",
+      "path": "scenarios/reference-vault/over-queued-candidates.json",
+      "category": "over_boundary",
+      "requirement_ids": [
+        "REQ-RVG-003",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-OVER-006",
+      "path": "scenarios/reference-vault/over-candidate-size-limit.json",
+      "category": "over_boundary",
+      "requirement_ids": [
+        "REQ-RVG-003",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-POS-001",
+      "path": "scenarios/reference-vault/repeated-generation-digest-identical.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-RVG-001",
+        "REQ-RVG-004",
+        "REQ-RVG-005",
+        "REQ-RVG-008",
+        "REQ-RVG-010"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-POS-002",
+      "path": "scenarios/reference-vault/whole-lineage-same-partition-redistribution.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-RVG-002",
+        "REQ-RVG-006",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-POS-003",
+      "path": "scenarios/reference-vault/generation-lifecycle-command-allowed.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-RVG-007",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-NEG-001",
+      "path": "scenarios/reference-vault/partition-membership-mutation-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RVG-002",
+        "REQ-RVG-006",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-NEG-002",
+      "path": "scenarios/reference-vault/unaccounted-coverage-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RVG-005",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-NEG-003",
+      "path": "scenarios/reference-vault/partial-lineage-redistribution-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RVG-006",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-NEG-004",
+      "path": "scenarios/reference-vault/duplicate-seed-version-binding-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RVG-004",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-NEG-005",
+      "path": "scenarios/reference-vault/lineage-crossing-generation-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RVG-002",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-NEG-006",
+      "path": "scenarios/reference-vault/duplicate-coverage-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RVG-005",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-NEG-007",
+      "path": "scenarios/reference-vault/forged-partition-membership-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RVG-002",
+        "REQ-RVG-006",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-ILLEGAL-001",
+      "path": "scenarios/reference-vault/cross-partition-redistribution-denied.json",
+      "category": "illegal_transition",
+      "requirement_ids": [
+        "REQ-RVG-006",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": true
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-ILLEGAL-002",
+      "path": "scenarios/reference-vault/generation-lifecycle-command-denied.json",
+      "category": "illegal_transition",
+      "requirement_ids": [
+        "REQ-RVG-007",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": true
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-STATE-001",
+      "path": "scenarios/reference-vault/stale-generator-binding-denied.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-RVG-004",
+        "REQ-RVG-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-AUTH-001",
+      "path": "scenarios/reference-vault/unauthorized-generator-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-RVG-001",
+        "REQ-RVG-007",
+        "REQ-RVG-008",
+        "REQ-RVG-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-REC-001",
+      "path": "scenarios/reference-vault/recover-before-manifest.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-RVG-007",
+        "REQ-RVG-008",
+        "REQ-RVG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-REC-002",
+      "path": "scenarios/reference-vault/recover-after-redistribution.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-RVG-007",
+        "REQ-RVG-008",
+        "REQ-RVG-009"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-RVG-REC-003",
+      "path": "scenarios/reference-vault/torn-recovery-journal-denied.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-RVG-007",
+        "REQ-RVG-008",
+        "REQ-RVG-009"
+      ],
+      "expected_verdict": "fail",
       "observable_assertions": {
         "inputs": true,
         "outputs": true,

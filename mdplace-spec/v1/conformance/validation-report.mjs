@@ -14,6 +14,7 @@ import {checkSemanticKernelContract} from './semantic-kernel-checks.mjs';
 import {checkTraceability, runConformance} from './traceability-checks.mjs';
 import {checkValidatorEvidence} from './validator-evidence-checks.mjs';
 import {checkVaultMutationGateContract} from './vault-mutation-gate-checks.mjs';
+import {checkReferenceVaultContract} from './reference-vault-checks.mjs';
 
 function check(id, codes) {
   const uniqueCodes = [...new Set(codes)];
@@ -69,6 +70,7 @@ export async function buildValidationReport(packageRoot, options = {}) {
   checks.push(await checkControlPlaneLifecycle(packageRoot));
   checks.push(await checkCoreProcessingPolicyContract(packageRoot, manifest, conformance, traceability));
   checks.push(await checkVaultMutationGateContract(packageRoot, manifest, conformance, traceability));
+  checks.push(await checkReferenceVaultContract(packageRoot));
   if (traceability !== null) {
     checks.push(await checkTraceability(
       packageRoot,

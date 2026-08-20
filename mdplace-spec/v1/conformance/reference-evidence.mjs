@@ -8,5 +8,6 @@ export function isReferenceEvidence(path) {
     path === 'conformance/evidence/control-plane-recovery-report.json' ||
     path === 'conformance/evidence/control-plane-doctor-report.json' ||
     path === 'conformance/evidence/control-plane-lifecycle-report.json' ||
-    path === 'conformance/evidence/vault-mutation-recovery-report.json';
+    path === 'conformance/evidence/vault-mutation-recovery-report.json' ||
+    path === 'conformance/evidence/reference-vault-recovery-report.json';
 }

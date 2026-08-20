@@ -924,6 +924,174 @@
       ],
       "acceptance_gate": "Every requirement preserves issue #7 and issue #26 as input_without_reopening, while every added artifact remains specification or conformance material and performs no real vault mutation.",
       "scope": "vault-mutation-gate"
+    },
+    {
+      "id": "REQ-RVG-001",
+      "title": "Canonical corpus vocabulary and scope are fixed",
+      "normative_anchor": "normative/reference-vault-generator-contract.md#req-rvg-001-canonical-corpus-vocabulary-and-scope-are-fixed",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"
+      ],
+      "canonical_terms": [
+        "Reference Vault",
+        "Corpus Manifest",
+        "Corpus Partition",
+        "Lineage Group",
+        "Scale Manifest",
+        "Generator Binding",
+        "Reference Vault Generator",
+        "Corpus Redistribution",
+        "Specification Package"
+      ],
+      "acceptance_gate": "Stable REQ-RVG identifiers use only canonical corpus vocabulary and define specification and conformance artifacts without production behavior.",
+      "scope": "reference-vault-generator"
+    },
+    {
+      "id": "REQ-RVG-002",
+      "title": "Corpus partitions and lineage groups are immutable",
+      "normative_anchor": "normative/reference-vault-generator-contract.md#req-rvg-002-corpus-partitions-and-lineage-groups-are-immutable",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"
+      ],
+      "canonical_terms": [
+        "Corpus Manifest",
+        "Corpus Partition",
+        "Lineage Group",
+        "Corpus Redistribution"
+      ],
+      "acceptance_gate": "Train, calibration, and test membership digests are immutable, every lineage belongs to exactly one partition, and redistribution moves only a whole lineage within that partition.",
+      "scope": "reference-vault-generator"
+    },
+    {
+      "id": "REQ-RVG-003",
+      "title": "The scale manifest fixes every Reference Vault boundary",
+      "normative_anchor": "normative/reference-vault-generator-contract.md#req-rvg-003-the-scale-manifest-fixes-every-reference-vault-boundary",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"
+      ],
+      "canonical_terms": [
+        "Reference Vault",
+        "Scale Manifest",
+        "Capture Candidate",
+        "Image Localization"
+      ],
+      "acceptance_gate": "The closed Scale Manifest fixes exactly 25,000 notes, 100,000 versions, 1,000 categories, 1,000,000 events, 1,000 queued candidates, and a 5 MiB candidate limit with deferred localized images excluded.",
+      "scope": "reference-vault-generator"
+    },
+    {
+      "id": "REQ-RVG-004",
+      "title": "Seed and generator version bind deterministic output",
+      "normative_anchor": "normative/reference-vault-generator-contract.md#req-rvg-004-seed-and-generator-version-bind-deterministic-output",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"
+      ],
+      "canonical_terms": [
+        "Reference Vault Generator",
+        "Generator Binding",
+        "Corpus Manifest"
+      ],
+      "acceptance_gate": "The exact generator identity, version, algorithm, and seed digest produce digest-identical manifests, while duplicate, conflicting, or stale bindings are rejected.",
+      "scope": "reference-vault-generator"
+    },
+    {
+      "id": "REQ-RVG-005",
+      "title": "Coverage accounting is total and unique",
+      "normative_anchor": "normative/reference-vault-generator-contract.md#req-rvg-005-coverage-accounting-is-total-and-unique",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"
+      ],
+      "canonical_terms": [
+        "Corpus Manifest",
+        "Corpus Partition",
+        "Scale Manifest",
+        "Traceability Record"
+      ],
+      "acceptance_gate": "Every fixed count is accounted exactly once by partition sums or one global exact account; omissions and duplicates fail conformance.",
+      "scope": "reference-vault-generator"
+    },
+    {
+      "id": "REQ-RVG-006",
+      "title": "Redistribution preserves partition and lineage identity",
+      "normative_anchor": "normative/reference-vault-generator-contract.md#req-rvg-006-redistribution-preserves-partition-and-lineage-identity",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"
+      ],
+      "canonical_terms": [
+        "Corpus Redistribution",
+        "Corpus Partition",
+        "Lineage Group",
+        "Corpus Manifest",
+        "Generator Binding"
+      ],
+      "acceptance_gate": "Only idempotent retries and whole-lineage moves between shards in the same current partition are allowed; every cross-partition, partial, stale, or coverage-changing request is denied.",
+      "scope": "reference-vault-generator"
+    },
+    {
+      "id": "REQ-RVG-007",
+      "title": "Generation redistribution and recovery lifecycles are complete",
+      "normative_anchor": "normative/reference-vault-generator-contract.md#req-rvg-007-generation-redistribution-and-recovery-lifecycles-are-complete",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"
+      ],
+      "canonical_terms": [
+        "Reference Vault Generator",
+        "Corpus Redistribution",
+        "Generator Binding",
+        "Corpus Manifest"
+      ],
+      "acceptance_gate": "Generation, redistribution, and recovery tables cover every declared step and state-command pair with exact authority, outputs, receipts, effects, failure, idempotency, and recovery.",
+      "scope": "reference-vault-generator"
+    },
+    {
+      "id": "REQ-RVG-008",
+      "title": "Boundary fixtures reject every invalid scale and identity case",
+      "normative_anchor": "normative/reference-vault-generator-contract.md#req-rvg-008-boundary-fixtures-reject-every-invalid-scale-and-identity-case",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"
+      ],
+      "canonical_terms": [
+        "Conformance Fixture",
+        "Reference Vault",
+        "Scale Manifest",
+        "Corpus Partition",
+        "Lineage Group",
+        "Generator Binding"
+      ],
+      "acceptance_gate": "Exactly 35 public fixtures cover every fixed boundary plus determinism, identity, unique coverage, sealed membership, redistribution, stale state, authority, allowed and denied lifecycle behavior, crash, and artifact-bound recovery.",
+      "scope": "reference-vault-generator"
+    },
+    {
+      "id": "REQ-RVG-009",
+      "title": "Recovery evidence is deterministic and observable",
+      "normative_anchor": "normative/reference-vault-generator-contract.md#req-rvg-009-recovery-evidence-is-deterministic-and-observable",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"
+      ],
+      "canonical_terms": [
+        "Reference Vault Generator",
+        "Generator Binding",
+        "Corpus Manifest",
+        "Traceability Record"
+      ],
+      "acceptance_gate": "The recovery report binds identical seeded digests, all fixtures, isolation receipts, lifecycle digests, recovery outcomes, and zero filesystem effects.",
+      "scope": "reference-vault-generator"
+    },
+    {
+      "id": "REQ-RVG-010",
+      "title": "Traceability is complete and materialization remains deferred",
+      "normative_anchor": "normative/reference-vault-generator-contract.md#req-rvg-010-traceability-is-complete-and-materialization-remains-deferred",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/10#issuecomment-5186946153"
+      ],
+      "canonical_terms": [
+        "Traceability Record",
+        "Specification Package",
+        "Normative Material",
+        "Conformance Fixture",
+        "Reference Vault"
+      ],
+      "acceptance_gate": "Every REQ-RVG record binds issue #10 as input_without_reopening and all artifacts remain specification/conformance-only with materialization and performance claims deferred.",
+      "scope": "reference-vault-generator"
     }
   ]
 }

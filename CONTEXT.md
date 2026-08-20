@@ -352,6 +352,38 @@ _Avoid_: Warning, transient error
 The current authoritative taxonomy derived from the accepted append-only ledger of promotion, supersession, and reversal decisions. It remains authoritative independently of the potentially lagging Folder Projection, which materializes but does not define it.
 _Avoid_: Current taxonomy file
 
+**Reference Vault**:
+The bounded, deterministic conformance corpus profile fixed at 25,000 Captured Tab Notes, 100,000 Observed Note Versions, 1,000 Categories, 1,000,000 canonical events, and 1,000 queued Capture Candidates. Its late materialization and performance measurements are outside the specification package.
+_Avoid_: Production vault, benchmark result, sample vault
+
+**Corpus Manifest**:
+A closed, digest-bound accounting record for one deterministic corpus generation. It binds the Generator Binding, Scale Manifest, immutable Corpus Partitions, Lineage Groups, coverage totals, and no note bodies or deferred localized images.
+_Avoid_: Generated vault, mutable index, benchmark output
+
+**Corpus Partition**:
+One immutable train, calibration, or test membership set in a Corpus Manifest. Partition-local shards may be rebalanced only by moving whole Lineage Groups without changing partition membership or scale totals.
+_Avoid_: Mutable split, shard, folder
+
+**Lineage Group**:
+The indivisible corpus unit that keeps duplicate, recapture, historical-version, Same Source, and near-related cases together in exactly one Corpus Partition through generation and redistribution.
+_Avoid_: Note identity, source page, individual fixture
+
+**Scale Manifest**:
+The closed, digest-bound declaration of every fixed Reference Vault count and the 5 MiB Capture Candidate limit, including the explicit exclusion of deferred localized images from both that limit and this ticket's materialization.
+_Avoid_: Capacity estimate, performance result, configurable profile
+
+**Generator Binding**:
+The immutable digest of one Reference Vault Generator identity, version, algorithm, and seed digest. The same binding must produce a digest-identical Corpus Manifest, while duplicate or stale bindings are invalid.
+_Avoid_: Random seed, runtime configuration, mutable version label
+
+**Reference Vault Generator**:
+The specification-only deterministic interface that turns one Generator Binding and Scale Manifest into a compact Corpus Manifest and conformance receipts. It neither writes a vault nor implements production mdplace behavior.
+_Avoid_: Production importer, benchmark runner, vault materializer
+
+**Corpus Redistribution**:
+A deterministic partition-local shard rebalance that moves only a whole Lineage Group, binds the current Corpus Manifest, preserves partition membership and identity, and changes no fixed coverage total.
+_Avoid_: Repartitioning, cross-split move, partial-lineage copy
+
 **Specification Package**:
 An independently versioned, immutable-after-release collection of mdplace Normative Material, Informative Material, schemas, Conformance Fixtures, transition tables, traceability, and validation evidence. The `mdplace-spec/v1` series begins the contract and never contains production mdplace behavior.
 _Avoid_: Implementation bundle, mutable specification folder

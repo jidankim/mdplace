@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:reference-vault-recovery-report:v1",
+  "title": "mdplace Reference Vault generation and recovery report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_id",
+    "package_series",
+    "release_version",
+    "validator_version",
+    "generator_id",
+    "generator_version",
+    "seed_sha256",
+    "binding_sha256",
+    "scale_manifest_sha256",
+    "first_manifest_sha256",
+    "repeated_manifest_sha256",
+    "digest_identical",
+    "generation_table_sha256",
+    "redistribution_table_sha256",
+    "recovery_cases",
+    "boundary_coverage",
+    "lineage_isolation",
+    "scenario_results",
+    "recovery_outcomes",
+    "filesystem_effects",
+    "materialization",
+    "performance_claim"
+  ],
+  "properties": {
+    "$schema": {"const": "../../contracts/schemas/reference-vault-recovery-report.schema.json"},
+    "schema_id": {"const": "mdplace.reference-vault-recovery-report/v1"},
+    "package_series": {"const": "mdplace-spec/v1"},
+    "release_version": {"const": "1.0.0"},
+    "validator_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+    "generator_id": {"const": "mdplace.reference-vault-generator/v1"},
+    "generator_version": {"const": "1.0.0"},
+    "seed_sha256": {"$ref": "#/$defs/sha256"},
+    "binding_sha256": {"$ref": "#/$defs/sha256"},
+    "scale_manifest_sha256": {"$ref": "#/$defs/sha256"},
+    "first_manifest_sha256": {"$ref": "#/$defs/sha256"},
+    "repeated_manifest_sha256": {"$ref": "#/$defs/sha256"},
+    "digest_identical": {"const": true},
+    "generation_table_sha256": {"$ref": "#/$defs/sha256"},
+    "redistribution_table_sha256": {"$ref": "#/$defs/sha256"},
+    "recovery_cases": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/recoveryCase"}
+    },
+    "boundary_coverage": {"$ref": "#/$defs/boundaryCoverage"},
+    "lineage_isolation": {"$ref": "#/$defs/lineageIsolation"},
+    "scenario_results": {
+      "type": "array",
+      "minItems": 35,
+      "maxItems": 35,
+      "items": {"$ref": "#/$defs/scenarioResult"}
+    },
+    "recovery_outcomes": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {"enum": ["restart_from_binding", "retain_redistributed_manifest", "denied"]}
+    },
+    "filesystem_effects": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"const": "none"}},
+    "materialization": {"const": "deferred"},
+    "performance_claim": {"const": "none"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "recoveryCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence_id", "crash_stage", "generator_binding_sha256", "manifest_sha256", "required_evidence", "decision", "receipt", "filesystem_effects"],
+      "properties": {
+        "evidence_id": {"type": "string", "pattern": "^RVG-RECOVERY-[A-Z-]{3,48}$"},
+        "crash_stage": {"enum": ["before_manifest", "after_manifest", "before_redistribution", "after_redistribution"]},
+        "generator_binding_sha256": {"$ref": "#/$defs/sha256"},
+        "manifest_sha256": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
+        "required_evidence": {"type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}},
+        "decision": {"enum": ["restart_from_binding", "retain_sealed_manifest", "discard_unsealed_plan", "retain_redistributed_manifest"]},
+        "receipt": {"const": "ReferenceVaultRecoveryReceipt"},
+        "filesystem_effects": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"const": "none"}}
+      }
+    },
+    "fixtureIds": {"type": "array", "minItems": 6, "maxItems": 6, "uniqueItems": true, "items": {"type": "string", "pattern": "^FIX-RVG-[A-Z]+-[0-9]{3}$"}},
+    "boundaryCoverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["below", "exact", "over"],
+      "properties": {
+        "below": {"$ref": "#/$defs/fixtureIds"},
+        "exact": {"$ref": "#/$defs/fixtureIds"},
+        "over": {"$ref": "#/$defs/fixtureIds"}
+      }
+    },
+    "partitionReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["partition_id", "membership_sha256", "shards", "isolated"],
+      "properties": {
+        "partition_id": {"enum": ["train", "calibration", "test"]},
+        "membership_sha256": {"$ref": "#/$defs/sha256"},
+        "shards": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {"$ref": "#/$defs/shardReceipt"}
+        },
+        "isolated": {"const": true}
+      }
+    },
+    "shardReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["shard_id", "lineage_range", "lineage_groups", "membership_sha256"],
+      "properties": {
+        "shard_id": {"type": "string", "pattern": "^(train|calibration|test)-[ab]$"},
+        "lineage_range": {"type": "string", "pattern": "^lineage:[0-9]{6}\\.\\.lineage:[0-9]{6}$"},
+        "lineage_groups": {"type": "integer", "minimum": 1},
+        "membership_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "lineageIsolation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["partitions", "cross_partition_lineages", "redistribution_unit"],
+      "properties": {
+        "partitions": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"$ref": "#/$defs/partitionReceipt"}},
+        "cross_partition_lineages": {"const": 0},
+        "redistribution_unit": {"const": "whole_lineage_group_within_partition"}
+      }
+    },
+    "scenarioResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fixture_id", "expected_verdict", "recovery_outcome"],
+      "properties": {
+        "fixture_id": {"type": "string", "pattern": "^FIX-RVG-[A-Z]+-[0-9]{3}$"},
+        "expected_verdict": {"enum": ["pass", "fail"]},
+        "recovery_outcome": {"enum": ["not_applicable", "restart_from_binding", "retain_redistributed_manifest", "denied"]}
+      }
+    }
+  }
+}

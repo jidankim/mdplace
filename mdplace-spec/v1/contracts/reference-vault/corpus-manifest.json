@@ -1,0 +1,135 @@
+{
+  "$schema": "../schemas/corpus-manifest.schema.json",
+  "schema_id": "mdplace.corpus-manifest/v1",
+  "manifest_id": "corpus:reference-vault-v1",
+  "generator_binding": {
+    "generator_id": "mdplace.reference-vault-generator/v1",
+    "generator_version": "1.0.0",
+    "seed_sha256": "45753d4c16f00de6cf8167e5df7b94179bc1a42f8a762a75efc000ae15746ecb",
+    "binding_sha256": "1a5757fab81f55dd9c600bdc7665c1ce0cb802d9c4be477f244c9f647931699b"
+  },
+  "scale_manifest": {
+    "ref": "contracts/reference-vault/scale-manifest.json",
+    "sha256": "6108dcd33419e32a6762281904334dfa967096fe762c25673d98a6ccccb31f53"
+  },
+  "partitions": [
+    {
+      "partition_id": "train",
+      "lineage_range": "lineage:000001..lineage:016000",
+      "lineage_groups": 16000,
+      "counts": {
+        "captured_tab_notes": 18000,
+        "observed_note_versions": 72000,
+        "canonical_events": 720000,
+        "queued_candidates": 720
+      },
+      "membership": "immutable",
+      "shards": [
+        {
+          "shard_id": "train-a",
+          "lineage_range": "lineage:000001..lineage:008000",
+          "lineage_groups": 8000,
+          "membership_sha256": "ecd2560980f98cd645b4b94136606364a6c3f0070f9ffb4336b3acb0858a524e"
+        },
+        {
+          "shard_id": "train-b",
+          "lineage_range": "lineage:008001..lineage:016000",
+          "lineage_groups": 8000,
+          "membership_sha256": "3ae173b366472bcfb12086bc2fcfef029534e02de69b0ecd72c3797abdb07b12"
+        }
+      ],
+      "membership_sha256": "d5dea1d3685a16c09dca2746e24bd94cd0329f60ead62dde164933a858326c3f"
+    },
+    {
+      "partition_id": "calibration",
+      "lineage_range": "lineage:016001..lineage:019000",
+      "lineage_groups": 3000,
+      "counts": {
+        "captured_tab_notes": 3500,
+        "observed_note_versions": 14000,
+        "canonical_events": 140000,
+        "queued_candidates": 140
+      },
+      "membership": "immutable",
+      "shards": [
+        {
+          "shard_id": "calibration-a",
+          "lineage_range": "lineage:016001..lineage:017500",
+          "lineage_groups": 1500,
+          "membership_sha256": "17391b512fe0486d138a4e56a105eb85db00ccbd7dc94e74e6d522699b2196a5"
+        },
+        {
+          "shard_id": "calibration-b",
+          "lineage_range": "lineage:017501..lineage:019000",
+          "lineage_groups": 1500,
+          "membership_sha256": "64b74128446801ba9685e187ec9aa9fe8debec09c8b6149d915927b4823522d0"
+        }
+      ],
+      "membership_sha256": "eba6d00fd54787f710f16d604232b73c3017af1323ed47f95442b7cb977de760"
+    },
+    {
+      "partition_id": "test",
+      "lineage_range": "lineage:019001..lineage:022000",
+      "lineage_groups": 3000,
+      "counts": {
+        "captured_tab_notes": 3500,
+        "observed_note_versions": 14000,
+        "canonical_events": 140000,
+        "queued_candidates": 140
+      },
+      "membership": "immutable",
+      "shards": [
+        {
+          "shard_id": "test-a",
+          "lineage_range": "lineage:019001..lineage:020500",
+          "lineage_groups": 1500,
+          "membership_sha256": "4111139c60da9ca736f90e2c975e63a9ffc568a23a9cafe4744a8f408a3b8b69"
+        },
+        {
+          "shard_id": "test-b",
+          "lineage_range": "lineage:020501..lineage:022000",
+          "lineage_groups": 1500,
+          "membership_sha256": "b9bd927b5b1c1c8b4811aca7514619b3fb703f0e2bccbb084b47c9c6c2def667"
+        }
+      ],
+      "membership_sha256": "fcb97db6a5beb113f62c901b550293e470e9a967f5006b7c08321c8140b511fb"
+    }
+  ],
+  "global_counts": {
+    "categories": 1000
+  },
+  "coverage_accounts": [
+    {
+      "dimension": "captured_tab_notes",
+      "accounted": 25000,
+      "accounting_rule": "partition_sum"
+    },
+    {
+      "dimension": "observed_note_versions",
+      "accounted": 100000,
+      "accounting_rule": "partition_sum"
+    },
+    {
+      "dimension": "categories",
+      "accounted": 1000,
+      "accounting_rule": "global_exact"
+    },
+    {
+      "dimension": "canonical_events",
+      "accounted": 1000000,
+      "accounting_rule": "partition_sum"
+    },
+    {
+      "dimension": "queued_candidates",
+      "accounted": 1000,
+      "accounting_rule": "partition_sum"
+    }
+  ],
+  "lineage_rules": {
+    "grouping": "duplicate_recapture_history_same-source_and_near-related",
+    "partition_crossing": "forbidden",
+    "redistribution_unit": "whole_lineage_group_within_partition",
+    "membership_change": "forbidden"
+  },
+  "manifest_sha256": "b7bf8b0bd74faab124766761ecd24131c8d9d09f0715624f749d1c777a26c3dc"
+}
