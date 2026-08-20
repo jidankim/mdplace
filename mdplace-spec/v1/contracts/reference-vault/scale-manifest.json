@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/scale-manifest.schema.json",
+  "schema_id": "mdplace.scale-manifest/v1",
+  "scale_id": "mdplace.reference-vault-scale/v1",
+  "counts": {
+    "captured_tab_notes": 25000,
+    "observed_note_versions": 100000,
+    "categories": 1000,
+    "canonical_events": 1000000,
+    "queued_candidates": 1000
+  },
+  "candidate_size_limit_bytes": 5242880,
+  "deferred_localized_images": {
+    "excluded_from_candidate_size_limit": true,
+    "excluded_from_ticket_materialization": true
+  },
+  "materialization": "deferred",
+  "performance_claim": "none",
+  "scale_sha256": "6108dcd33419e32a6762281904334dfa967096fe762c25673d98a6ccccb31f53"
+}

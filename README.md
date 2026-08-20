@@ -42,6 +42,7 @@ Taxonomy changes remain versioned, explainable, reviewable, and reversible. Cate
 - [Project language and boundaries](CONTEXT.md)
 - [Normative package and contract meta-schema](mdplace-spec/v1/README.md)
 - [Vault Mutation Gate contract](mdplace-spec/v1/normative/vault-mutation-gate-contract.md)
+- [Deterministic Reference Vault corpus contract](mdplace-spec/v1/normative/reference-vault-generator-contract.md)
 - [Captured Tab Note intake contract](docs/captured-tab-note-intake-contract-v1.md)
 - [Issue #1: destination and open decisions](https://github.com/jidankim/mdplace/issues/1)
 - [Issue #2: reconcile the existing semantic ledger](https://github.com/jidankim/mdplace/issues/2)

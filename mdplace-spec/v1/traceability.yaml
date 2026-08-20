@@ -2568,6 +2568,435 @@
         "conformance/evidence/vault-mutation-recovery-report.json",
         "conformance/evidence/traceability-report.json"
       ]
+    },
+    {
+      "requirement_id": "REQ-RVG-001",
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Reference Vault",
+        "Corpus Manifest",
+        "Corpus Partition",
+        "Lineage Group",
+        "Scale Manifest",
+        "Generator Binding",
+        "Reference Vault Generator",
+        "Corpus Redistribution",
+        "Specification Package"
+      ],
+      "normative_anchors": [
+        "normative/reference-vault-generator-contract.md#req-rvg-001-canonical-corpus-vocabulary-and-scope-are-fixed"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/scale-manifest.schema.json",
+        "contracts/schemas/corpus-manifest.schema.json",
+        "contracts/schemas/reference-vault-generator.schema.json",
+        "contracts/schemas/reference-vault-scenario.schema.json",
+        "contracts/schemas/reference-vault-recovery-report.schema.json",
+        "contracts/transitions/reference-vault-generation-lifecycle.json",
+        "contracts/transitions/reference-vault-redistribution-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-RVG-POS-001"
+      ],
+      "negative_fixture_ids": [
+        "FIX-RVG-AUTH-001"
+      ],
+      "acceptance_gate": "Stable REQ-RVG identifiers use only canonical corpus vocabulary and define specification and conformance artifacts without production behavior.",
+      "scope": "reference-vault-generator",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/reference-vault-recovery-report.json",
+        "conformance/evidence/traceability-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-RVG-002",
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Corpus Manifest",
+        "Corpus Partition",
+        "Lineage Group",
+        "Corpus Redistribution"
+      ],
+      "normative_anchors": [
+        "normative/reference-vault-generator-contract.md#req-rvg-002-corpus-partitions-and-lineage-groups-are-immutable"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/scale-manifest.schema.json",
+        "contracts/schemas/corpus-manifest.schema.json",
+        "contracts/schemas/reference-vault-generator.schema.json",
+        "contracts/schemas/reference-vault-scenario.schema.json",
+        "contracts/schemas/reference-vault-recovery-report.schema.json",
+        "contracts/transitions/reference-vault-generation-lifecycle.json",
+        "contracts/transitions/reference-vault-redistribution-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-RVG-POS-002"
+      ],
+      "negative_fixture_ids": [
+        "FIX-RVG-NEG-001",
+        "FIX-RVG-NEG-005"
+      ],
+      "acceptance_gate": "Train, calibration, and test membership digests are immutable, every lineage belongs to exactly one partition, and redistribution moves only a whole lineage within that partition.",
+      "scope": "reference-vault-generator",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/reference-vault-recovery-report.json",
+        "conformance/evidence/traceability-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-RVG-003",
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Reference Vault",
+        "Scale Manifest",
+        "Capture Candidate",
+        "Image Localization"
+      ],
+      "normative_anchors": [
+        "normative/reference-vault-generator-contract.md#req-rvg-003-the-scale-manifest-fixes-every-reference-vault-boundary"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/scale-manifest.schema.json",
+        "contracts/schemas/corpus-manifest.schema.json",
+        "contracts/schemas/reference-vault-generator.schema.json",
+        "contracts/schemas/reference-vault-scenario.schema.json",
+        "contracts/schemas/reference-vault-recovery-report.schema.json",
+        "contracts/transitions/reference-vault-generation-lifecycle.json",
+        "contracts/transitions/reference-vault-redistribution-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-RVG-BELOW-006",
+        "FIX-RVG-EXACT-001",
+        "FIX-RVG-EXACT-002",
+        "FIX-RVG-EXACT-003",
+        "FIX-RVG-EXACT-004",
+        "FIX-RVG-EXACT-005",
+        "FIX-RVG-EXACT-006"
+      ],
+      "negative_fixture_ids": [
+        "FIX-RVG-BELOW-001",
+        "FIX-RVG-BELOW-002",
+        "FIX-RVG-BELOW-003",
+        "FIX-RVG-BELOW-004",
+        "FIX-RVG-BELOW-005",
+        "FIX-RVG-OVER-001",
+        "FIX-RVG-OVER-002",
+        "FIX-RVG-OVER-003",
+        "FIX-RVG-OVER-004",
+        "FIX-RVG-OVER-005",
+        "FIX-RVG-OVER-006"
+      ],
+      "acceptance_gate": "The closed Scale Manifest fixes exactly 25,000 notes, 100,000 versions, 1,000 categories, 1,000,000 events, 1,000 queued candidates, and a 5 MiB candidate limit with deferred localized images excluded.",
+      "scope": "reference-vault-generator",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/reference-vault-recovery-report.json",
+        "conformance/evidence/traceability-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-RVG-004",
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Reference Vault Generator",
+        "Generator Binding",
+        "Corpus Manifest"
+      ],
+      "normative_anchors": [
+        "normative/reference-vault-generator-contract.md#req-rvg-004-seed-and-generator-version-bind-deterministic-output"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/scale-manifest.schema.json",
+        "contracts/schemas/corpus-manifest.schema.json",
+        "contracts/schemas/reference-vault-generator.schema.json",
+        "contracts/schemas/reference-vault-scenario.schema.json",
+        "contracts/schemas/reference-vault-recovery-report.schema.json",
+        "contracts/transitions/reference-vault-generation-lifecycle.json",
+        "contracts/transitions/reference-vault-redistribution-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-RVG-POS-001"
+      ],
+      "negative_fixture_ids": [
+        "FIX-RVG-NEG-004",
+        "FIX-RVG-STATE-001"
+      ],
+      "acceptance_gate": "The exact generator identity, version, algorithm, and seed digest produce digest-identical manifests, while duplicate, conflicting, or stale bindings are rejected.",
+      "scope": "reference-vault-generator",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/reference-vault-recovery-report.json",
+        "conformance/evidence/traceability-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-RVG-005",
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Corpus Manifest",
+        "Corpus Partition",
+        "Scale Manifest",
+        "Traceability Record"
+      ],
+      "normative_anchors": [
+        "normative/reference-vault-generator-contract.md#req-rvg-005-coverage-accounting-is-total-and-unique"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/scale-manifest.schema.json",
+        "contracts/schemas/corpus-manifest.schema.json",
+        "contracts/schemas/reference-vault-generator.schema.json",
+        "contracts/schemas/reference-vault-scenario.schema.json",
+        "contracts/schemas/reference-vault-recovery-report.schema.json",
+        "contracts/transitions/reference-vault-generation-lifecycle.json",
+        "contracts/transitions/reference-vault-redistribution-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-RVG-POS-001"
+      ],
+      "negative_fixture_ids": [
+        "FIX-RVG-NEG-002"
+      ],
+      "acceptance_gate": "Every fixed count is accounted exactly once by partition sums or one global exact account; omissions and duplicates fail conformance.",
+      "scope": "reference-vault-generator",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/reference-vault-recovery-report.json",
+        "conformance/evidence/traceability-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-RVG-006",
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Corpus Redistribution",
+        "Corpus Partition",
+        "Lineage Group",
+        "Corpus Manifest",
+        "Generator Binding"
+      ],
+      "normative_anchors": [
+        "normative/reference-vault-generator-contract.md#req-rvg-006-redistribution-preserves-partition-and-lineage-identity"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/scale-manifest.schema.json",
+        "contracts/schemas/corpus-manifest.schema.json",
+        "contracts/schemas/reference-vault-generator.schema.json",
+        "contracts/schemas/reference-vault-scenario.schema.json",
+        "contracts/schemas/reference-vault-recovery-report.schema.json",
+        "contracts/transitions/reference-vault-generation-lifecycle.json",
+        "contracts/transitions/reference-vault-redistribution-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-RVG-POS-002"
+      ],
+      "negative_fixture_ids": [
+        "FIX-RVG-NEG-001",
+        "FIX-RVG-NEG-003",
+        "FIX-RVG-ILLEGAL-001"
+      ],
+      "acceptance_gate": "Only idempotent retries and whole-lineage moves between shards in the same current partition are allowed; every cross-partition, partial, stale, or coverage-changing request is denied.",
+      "scope": "reference-vault-generator",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/reference-vault-recovery-report.json",
+        "conformance/evidence/traceability-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-RVG-007",
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Reference Vault Generator",
+        "Corpus Redistribution",
+        "Generator Binding",
+        "Corpus Manifest"
+      ],
+      "normative_anchors": [
+        "normative/reference-vault-generator-contract.md#req-rvg-007-generation-redistribution-and-recovery-lifecycles-are-complete"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/scale-manifest.schema.json",
+        "contracts/schemas/corpus-manifest.schema.json",
+        "contracts/schemas/reference-vault-generator.schema.json",
+        "contracts/schemas/reference-vault-scenario.schema.json",
+        "contracts/schemas/reference-vault-recovery-report.schema.json",
+        "contracts/transitions/reference-vault-generation-lifecycle.json",
+        "contracts/transitions/reference-vault-redistribution-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-RVG-REC-001",
+        "FIX-RVG-REC-002"
+      ],
+      "negative_fixture_ids": [
+        "FIX-RVG-ILLEGAL-002",
+        "FIX-RVG-AUTH-001",
+        "FIX-RVG-REC-003"
+      ],
+      "acceptance_gate": "Generation, redistribution, and recovery tables cover every declared step and state-command pair with exact authority, outputs, receipts, effects, failure, idempotency, and recovery.",
+      "scope": "reference-vault-generator",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/reference-vault-recovery-report.json",
+        "conformance/evidence/traceability-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-RVG-008",
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Conformance Fixture",
+        "Reference Vault",
+        "Scale Manifest",
+        "Corpus Partition",
+        "Lineage Group",
+        "Generator Binding"
+      ],
+      "normative_anchors": [
+        "normative/reference-vault-generator-contract.md#req-rvg-008-boundary-fixtures-reject-every-invalid-scale-and-identity-case"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/scale-manifest.schema.json",
+        "contracts/schemas/corpus-manifest.schema.json",
+        "contracts/schemas/reference-vault-generator.schema.json",
+        "contracts/schemas/reference-vault-scenario.schema.json",
+        "contracts/schemas/reference-vault-recovery-report.schema.json",
+        "contracts/transitions/reference-vault-generation-lifecycle.json",
+        "contracts/transitions/reference-vault-redistribution-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-RVG-BELOW-006",
+        "FIX-RVG-EXACT-001",
+        "FIX-RVG-EXACT-002",
+        "FIX-RVG-EXACT-003",
+        "FIX-RVG-EXACT-004",
+        "FIX-RVG-EXACT-005",
+        "FIX-RVG-EXACT-006",
+        "FIX-RVG-POS-001",
+        "FIX-RVG-POS-002"
+      ],
+      "negative_fixture_ids": [
+        "FIX-RVG-BELOW-001",
+        "FIX-RVG-BELOW-002",
+        "FIX-RVG-BELOW-003",
+        "FIX-RVG-BELOW-004",
+        "FIX-RVG-BELOW-005",
+        "FIX-RVG-OVER-001",
+        "FIX-RVG-OVER-002",
+        "FIX-RVG-OVER-003",
+        "FIX-RVG-OVER-004",
+        "FIX-RVG-OVER-005",
+        "FIX-RVG-OVER-006",
+        "FIX-RVG-NEG-001",
+        "FIX-RVG-NEG-002",
+        "FIX-RVG-NEG-003",
+        "FIX-RVG-NEG-004",
+        "FIX-RVG-NEG-005",
+        "FIX-RVG-ILLEGAL-001",
+        "FIX-RVG-ILLEGAL-002",
+        "FIX-RVG-STATE-001",
+        "FIX-RVG-AUTH-001"
+      ],
+      "acceptance_gate": "Exactly 32 public fixtures cover every fixed boundary plus determinism, identity, coverage, redistribution, stale state, authority, lifecycle, crash, and recovery behavior.",
+      "scope": "reference-vault-generator",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/reference-vault-recovery-report.json",
+        "conformance/evidence/traceability-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-RVG-009",
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Reference Vault Generator",
+        "Generator Binding",
+        "Corpus Manifest",
+        "Traceability Record"
+      ],
+      "normative_anchors": [
+        "normative/reference-vault-generator-contract.md#req-rvg-009-recovery-evidence-is-deterministic-and-observable"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/scale-manifest.schema.json",
+        "contracts/schemas/corpus-manifest.schema.json",
+        "contracts/schemas/reference-vault-generator.schema.json",
+        "contracts/schemas/reference-vault-scenario.schema.json",
+        "contracts/schemas/reference-vault-recovery-report.schema.json",
+        "contracts/transitions/reference-vault-generation-lifecycle.json",
+        "contracts/transitions/reference-vault-redistribution-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-RVG-REC-001",
+        "FIX-RVG-REC-002"
+      ],
+      "negative_fixture_ids": [
+        "FIX-RVG-REC-003"
+      ],
+      "acceptance_gate": "The recovery report binds identical seeded digests, all fixtures, isolation receipts, lifecycle digests, recovery outcomes, and zero filesystem effects.",
+      "scope": "reference-vault-generator",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/reference-vault-recovery-report.json",
+        "conformance/evidence/traceability-report.json"
+      ]
+    },
+    {
+      "requirement_id": "REQ-RVG-010",
+      "decision_ids": [
+        "DEC-010"
+      ],
+      "canonical_terms": [
+        "Traceability Record",
+        "Specification Package",
+        "Normative Material",
+        "Conformance Fixture",
+        "Reference Vault"
+      ],
+      "normative_anchors": [
+        "normative/reference-vault-generator-contract.md#req-rvg-010-traceability-is-complete-and-materialization-remains-deferred"
+      ],
+      "schema_or_transition_refs": [
+        "contracts/schemas/scale-manifest.schema.json",
+        "contracts/schemas/corpus-manifest.schema.json",
+        "contracts/schemas/reference-vault-generator.schema.json",
+        "contracts/schemas/reference-vault-scenario.schema.json",
+        "contracts/schemas/reference-vault-recovery-report.schema.json",
+        "contracts/transitions/reference-vault-generation-lifecycle.json",
+        "contracts/transitions/reference-vault-redistribution-lifecycle.json"
+      ],
+      "positive_fixture_ids": [
+        "FIX-RVG-POS-001"
+      ],
+      "negative_fixture_ids": [
+        "FIX-RVG-AUTH-001"
+      ],
+      "acceptance_gate": "Every REQ-RVG record binds issue #10 as input_without_reopening and all artifacts remain specification/conformance-only with materialization and performance claims deferred.",
+      "scope": "reference-vault-generator",
+      "evidence_refs": [
+        "conformance/evidence/validation-report.json",
+        "conformance/evidence/reference-vault-recovery-report.json",
+        "conformance/evidence/traceability-report.json"
+      ]
     }
   ]
 }

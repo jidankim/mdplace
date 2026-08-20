@@ -1,0 +1,773 @@
+{
+  "$schema": "../schemas/transition-table.schema.json",
+  "schema_id": "mdplace.transition-table/v1",
+  "table_id": "TRANS-RVG-REDISTRIBUTION",
+  "lifecycle": "Reference Vault redistribution",
+  "version": "1.0.0",
+  "states": [
+    "sealed",
+    "redistribution_planned",
+    "recovery_required",
+    "redistributed"
+  ],
+  "commands": [
+    "plan_redistribution",
+    "apply_redistribution",
+    "recover_redistribution",
+    "seal_redistribution"
+  ],
+  "transitions": [
+    {
+      "transition_id": "TR-RVGR-001",
+      "command_or_event": "plan_redistribution",
+      "from_state": "sealed",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "vault_owner"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact current generator and manifest bindings validate"
+      ],
+      "base_references": [
+        "generator_binding_sha256",
+        "corpus_manifest_sha256"
+      ],
+      "emitted_records": [
+        "ReferenceVaultTransitionReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "generator_binding_sha256",
+          "command_or_event",
+          "idempotency_key"
+        ],
+        "retry_result": "return digest-identical original receipt"
+      },
+      "terminal_state": "redistribution_planned",
+      "failure_result": {
+        "code": "generator.lifecycle_illegal",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ReferenceVaultTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Resume only from the emitted digest-bound receipt."
+    },
+    {
+      "transition_id": "TR-RVGR-002",
+      "command_or_event": "apply_redistribution",
+      "from_state": "sealed",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "reference_vault_generator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "transition is not allowed from this state"
+      ],
+      "base_references": [
+        "generator_binding_sha256",
+        "corpus_manifest_sha256"
+      ],
+      "emitted_records": [
+        "ReferenceVaultTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "generator_binding_sha256",
+          "command_or_event",
+          "idempotency_key"
+        ],
+        "retry_result": "return digest-identical original receipt"
+      },
+      "terminal_state": "sealed",
+      "failure_result": {
+        "code": "generator.lifecycle_illegal",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ReferenceVaultTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Supply a valid command for the current state."
+    },
+    {
+      "transition_id": "TR-RVGR-003",
+      "command_or_event": "recover_redistribution",
+      "from_state": "sealed",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "transition is not allowed from this state"
+      ],
+      "base_references": [
+        "generator_binding_sha256",
+        "corpus_manifest_sha256"
+      ],
+      "emitted_records": [
+        "ReferenceVaultTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "generator_binding_sha256",
+          "command_or_event",
+          "idempotency_key"
+        ],
+        "retry_result": "return digest-identical original receipt"
+      },
+      "terminal_state": "sealed",
+      "failure_result": {
+        "code": "generator.lifecycle_illegal",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ReferenceVaultTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Supply a valid command for the current state."
+    },
+    {
+      "transition_id": "TR-RVGR-004",
+      "command_or_event": "seal_redistribution",
+      "from_state": "sealed",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "transition is not allowed from this state"
+      ],
+      "base_references": [
+        "generator_binding_sha256",
+        "corpus_manifest_sha256"
+      ],
+      "emitted_records": [
+        "ReferenceVaultTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "generator_binding_sha256",
+          "command_or_event",
+          "idempotency_key"
+        ],
+        "retry_result": "return digest-identical original receipt"
+      },
+      "terminal_state": "sealed",
+      "failure_result": {
+        "code": "generator.lifecycle_illegal",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ReferenceVaultTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Supply a valid command for the current state."
+    },
+    {
+      "transition_id": "TR-RVGR-005",
+      "command_or_event": "plan_redistribution",
+      "from_state": "redistribution_planned",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_owner"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "transition is not allowed from this state"
+      ],
+      "base_references": [
+        "generator_binding_sha256",
+        "corpus_manifest_sha256"
+      ],
+      "emitted_records": [
+        "ReferenceVaultTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "generator_binding_sha256",
+          "command_or_event",
+          "idempotency_key"
+        ],
+        "retry_result": "return digest-identical original receipt"
+      },
+      "terminal_state": "redistribution_planned",
+      "failure_result": {
+        "code": "generator.lifecycle_illegal",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ReferenceVaultTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Supply a valid command for the current state."
+    },
+    {
+      "transition_id": "TR-RVGR-006",
+      "command_or_event": "apply_redistribution",
+      "from_state": "redistribution_planned",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "reference_vault_generator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact current generator and manifest bindings validate"
+      ],
+      "base_references": [
+        "generator_binding_sha256",
+        "corpus_manifest_sha256"
+      ],
+      "emitted_records": [
+        "ReferenceVaultTransitionReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "generator_binding_sha256",
+          "command_or_event",
+          "idempotency_key"
+        ],
+        "retry_result": "return digest-identical original receipt"
+      },
+      "terminal_state": "redistributed",
+      "failure_result": {
+        "code": "generator.lifecycle_illegal",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ReferenceVaultTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Resume only from the emitted digest-bound receipt."
+    },
+    {
+      "transition_id": "TR-RVGR-007",
+      "command_or_event": "recover_redistribution",
+      "from_state": "redistribution_planned",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "transition is not allowed from this state"
+      ],
+      "base_references": [
+        "generator_binding_sha256",
+        "corpus_manifest_sha256"
+      ],
+      "emitted_records": [
+        "ReferenceVaultTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "generator_binding_sha256",
+          "command_or_event",
+          "idempotency_key"
+        ],
+        "retry_result": "return digest-identical original receipt"
+      },
+      "terminal_state": "redistribution_planned",
+      "failure_result": {
+        "code": "generator.lifecycle_illegal",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ReferenceVaultTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Supply a valid command for the current state."
+    },
+    {
+      "transition_id": "TR-RVGR-008",
+      "command_or_event": "seal_redistribution",
+      "from_state": "redistribution_planned",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "transition is not allowed from this state"
+      ],
+      "base_references": [
+        "generator_binding_sha256",
+        "corpus_manifest_sha256"
+      ],
+      "emitted_records": [
+        "ReferenceVaultTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "generator_binding_sha256",
+          "command_or_event",
+          "idempotency_key"
+        ],
+        "retry_result": "return digest-identical original receipt"
+      },
+      "terminal_state": "redistribution_planned",
+      "failure_result": {
+        "code": "generator.lifecycle_illegal",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ReferenceVaultTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Supply a valid command for the current state."
+    },
+    {
+      "transition_id": "TR-RVGR-009",
+      "command_or_event": "plan_redistribution",
+      "from_state": "recovery_required",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_owner"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "transition is not allowed from this state"
+      ],
+      "base_references": [
+        "generator_binding_sha256",
+        "corpus_manifest_sha256"
+      ],
+      "emitted_records": [
+        "ReferenceVaultTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "generator_binding_sha256",
+          "command_or_event",
+          "idempotency_key"
+        ],
+        "retry_result": "return digest-identical original receipt"
+      },
+      "terminal_state": "recovery_required",
+      "failure_result": {
+        "code": "generator.lifecycle_illegal",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ReferenceVaultTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Supply a valid command for the current state."
+    },
+    {
+      "transition_id": "TR-RVGR-010",
+      "command_or_event": "apply_redistribution",
+      "from_state": "recovery_required",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "reference_vault_generator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "transition is not allowed from this state"
+      ],
+      "base_references": [
+        "generator_binding_sha256",
+        "corpus_manifest_sha256"
+      ],
+      "emitted_records": [
+        "ReferenceVaultTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "generator_binding_sha256",
+          "command_or_event",
+          "idempotency_key"
+        ],
+        "retry_result": "return digest-identical original receipt"
+      },
+      "terminal_state": "recovery_required",
+      "failure_result": {
+        "code": "generator.lifecycle_illegal",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ReferenceVaultTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Supply a valid command for the current state."
+    },
+    {
+      "transition_id": "TR-RVGR-011",
+      "command_or_event": "recover_redistribution",
+      "from_state": "recovery_required",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact current generator and manifest bindings validate"
+      ],
+      "base_references": [
+        "generator_binding_sha256",
+        "corpus_manifest_sha256"
+      ],
+      "emitted_records": [
+        "ReferenceVaultTransitionReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "generator_binding_sha256",
+          "command_or_event",
+          "idempotency_key"
+        ],
+        "retry_result": "return digest-identical original receipt"
+      },
+      "terminal_state": "sealed",
+      "failure_result": {
+        "code": "generator.lifecycle_illegal",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ReferenceVaultTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Resume only from the emitted digest-bound receipt."
+    },
+    {
+      "transition_id": "TR-RVGR-012",
+      "command_or_event": "seal_redistribution",
+      "from_state": "recovery_required",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "transition is not allowed from this state"
+      ],
+      "base_references": [
+        "generator_binding_sha256",
+        "corpus_manifest_sha256"
+      ],
+      "emitted_records": [
+        "ReferenceVaultTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "generator_binding_sha256",
+          "command_or_event",
+          "idempotency_key"
+        ],
+        "retry_result": "return digest-identical original receipt"
+      },
+      "terminal_state": "recovery_required",
+      "failure_result": {
+        "code": "generator.lifecycle_illegal",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ReferenceVaultTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Supply a valid command for the current state."
+    },
+    {
+      "transition_id": "TR-RVGR-013",
+      "command_or_event": "plan_redistribution",
+      "from_state": "redistributed",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "vault_owner"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "transition is not allowed from this state"
+      ],
+      "base_references": [
+        "generator_binding_sha256",
+        "corpus_manifest_sha256"
+      ],
+      "emitted_records": [
+        "ReferenceVaultTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "generator_binding_sha256",
+          "command_or_event",
+          "idempotency_key"
+        ],
+        "retry_result": "return digest-identical original receipt"
+      },
+      "terminal_state": "redistributed",
+      "failure_result": {
+        "code": "generator.lifecycle_illegal",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ReferenceVaultTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Supply a valid command for the current state."
+    },
+    {
+      "transition_id": "TR-RVGR-014",
+      "command_or_event": "apply_redistribution",
+      "from_state": "redistributed",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "reference_vault_generator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "transition is not allowed from this state"
+      ],
+      "base_references": [
+        "generator_binding_sha256",
+        "corpus_manifest_sha256"
+      ],
+      "emitted_records": [
+        "ReferenceVaultTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "generator_binding_sha256",
+          "command_or_event",
+          "idempotency_key"
+        ],
+        "retry_result": "return digest-identical original receipt"
+      },
+      "terminal_state": "redistributed",
+      "failure_result": {
+        "code": "generator.lifecycle_illegal",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ReferenceVaultTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Supply a valid command for the current state."
+    },
+    {
+      "transition_id": "TR-RVGR-015",
+      "command_or_event": "recover_redistribution",
+      "from_state": "redistributed",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "transition is not allowed from this state"
+      ],
+      "base_references": [
+        "generator_binding_sha256",
+        "corpus_manifest_sha256"
+      ],
+      "emitted_records": [
+        "ReferenceVaultTransitionDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "generator_binding_sha256",
+          "command_or_event",
+          "idempotency_key"
+        ],
+        "retry_result": "return digest-identical original receipt"
+      },
+      "terminal_state": "redistributed",
+      "failure_result": {
+        "code": "generator.lifecycle_illegal",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ReferenceVaultTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Supply a valid command for the current state."
+    },
+    {
+      "transition_id": "TR-RVGR-016",
+      "command_or_event": "seal_redistribution",
+      "from_state": "redistributed",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact current generator and manifest bindings validate"
+      ],
+      "base_references": [
+        "generator_binding_sha256",
+        "corpus_manifest_sha256"
+      ],
+      "emitted_records": [
+        "ReferenceVaultTransitionReceipt"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "generator_binding_sha256",
+          "command_or_event",
+          "idempotency_key"
+        ],
+        "retry_result": "return digest-identical original receipt"
+      },
+      "terminal_state": "sealed",
+      "failure_result": {
+        "code": "generator.lifecycle_illegal",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "ReferenceVaultTransitionDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Resume only from the emitted digest-bound receipt."
+    }
+  ]
+}

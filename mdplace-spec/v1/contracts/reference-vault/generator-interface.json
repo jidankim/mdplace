@@ -1,0 +1,171 @@
+{
+  "$schema": "../schemas/reference-vault-generator.schema.json",
+  "schema_id": "mdplace.reference-vault-generator/v1",
+  "generator_id": "mdplace.reference-vault-generator/v1",
+  "generator_version": "1.0.0",
+  "determinism": {
+    "algorithm": "sha256-counter-v1",
+    "canonicalization": "sorted-key-json-v1",
+    "seed": "mdplace-reference-vault-seed-2026-08-v1",
+    "seed_sha256": "45753d4c16f00de6cf8167e5df7b94179bc1a42f8a762a75efc000ae15746ecb",
+    "binding_sha256": "1a5757fab81f55dd9c600bdc7665c1ce0cb802d9c4be477f244c9f647931699b",
+    "repeat_result": "digest_identical"
+  },
+  "scale_manifest": {
+    "ref": "contracts/reference-vault/scale-manifest.json",
+    "sha256": "6108dcd33419e32a6762281904334dfa967096fe762c25673d98a6ccccb31f53"
+  },
+  "inputs": [
+    "seed",
+    "generator_version",
+    "scale_manifest_sha256",
+    "corpus_schema_id",
+    "redistribution_request"
+  ],
+  "outputs": ["corpus_manifest", "generator_receipt", "recovery_report"],
+  "partitions": ["train", "calibration", "test"],
+  "generation_table": [
+    {
+      "step_id": "GEN-001",
+      "order": 1,
+      "inputs": ["seed", "generator_version"],
+      "deterministic_rule": "Hash the public seed and bind it to the exact generator identity, version, and algorithm.",
+      "output": "generator_binding",
+      "failure_code": "generator.binding_invalid"
+    },
+    {
+      "step_id": "GEN-002",
+      "order": 2,
+      "inputs": ["generator_binding", "scale_manifest_sha256"],
+      "deterministic_rule": "Resolve the one digest-bound closed scale manifest before allocating identities.",
+      "output": "scale_binding",
+      "failure_code": "generator.scale_invalid"
+    },
+    {
+      "step_id": "GEN-003",
+      "order": 3,
+      "inputs": ["generator_binding", "scale_binding"],
+      "deterministic_rule": "Allocate stable lineage ranges in ascending counter order without materializing note bodies.",
+      "output": "lineage_ranges",
+      "failure_code": "generator.lineage_invalid"
+    },
+    {
+      "step_id": "GEN-004",
+      "order": 4,
+      "inputs": ["lineage_ranges", "partitions"],
+      "deterministic_rule": "Assign every complete lineage group to exactly one immutable partition and then one partition-local shard.",
+      "output": "partition_membership",
+      "failure_code": "generator.partition_invalid"
+    },
+    {
+      "step_id": "GEN-005",
+      "order": 5,
+      "inputs": ["partition_membership", "scale_binding"],
+      "deterministic_rule": "Account every fixed scale dimension exactly once and reject every gap or duplicate.",
+      "output": "coverage_accounts",
+      "failure_code": "generator.coverage_invalid"
+    },
+    {
+      "step_id": "GEN-006",
+      "order": 6,
+      "inputs": ["generator_binding", "partition_membership", "coverage_accounts"],
+      "deterministic_rule": "Canonicalize the compact manifest and seal its digest after all invariants pass.",
+      "output": "corpus_manifest",
+      "failure_code": "generator.manifest_invalid"
+    }
+  ],
+  "redistribution_table": [
+    {
+      "rule_id": "RED-001",
+      "condition": "The request binds the current sealed manifest digest.",
+      "allowed": true,
+      "identity_effect": "preserve_partition_and_lineage",
+      "failure_code": null,
+      "recovery": "Return the original receipt for an identical request."
+    },
+    {
+      "rule_id": "RED-002",
+      "condition": "A whole lineage group moves between shards inside its existing partition.",
+      "allowed": true,
+      "identity_effect": "preserve_partition_and_lineage",
+      "failure_code": null,
+      "recovery": "Recompute shard summaries and retain partition membership digests."
+    },
+    {
+      "rule_id": "RED-003",
+      "condition": "An identical redistribution request already has a sealed receipt.",
+      "allowed": true,
+      "identity_effect": "preserve_partition_and_lineage",
+      "failure_code": null,
+      "recovery": "Return the digest-identical sealed receipt without another effect."
+    },
+    {
+      "rule_id": "RED-004",
+      "condition": "A request moves any lineage group between train, calibration, or test.",
+      "allowed": false,
+      "identity_effect": "none",
+      "failure_code": "corpus.lineage_crossing",
+      "recovery": "Reject and preserve the sealed manifest."
+    },
+    {
+      "rule_id": "RED-005",
+      "condition": "A request moves only part of a lineage group.",
+      "allowed": false,
+      "identity_effect": "none",
+      "failure_code": "corpus.partial_lineage",
+      "recovery": "Reject and preserve the sealed manifest."
+    },
+    {
+      "rule_id": "RED-006",
+      "condition": "Redistribution changes a fixed scale or coverage total.",
+      "allowed": false,
+      "identity_effect": "none",
+      "failure_code": "corpus.coverage_unaccounted",
+      "recovery": "Reject and preserve the sealed manifest."
+    },
+    {
+      "rule_id": "RED-007",
+      "condition": "The request binds a stale manifest or generator binding.",
+      "allowed": false,
+      "identity_effect": "none",
+      "failure_code": "corpus.redistribution_stale",
+      "recovery": "Regenerate a plan from the current sealed manifest."
+    },
+    {
+      "rule_id": "RED-008",
+      "condition": "The post-state changes an immutable partition membership digest.",
+      "allowed": false,
+      "identity_effect": "none",
+      "failure_code": "corpus.partition_membership_mutated",
+      "recovery": "Reject and preserve the sealed manifest."
+    }
+  ],
+  "recovery_table": [
+    {
+      "crash_stage": "before_manifest",
+      "required_evidence": ["generator_binding", "scale_manifest_sha256"],
+      "result": "restart_from_binding",
+      "filesystem_effects": "none"
+    },
+    {
+      "crash_stage": "after_manifest",
+      "required_evidence": ["sealed_manifest_sha256", "generator_receipt"],
+      "result": "retain_sealed_manifest",
+      "filesystem_effects": "none"
+    },
+    {
+      "crash_stage": "before_redistribution",
+      "required_evidence": ["sealed_manifest_sha256", "redistribution_plan_sha256"],
+      "result": "discard_unsealed_plan",
+      "filesystem_effects": "none"
+    },
+    {
+      "crash_stage": "after_redistribution",
+      "required_evidence": ["redistributed_manifest_sha256", "redistribution_receipt"],
+      "result": "retain_redistributed_manifest",
+      "filesystem_effects": "none"
+    }
+  ],
+  "materialization": "deferred",
+  "performance_claim": "none"
+}

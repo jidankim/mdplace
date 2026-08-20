@@ -42,10 +42,22 @@
   },
   "artifacts": [
     {
+      "path": "README.md",
+      "authority": "informative",
+      "media_type": "text/markdown",
+      "sha256": "95e8c44fbbd8eda640d047d7e9e7616a9b844c1a21994656b5f3d99da483d8cd"
+    },
+    {
       "path": "claims-and-evidence.yaml",
       "authority": "normative",
       "media_type": "application/json",
       "sha256": "57cc759832ddeec0c783deb194d722428c6b9032434b53c7c09351c67b676c7f"
+    },
+    {
+      "path": "conformance/README.md",
+      "authority": "informative",
+      "media_type": "text/markdown",
+      "sha256": "1a0a3e4fe4786e8cbbe2b49f8a09dac24a8b0eb3164b73d5f5323c49101580ee"
     },
     {
       "path": "conformance/amendment-evidence.mjs",
@@ -225,7 +237,7 @@
       "path": "conformance/evidence/claims/recovery-snapshot.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "8ab85d77186077c89f3082b5a1c196b56f92a6695ff16e214aa9b9f1483b0bc8"
+      "sha256": "76e47bfa97e3ce9f785338b14c4c8de19aa5c44954ea3a8bb88817828b90babc"
     },
     {
       "path": "conformance/evidence/control-plane-doctor-report.json",
@@ -261,25 +273,31 @@
       "path": "conformance/evidence/envelopes/validator-evidence-reference.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "6c562f47a69d7880dbd011c5b558a38174303be9ba4f53e69f0554467437f48d"
+      "sha256": "acd63484618a8674f7ee5869f31f282f60f4632cb7a1bdf728f74350a213368e"
     },
     {
       "path": "conformance/evidence/evidence-recovery-report.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "8b2af4138835d67c560821ec2976e00cd128ff77e91df72065abafe4916298dc"
+      "sha256": "8f19003540b4bade9b0a93e754de99832321c99c94682e93e4a5fce54df52433"
     },
     {
       "path": "conformance/evidence/invocations/validator-evidence-reference.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "f9d480650be1f1678764261f83bc3adc99b10ee704c672c3d914f957b52cbee1"
+      "sha256": "b08ed2145bc2f0642b08643346936460b8b5a6af0aa7583001bb0b940c517b46"
     },
     {
       "path": "conformance/evidence/recovery-report.json",
       "authority": "informative",
       "media_type": "application/json",
       "sha256": "2b9fe3526d842b52aed563bc38cfef2329113d2fd69d635ac5482ce04b7506d6"
+    },
+    {
+      "path": "conformance/evidence/reference-vault-recovery-report.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "3b10762eb87a1e0438752b193c1cdc96b2718585e1d5f16518d838bd04414600"
     },
     {
       "path": "conformance/evidence/semantic-kernel-recovery-report.json",
@@ -291,13 +309,13 @@
       "path": "conformance/evidence/traceability-report.json",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "3ffcc60954aac8cc36b6126bc3fb924782075de646777de453f27d193626d6a7"
+      "sha256": "e904b4acbccdbc0d03fe52620a230e7a18f94cb57583243aaa8a2979ca58a657"
     },
     {
       "path": "conformance/evidence/validation-report.json",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "a2d54b64b3993eac0e9fd670a6893fcb272146790465d6f3e7c67c7fdbefc667"
+      "sha256": "7ffd207f3dd6adc2b8bbeb09953ac02db0f2f53d1bcd2709a9b4ffe7d9bf7f4a"
     },
     {
       "path": "conformance/evidence/vault-mutation-recovery-report.json",
@@ -315,7 +333,7 @@
       "path": "conformance/fixture-observer.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "80089af942430acb0af9524aa67395b36afd3db64acc7004268008023a99a2ec"
+      "sha256": "cbe9ceff42a9936e3a70402d0c796fe39e84c9ce0c0143cd8a30b531ef661784"
     },
     {
       "path": "conformance/fixtures/boundary/above-sha256.json",
@@ -375,7 +393,7 @@
       "path": "conformance/fixtures/negative/duplicate-envelope-references.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "225ed7b6c87ef2f038ba8627e7211552f1cfeee24953ebe68a14ae2f201dc024"
+      "sha256": "dbc75cd32f5b2b93168b47986a5263d052b0c003c5a5ef0bbbe8405b9ec2449f"
     },
     {
       "path": "conformance/fixtures/negative/duplicate-requirement-id.json",
@@ -387,7 +405,7 @@
       "path": "conformance/fixtures/negative/evidence-receipt-digest-tampered.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "75c76f2590c3ba2a8394d44b1bbecfcf4f152e04dea83f929ae9848129e94b39"
+      "sha256": "3f1fab770dc9c1a03a950cd5ac1f28caebad51427acbe7bcb51938f6230c9296"
     },
     {
       "path": "conformance/fixtures/negative/evidence-receipt-type-tampered.json",
@@ -423,7 +441,7 @@
       "path": "conformance/fixtures/negative/missing-release-slot.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "abdd8531f5a2da15ac58d1f038d42b8e6f57981281c068b2e77e3f770b8d4ccd"
+      "sha256": "4274ca4cd3b075deeb6e1652c6ad8a8a1a51830471035a9f5cb1a9d4f857a999"
     },
     {
       "path": "conformance/fixtures/negative/mutable-release-content.json",
@@ -483,7 +501,7 @@
       "path": "conformance/fixtures/positive/authorized-release.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "cd57ceea11e821cf75f235bb485c73e6666afacd0c9610f521be6bdd4545d025"
+      "sha256": "1ba35fbdefacee4c2a1af938a204e6e83b7c573eda0237d540fc60611d8bfd0e"
     },
     {
       "path": "conformance/fixtures/positive/authorized-submit.json",
@@ -519,7 +537,7 @@
       "path": "conformance/fixtures/positive/valid-evidence-envelope.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "835a46a800412230b35fe2f8ee38c0bbffa82daffb7fd50a0cf4327363b65735"
+      "sha256": "4e7d09d74eadb20e174c6a5e8e4242db1553b8c77fecefa05c0c463149fd7b31"
     },
     {
       "path": "conformance/fixtures/positive/valid-package-amendment.json",
@@ -543,7 +561,7 @@
       "path": "conformance/manifest.yaml",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "bf65117b7e2aa3fe02671a978b1a753a9b59006fc241fae338ef2515cba220c0"
+      "sha256": "efccfdd49c190e34277807777f8bd97c6a3b71e6ab76ce8aa7ee686206568f5d"
     },
     {
       "path": "conformance/package-checks.mjs",
@@ -555,7 +573,7 @@
       "path": "conformance/package-foundation.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "d2f5021d80e5dbcb895ae511eb12042d57ef982041275c365becebe5d5ea4e7f"
+      "sha256": "af36472797aad00924cf85986500c49cb14ec538a4a1679e634916d1710555fe"
     },
     {
       "path": "conformance/pattern-evaluation.mjs",
@@ -606,22 +624,46 @@
       "sha256": "e9cfdb1ab3619e34b5386c65b22b0fa466891dbe1588746d9d9393f81081ad51"
     },
     {
-      "path": "conformance/README.md",
-      "authority": "informative",
-      "media_type": "text/markdown",
-      "sha256": "e230fe9b00dd6fcf52a7d8b7c56bb339f6a11f741a9ece608b9a885c452f6520"
-    },
-    {
       "path": "conformance/reference-evidence.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "997d724becd14eb8f782f57d32e930e51943f4d3725c2d595525427208858093"
+      "sha256": "0fbedb5c899980241fac6a0a3cd68de422c8db369c1838c99a890ea4255f9e72"
+    },
+    {
+      "path": "conformance/reference-vault-checks.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "e0e2dd50332f2e8c328006fac3c76a826294e6df6f83b29542f749e5e5ae0bd3"
+    },
+    {
+      "path": "conformance/reference-vault-core.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "1f1a3e54c3daaac3b3098e50669ca12136458760885d84f04559be37b2ce1f36"
+    },
+    {
+      "path": "conformance/reference-vault-evidence.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "fb1a14255e314319dc6bd7d7bbec8d6c31b054861a5a137057f4b3c7daec6f64"
+    },
+    {
+      "path": "conformance/reference-vault-observer.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "4a983997b5048d7fb323200309428ad28e1ffc54c704af2c1f423c051fc4fb1b"
     },
     {
       "path": "conformance/release-targets/amendment/releases/README.md",
       "authority": "normative",
       "media_type": "text/markdown",
       "sha256": "9daba4e265bb467df4f115271890a744b90d257ee4fccbd5111f7b655fcf9bce"
+    },
+    {
+      "path": "conformance/release-targets/amendment/source/README.md",
+      "authority": "normative",
+      "media_type": "text/markdown",
+      "sha256": "eb534a37e66c2624636d8498ff973acde79c37d52c2af738d0049a6c6e53a4de"
     },
     {
       "path": "conformance/release-targets/amendment/source/architecture.md",
@@ -732,12 +774,6 @@
       "sha256": "981f001ff0bda8662fa69d6629b342fac28552cda69e6e59f81d87d3eba4d547"
     },
     {
-      "path": "conformance/release-targets/amendment/source/README.md",
-      "authority": "normative",
-      "media_type": "text/markdown",
-      "sha256": "eb534a37e66c2624636d8498ff973acde79c37d52c2af738d0049a6c6e53a4de"
-    },
-    {
       "path": "conformance/release-targets/amendment/source/security-and-privacy.md",
       "authority": "normative",
       "media_type": "text/markdown",
@@ -748,6 +784,12 @@
       "authority": "normative",
       "media_type": "application/json",
       "sha256": "398211ad27c6e9fe48e4c5d54daa00b50f238c45e0da626a34c23f5bec8cce4c"
+    },
+    {
+      "path": "conformance/release-targets/amendment/target/README.md",
+      "authority": "normative",
+      "media_type": "text/markdown",
+      "sha256": "eb534a37e66c2624636d8498ff973acde79c37d52c2af738d0049a6c6e53a4de"
     },
     {
       "path": "conformance/release-targets/amendment/target/architecture.md",
@@ -858,12 +900,6 @@
       "sha256": "981f001ff0bda8662fa69d6629b342fac28552cda69e6e59f81d87d3eba4d547"
     },
     {
-      "path": "conformance/release-targets/amendment/target/README.md",
-      "authority": "normative",
-      "media_type": "text/markdown",
-      "sha256": "eb534a37e66c2624636d8498ff973acde79c37d52c2af738d0049a6c6e53a4de"
-    },
-    {
       "path": "conformance/release-targets/amendment/target/security-and-privacy.md",
       "authority": "normative",
       "media_type": "text/markdown",
@@ -874,6 +910,12 @@
       "authority": "normative",
       "media_type": "application/json",
       "sha256": "398211ad27c6e9fe48e4c5d54daa00b50f238c45e0da626a34c23f5bec8cce4c"
+    },
+    {
+      "path": "conformance/release-targets/complete/README.md",
+      "authority": "normative",
+      "media_type": "text/markdown",
+      "sha256": "e882f7c919d197842dd86297bfe287c97f7a53668b040b138f0ec288afb1fe34"
     },
     {
       "path": "conformance/release-targets/complete/architecture.md",
@@ -946,12 +988,6 @@
       "authority": "normative",
       "media_type": "text/markdown",
       "sha256": "505218da3a0692b564b4385a86759ae06f974aa590c5cf6dcde225e6309f4fa3"
-    },
-    {
-      "path": "conformance/release-targets/complete/README.md",
-      "authority": "normative",
-      "media_type": "text/markdown",
-      "sha256": "e882f7c919d197842dd86297bfe287c97f7a53668b040b138f0ec288afb1fe34"
     },
     {
       "path": "conformance/release-targets/complete/releases/README.md",
@@ -1455,7 +1491,7 @@
       "path": "conformance/scenarios/evidence-crash-recovery.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "249d93f02c31a76b047f086e916d38e435bc6417801525848a5afdc7ad4422c1"
+      "sha256": "636c859773290182f65e4ed8609d5566ef1322a1f993b3979f6fb8e072643c97"
     },
     {
       "path": "conformance/scenarios/evidence-illegal-awaiting-readback.json",
@@ -1497,7 +1533,7 @@
       "path": "conformance/scenarios/evidence-stale-recovery-pass.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "f6d615112bb01dbbcb5131f980b649bfe33deb967e688280c549fad7bd432c67"
+      "sha256": "d9a1d3a850ef7b1a037741ca333ccb08d3a07f54946378a5cc722a53716f699e"
     },
     {
       "path": "conformance/scenarios/evidence-stale-version.json",
@@ -1582,6 +1618,198 @@
       "authority": "normative",
       "media_type": "application/json",
       "sha256": "7e7272471266baa17c5889fac6ef6e56ccb872b9b88c0a0d9728d4804a1cd346"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/below-candidate-size-limit.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "d4347bff32550920eb238c60bd38a285f1609afeb086396b6fcc605f03e732e0"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/below-canonical-events.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "94891e81c79851c03c070ce8b757eb157afcae3b7533c176b4ff57c2ed4a302d"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/below-captured-tab-notes.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "4b83d423febae242ef3464aaaad2f326ed7f424a80386d714e3e510b54b1356a"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/below-categories.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "42bfb9d4f940af76e90b8212f750c5b35b62efe31d0ce884aaa124361ce65ee9"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/below-observed-note-versions.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "d61048f6ab2f9d3880986726ff837356a502d932c6bc5c96b085d5517c061a17"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/below-queued-candidates.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "bede649e0cb6133281e96c6630601cbcef62a0d5a4937724b7e13a1a71b6ca01"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/cross-partition-redistribution-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "0d404290311c72a78cac5cc3bd446f112b3f064446ee203f742795cc4803a821"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/duplicate-seed-version-binding-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "15dd3608e644daaef9f52975bba8d664160a719ce9095d411de5a9d5960ba4e8"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/exact-candidate-size-limit.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "f9511adfd2ce61de13d3a54b16fecb988e6bc07697203db72a44f6d4733da89a"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/exact-canonical-events.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "edbbb5918900c98f87c8a856b588c1797bdb5423b3250727a5775761e688f5f8"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/exact-captured-tab-notes.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "f2695d3b6b40bd90b31fa1a353e4a4b9ad2a8100f93e6057ef25ad467c1fbb11"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/exact-categories.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "3f936c5d900b0468bbac76b8283780c03f8820d0424c397f880628f7932af4a9"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/exact-observed-note-versions.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "79a209e8cce6c17b007b6645cce5039f25d2996e0ae45d69244d61513119d104"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/exact-queued-candidates.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "4443d915766cfd2f5720199e3550827f31468dbbe44c2a2da3c5d6974430f516"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/generation-lifecycle-command-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "922cccdd16f61e6b8d5baeefd58110ba3ede11e96945f24811701aeb99fb6c98"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/lineage-crossing-generation-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "69df8912965ce7716a418d1242e845e37c13f89e6667b15884025ebfcc8e3b65"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/over-candidate-size-limit.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "c1531451c369cb64f46b2c42474efec5e36bfafacbe65d91e2716ca11c32262a"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/over-canonical-events.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "25d1ba4bcf281f38bf3f57899641500289c180aeafa55252dfaa5f54460d9bf3"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/over-captured-tab-notes.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "61e11d667ec7683278bd1d5ed23c18f03c0fce965b8e9319a9c0887ccb3927d2"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/over-categories.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "662a43d59b9735848bb73689e746b089e64916c01d5d7d745315359d52c530dd"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/over-observed-note-versions.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "16c8f79d68fb3799b65a8834c7a77f88934f202aa19199112aecfa1042f69914"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/over-queued-candidates.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "5a24475d33494c56a9657035ffe43d859919c68a0aef761c6b60b0d4a6277395"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/partial-lineage-redistribution-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "e3e70c81f854789f54c69c545f9f93294e8b34af150926dd1e1bc2219e968bef"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/partition-membership-mutation-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "4a0c477f0d6c9a17f609071e68079d316e79a140f8949170adc8268d7cd3fbd7"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/recover-after-redistribution.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "a990066538043a43227b6a9210178acc23aa1a5449fda7b5a501bfab5f5ca8d4"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/recover-before-manifest.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "20ab8a4c943f0af1e1a1e4851b948256f2640a1b831bce867204001ae98d636f"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/repeated-generation-digest-identical.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "dc2fb707b3a477da0f53e2772325c76e75346cb0ac273b7c0f839c29a738afd5"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/stale-generator-binding-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "205a1a593b19500c37110cfb62ce54bdffc967ca3d7cfcc9e323617a5121fb10"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/torn-recovery-journal-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "4a39da4c972cc062070e6ac727afafaa9f72a5957e888d477721b0e3932a96df"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/unaccounted-coverage-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "785cb57a66ae811ff9da755107b77c6e3d3ce0aec20c3561c2a5ba791201827e"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/unauthorized-generator-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "e7695b0b3ba0bc861f6f2462c5dc836ddb64ae80e8744addaade928700e4cd1f"
+    },
+    {
+      "path": "conformance/scenarios/reference-vault/whole-lineage-same-partition-redistribution.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "6562dfd02998704d2a4e2960065fbf6d311cf02dda2e2db61b62be3189561ba9"
     },
     {
       "path": "conformance/scenarios/semantic-kernel/append-during-recovery-denied.json",
@@ -2307,7 +2535,7 @@
       "path": "conformance/schema-instances.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "c33184ed3b94714205bc8825709ea5598785d1dc9564455de9282cbe4dcda8c5"
+      "sha256": "e9c0bd62cba470205a27d5c7f9fe9daa60eb3d02ac5449d20375a41a9de4eff0"
     },
     {
       "path": "conformance/semantic-kernel-authority.mjs",
@@ -2355,25 +2583,25 @@
       "path": "conformance/state-observations/candidate/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "c2c48167004c5f4987b4bae20608508fd0ba4f501d01a8e06bfa472de13fbd33"
+      "sha256": "f778f089fe2070f3fbf5b64518cafef612f51b0ad6e53a35984964109f80122c"
     },
     {
       "path": "conformance/state-observations/draft/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "de99583465343157cb630a670fdf93c30a3e6a2bd9f42c70a9a9bd30c0b897c9"
+      "sha256": "dd9ef79e039d070e9fcbd680a17b82839a057782124c1ba5c84a5e949a5eb295"
     },
     {
       "path": "conformance/state-observations/release-ready/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "cf69186e56d521fff05ea6c5e78019d57b691e296e5841ba1e981a1761adc2d2"
+      "sha256": "09fdd8a80563b89fb0ac88881489722b5313c71f6366d02e3d5899db3d54a529"
     },
     {
       "path": "conformance/state-observations/released/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "33d0c98eb504ab07d94345a098a5faa86e844997b358e9db56cf3921d6cc7c9f"
+      "sha256": "2574c4d2e195a31d4733bc067620eb19b0be5e371eb920f8e9c16727c246bf55"
     },
     {
       "path": "conformance/traceability-checks.mjs",
@@ -2397,7 +2625,7 @@
       "path": "conformance/validation-report.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "63993e617da59da944bdcd90b31d7f6a22f5229f0463aa0f3f640b356f9e0a01"
+      "sha256": "45c468eb7fd72b5cc8203ca1a7054325f43f09dcd67a6f49c25c3aa6424988fb"
     },
     {
       "path": "conformance/validator-boundary-cases.mjs",
@@ -2415,7 +2643,7 @@
       "path": "conformance/validator-contract-cases.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "d82dfc4d5c62d781b5c6e921cc159353da8488554457f0f59a7bdc28da5fa0e4"
+      "sha256": "1c47c795a31f080ac7b32e27ca07740a61fc86e4c450e2f9af87923372b60407"
     },
     {
       "path": "conformance/validator-control-plane-cases.mjs",
@@ -2592,6 +2820,12 @@
       "sha256": "d75d68864ddc4ca6bb5f6708e4eaab92ab1f9a0917b903b12d73528f5b953b2d"
     },
     {
+      "path": "conformance/validator-reference-vault-cases.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "a5dae3aff51200dafe172079ce7e7ad5bc1c006ed1263aa2fd40a347d621c952"
+    },
+    {
       "path": "conformance/validator-review-round-three-cases.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
@@ -2607,7 +2841,7 @@
       "path": "conformance/validator-rules.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "56e38cac5a045af8fe78c39531730b5eabf051f25fb2781f2cd2fbc676b7e4be"
+      "sha256": "fb79df199103b61a2675b7575979824ea1c9ca401b0f1ea6270adde78b72ce62"
     },
     {
       "path": "conformance/validator-security-cases.mjs",
@@ -2661,7 +2895,7 @@
       "path": "conformance/validator.test.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "f15a7832642ea479f16253115e79ff55e652273dc26fd0f19ebe709850c3ce29"
+      "sha256": "9f81eedd1b006ec4a79fb7024b8760d2d2a01548e65cd9b463b72fed197f9c7f"
     },
     {
       "path": "conformance/vault-mutation-digests.mjs",
@@ -2748,6 +2982,24 @@
       "sha256": "da1c6bfdcda2738b3ea8c1e22b0375c8a11d403c2d85f3d95f5ee017d9a94506"
     },
     {
+      "path": "contracts/reference-vault/corpus-manifest.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "cd5a7296da124f4ecedd45fd40e07a2e13a65e3ce35a2129fb7a9b89b3eb1083"
+    },
+    {
+      "path": "contracts/reference-vault/generator-interface.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "f4823bfdac35fc225d80962e9baf4917beb05cc37e3cc7e9caaa2bd429bfba40"
+    },
+    {
+      "path": "contracts/reference-vault/scale-manifest.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "7e4b8136922754cf505bcbc2356d2b528c935e95d8cdb524fc8c4e6cc2b5ceae"
+    },
+    {
       "path": "contracts/schemas/agent-state.schema.json",
       "authority": "normative",
       "media_type": "application/json",
@@ -2787,7 +3039,7 @@
       "path": "contracts/schemas/conformance-fixture.schema.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "121026edeecf206a3f696e78ad9cb1cbacdbbc1641c89a32be0f370bae96f355"
+      "sha256": "b58955d23e23e6b32d6d66e764721a216984a971a9ebd3672b483818ac234326"
     },
     {
       "path": "contracts/schemas/conformance-manifest.schema.json",
@@ -2836,6 +3088,12 @@
       "authority": "normative",
       "media_type": "application/json",
       "sha256": "b5ee1ff598b73b679a39b2524d3e1473aa558d880848d3568163f0e6a0416d09"
+    },
+    {
+      "path": "contracts/schemas/corpus-manifest.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "6e8d090165ff7621c6badb9e6e74a27057ab0fe84f536c9145d989fc0c25f02e"
     },
     {
       "path": "contracts/schemas/evidence-envelope.schema.json",
@@ -2940,10 +3198,34 @@
       "sha256": "98f7f64cbd761d2e6caac5acd83834e5f44b033aa4c3b095295f185d8b735a2b"
     },
     {
+      "path": "contracts/schemas/reference-vault-generator.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "07491c1170171b6807c6f85cf86753e3b4a385be7a0dbe560b8b38cc9da94126"
+    },
+    {
+      "path": "contracts/schemas/reference-vault-recovery-report.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "818e2bd8b3acfa7e4b7e4451b06210c608365ec442976bd5a8099ecea980d6ab"
+    },
+    {
+      "path": "contracts/schemas/reference-vault-scenario.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "67327cee8215447576a8fcab003187196b68e986cc6cefb7d5068c14f4eb008b"
+    },
+    {
       "path": "contracts/schemas/requirements.schema.json",
       "authority": "normative",
       "media_type": "application/json",
       "sha256": "12f5d591525f2910d1879bc76a2064038eb30aed873f2cf3ba0a8a55de4496d5"
+    },
+    {
+      "path": "contracts/schemas/scale-manifest.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "65896c8e99774b8e91f6e540c2b035d4a24213407fbe18865a4daaa685abbede"
     },
     {
       "path": "contracts/schemas/scheduler-state.schema.json",
@@ -3132,6 +3414,18 @@
       "sha256": "f38e71bc9d6a437ca49a52a23e40ac1f0d1a2586b1abcd4cfe655c2702c846ef"
     },
     {
+      "path": "contracts/transitions/reference-vault-generation-lifecycle.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "75cc3dcb7584c13fbfcd175b96d4930eddb7590b0165677bb83d281f142a8016"
+    },
+    {
+      "path": "contracts/transitions/reference-vault-redistribution-lifecycle.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "38d6bb5db5cf6d63b8736b66ec4dd5cbbcd3b020cf6185b0be2adc71f1591840"
+    },
+    {
       "path": "contracts/transitions/retry-lifecycle.json",
       "authority": "normative",
       "media_type": "application/json",
@@ -3216,10 +3510,16 @@
       "sha256": "9c539638d9e34341b5c8ba293d5496d445762156e70a93e0429bbec5bcc270cc"
     },
     {
+      "path": "normative/reference-vault-generator-contract.md",
+      "authority": "normative",
+      "media_type": "text/markdown",
+      "sha256": "392d911236d8c9551e8495df727c40bf3074fcf435baa2e8f268a635044b3430"
+    },
+    {
       "path": "normative/requirements.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "50e8d01238dd93d8011b0f88070108b82526cb70c7f64d63bf17d4c77f4728a2"
+      "sha256": "2382e4d0890b0ac7091961edf6dd8202b2b71df1fc95d6a308d5cb9a47c9013a"
     },
     {
       "path": "normative/semantic-kernel-contract.md",
@@ -3240,20 +3540,14 @@
       "sha256": "f8eee6d64b40484a4fd0345119cef98756f65cf75ca73f1519fb238a6e0d4866"
     },
     {
-      "path": "README.md",
-      "authority": "informative",
-      "media_type": "text/markdown",
-      "sha256": "1a46e8e8cf6b54a5e5d3bf7d42bf2113b63aaec30ecdb0272d4d1a616a1e93f5"
-    },
-    {
       "path": "traceability.yaml",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "131ef4a1662b21721b6e7502ff72455b759e06978113d20ec03a48100b6f51a1"
+      "sha256": "e5b166345858d96c3435265e4358abfd573b9620994b082ceff9d68f1b06089a"
     }
   ],
-  "normative_digest": "3b61bbb7245a223c0e7d3e9276f978bfed645c6fd484c21e23fdea4a8b0b4b79",
-  "conformance_digest": "83d1b7b73d927fb2649a11e59811ab1f3f47dede7542b78e817e3138aa349f82",
+  "normative_digest": "bc57d47e3cd4b1f0f5d6897a1572a9fdb6c44bd8d83c3c6121c5ad75efba846b",
+  "conformance_digest": "3a0909337bcfae3836e33e8de1db188eac0e657be9be7f0eb777b2ce8dcf5e77",
   "amendment_policy": {
     "immutable_after_release": true,
     "in_place_mutation": "forbidden",

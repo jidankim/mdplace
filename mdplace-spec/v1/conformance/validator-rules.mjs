@@ -89,6 +89,14 @@ const authorityByCommand = new Map([
   ['rollback', {roles: ['foreground_recovery'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
   ['compensate', {roles: ['foreground_recovery'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
   ['halt_manual_repair', {roles: ['foreground_recovery'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['bind_generator', {roles: ['conformance_validator'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['generate_manifest', {roles: ['reference_vault_generator'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['seal_manifest', {roles: ['conformance_validator'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['recover_generation', {roles: ['foreground_recovery'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['plan_redistribution', {roles: ['vault_owner'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['apply_redistribution', {roles: ['reference_vault_generator'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['recover_redistribution', {roles: ['foreground_recovery'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ['seal_redistribution', {roles: ['conformance_validator'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
 ]);
 
 const conformanceExecutables = new Set([
@@ -190,6 +198,11 @@ const conformanceExecutables = new Set([
   'conformance/vault-mutation-virtual-vault.mjs',
   'conformance/validator-vault-mutation-gate-cases.mjs',
   'conformance/vault-mutation-recovery-checks.mjs',
+  'conformance/reference-vault-core.mjs',
+  'conformance/reference-vault-checks.mjs',
+  'conformance/reference-vault-observer.mjs',
+  'conformance/reference-vault-evidence.mjs',
+  'conformance/validator-reference-vault-cases.mjs',
 ]);
 
 export function authorityMatches(command, actual) {

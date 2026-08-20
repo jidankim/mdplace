@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:corpus-manifest:v1",
+  "title": "mdplace deterministic corpus manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_id",
+    "manifest_id",
+    "generator_binding",
+    "scale_manifest",
+    "partitions",
+    "global_counts",
+    "coverage_accounts",
+    "lineage_rules",
+    "manifest_sha256"
+  ],
+  "properties": {
+    "$schema": {"const": "../schemas/corpus-manifest.schema.json"},
+    "schema_id": {"const": "mdplace.corpus-manifest/v1"},
+    "manifest_id": {"type": "string", "pattern": "^corpus:[a-z0-9-]{3,64}$"},
+    "generator_binding": {"$ref": "#/$defs/generatorBinding"},
+    "scale_manifest": {"$ref": "#/$defs/scaleBinding"},
+    "partitions": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {"$ref": "#/$defs/partition"}
+    },
+    "global_counts": {"$ref": "#/$defs/globalCounts"},
+    "coverage_accounts": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {"$ref": "#/$defs/coverageAccount"}
+    },
+    "lineage_rules": {"$ref": "#/$defs/lineageRules"},
+    "manifest_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "generatorBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generator_id", "generator_version", "seed_sha256", "binding_sha256"],
+      "properties": {
+        "generator_id": {"const": "mdplace.reference-vault-generator/v1"},
+        "generator_version": {"type": "string", "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"},
+        "seed_sha256": {"$ref": "#/$defs/sha256"},
+        "binding_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "scaleBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "sha256"],
+      "properties": {
+        "ref": {"const": "contracts/reference-vault/scale-manifest.json"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["captured_tab_notes", "observed_note_versions", "canonical_events", "queued_candidates"],
+      "properties": {
+        "captured_tab_notes": {"type": "integer", "minimum": 0},
+        "observed_note_versions": {"type": "integer", "minimum": 0},
+        "canonical_events": {"type": "integer", "minimum": 0},
+        "queued_candidates": {"type": "integer", "minimum": 0}
+      }
+    },
+    "shard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["shard_id", "lineage_groups"],
+      "properties": {
+        "shard_id": {"type": "string", "pattern": "^(train|calibration|test)-[ab]$"},
+        "lineage_groups": {"type": "integer", "minimum": 1}
+      }
+    },
+    "partition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "partition_id",
+        "membership",
+        "lineage_range",
+        "lineage_groups",
+        "counts",
+        "shards",
+        "membership_sha256"
+      ],
+      "properties": {
+        "partition_id": {"enum": ["train", "calibration", "test"]},
+        "membership": {"const": "immutable"},
+        "lineage_range": {"type": "string", "pattern": "^lineage:[0-9]{6}\\.\\.lineage:[0-9]{6}$"},
+        "lineage_groups": {"type": "integer", "minimum": 1},
+        "counts": {"$ref": "#/$defs/counts"},
+        "shards": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {"$ref": "#/$defs/shard"}
+        },
+        "membership_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "globalCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["categories"],
+      "properties": {"categories": {"type": "integer", "minimum": 0}}
+    },
+    "coverageAccount": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dimension", "accounted", "accounting_rule"],
+      "properties": {
+        "dimension": {"enum": ["captured_tab_notes", "observed_note_versions", "categories", "canonical_events", "queued_candidates"]},
+        "accounted": {"type": "integer", "minimum": 0},
+        "accounting_rule": {"enum": ["partition_sum", "global_exact"]}
+      }
+    },
+    "lineageRules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["grouping", "partition_crossing", "redistribution_unit", "membership_change"],
+      "properties": {
+        "grouping": {"const": "duplicate_recapture_history_same-source_and_near-related"},
+        "partition_crossing": {"const": "forbidden"},
+        "redistribution_unit": {"const": "whole_lineage_group_within_partition"},
+        "membership_change": {"const": "forbidden"}
+      }
+    }
+  }
+}
