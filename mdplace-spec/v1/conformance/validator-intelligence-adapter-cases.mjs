@@ -1,14 +1,17 @@
 import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
-import {readFile} from 'node:fs/promises';
+import {readFile, writeFile} from 'node:fs/promises';
+import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import test from 'node:test';
 
 import {adapterReceiptDigest, canonicalDigest, parseReceiptStrings, sha256} from './intelligence-adapter-core.mjs';
+import {checkIntelligenceAdapterProtocol} from './intelligence-adapter-checks.mjs';
 import {observeIntelligenceAdapterScenario} from './intelligence-adapter-observer.mjs';
 import {forbiddenActionCode, preflightCode} from './intelligence-adapter-validation.mjs';
 import {validateJsonSchema} from './json-schema.mjs';
 import {canonicalJson} from './semantic-kernel-core.mjs';
+import {copyCommittedPackage} from './validator-test-support.mjs';
 
 const packageRoot = fileURLToPath(new URL('../', import.meta.url));
 const validator = fileURLToPath(new URL('./validator.mjs', import.meta.url));
@@ -20,6 +23,23 @@ async function readJson(relativePath) {
 async function scenario(caseId) {
   const fixture = await readJson(`conformance/scenarios/intelligence-adapter/${caseId}.json`);
   return structuredClone(fixture.subject.document);
+}
+
+async function readRootJson(root, relativePath) {
+  return JSON.parse(await readFile(join(root, relativePath), 'utf8'));
+}
+
+async function writeRootJson(root, relativePath, document) {
+  await writeFile(join(root, relativePath), `${JSON.stringify(document, null, 2)}\n`);
+}
+
+async function adapterProtocolCheck(root) {
+  const [manifest, conformance, traceability] = await Promise.all([
+    readRootJson(root, 'package-manifest.yaml'),
+    readRootJson(root, 'conformance/manifest.yaml'),
+    readRootJson(root, 'traceability.yaml'),
+  ]);
+  return checkIntelligenceAdapterProtocol(root, manifest, conformance, traceability);
 }
 
 async function afterReceiptRecovery(caseId, targetIndex) {
@@ -56,6 +76,39 @@ test('CLI validates the complete Intelligence Adapter proposal protocol pack', (
   assert.equal(adapterResults.length, 42);
   assert.ok(adapterResults.every(({verdict}) => verdict === 'pass'));
   assert.equal(result.status, 0, result.stderr || result.stdout);
+});
+
+test('protocol evidence recomputes claim indexes and every recovery report fact', async () => {
+  const [recoveryRoot, claimRoot] = await Promise.all([copyCommittedPackage(), copyCommittedPackage()]);
+  const recoveryPath = 'conformance/evidence/intelligence-adapter-recovery-report.json';
+  const evidencePath = 'conformance/evidence/intelligence-adapter-evidence.json';
+  const recoveryReport = await readRootJson(recoveryRoot, recoveryPath);
+  const [firstRecovery] = recoveryReport.cases;
+  recoveryReport.cases = [
+    {...firstRecovery},
+    {...firstRecovery, crash_point: 'after_receipt', terminal_state: 'recovered', transmitted_bytes: 999},
+    {...firstRecovery, crash_point: 'after_transmission_before_receipt', terminal_state: 'recovery_required', transmitted_bytes: 1},
+  ];
+  const evidence = await readRootJson(claimRoot, evidencePath);
+  for (const claim of [
+    'isolation_fixture_ids',
+    'canary_fixture_ids',
+    'instrumented_double_fixture_ids',
+    'retry_fixture_ids',
+    'fallback_fixture_ids',
+    'inert_output_fixture_ids',
+  ]) evidence.claims[claim] = ['FIX-IAP-POS-001'];
+  await Promise.all([
+    writeRootJson(recoveryRoot, recoveryPath, recoveryReport),
+    writeRootJson(claimRoot, evidencePath, evidence),
+  ]);
+  const [recoveryCheck, claimCheck] = await Promise.all([
+    adapterProtocolCheck(recoveryRoot),
+    adapterProtocolCheck(claimRoot),
+  ]);
+
+  assert.ok(recoveryCheck.codes.includes('adapter.recovery_evidence_invalid'));
+  assert.ok(claimCheck.codes.includes('adapter.evidence_claim_invalid'));
 });
 
 test('attempt authorization denies an unapproved model before transmission', async () => {
@@ -575,6 +628,31 @@ test('recovery receipts retain the measurements that select timeout and cost out
   assert.equal(receipts[0].observed_completed_at, timeout.attempts[0].double.observed_completed_at);
   assert.equal(receipts[1].budget.cost_microunits, cost.attempts[0].double.cost_microunits);
   assert.equal(receipts[1].observed_completed_at, cost.attempts[0].double.observed_completed_at);
+});
+
+test('recovery mismatch receipts bind same-length raw response and validated proposal artifacts', async () => {
+  const altered = await scenario('crash-after-receipt-preserves-receipt');
+  const changed = await scenario('crash-after-receipt-preserves-receipt');
+  altered.attempts[0].double.raw_output = altered.attempts[0].double.raw_output.replace('Bounded', 'Altered');
+  changed.attempts[0].double.raw_output = changed.attempts[0].double.raw_output.replace('Bounded', 'Changed');
+
+  const results = await Promise.all([altered, changed]
+    .map((document) => observeIntelligenceAdapterScenario(document, packageRoot)));
+  const receipts = results.map(({receipts: values}) => parseReceiptStrings(values)[0]);
+  const observations = results.map(({observations: values}) => JSON.parse(values[0]));
+
+  assert.deepEqual(results.map(({codes}) => codes[0]), [
+    'adapter.recovery_unknown_completion',
+    'adapter.recovery_unknown_completion',
+  ]);
+  assert.equal(receipts[0].budget.output_bytes, receipts[1].budget.output_bytes);
+  assert.notEqual(receipts[0].raw_response_sha256, receipts[1].raw_response_sha256);
+  for (const [index, document] of [altered, changed].entries()) {
+    const rawOutput = document.attempts[0].double.raw_output;
+    assert.equal(receipts[index].raw_response_sha256, sha256(rawOutput));
+    assert.equal(receipts[index].proposal_sha256, canonicalDigest(JSON.parse(rawOutput)));
+    assert.equal(observations[index].raw_output_sha256, sha256(rawOutput));
+  }
 });
 
 test('retry scheduling denies known aggregate input exhaustion before emitting a schedule receipt', async () => {

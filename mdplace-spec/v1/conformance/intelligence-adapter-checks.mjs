@@ -212,7 +212,9 @@ export async function checkIntelligenceAdapterProtocol(packageRoot, manifest, co
 
   const evidence = evidenceResult.document;
   const evidenceBindings = evidence?.fixture_bindings ?? [];
+  const fixtureIds = [...fixtureRecords.keys()];
   if (evidence?.validator_version !== manifest?.validator_version || evidenceBindings.length !== 42 ||
+      !isDeepStrictEqual(evidenceBindings.map(({fixture_id: id}) => id), fixtureIds) ||
       createHash('sha256').update(contextResult.read.content ?? '').digest('hex') !== evidence?.approved_context_sha256) {
     codes.push('adapter.evidence_binding_invalid');
   }
@@ -228,9 +230,35 @@ export async function checkIntelligenceAdapterProtocol(packageRoot, manifest, co
     }
   }
   const claims = evidence?.claims;
-  if (claims?.zero_semantic_effect !== true || claims?.zero_filesystem_effect !== true ||
-      claims?.zero_tool_effect !== true || claims?.exact_transmission_observed !== true ||
-      claims?.all_outcomes_receipted !== true) codes.push('adapter.evidence_claim_invalid');
+  const fixtureIdsMatching = (predicate) => [...fixtureRecords.entries()]
+    .filter(([, record]) => predicate(record.fixture.subject.document.case_id))
+    .map(([fixtureId]) => fixtureId);
+  const expectedClaimIndexes = {
+    isolation_fixture_ids: fixtureIdsMatching((caseId) => caseId.includes('isolation') || caseId.includes('canary')),
+    canary_fixture_ids: fixtureIdsMatching((caseId) => caseId.includes('canary') || caseId === 'remote-valid-proposal-advice'),
+    instrumented_double_fixture_ids: fixtureIds,
+    retry_fixture_ids: fixtureIdsMatching((caseId) => caseId.includes('retry')),
+    fallback_fixture_ids: fixtureIdsMatching((caseId) => caseId.includes('fallback')),
+    inert_output_fixture_ids: fixtureIdsMatching((caseId) =>
+      caseId.includes('proposal') || caseId.includes('output') || caseId.includes('authority')),
+  };
+  const fixtureRecordValues = [...fixtureRecords.values()];
+  const expectedClaimTruth = {
+    zero_semantic_effect: fixtureRecordValues.every(({receipts}) =>
+      receipts.every(({semantic_effects: effects}) => effects.length === 0)),
+    zero_filesystem_effect: fixtureRecordValues.every(({observed, receipts}) =>
+      observed.filesystem_effects.every((effect) => effect === 'none') &&
+      receipts.every(({filesystem_effects: effects}) => effects.length === 0)),
+    zero_tool_effect: fixtureRecordValues.every(({receipts}) =>
+      receipts.every(({tool_invocations: invocations}) => invocations.length === 0)),
+    exact_transmission_observed: fixtureRecordValues.every(({observed}) =>
+      observed.network_effects[0] === 'none' || observed.observations.length > 0),
+    all_outcomes_receipted: fixtureRecordValues.every(({observed}) => observed.receipts.length > 0),
+  };
+  if (Object.entries(expectedClaimIndexes).some(([claim, expected]) =>
+    !isDeepStrictEqual(claims?.[claim], expected)) ||
+      Object.entries(expectedClaimTruth).some(([claim, expected]) =>
+        expected !== true || claims?.[claim] !== expected)) codes.push('adapter.evidence_claim_invalid');
 
   const outcomeRows = rulesResult.document?.outcome_precedence ?? [];
   const ruleCodes = outcomeRows.map(({code}) => code);
@@ -247,11 +275,18 @@ export async function checkIntelligenceAdapterProtocol(packageRoot, manifest, co
     codes.push('adapter.denial_coverage_missing');
   }
   const recoveryCases = recoveryResult.document?.cases ?? [];
-  if (recoveryCases.length !== 3 || recoveryCases.some((entry) => {
+  const recoveryFixtureIds = [...fixtureRecords.entries()]
+    .filter(([, record]) => record.entry.category === 'crash_recovery')
+    .map(([fixtureId]) => fixtureId);
+  if (!isDeepStrictEqual(recoveryCases.map(({fixture_id: id}) => id), recoveryFixtureIds) ||
+      recoveryCases.some((entry) => {
     const record = fixtureRecords.get(entry.fixture_id);
     return record === undefined || entry.observable_result_sha256 !== adapterResultDigest(record.observed) ||
+      entry.crash_point !== record.fixture.subject.document.recovery.crash_point ||
       entry.target_attempt_id !== record.fixture.subject.document.recovery.target_attempt_id ||
       entry.target_attempt_sequence !== record.fixture.subject.document.recovery.target_attempt_sequence ||
+      entry.terminal_state !== record.observed.terminal_state ||
+      entry.transmitted_bytes !== record.receipts.reduce((total, receipt) => total + receipt.transmitted_bytes, 0) ||
       !isDeepStrictEqual(entry.receipt_sha256s, record.receipts.map(({receipt_sha256: digest}) => digest));
   })) codes.push('adapter.recovery_evidence_invalid');
 

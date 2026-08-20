@@ -396,6 +396,8 @@ async function observeRecovery(subject, context, packageRoot) {
     ? zeroReceiptBudget()
     : recoveryEvaluation?.budget ??
       {input_bytes: transmission.byte_length, output_bytes: 0, runtime_ms: 0, cost_microunits: 0};
+  const recoveryRawOutput = transmission === null ? null : recoveryEvaluation?.rawOutput ?? null;
+  const recoveryProposal = transmission === null ? null : recoveryEvaluation?.proposal ?? null;
   const code = highestPrecedenceCode([
     chainCode,
     replay.terminalCode,
@@ -403,9 +405,10 @@ async function observeRecovery(subject, context, packageRoot) {
     recoveryEvaluation?.code ?? null,
     'adapter.recovery_unknown_completion',
   ]);
-  const receipt = receiptFor(attempt, transmission, null, null, outcomeForCode(code), code, budget);
+  const receipt = receiptFor(attempt, transmission, recoveryRawOutput, recoveryProposal,
+    outcomeForCode(code), code, budget);
   const observations = observedPriorTransmission
-    ? [{...observedTransmission(attempt, bytes, budget, null), new_transmission: false}]
+    ? [{...observedTransmission(attempt, bytes, budget, recoveryRawOutput), new_transmission: false}]
     : [{attempt_id: attempt.envelope.attempt_id, new_transmission: false, prior_transmission_valid: false}];
   return result({
     verdict: 'fail', codes: [code], outputs: [outputFor(code)],
