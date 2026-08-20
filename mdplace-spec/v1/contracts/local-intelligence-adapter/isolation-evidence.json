@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/local-adapter-isolation-evidence.schema.json",
+  "schema_id": "mdplace.local-adapter-isolation-evidence/v1",
+  "profile_id": "local-adapter",
+  "evidence_id": "local-isolation-evidence:v1",
+  "status": "current",
+  "profile_sha256": "f71bfc8fec18b634edd8b1beec948a1a37ef0cf2f6657f423db1a9fa9b839ad7",
+  "ephemeral": true,
+  "fresh_process": true,
+  "advisory_only": true,
+  "prompt_injection_inert": true,
+  "filesystem": "none",
+  "network": "denied",
+  "tools": "none",
+  "ambient_configuration": "unreadable",
+  "credentials": "none",
+  "semantic_writer": "unreachable",
+  "observed_at": "2026-08-21T00:00:00.000Z",
+  "expires_at": "2026-09-20T00:00:00.000Z"
+}

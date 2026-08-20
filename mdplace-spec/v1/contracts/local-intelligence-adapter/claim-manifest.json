@@ -1,0 +1,368 @@
+{
+  "$schema": "../schemas/local-adapter-claim-manifest.schema.json",
+  "schema_id": "mdplace.local-adapter-claim-manifest/v1",
+  "manifest_id": "local-adapter-claim:v1",
+  "package_series": "mdplace-spec/v1",
+  "release_version": "1.0.0",
+  "validator_id": "mdplace.package-validator",
+  "validator_version": "1.2.0",
+  "rows": [
+    {
+      "id": "local-adapter",
+      "owner": "local-adapter",
+      "verdict": "pass",
+      "evidence_digest": "9cc1662c7c4b4fabd9949a67c44a193ea949fac7e476e288bef0c837ebd212ac",
+      "evidence_material": [
+        {
+          "ordinal": 0,
+          "label": "local_material_001",
+          "path": "contracts/local-intelligence-adapter/profile.json",
+          "sha256": "f71bfc8fec18b634edd8b1beec948a1a37ef0cf2f6657f423db1a9fa9b839ad7"
+        },
+        {
+          "ordinal": 1,
+          "label": "local_material_002",
+          "path": "contracts/local-intelligence-adapter/capability-evidence.json",
+          "sha256": "41c5505e4c7bb99b53280c93f435d53abcf65975cb71984c8e610311f7b25bf5"
+        },
+        {
+          "ordinal": 2,
+          "label": "local_material_003",
+          "path": "contracts/local-intelligence-adapter/isolation-evidence.json",
+          "sha256": "4acf8e0a1726321e12ad9b8b2af9462c983cc749bdf2d8beb3be2bc40aa941b8"
+        },
+        {
+          "ordinal": 3,
+          "label": "local_material_004",
+          "path": "contracts/local-intelligence-adapter/fixture-manifest.json",
+          "sha256": "0f800dc15a8ee8fb58a51b12b7eb132cd2d633fc0c2d9ba74dd18a9d0bd5b83f"
+        },
+        {
+          "ordinal": 4,
+          "label": "local_material_005",
+          "path": "conformance/evidence/local-adapter-evidence.json",
+          "sha256": "b55e14e370311ec22e53d76e601c9a60298568d0c5d0f73517dd0c41c1a3f139"
+        },
+        {
+          "ordinal": 5,
+          "label": "local_material_006",
+          "path": "conformance/scenarios/local-intelligence-adapter/valid-inert-proposal.json",
+          "sha256": "487f1c22373570b5263e95d5d7244e500d92e338b7bfcd66905030a5f7c4fede"
+        },
+        {
+          "ordinal": 6,
+          "label": "local_material_007",
+          "path": "conformance/scenarios/local-intelligence-adapter/valid-abstention.json",
+          "sha256": "df3c160b8974e95d6f1d632b28afaa30e858a36c2505d21c67f9640c78fd3aab"
+        },
+        {
+          "ordinal": 7,
+          "label": "local_material_008",
+          "path": "conformance/scenarios/local-intelligence-adapter/exact-input-ceiling.json",
+          "sha256": "8570d67221c4ee0977069d6ce36125561ac94291870c5e63febbdb10d4625b6b"
+        },
+        {
+          "ordinal": 8,
+          "label": "local_material_009",
+          "path": "conformance/scenarios/local-intelligence-adapter/exact-output-ceiling.json",
+          "sha256": "511f7017e69f3f10bc65af8ef8fed40886a86c90fc3f2f47fedc29c5aee9fbc9"
+        },
+        {
+          "ordinal": 9,
+          "label": "local_material_010",
+          "path": "conformance/scenarios/local-intelligence-adapter/exact-runtime-ceiling.json",
+          "sha256": "a26202e4fe8d9db0bc5517e3536eb63d2b66cede93d0e52ce745eb96b09548c0"
+        },
+        {
+          "ordinal": 10,
+          "label": "local_material_011",
+          "path": "conformance/scenarios/local-intelligence-adapter/exact-attempt-ceiling.json",
+          "sha256": "ca35f3548d86c3df3c02ef8146d7d53591072e29b519afdeb12896a18e5a2b1d"
+        },
+        {
+          "ordinal": 11,
+          "label": "local_material_012",
+          "path": "conformance/scenarios/local-intelligence-adapter/hostile-instructions-remain-inert.json",
+          "sha256": "6cc576ec55b41e03b3647a8ab78ab6a2ae40ba36f0f6f157c6ffd12f7a16b031"
+        },
+        {
+          "ordinal": 12,
+          "label": "local_material_013",
+          "path": "conformance/scenarios/local-intelligence-adapter/embedded-tool-call-denied.json",
+          "sha256": "3856af66677362682f11c67601ba875635bb73ca6a56f483ed18af255cb24458"
+        },
+        {
+          "ordinal": 13,
+          "label": "local_material_014",
+          "path": "conformance/scenarios/local-intelligence-adapter/secret-request-denied.json",
+          "sha256": "a2ee9faa1d5abf61d0970c2d82566cae50e46e8c73d1c1bf1a353420f237f0dc"
+        },
+        {
+          "ordinal": 14,
+          "label": "local_material_015",
+          "path": "conformance/scenarios/local-intelligence-adapter/ambient-configuration-denied.json",
+          "sha256": "c203c83dd51d3aa154858f5612daceff45e5ff79e9185077ef0b6ad2d64fdd6f"
+        },
+        {
+          "ordinal": 15,
+          "label": "local_material_016",
+          "path": "conformance/scenarios/local-intelligence-adapter/semantic-authority-denied.json",
+          "sha256": "5c009e06827e934149e83defaed30b63b95917341fa7aa42eee68f16310e1311"
+        },
+        {
+          "ordinal": 16,
+          "label": "local_material_017",
+          "path": "conformance/scenarios/local-intelligence-adapter/note-placement-authority-denied.json",
+          "sha256": "d561ec701d3376ac470958aaaaf31ed3c64721c3c7c824f7f1a16b4ddb04b076"
+        },
+        {
+          "ordinal": 17,
+          "label": "local_material_018",
+          "path": "conformance/scenarios/local-intelligence-adapter/taxonomy-authority-denied.json",
+          "sha256": "aa788f535cb488e9013bc3e514919bee8a0c22b1586d2f876069e9f6c0062cd0"
+        },
+        {
+          "ordinal": 18,
+          "label": "local_material_019",
+          "path": "conformance/scenarios/local-intelligence-adapter/projection-authority-denied.json",
+          "sha256": "6d2b91afa12cf6a61eeb25801c7e343adba8b7fa4b076bc22adfb4492e8c0a9a"
+        },
+        {
+          "ordinal": 19,
+          "label": "local_material_020",
+          "path": "conformance/scenarios/local-intelligence-adapter/filesystem-authority-denied.json",
+          "sha256": "d4d63e2610f7298d5967833a25ae9279dfe60c881b266f948c56a3e9612ddb85"
+        },
+        {
+          "ordinal": 20,
+          "label": "local_material_021",
+          "path": "conformance/scenarios/local-intelligence-adapter/network-authority-denied.json",
+          "sha256": "02bf4208a6852236624720ae100e79bd4a9d541c3d5fc53dc0b96caebd0c511a"
+        },
+        {
+          "ordinal": 21,
+          "label": "local_material_022",
+          "path": "conformance/scenarios/local-intelligence-adapter/tool-authority-denied.json",
+          "sha256": "9d1af5862cbdd1d081a73e8fdef8aefcee5737dbbc70f28ea1f66a748aab9aa8"
+        },
+        {
+          "ordinal": 22,
+          "label": "local_material_023",
+          "path": "conformance/scenarios/local-intelligence-adapter/automation-authority-denied.json",
+          "sha256": "9393be096edca97ad9f855d3d7987fb41a3842d1172e859cb484e31f5f1587eb"
+        },
+        {
+          "ordinal": 23,
+          "label": "local_material_024",
+          "path": "conformance/scenarios/local-intelligence-adapter/malformed-output-denied.json",
+          "sha256": "316afaf60712a8e9ac2434e606f435379c1d2037988dd41bca96edd7fc9e94f0"
+        },
+        {
+          "ordinal": 24,
+          "label": "local_material_025",
+          "path": "conformance/scenarios/local-intelligence-adapter/input-budget-exhausted.json",
+          "sha256": "3b0c884b1bb1674a8b7c6578591e49960dc705faa5baba2b11c7d0033bde71fb"
+        },
+        {
+          "ordinal": 25,
+          "label": "local_material_026",
+          "path": "conformance/scenarios/local-intelligence-adapter/output-budget-exhausted.json",
+          "sha256": "6d36f2acf646086901106fe8b854425a62406d4290dfd33f689878ea2187c8a5"
+        },
+        {
+          "ordinal": 26,
+          "label": "local_material_027",
+          "path": "conformance/scenarios/local-intelligence-adapter/runtime-budget-exhausted.json",
+          "sha256": "d18cc491f8cc4a72908414e6bad0d59c3263b8750f2a46ecab72276fc987fa18"
+        },
+        {
+          "ordinal": 27,
+          "label": "local_material_028",
+          "path": "conformance/scenarios/local-intelligence-adapter/attempt-budget-exhausted.json",
+          "sha256": "b3f85679eca66ac390d8d70bf7f52a5c50676adda0fa94179e25f5581f359d87"
+        },
+        {
+          "ordinal": 28,
+          "label": "local_material_029",
+          "path": "conformance/scenarios/local-intelligence-adapter/stale-policy-binding-denied.json",
+          "sha256": "aae26d06e576f3304b726e06a2585bb0159d96188b02d2a48750eca6f7d193b2"
+        },
+        {
+          "ordinal": 29,
+          "label": "local_material_030",
+          "path": "conformance/scenarios/local-intelligence-adapter/missing-capability-evidence-denied.json",
+          "sha256": "ae06db0e9c2c6c2e9839ec7f1fc23c9f0ed93332d9ed1e5b97269f3ad315b302"
+        },
+        {
+          "ordinal": 30,
+          "label": "local_material_031",
+          "path": "conformance/scenarios/local-intelligence-adapter/stale-capability-evidence-denied.json",
+          "sha256": "4978aaa8b499b2eda7532812e630411e1e9d1fbedbcba63a7eddca8542463079"
+        },
+        {
+          "ordinal": 31,
+          "label": "local_material_032",
+          "path": "conformance/scenarios/local-intelligence-adapter/malformed-capability-evidence-denied.json",
+          "sha256": "2314fe826957519329ea106d3412bc13740909500a68d8a8f8ed27ce943551d3"
+        },
+        {
+          "ordinal": 32,
+          "label": "local_material_033",
+          "path": "conformance/scenarios/local-intelligence-adapter/unsupported-capability-evidence-denied.json",
+          "sha256": "09739374b237624a824aee1ef3ec2f06ae85433d33036916a19bc244542a4af3"
+        },
+        {
+          "ordinal": 33,
+          "label": "local_material_034",
+          "path": "conformance/scenarios/local-intelligence-adapter/inconclusive-capability-evidence-denied.json",
+          "sha256": "678fc4bf6ecc63aef2b91d8bf3fe67b29e8d627ed653bb2f7fca9a7ba77a7af6"
+        },
+        {
+          "ordinal": 34,
+          "label": "local_material_035",
+          "path": "conformance/scenarios/local-intelligence-adapter/missing-isolation-evidence-denied.json",
+          "sha256": "cbf087a423118bfcea433da0f765cafe571df03bd8c93dc8cfef794b7449572a"
+        },
+        {
+          "ordinal": 35,
+          "label": "local_material_036",
+          "path": "conformance/scenarios/local-intelligence-adapter/stale-isolation-evidence-denied.json",
+          "sha256": "709cb5253318d16c564b8b4b5c1ff40dfac44ea2feafc14ce127260c382f46b5"
+        },
+        {
+          "ordinal": 36,
+          "label": "local_material_037",
+          "path": "conformance/scenarios/local-intelligence-adapter/malformed-isolation-evidence-denied.json",
+          "sha256": "dad6353fe8c5f1d3935bcd42872819411c604970bf3273db512989adda3eab6b"
+        },
+        {
+          "ordinal": 37,
+          "label": "local_material_038",
+          "path": "conformance/scenarios/local-intelligence-adapter/unsupported-isolation-evidence-denied.json",
+          "sha256": "c4391a86f520f771fddd5c8d9429a2b5bfdce7c070d9aa62214e2789b5e0c697"
+        },
+        {
+          "ordinal": 38,
+          "label": "local_material_039",
+          "path": "conformance/scenarios/local-intelligence-adapter/inconclusive-isolation-evidence-denied.json",
+          "sha256": "4677995cdc0aa18b6bef8429e320abf07ac5d5e35d04e4ae6f3527c516fedcb1"
+        },
+        {
+          "ordinal": 39,
+          "label": "local_material_040",
+          "path": "conformance/scenarios/local-intelligence-adapter/isolation-canary-failed-denied.json",
+          "sha256": "94a6549fd02f91d8ca9ba80c0dc08fc0aa8b33da90b4d1adbfdcd1534478b78e"
+        },
+        {
+          "ordinal": 40,
+          "label": "local_material_041",
+          "path": "conformance/scenarios/local-intelligence-adapter/interruption-recorded.json",
+          "sha256": "6bb99446b6e7063e6f12b555d0094fef4e852d978dd084fe65643f08c5bedc2d"
+        },
+        {
+          "ordinal": 41,
+          "label": "local_material_042",
+          "path": "conformance/scenarios/local-intelligence-adapter/cancellation-recorded.json",
+          "sha256": "77ad4fec1bb8e2fba9bf2188787735c7a8b4737abedc78c9170ad7f28de84f50"
+        },
+        {
+          "ordinal": 42,
+          "label": "local_material_043",
+          "path": "conformance/scenarios/local-intelligence-adapter/cancel-and-resume-new-attempt.json",
+          "sha256": "77a8eb9a801b275748ddb0695522781092d6a22ef2940b27cc44a17f54b38a9e"
+        },
+        {
+          "ordinal": 43,
+          "label": "local_material_044",
+          "path": "conformance/scenarios/local-intelligence-adapter/repeated-interruption-recorded.json",
+          "sha256": "6bbd205def2c17bd559cca535184749c2c86a9e78d4251b66a45a856df2c1ea1"
+        },
+        {
+          "ordinal": 44,
+          "label": "local_material_045",
+          "path": "conformance/scenarios/local-intelligence-adapter/hung-execution-bounded.json",
+          "sha256": "7ebfdb4b98be3ffa3d8ffea9375c78c5b1659c981e47cb3fc80253b5aa7c844b"
+        },
+        {
+          "ordinal": 45,
+          "label": "local_material_046",
+          "path": "conformance/scenarios/local-intelligence-adapter/flaky-execution-bounded.json",
+          "sha256": "a25c186ccb17dcf8e9f79848ae6965cceed4334ae579aaadfcf0122f02df93cb"
+        },
+        {
+          "ordinal": 46,
+          "label": "local_material_047",
+          "path": "conformance/scenarios/local-intelligence-adapter/misleading-success-denied.json",
+          "sha256": "381cefc040c8d3ebe1770ecd8cf83e68a82f14a84c41f990df864d711d530461"
+        },
+        {
+          "ordinal": 47,
+          "label": "local_material_048",
+          "path": "conformance/scenarios/local-intelligence-adapter/crash-before-receipt-requires-recovery.json",
+          "sha256": "c3e8b0c4c476687acfaa18b593c0a1254da60f3a2fff4e795262c074b92f2fa0"
+        },
+        {
+          "ordinal": 48,
+          "label": "local_material_049",
+          "path": "conformance/scenarios/local-intelligence-adapter/crash-after-receipt-requires-recovery.json",
+          "sha256": "40e5844266b34e23ab69b1a9e2dd9a5e15a9cda9bf1594a6a0824eae8b819483"
+        },
+        {
+          "ordinal": 49,
+          "label": "local_material_050",
+          "path": "conformance/scenarios/local-intelligence-adapter/recovery-revalidates-current-digests.json",
+          "sha256": "6ab83a0452ded3fafa98da88e2ac50db92940ce175d527138d41f2bfb0188585"
+        },
+        {
+          "ordinal": 50,
+          "label": "local_material_051",
+          "path": "conformance/scenarios/local-intelligence-adapter/recovery-rejects-stale-evidence-digest.json",
+          "sha256": "6b7e0248d4d87a7e9810efa9ebd709f876a5496e2fbd020bb241b2c5fbd72046"
+        },
+        {
+          "ordinal": 51,
+          "label": "local_material_052",
+          "path": "conformance/scenarios/local-intelligence-adapter/recovery-rejects-stale-claim-digest.json",
+          "sha256": "a47af31567c1605c5a3a832ddf8c9b0720f86a9a2443fb5ebd18611461b29aed"
+        },
+        {
+          "ordinal": 52,
+          "label": "local_material_053",
+          "path": "conformance/scenarios/local-intelligence-adapter/illegal-capability-transition-denied.json",
+          "sha256": "dba5b7fb7f739c6da0af5bd260b4d8de99d79b45979eb7a67298b646484e9bf2"
+        },
+        {
+          "ordinal": 53,
+          "label": "local_material_054",
+          "path": "conformance/scenarios/local-intelligence-adapter/illegal-isolation-transition-denied.json",
+          "sha256": "3d522ef0cbff4864937749109021a5a434e7a57ac27ec8401078a0fbc24b9703"
+        },
+        {
+          "ordinal": 54,
+          "label": "local_material_055",
+          "path": "conformance/scenarios/local-intelligence-adapter/illegal-verdict-transition-denied.json",
+          "sha256": "f92fabc2e6a1bb6cbda158cd87d7c3617136704fc062f4a30cdb785b0d6e5f06"
+        },
+        {
+          "ordinal": 55,
+          "label": "local_material_056",
+          "path": "conformance/scenarios/local-intelligence-adapter/illegal-failure-transition-denied.json",
+          "sha256": "5c08a526bfb604ce48ce5a7e3ab7baaa1b2c4f2d453040bd26ea668df7cf9981"
+        },
+        {
+          "ordinal": 56,
+          "label": "local_material_057",
+          "path": "conformance/scenarios/local-intelligence-adapter/illegal-recovery-transition-denied.json",
+          "sha256": "0c1c6e99ed1f7673ef5f9c4575045a10b842cbc30a2dd96e09633fcfbec6aec2"
+        }
+      ],
+      "dependencies_elevated": {
+        "core": false,
+        "product_readiness": false,
+        "remote_adapter": false,
+        "codex_adapter": false,
+        "placement_automation": false
+      }
+    }
+  ]
+}

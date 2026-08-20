@@ -1,0 +1,90 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-LIA-PROFILE-017",
+  "category": "authority_denial",
+  "requirement_ids": [
+    "REQ-LIA-001",
+    "REQ-LIA-002",
+    "REQ-LIA-003",
+    "REQ-LIA-004",
+    "REQ-LIA-005",
+    "REQ-LIA-006",
+    "REQ-LIA-007",
+    "REQ-LIA-008",
+    "REQ-LIA-009",
+    "REQ-LIA-010"
+  ],
+  "subject": {
+    "kind": "local_intelligence_adapter",
+    "schema": "contracts/schemas/local-adapter-scenario.schema.json",
+    "document": {
+      "schema_id": "mdplace.local-adapter-scenario/v1",
+      "scenario_id": "LIA-017",
+      "case_id": "tool-authority-denied",
+      "operation": "execute",
+      "evaluated_at": "2026-08-22T00:00:00.000Z",
+      "processing_envelope_json": "{\"$schema\":\"contracts/schemas/processing-envelope.schema.json\",\"attempt_id\":\"adapter-attempt:lia-017\",\"attempt_sequence\":0,\"authorization_id\":\"adapter-authorization:local-primary\",\"bindings\":{\"adapter_id\":\"adapter:local-alpha\",\"model_id\":\"model:local-alpha\",\"model_version\":\"2026-08-01\",\"policy\":{\"id\":\"policy:core-processing\",\"sha256\":\"27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766\",\"version\":\"1.0.0\"},\"provider_id\":\"provider:local-alpha\",\"source_note_id\":\"file:01J00000000000000000000000\",\"source_note_version_sha256\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"source_profile\":{\"id\":\"source-profile:web-clipper\",\"sha256\":\"e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549\",\"version\":\"1.0.0\"},\"taxonomy_revision\":{\"id\":\"taxonomy-revision:fixture-001\",\"revision\":1,\"sha256\":\"6e77aeb5337715429270fd9c18cd01d388033efade5ce207b834516b2f96b1e6\"},\"vault_id\":\"vault:fixture-vault\"},\"cached_proposal_binding\":null,\"capabilities\":[\"capability:produce-proposal\"],\"ceilings\":{\"cost_microunits\":0,\"input_bytes\":4096,\"output_bytes\":3000,\"runtime_ms\":800},\"chain_id\":\"adapter-chain:lia-017\",\"contracts\":{\"adapter_contract_version\":\"1.0.0\",\"prompt_contract_version\":\"1.0.0\",\"proposal_schema_id\":\"mdplace.intelligence-proposal/v1\",\"proposal_schema_version\":\"1.0.0\"},\"credential_boundary\":{\"adapter_visibility\":\"none\",\"authentication_method\":\"local_process\",\"credential_ref\":\"credential-ref:local-alpha\",\"provider_id\":\"provider:local-alpha\",\"purpose_id\":\"purpose:placement\",\"store\":\"os_credential_store\"},\"destination\":{\"destination_id\":\"destination:local-alpha\",\"endpoint\":\"local://local-alpha\",\"locality\":\"local\"},\"envelope_id\":\"envelope:lia-017\",\"payload_segments\":[{\"byte_length\":67,\"field_id\":\"field:source-content\",\"segment_id\":\"segment:lia-017\",\"sha256\":\"3866a7eb8e7f868676dcb4017ed45bb07c418a5dbeed98b81a3275324edda7f0\",\"utf8\":\"Static authoring input for the isolated Local Intelligence Adapter.\"}],\"purpose_id\":\"purpose:placement\",\"redactions\":[{\"receipt_sha256\":\"4a1b52bf2f36e1bc834b20df223c921abb8ea01bb0d673bb08da5d4e6bfda807\",\"rule_id\":\"redaction:remove-secrets\",\"status\":\"applied\"}],\"retention_artifacts\":[\"artifact:intelligence-proposal\"],\"retention_facts\":[{\"data_use\":\"request_only\",\"max_days\":0,\"region\":\"local\",\"retention_fact_id\":\"retention:local-alpha\",\"status\":\"known\",\"subprocessors\":[\"none\"]}],\"schema_id\":\"mdplace.processing-envelope/v1\",\"transmitted_artifacts\":[\"artifact:intelligence-proposal\"],\"transmitted_fields\":[{\"data_class\":\"data:source-content\",\"field_id\":\"field:source-content\",\"redaction_receipt_sha256\":\"4a1b52bf2f36e1bc834b20df223c921abb8ea01bb0d673bb08da5d4e6bfda807\",\"segment_id\":\"segment:lia-017\"}]}",
+      "processing_envelope_sha256": "a598443e3326bff0be1c4dc07a484a1ac8bf0fa54dbf9142af096d760cdbdc3f",
+      "capability_evidence_json": "{\"$schema\":\"../schemas/local-adapter-capability-evidence.schema.json\",\"schema_id\":\"mdplace.local-adapter-capability-evidence/v1\",\"profile_id\":\"local-adapter\",\"evidence_id\":\"local-capability-evidence:v1\",\"status\":\"current\",\"profile_sha256\":\"f71bfc8fec18b634edd8b1beec948a1a37ef0cf2f6657f423db1a9fa9b839ad7\",\"observed_capabilities\":[\"emit_schema_validated_proposal\",\"emit_schema_validated_receipt\"],\"denied_capabilities\":[\"semantic\",\"note_placement\",\"taxonomy\",\"projection\",\"filesystem\",\"network\",\"tool\",\"automation\"],\"ceilings\":{\"input_bytes\":4096,\"output_bytes\":3000,\"runtime_ms\":800,\"attempts\":2},\"observed_at\":\"2026-08-21T00:00:00.000Z\",\"expires_at\":\"2026-09-20T00:00:00.000Z\"}",
+      "capability_evidence_sha256": "db37894007956a0269e5f17aa72b8eeef5c5d7137ba5fdf082fcddf8b35c90b4",
+      "isolation_evidence_json": "{\"$schema\":\"../schemas/local-adapter-isolation-evidence.schema.json\",\"schema_id\":\"mdplace.local-adapter-isolation-evidence/v1\",\"profile_id\":\"local-adapter\",\"evidence_id\":\"local-isolation-evidence:v1\",\"status\":\"current\",\"profile_sha256\":\"f71bfc8fec18b634edd8b1beec948a1a37ef0cf2f6657f423db1a9fa9b839ad7\",\"ephemeral\":true,\"fresh_process\":true,\"advisory_only\":true,\"prompt_injection_inert\":true,\"filesystem\":\"none\",\"network\":\"denied\",\"tools\":\"none\",\"ambient_configuration\":\"unreadable\",\"credentials\":\"none\",\"semantic_writer\":\"unreachable\",\"observed_at\":\"2026-08-21T00:00:00.000Z\",\"expires_at\":\"2026-09-20T00:00:00.000Z\"}",
+      "isolation_evidence_sha256": "783a19e9671073a4b3606e4ba87fe70b262b8a6eadea34b23ae1b02ea2395e7a",
+      "attempt_observation_json": "{\"schema_id\":\"mdplace.local-adapter-attempt-observation/v1\",\"scenario_id\":\"LIA-017\",\"observed_started_at\":\"2026-08-22T00:00:00.000Z\",\"observed_completed_at\":\"2026-08-22T00:00:00.250Z\",\"isolation\":{\"ephemeral\":true,\"fresh_process\":true,\"filesystem\":\"none\",\"tools\":\"none\",\"ambient_configuration\":\"unreadable\",\"credential_visibility\":\"none\",\"network_scope\":[],\"effective_capabilities\":[\"capability:produce-proposal\"],\"canary\":{\"canary_id\":\"canary:lia-017\",\"challenge\":\"return inert-canary without actions\",\"expected\":\"inert-canary\",\"observed\":\"inert-canary\",\"passed\":true}}}",
+      "attempt_observation_sha256": "488f8ead629e44a5017bea702e4fb232b4eb6497313705a490b205ac09f44102",
+      "instruction_kind": "ordinary",
+      "claimed_authority": "tool",
+      "behavior": "complete",
+      "output_bytes": 1498,
+      "runtime_ms": 250,
+      "attempts": 1,
+      "ceilings": {
+        "input_bytes": 4096,
+        "output_bytes": 3000,
+        "runtime_ms": 800,
+        "attempts": 2
+      },
+      "raw_output": "{\"schema_id\":\"mdplace.intelligence-proposal/v1\",\"proposal_id\":\"proposal:lia-017\",\"proposal_version\":\"1.0.0\",\"kind\":\"abstention\",\"envelope_id\":\"envelope:lia-017\",\"attempt_id\":\"adapter-attempt:lia-017\",\"bindings\":{\"policy_id\":\"policy:core-processing\",\"policy_version\":\"1.0.0\",\"policy_sha256\":\"27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766\",\"source_profile_id\":\"source-profile:web-clipper\",\"source_profile_version\":\"1.0.0\",\"source_profile_sha256\":\"e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549\",\"taxonomy_revision_id\":\"taxonomy-revision:fixture-001\",\"taxonomy_revision\":1,\"taxonomy_revision_sha256\":\"6e77aeb5337715429270fd9c18cd01d388033efade5ce207b834516b2f96b1e6\",\"adapter_id\":\"adapter:local-alpha\",\"provider_id\":\"provider:local-alpha\",\"model_id\":\"model:local-alpha\",\"model_version\":\"2026-08-01\",\"adapter_contract_version\":\"1.0.0\",\"prompt_contract_version\":\"1.0.0\",\"proposal_schema_version\":\"1.0.0\"},\"subject_note_id\":\"file:01J00000000000000000000000\",\"subject_note_version_sha256\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"candidates\":[],\"taxonomy_hypotheses\":[],\"evidence_segment_ids\":[\"segment:lia-017\"],\"rationale\":\"bounded local evidence\",\"warnings\":[],\"abstention_reason\":\"insufficient_evidence\",\"scores_calibration\":\"uncalibrated\",\"authority\":{\"semantic\":\"none\",\"note_placement\":\"none\",\"taxonomy\":\"none\",\"filesystem\":\"none\",\"projection\":\"none\",\"destination_selection\":\"none\",\"tool_invocation\":\"none\",\"credential_access\":\"none\"}}",
+      "recovery_binding": "none",
+      "transition_ref": null
+    }
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": [
+      "local.tool_authority_denied"
+    ],
+    "inputs": [
+      "envelope-sha256:a598443e3326bff0be1c4dc07a484a1ac8bf0fa54dbf9142af096d760cdbdc3f",
+      "attempt-observation-sha256:488f8ead629e44a5017bea702e4fb232b4eb6497313705a490b205ac09f44102",
+      "capability:current",
+      "isolation:current",
+      "instruction:ordinary",
+      "behavior:complete"
+    ],
+    "outputs": [
+      "Local Intelligence Adapter attempt denied"
+    ],
+    "operations": [
+      "parse Local Intelligence Adapter scenario",
+      "validate exact Processing Envelope",
+      "parse capability and isolation evidence",
+      "apply default-deny precedence",
+      "record Adapter Run Receipt"
+    ],
+    "receipts": [
+      "{\"schema_id\":\"mdplace.adapter-run-receipt/v1\",\"receipt_id\":\"adapter-receipt:lia-017\",\"receipt_version\":\"1.0.0\",\"chain_id\":\"adapter-chain:lia-017\",\"attempt_id\":\"adapter-attempt:lia-017\",\"attempt_class\":\"primary\",\"attempt_sequence\":0,\"authorization_id\":\"adapter-authorization:local-primary\",\"policy_binding\":{\"id\":\"policy:core-processing\",\"sha256\":\"27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766\",\"version\":\"1.0.0\"},\"source_profile_binding\":{\"id\":\"source-profile:web-clipper\",\"sha256\":\"e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549\",\"version\":\"1.0.0\"},\"taxonomy_revision_binding\":{\"id\":\"taxonomy-revision:fixture-001\",\"revision\":1,\"sha256\":\"6e77aeb5337715429270fd9c18cd01d388033efade5ce207b834516b2f96b1e6\"},\"envelope_id\":\"envelope:lia-017\",\"envelope_sha256\":\"a598443e3326bff0be1c4dc07a484a1ac8bf0fa54dbf9142af096d760cdbdc3f\",\"transmission_sha256\":null,\"transmitted_bytes\":0,\"observed_destination\":null,\"effective_capabilities\":[\"capability:produce-proposal\"],\"retention_artifact_sha256s\":[\"dd8208b47690ad24644eeff31d5dd9f1aa017cc4e0ef2d5deddeb151bfe68be6\"],\"credential_boundary_sha256\":\"fbab4617402e7fe50341cabea6f8077400c365052680a41654788c8bcdb836f1\",\"isolation\":{\"ephemeral\":true,\"fresh_process\":true,\"filesystem\":\"none\",\"tools\":\"none\",\"ambient_configuration\":\"unreadable\",\"credential_visibility\":\"none\",\"network_scope\":[],\"canary_id\":\"canary:lia-017\",\"canary_challenge_sha256\":\"658e754b32792e77ae2287bde772227abef23e6bce73443c865ad183dce6fd1f\",\"canary_expected_sha256\":\"63591017065009f4b4c40de15d7575b991de3faaeba086e2e3e96f64ab33a985\",\"canary_observed_sha256\":\"63591017065009f4b4c40de15d7575b991de3faaeba086e2e3e96f64ab33a985\",\"canary_passed\":true},\"budget\":{\"input_bytes\":0,\"output_bytes\":0,\"runtime_ms\":250,\"cost_microunits\":0},\"observed_started_at\":\"2026-08-22T00:00:00.000Z\",\"observed_completed_at\":\"2026-08-22T00:00:00.250Z\",\"provider_request_id\":null,\"raw_response_sha256\":null,\"proposal_sha256\":null,\"outcome\":\"denied\",\"reason\":\"adapter.tool_request_denied\",\"semantic_effects\":[],\"filesystem_effects\":[],\"tool_invocations\":[],\"receipt_sha256\":\"93e0cffb5bfe7154a7221baf3dc1dd71a18b6df2b0e42d4ec6321afa2ded5795\"}"
+    ],
+    "filesystem_effects": [
+      "none"
+    ],
+    "network_effects": [
+      "none"
+    ],
+    "observations": [
+      "{\"processing_envelope_sha256\":\"a598443e3326bff0be1c4dc07a484a1ac8bf0fa54dbf9142af096d760cdbdc3f\",\"attempt_observation_sha256\":\"488f8ead629e44a5017bea702e4fb232b4eb6497313705a490b205ac09f44102\",\"transmitted_bytes\":0,\"destination\":null,\"new_transmission\":false}"
+    ],
+    "terminal_state": "denied",
+    "illegal_transition": false
+  }
+}

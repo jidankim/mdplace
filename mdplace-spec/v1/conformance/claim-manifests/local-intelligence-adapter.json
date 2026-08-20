@@ -8,10 +8,29 @@
   "release_version": "1.0.0",
   "validator_id": "mdplace.package-validator",
   "validator_version": "1.2.0",
-  "subject": {"kind": "conformance_fixture", "subject_id": "fixture:claim-profile-local-adapter", "sha256": "f2c20e4b7be1d2a70b00003e0976eb283edfd4c20c139618bf07ed4b2f7f9a47"},
-  "requirement_id": "REQ-VAL-004",
-  "evidence_requirements": [{"evidence_kind": "local_adapter_conformance", "mandatory": true}],
-  "evidence_bindings": [{"evidence_kind": "local_adapter_conformance", "mandatory": true, "availability": "unsupported", "applicability": "applicable", "evidence_ref": null, "evidence_digest": null, "verdict": "unsupported"}],
+  "subject": {
+    "kind": "local_adapter_claim",
+    "subject_id": "local-adapter:claim-v1",
+    "sha256": "8f19f27b9e52ad4c629f253b7f61d05149e9446bae9bf1a6dcc2ad4a68eb314c"
+  },
+  "requirement_id": "REQ-LIA-007",
+  "evidence_requirements": [
+    {
+      "evidence_kind": "local_adapter_conformance",
+      "mandatory": true
+    }
+  ],
+  "evidence_bindings": [
+    {
+      "evidence_kind": "local_adapter_conformance",
+      "mandatory": true,
+      "availability": "present",
+      "applicability": "applicable",
+      "evidence_ref": "conformance/evidence/envelopes/local-adapter-profile.json",
+      "evidence_digest": "77452f373a34c3477698bf5a174d81faab6411fade737bb53f9c1536cde68f4b",
+      "verdict": "pass"
+    }
+  ],
   "applicability": "applicable",
-  "verdict": "unsupported"
+  "verdict": "pass"
 }

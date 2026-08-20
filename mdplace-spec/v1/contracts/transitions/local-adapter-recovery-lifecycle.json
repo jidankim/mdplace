@@ -1,0 +1,572 @@
+{
+  "$schema": "../schemas/transition-table.schema.json",
+  "schema_id": "mdplace.transition-table/v1",
+  "table_id": "TRANS-LIA-RECOVERY",
+  "lifecycle": "Local Intelligence Adapter recovery",
+  "version": "1.0.0",
+  "states": [
+    "interrupted",
+    "revalidating",
+    "recovered",
+    "blocked"
+  ],
+  "commands": [
+    "inspect_adapter_recovery",
+    "recover_adapter_receipt",
+    "deny_adapter_recovery"
+  ],
+  "transitions": [
+    {
+      "transition_id": "TR-LIAREC-001",
+      "command_or_event": "inspect_adapter_recovery",
+      "from_state": "interrupted",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Local Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "capability_evidence_sha256",
+        "isolation_evidence_sha256"
+      ],
+      "emitted_records": [
+        "LocalIntelligenceAdapterTransitionObserved"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "revalidating",
+      "failure_result": {
+        "code": "local.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "LocalIntelligenceAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-LIAREC-002",
+      "command_or_event": "recover_adapter_receipt",
+      "from_state": "interrupted",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Local Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "capability_evidence_sha256",
+        "isolation_evidence_sha256"
+      ],
+      "emitted_records": [
+        "LocalIntelligenceAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "interrupted",
+      "failure_result": {
+        "code": "local.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "LocalIntelligenceAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-LIAREC-003",
+      "command_or_event": "deny_adapter_recovery",
+      "from_state": "interrupted",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Local Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "capability_evidence_sha256",
+        "isolation_evidence_sha256"
+      ],
+      "emitted_records": [
+        "LocalIntelligenceAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "interrupted",
+      "failure_result": {
+        "code": "local.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "LocalIntelligenceAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-LIAREC-004",
+      "command_or_event": "inspect_adapter_recovery",
+      "from_state": "revalidating",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Local Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "capability_evidence_sha256",
+        "isolation_evidence_sha256"
+      ],
+      "emitted_records": [
+        "LocalIntelligenceAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "revalidating",
+      "failure_result": {
+        "code": "local.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "LocalIntelligenceAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-LIAREC-005",
+      "command_or_event": "recover_adapter_receipt",
+      "from_state": "revalidating",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Local Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "capability_evidence_sha256",
+        "isolation_evidence_sha256"
+      ],
+      "emitted_records": [
+        "LocalIntelligenceAdapterTransitionObserved"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "recovered",
+      "failure_result": {
+        "code": "local.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "LocalIntelligenceAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-LIAREC-006",
+      "command_or_event": "deny_adapter_recovery",
+      "from_state": "revalidating",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Local Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "capability_evidence_sha256",
+        "isolation_evidence_sha256"
+      ],
+      "emitted_records": [
+        "LocalIntelligenceAdapterTransitionObserved"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "blocked",
+      "failure_result": {
+        "code": "local.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "LocalIntelligenceAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-LIAREC-007",
+      "command_or_event": "inspect_adapter_recovery",
+      "from_state": "recovered",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Local Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "capability_evidence_sha256",
+        "isolation_evidence_sha256"
+      ],
+      "emitted_records": [
+        "LocalIntelligenceAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "recovered",
+      "failure_result": {
+        "code": "local.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "LocalIntelligenceAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-LIAREC-008",
+      "command_or_event": "recover_adapter_receipt",
+      "from_state": "recovered",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Local Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "capability_evidence_sha256",
+        "isolation_evidence_sha256"
+      ],
+      "emitted_records": [
+        "LocalIntelligenceAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "recovered",
+      "failure_result": {
+        "code": "local.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "LocalIntelligenceAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-LIAREC-009",
+      "command_or_event": "deny_adapter_recovery",
+      "from_state": "recovered",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Local Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "capability_evidence_sha256",
+        "isolation_evidence_sha256"
+      ],
+      "emitted_records": [
+        "LocalIntelligenceAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "recovered",
+      "failure_result": {
+        "code": "local.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "LocalIntelligenceAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-LIAREC-010",
+      "command_or_event": "inspect_adapter_recovery",
+      "from_state": "blocked",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Local Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "capability_evidence_sha256",
+        "isolation_evidence_sha256"
+      ],
+      "emitted_records": [
+        "LocalIntelligenceAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "blocked",
+      "failure_result": {
+        "code": "local.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "LocalIntelligenceAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-LIAREC-011",
+      "command_or_event": "recover_adapter_receipt",
+      "from_state": "blocked",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Local Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "capability_evidence_sha256",
+        "isolation_evidence_sha256"
+      ],
+      "emitted_records": [
+        "LocalIntelligenceAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "blocked",
+      "failure_result": {
+        "code": "local.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "LocalIntelligenceAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-LIAREC-012",
+      "command_or_event": "deny_adapter_recovery",
+      "from_state": "blocked",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "foreground_recovery"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Local Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "capability_evidence_sha256",
+        "isolation_evidence_sha256"
+      ],
+      "emitted_records": [
+        "LocalIntelligenceAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "blocked",
+      "failure_result": {
+        "code": "local.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "LocalIntelligenceAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    }
+  ]
+}

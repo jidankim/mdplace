@@ -22,6 +22,7 @@ const subjectSchemas = [
   'contracts/schemas/evidence-recovery-report.schema.json',
   'contracts/schemas/evidence-transition-attempt.schema.json',
   'contracts/schemas/verdict-table.schema.json',
+  'contracts/schemas/local-adapter-claim-manifest.schema.json',
 ];
 
 function result(codes) {

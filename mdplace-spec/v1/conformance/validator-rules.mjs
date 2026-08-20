@@ -1,3 +1,4 @@
+import {localAdapterExecutablePaths} from './local-adapter-artifact-rules.mjs';
 export const manifestFields = new Set([
   '$schema',
   'schema_id',
@@ -97,10 +98,8 @@ const authorityByCommand = new Map([
   ['apply_redistribution', {roles: ['reference_vault_generator'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
   ['recover_redistribution', {roles: ['foreground_recovery'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
   ['seal_redistribution', {roles: ['conformance_validator'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
-  ['authorize_adapter_attempt', {roles: ['mdplace_agent'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
-  ['transmit_adapter_payload', {roles: ['mdplace_agent'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
-  ['record_adapter_outcome', {roles: ['mdplace_agent'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
-  ['deny_adapter_attempt', {roles: ['mdplace_agent'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ...['authorize_adapter_attempt', 'transmit_adapter_payload', 'record_adapter_outcome', 'deny_adapter_attempt', 'start_adapter_attempt']
+    .map((command) => [command, {roles: ['mdplace_agent'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}]),
   ['time_out_adapter_attempt', {roles: ['operating_system'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
   ['authorize_adapter_retry', {roles: ['mdplace_agent'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
   ['start_adapter_retry', {roles: ['mdplace_agent'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
@@ -113,6 +112,8 @@ const authorityByCommand = new Map([
   ['inspect_adapter_recovery', {roles: ['foreground_recovery'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
   ['recover_adapter_receipt', {roles: ['foreground_recovery'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
   ['deny_adapter_recovery', {roles: ['foreground_recovery'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
+  ...['mark_capability_stale', 'record_pass', 'record_fail', 'record_unsupported', 'record_inconclusive']
+    .map((command) => [command, {roles: ['conformance_validator'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}]),
 ]);
 
 const conformanceExecutables = new Set([
@@ -243,6 +244,6 @@ export function packageArtifactPathAllowed(path) {
   if (/^(?:package-manifest|traceability|claims-and-evidence)\.yaml$/.test(path)) return true;
   if (/^normative\/[a-z0-9][a-z0-9./-]*\.(?:md|json|yaml)$/.test(path)) return true;
   if (/^contracts\/[a-z0-9][a-z0-9./-]*\.json$/.test(path)) return true;
-  if (path.endsWith('.mjs')) return conformanceExecutables.has(path);
+  if (path.endsWith('.mjs')) return conformanceExecutables.has(path) || localAdapterExecutablePaths.has(path);
   return /^conformance\/[A-Za-z0-9][A-Za-z0-9./-]*\.(?:md|json|yaml|txt)$/.test(path);
 }

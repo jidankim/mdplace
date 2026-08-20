@@ -1,0 +1,30 @@
+{
+  "$schema": "../schemas/local-adapter-capability-evidence.schema.json",
+  "schema_id": "mdplace.local-adapter-capability-evidence/v1",
+  "profile_id": "local-adapter",
+  "evidence_id": "local-capability-evidence:v1",
+  "status": "current",
+  "profile_sha256": "f71bfc8fec18b634edd8b1beec948a1a37ef0cf2f6657f423db1a9fa9b839ad7",
+  "observed_capabilities": [
+    "emit_schema_validated_proposal",
+    "emit_schema_validated_receipt"
+  ],
+  "denied_capabilities": [
+    "semantic",
+    "note_placement",
+    "taxonomy",
+    "projection",
+    "filesystem",
+    "network",
+    "tool",
+    "automation"
+  ],
+  "ceilings": {
+    "input_bytes": 4096,
+    "output_bytes": 3000,
+    "runtime_ms": 800,
+    "attempts": 2
+  },
+  "observed_at": "2026-08-21T00:00:00.000Z",
+  "expires_at": "2026-09-20T00:00:00.000Z"
+}

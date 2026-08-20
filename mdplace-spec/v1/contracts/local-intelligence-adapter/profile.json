@@ -1,0 +1,39 @@
+{
+  "$schema": "../schemas/local-intelligence-adapter-profile.schema.json",
+  "schema_id": "mdplace.local-intelligence-adapter-profile/v1",
+  "profile_id": "local-adapter",
+  "owner": "local-adapter",
+  "version": "1.0.0",
+  "protocol_ref": "normative/intelligence-adapter-protocol.md",
+  "approved_processing_policy_ref": "contracts/intelligence-adapter/approved-context.json#/policy_binding",
+  "decision": "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093",
+  "locality": "local",
+  "lifecycle": "isolated_ephemeral_advisory",
+  "execution_scope": {
+    "endpoint": "local://isolated-child",
+    "network_access": "denied",
+    "filesystem_access": "none",
+    "ambient_configuration": "unreadable",
+    "tools": "none",
+    "credentials": "none"
+  },
+  "capabilities": [
+    "emit_schema_validated_proposal",
+    "emit_schema_validated_receipt"
+  ],
+  "authority": {
+    "semantic": "none",
+    "note_placement": "none",
+    "taxonomy": "none",
+    "projection": "none",
+    "filesystem": "none",
+    "network": "none",
+    "tool": "none",
+    "automation": "none"
+  },
+  "output_schemas": [
+    "contracts/schemas/intelligence-proposal.schema.json",
+    "contracts/schemas/adapter-run-receipt.schema.json"
+  ],
+  "specification_only": true
+}

@@ -1,0 +1,64 @@
+{
+  "$schema": "../../../contracts/schemas/validator-invocation.schema.json",
+  "schema_id": "mdplace.validator-invocation/v1",
+  "extension_id": "mdplace.validator-extension/evidence/v1",
+  "invocation_id": "invocation:local-adapter-profile",
+  "package_series": "mdplace-spec/v1",
+  "release_version": "1.0.0",
+  "validator_id": "mdplace.package-validator",
+  "validator_version": "1.2.0",
+  "subject": {
+    "kind": "local_adapter_claim",
+    "subject_id": "local-adapter:claim-v1",
+    "schema": "contracts/schemas/local-adapter-claim-manifest.schema.json",
+    "sha256": "8f19f27b9e52ad4c629f253b7f61d05149e9446bae9bf1a6dcc2ad4a68eb314c",
+    "path": "contracts/local-intelligence-adapter/claim-manifest.json"
+  },
+  "requirement_ids": [
+    "REQ-LIA-001",
+    "REQ-LIA-002",
+    "REQ-LIA-003",
+    "REQ-LIA-004",
+    "REQ-LIA-005",
+    "REQ-LIA-006",
+    "REQ-LIA-007",
+    "REQ-LIA-008",
+    "REQ-LIA-009",
+    "REQ-LIA-010"
+  ],
+  "input_digests": [
+    {
+      "ordinal": 0,
+      "label": "requirements",
+      "path": "normative/requirements.json",
+      "sha256": "5a4dc27d66e16c28ebb2ecd47de35113544be65a12789c155a57de2a9367f959"
+    },
+    {
+      "ordinal": 1,
+      "label": "capability",
+      "path": "contracts/local-intelligence-adapter/capability-evidence.json",
+      "sha256": "41c5505e4c7bb99b53280c93f435d53abcf65975cb71984c8e610311f7b25bf5"
+    },
+    {
+      "ordinal": 2,
+      "label": "isolation",
+      "path": "contracts/local-intelligence-adapter/isolation-evidence.json",
+      "sha256": "4acf8e0a1726321e12ad9b8b2af9462c983cc749bdf2d8beb3be2bc40aa941b8"
+    },
+    {
+      "ordinal": 3,
+      "label": "fixture_manifest",
+      "path": "contracts/local-intelligence-adapter/fixture-manifest.json",
+      "sha256": "0f800dc15a8ee8fb58a51b12b7eb132cd2d633fc0c2d9ba74dd18a9d0bd5b83f"
+    }
+  ],
+  "execution_context": {
+    "runner_id": "mdplace.package-validator",
+    "platform": "platform_neutral",
+    "architecture": "architecture_neutral",
+    "filesystem": "package_fixture",
+    "locale": "C.UTF-8",
+    "timezone": "UTC",
+    "network_access": "denied"
+  }
+}

@@ -256,6 +256,10 @@ _Avoid_: Privacy setting, blanket consent
 A local or remote reasoning integration that produces evidence, placement candidates, or taxonomy-change proposals under the Processing Policy. It treats Captured Tab Notes only as untrusted data, has no tool or credential access by default, and returns schema-constrained outputs. It neither establishes semantic truth nor causes external effects without separate explicit authorization.
 _Avoid_: Source of truth, taxonomy authority
 
+**Local Intelligence Adapter**:
+The independently claimable local Conformance Profile of an Intelligence Adapter. Each attempt is isolated, ephemeral, advisory-only, bound to one exact Processing Envelope, and unable to use network, filesystem, tool, credential, automation, or semantic authority; it emits only a schema-validated Intelligence Proposal and Adapter Run Receipt.
+_Avoid_: Local Adapter, local authority, standalone adapter protocol
+
 **Processing Envelope**:
 A closed, immutable, least-privilege input for one Intelligence Adapter Attempt that binds the exact approved Processing Policy and Source Profile versions, provider, purpose, destination, transmitted fields and artifacts, applied redactions, effective capabilities, retention facts, credential boundary, contract versions, and input/output/runtime/cost ceilings before any payload byte is transmitted. A remote destination uses only its bound credential-free HTTPS endpoint with a lowercase, normalization-stable, multi-label DNS-style authority outside the `localhost` namespace, a name-bearing final label, and default port; a local destination uses only its equivalently closed local endpoint and is not network egress. It contains untrusted data, never instructions or authority.
 _Avoid_: Prompt, ambient context, blanket provider request

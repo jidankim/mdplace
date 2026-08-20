@@ -929,8 +929,17 @@
       "id": "REQ-IAP-001",
       "title": "Stable requirements use canonical protocol vocabulary",
       "normative_anchor": "normative/intelligence-adapter-protocol.md#req-iap-001-stable-requirements-use-canonical-protocol-vocabulary",
-      "decision_urls": ["https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"],
-      "canonical_terms": ["Intelligence Adapter", "Processing Envelope", "Intelligence Adapter Attempt", "Intelligence Proposal", "Adapter Run Receipt", "Adapter Isolation Canary"],
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Intelligence Adapter",
+        "Processing Envelope",
+        "Intelligence Adapter Attempt",
+        "Intelligence Proposal",
+        "Adapter Run Receipt",
+        "Adapter Isolation Canary"
+      ],
       "acceptance_gate": "All eight stable requirement identifiers and canonical protocol terms resolve without aliases or conflicting meanings.",
       "scope": "intelligence-adapter-protocol"
     },
@@ -938,8 +947,16 @@
       "id": "REQ-IAP-002",
       "title": "Processing Envelope proposal and receipt contracts are closed",
       "normative_anchor": "normative/intelligence-adapter-protocol.md#req-iap-002-processing-envelope-proposal-and-receipt-contracts-are-closed",
-      "decision_urls": ["https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"],
-      "canonical_terms": ["Processing Envelope", "Intelligence Proposal", "Adapter Run Receipt", "Processing Policy", "Source Profile"],
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Processing Envelope",
+        "Intelligence Proposal",
+        "Adapter Run Receipt",
+        "Processing Policy",
+        "Source Profile"
+      ],
       "acceptance_gate": "Every structured protocol artifact validates against a closed schema and binds the exact approved versions and transmitted facts.",
       "scope": "intelligence-adapter-protocol"
     },
@@ -947,8 +964,16 @@
       "id": "REQ-IAP-003",
       "title": "Policy binding isolation and canary checks precede transmission",
       "normative_anchor": "normative/intelligence-adapter-protocol.md#req-iap-003-policy-binding-isolation-and-canary-checks-precede-transmission",
-      "decision_urls": ["https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"],
-      "canonical_terms": ["Processing Policy", "Source Profile", "Processing Envelope", "Adapter Isolation Canary", "Intelligence Adapter Attempt"],
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Processing Policy",
+        "Source Profile",
+        "Processing Envelope",
+        "Adapter Isolation Canary",
+        "Intelligence Adapter Attempt"
+      ],
       "acceptance_gate": "Any stale authorization, widening, isolation defect, or failed canary records a deterministic denial and transmits zero bytes.",
       "scope": "intelligence-adapter-protocol"
     },
@@ -956,8 +981,15 @@
       "id": "REQ-IAP-004",
       "title": "Every initial retry and fallback attempt is independently bounded",
       "normative_anchor": "normative/intelligence-adapter-protocol.md#req-iap-004-every-initial-retry-and-fallback-attempt-is-independently-bounded",
-      "decision_urls": ["https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"],
-      "canonical_terms": ["Intelligence Adapter Attempt", "Processing Envelope", "Adapter Run Receipt", "Processing Policy"],
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Intelligence Adapter Attempt",
+        "Processing Envelope",
+        "Adapter Run Receipt",
+        "Processing Policy"
+      ],
       "acceptance_gate": "All seven complete lifecycle tables and instrumented budgets deny any unbound retry, fallback, timeout, or ceiling excess.",
       "scope": "intelligence-adapter-protocol"
     },
@@ -965,8 +997,16 @@
       "id": "REQ-IAP-005",
       "title": "Returned output is inert and adapters have zero authority",
       "normative_anchor": "normative/intelligence-adapter-protocol.md#req-iap-005-returned-output-is-inert-and-adapters-have-zero-authority",
-      "decision_urls": ["https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"],
-      "canonical_terms": ["Intelligence Adapter", "Intelligence Proposal", "Semantic Kernel", "Vault Mutation Gate", "Folder Projection"],
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Intelligence Adapter",
+        "Intelligence Proposal",
+        "Semantic Kernel",
+        "Vault Mutation Gate",
+        "Folder Projection"
+      ],
       "acceptance_gate": "Output remains inert through closed validation and no valid or invalid proposal creates semantic, tool, or filesystem effects.",
       "scope": "intelligence-adapter-protocol"
     },
@@ -974,8 +1014,15 @@
       "id": "REQ-IAP-006",
       "title": "Outcomes and recovery have deterministic receipts",
       "normative_anchor": "normative/intelligence-adapter-protocol.md#req-iap-006-outcomes-and-recovery-have-deterministic-receipts",
-      "decision_urls": ["https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"],
-      "canonical_terms": ["Adapter Run Receipt", "Intelligence Adapter Attempt", "Processing Envelope", "Intelligence Proposal"],
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Adapter Run Receipt",
+        "Intelligence Adapter Attempt",
+        "Processing Envelope",
+        "Intelligence Proposal"
+      ],
       "acceptance_gate": "Every terminal, retry, fallback, timeout, denial, malformed, budget, isolation, and recovery outcome has one recomputable receipt.",
       "scope": "intelligence-adapter-protocol"
     },
@@ -983,8 +1030,17 @@
       "id": "REQ-IAP-007",
       "title": "Public fixtures and evidence prove the protocol",
       "normative_anchor": "normative/intelligence-adapter-protocol.md#req-iap-007-public-fixtures-and-evidence-prove-the-protocol",
-      "decision_urls": ["https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"],
-      "canonical_terms": ["Conformance Fixture", "Traceability Record", "Processing Envelope", "Intelligence Proposal", "Adapter Run Receipt", "Adapter Isolation Canary"],
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Conformance Fixture",
+        "Traceability Record",
+        "Processing Envelope",
+        "Intelligence Proposal",
+        "Adapter Run Receipt",
+        "Adapter Isolation Canary"
+      ],
       "acceptance_gate": "Exactly 42 public fixtures and digest-bound instrumented, isolation, canary, and recovery evidence cover every required observable boundary.",
       "scope": "intelligence-adapter-protocol"
     },
@@ -992,8 +1048,17 @@
       "id": "REQ-IAP-008",
       "title": "Decision and specification boundaries remain closed",
       "normative_anchor": "normative/intelligence-adapter-protocol.md#req-iap-008-decision-and-specification-boundaries-remain-closed",
-      "decision_urls": ["https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"],
-      "canonical_terms": ["Specification Package", "Normative Material", "Conformance Fixture", "Intelligence Adapter", "Processing Policy", "Source Profile"],
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Specification Package",
+        "Normative Material",
+        "Conformance Fixture",
+        "Intelligence Adapter",
+        "Processing Policy",
+        "Source Profile"
+      ],
       "acceptance_gate": "Decision DEC-008 is the sole input, no product or adapter-profile claim changes, and every added artifact remains specification or conformance material.",
       "scope": "intelligence-adapter-protocol"
     },
@@ -1164,6 +1229,154 @@
       ],
       "acceptance_gate": "Every REQ-RVG record binds issue #10 as input_without_reopening and all artifacts remain specification/conformance-only with materialization and performance claims deferred.",
       "scope": "reference-vault-generator"
+    },
+    {
+      "id": "REQ-LIA-001",
+      "title": "Canonical Local Intelligence Adapter vocabulary and stable identifiers are normative",
+      "normative_anchor": "normative/local-intelligence-adapter-profile.md#req-lia-001-canonical-local-intelligence-adapter-vocabulary-and-stable-identifiers-are-normative",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Local Intelligence Adapter",
+        "Intelligence Adapter",
+        "Processing Policy",
+        "Conformance Profile"
+      ],
+      "acceptance_gate": "Local Intelligence Adapter profile gate 1 is satisfied by closed observable conformance evidence.",
+      "scope": "local-intelligence-adapter"
+    },
+    {
+      "id": "REQ-LIA-002",
+      "title": "The Local Intelligence Adapter profile closes capability and isolation evidence",
+      "normative_anchor": "normative/local-intelligence-adapter-profile.md#req-lia-002-the-local-intelligence-adapter-profile-closes-capability-and-isolation-evidence",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Local Intelligence Adapter",
+        "Intelligence Adapter Attempt",
+        "Adapter Isolation Canary"
+      ],
+      "acceptance_gate": "Local Intelligence Adapter profile gate 2 is satisfied by closed observable conformance evidence.",
+      "scope": "local-intelligence-adapter"
+    },
+    {
+      "id": "REQ-LIA-003",
+      "title": "Only validated proposal and receipt evidence may leave an attempt",
+      "normative_anchor": "normative/local-intelligence-adapter-profile.md#req-lia-003-only-validated-proposal-and-receipt-evidence-may-leave-an-attempt",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Intelligence Proposal",
+        "Adapter Run Receipt"
+      ],
+      "acceptance_gate": "Local Intelligence Adapter profile gate 3 is satisfied by closed observable conformance evidence.",
+      "scope": "local-intelligence-adapter"
+    },
+    {
+      "id": "REQ-LIA-004",
+      "title": "Every undeclared authority is denied",
+      "normative_anchor": "normative/local-intelligence-adapter-profile.md#req-lia-004-every-undeclared-authority-is-denied",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Intelligence Adapter",
+        "Processing Policy",
+        "Semantic Kernel",
+        "Folder Projection"
+      ],
+      "acceptance_gate": "Local Intelligence Adapter profile gate 4 is satisfied by closed observable conformance evidence.",
+      "scope": "local-intelligence-adapter"
+    },
+    {
+      "id": "REQ-LIA-005",
+      "title": "Local execution cases are deterministic and bounded",
+      "normative_anchor": "normative/local-intelligence-adapter-profile.md#req-lia-005-local-execution-cases-are-deterministic-and-bounded",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Conformance Fixture",
+        "Intelligence Adapter Attempt"
+      ],
+      "acceptance_gate": "Local Intelligence Adapter profile gate 5 is satisfied by closed observable conformance evidence.",
+      "scope": "local-intelligence-adapter"
+    },
+    {
+      "id": "REQ-LIA-006",
+      "title": "Capability, isolation, verdict, failure, and recovery transitions are complete",
+      "normative_anchor": "normative/local-intelligence-adapter-profile.md#req-lia-006-capability-isolation-verdict-failure-and-recovery-transitions-are-complete",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Intelligence Adapter Attempt",
+        "Conformance Verdict"
+      ],
+      "acceptance_gate": "Local Intelligence Adapter profile gate 6 is satisfied by closed observable conformance evidence.",
+      "scope": "local-intelligence-adapter"
+    },
+    {
+      "id": "REQ-LIA-007",
+      "title": "The independent claim row binds one exact evidence digest",
+      "normative_anchor": "normative/local-intelligence-adapter-profile.md#req-lia-007-the-independent-claim-row-binds-one-exact-evidence-digest",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Claim Manifest",
+        "Conformance Profile",
+        "Conformance Verdict"
+      ],
+      "acceptance_gate": "Local Intelligence Adapter profile gate 7 is satisfied by closed observable conformance evidence.",
+      "scope": "local-intelligence-adapter"
+    },
+    {
+      "id": "REQ-LIA-008",
+      "title": "Recovery revalidates parsed evidence before reading a verdict",
+      "normative_anchor": "normative/local-intelligence-adapter-profile.md#req-lia-008-recovery-revalidates-parsed-evidence-before-reading-a-verdict",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Claim Manifest",
+        "Conformance Verdict"
+      ],
+      "acceptance_gate": "Local Intelligence Adapter profile gate 8 is satisfied by closed observable conformance evidence.",
+      "scope": "local-intelligence-adapter"
+    },
+    {
+      "id": "REQ-LIA-009",
+      "title": "Traceability preserves the accepted decision input",
+      "normative_anchor": "normative/local-intelligence-adapter-profile.md#req-lia-009-traceability-preserves-the-accepted-decision-input",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Traceability Record",
+        "Conformance Fixture"
+      ],
+      "acceptance_gate": "Local Intelligence Adapter profile gate 9 is satisfied by closed observable conformance evidence.",
+      "scope": "local-intelligence-adapter"
+    },
+    {
+      "id": "REQ-LIA-010",
+      "title": "The profile is specification and conformance only",
+      "normative_anchor": "normative/local-intelligence-adapter-profile.md#req-lia-010-the-profile-is-specification-and-conformance-only",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Specification Package",
+        "Conformance Profile",
+        "Semantic Kernel",
+        "Vault Mutation Gate"
+      ],
+      "acceptance_gate": "Local Intelligence Adapter profile gate 10 is satisfied by closed observable conformance evidence.",
+      "scope": "local-intelligence-adapter"
     }
   ]
 }

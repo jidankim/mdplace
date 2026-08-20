@@ -1,0 +1,33 @@
+{
+  "$schema": "../../contracts/schemas/local-adapter-recovery-report.schema.json",
+  "schema_id": "mdplace.local-adapter-recovery-report/v1",
+  "report_id": "local-adapter-recovery:v1",
+  "profile_id": "local-adapter",
+  "claim_manifest_sha256": "8f19f27b9e52ad4c629f253b7f61d05149e9446bae9bf1a6dcc2ad4a68eb314c",
+  "evidence_digest": "9cc1662c7c4b4fabd9949a67c44a193ea949fac7e476e288bef0c837ebd212ac",
+  "parsed_artifacts_revalidated": true,
+  "cases": [
+    {
+      "fixture_id": "FIX-LIA-PROFILE-045",
+      "claim_digest_revalidated": true,
+      "parsed_evidence_revalidated": true,
+      "terminal_state": "recovered",
+      "receipt_sha256": "afa5c449b5b5e5d34fa012610f676b768b2375da9fbafbc763e15b8eea69d05e"
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-046",
+      "claim_digest_revalidated": true,
+      "parsed_evidence_revalidated": false,
+      "terminal_state": "recovery_required",
+      "receipt_sha256": "f7e09e34935206062356f1792507ff86902e85dbfa28b90b3ad1eeb250775c4c"
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-047",
+      "claim_digest_revalidated": false,
+      "parsed_evidence_revalidated": true,
+      "terminal_state": "recovery_required",
+      "receipt_sha256": "26d17b1b05b945cb45d7594d7d27565d1f5917f9216d8624933f427756caade0"
+    }
+  ],
+  "verdict": "pass"
+}

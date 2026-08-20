@@ -23,3 +23,4 @@ import './validator-processing-policy-boundary-cases.mjs';
 import './validator-vault-mutation-gate-cases.mjs';
 import './validator-reference-vault-cases.mjs';
 import './validator-intelligence-adapter-cases.mjs';
+import './validator-local-adapter-cases.mjs';
