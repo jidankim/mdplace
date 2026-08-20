@@ -84,6 +84,17 @@ test('CLI validates the complete Intelligence Adapter proposal protocol pack', (
   assert.equal(result.status, 0, result.stderr || result.stdout);
 });
 
+test('generated normative digest uses stable code-unit path ordering', async () => {
+  const manifest = await readJson('package-manifest.yaml');
+  const expected = sha256([...manifest.artifacts]
+    .filter(({authority}) => authority === 'normative')
+    .sort((left, right) => left.path < right.path ? -1 : left.path > right.path ? 1 : 0)
+    .map(({path, sha256: digest}) => `${path}\0${digest}\n`)
+    .join(''));
+
+  assert.equal(manifest.normative_digest, expected);
+});
+
 test('protocol evidence recomputes claim indexes and every recovery report fact', async () => {
   const trustedEvidence = await readJson('conformance/evidence/intelligence-adapter-evidence.json');
   const [recoveryRoot, claimRoot] = await Promise.all([copyCommittedPackage(), copyCommittedPackage()]);
@@ -130,7 +141,7 @@ test('protocol evidence recomputes claim indexes and every recovery report fact'
   ]) assert.ok(trustedEvidence.claims.isolation_fixture_ids.includes(fixtureId));
 });
 
-test('evidence claims require every executed attempt receipt in exact chain order', async () => {
+test('receipt-chain and transmission-observation claims are independently recomputable', async () => {
   const document = await scenario('authorized-local-fallback-succeeds');
   const observed = await observeIntelligenceAdapterScenario(document, packageRoot);
   const receipts = parseReceiptStrings(observed.receipts);
@@ -140,19 +151,69 @@ test('evidence claims require every executed attempt receipt in exact chain orde
   assert.equal(complete.exact_transmission_observed, true);
   assert.equal(complete.all_outcomes_receipted, true);
 
-  const missingRetry = structuredClone(record);
-  missingRetry.receipts = missingRetry.receipts.filter(({attempt_sequence: sequence}) => sequence !== 1);
-  missingRetry.observed.observations = missingRetry.observed.observations.filter((value) =>
-    JSON.parse(value).attempt_id !== document.attempts[1].envelope.attempt_id);
-  const missingRetryClaims = adapterEvidenceClaims([missingRetry]);
-  assert.equal(missingRetryClaims.exact_transmission_observed, false);
-  assert.equal(missingRetryClaims.all_outcomes_receipted, false);
+  const missingReceipt = structuredClone(record);
+  missingReceipt.receipts = missingReceipt.receipts.filter(({attempt_sequence: sequence}) => sequence !== 1);
+  const missingReceiptClaims = adapterEvidenceClaims([missingReceipt]);
+  assert.equal(missingReceiptClaims.exact_transmission_observed, true);
+  assert.equal(missingReceiptClaims.all_outcomes_receipted, false);
 
-  const reordered = structuredClone(record);
-  reordered.receipts.reverse();
-  const reorderedClaims = adapterEvidenceClaims([reordered]);
-  assert.equal(reorderedClaims.exact_transmission_observed, false);
-  assert.equal(reorderedClaims.all_outcomes_receipted, false);
+  const missingObservation = structuredClone(record);
+  missingObservation.observed.observations = missingObservation.observed.observations.filter((value) =>
+    JSON.parse(value).attempt_id !== document.attempts[1].envelope.attempt_id);
+  const missingObservationClaims = adapterEvidenceClaims([missingObservation]);
+  assert.equal(missingObservationClaims.exact_transmission_observed, false);
+  assert.equal(missingObservationClaims.all_outcomes_receipted, true);
+
+  const reorderedReceipts = structuredClone(record);
+  reorderedReceipts.receipts.reverse();
+  const reorderedReceiptClaims = adapterEvidenceClaims([reorderedReceipts]);
+  assert.equal(reorderedReceiptClaims.exact_transmission_observed, true);
+  assert.equal(reorderedReceiptClaims.all_outcomes_receipted, false);
+
+  const reorderedObservations = structuredClone(record);
+  reorderedObservations.observed.observations.reverse();
+  const reorderedObservationClaims = adapterEvidenceClaims([reorderedObservations]);
+  assert.equal(reorderedObservationClaims.exact_transmission_observed, false);
+  assert.equal(reorderedObservationClaims.all_outcomes_receipted, true);
+});
+
+test('protocol checks fail closed on malformed lifecycle and scenario documents', async () => {
+  const [lifecycleRoot, scenarioRoot] = await Promise.all([copyCommittedPackage(), copyCommittedPackage()]);
+  const rules = await readRootJson(lifecycleRoot, 'contracts/intelligence-adapter/protocol-rules.json');
+  const lifecyclePath = rules.lifecycle_tables[0];
+  const lifecycle = await readRootJson(lifecycleRoot, lifecyclePath);
+  delete lifecycle.transitions[0].failure_result;
+
+  const scenarioPath = 'conformance/scenarios/intelligence-adapter/crash-after-receipt-preserves-receipt.json';
+  const malformedScenario = await readRootJson(scenarioRoot, scenarioPath);
+  malformedScenario.subject.document.recovery = null;
+  await Promise.all([
+    writeRootJson(lifecycleRoot, lifecyclePath, lifecycle),
+    writeRootJson(scenarioRoot, scenarioPath, malformedScenario),
+  ]);
+
+  const [lifecycleCheck, scenarioCheck] = await Promise.all([
+    adapterProtocolCheck(lifecycleRoot),
+    adapterProtocolCheck(scenarioRoot),
+  ]);
+
+  assert.equal(lifecycleCheck.verdict, 'fail');
+  assert.ok(lifecycleCheck.codes.includes('adapter.lifecycle_incomplete'));
+  assert.equal(scenarioCheck.verdict, 'fail');
+  assert.ok(scenarioCheck.codes.includes('schema.constraint'));
+});
+
+test('expected envelope schema errors suppress only the declared boundary', async () => {
+  const root = await copyCommittedPackage();
+  const scenarioPath = 'conformance/scenarios/intelligence-adapter/missing-retention-facts-denied.json';
+  const fixture = await readRootJson(root, scenarioPath);
+  fixture.subject.document.attempts[0].envelope.unexpected = true;
+  await writeRootJson(root, scenarioPath, fixture);
+
+  const check = await adapterProtocolCheck(root);
+
+  assert.equal(check.verdict, 'fail');
+  assert.ok(check.codes.includes('schema.unknown_field'));
 });
 
 test('attempt authorization denies an unapproved model before transmission', async () => {
@@ -773,6 +834,8 @@ test('taxonomy caching, receipt reasons, and transmission dependencies are close
   assert.ok(envelopeSchema.$defs.cachedProposal.required.includes('taxonomy_revision_sha256'));
   assert.ok(contextSchema.required.includes('taxonomy_revision_binding'));
   assert.ok(proposalSchema.$defs.bindings.required.includes('taxonomy_revision_sha256'));
+  assert.equal(rules.outcome_precedence.find(({order}) => order === 7)?.condition,
+    'transmitted artifact not approved');
   assert.deepEqual(
     new Set(receiptSchema.properties.reason.enum),
     new Set(rules.receipt_reasons.map(({code}) => code)),

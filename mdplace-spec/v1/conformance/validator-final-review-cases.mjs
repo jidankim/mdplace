@@ -43,7 +43,7 @@ async function rewriteSourceRequirements(packageRoot, mutate) {
   }
   manifest.normative_digest = createHash('sha256').update(manifest.artifacts
     .filter(({authority}) => authority === 'normative')
-    .sort((left, right) => left.path.localeCompare(right.path))
+    .sort((left, right) => left.path < right.path ? -1 : left.path > right.path ? 1 : 0)
     .map(({path, sha256}) => `${path}\0${sha256}\n`).join('')).digest('hex');
   await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
   return manifest.normative_digest;

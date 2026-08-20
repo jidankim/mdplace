@@ -134,9 +134,11 @@ export async function checkIntelligenceAdapterProtocol(packageRoot, manifest, co
   if (lifecyclePaths.length !== 7 || new Set(lifecyclePaths).size !== 7) codes.push('adapter.lifecycle_set_invalid');
   for (const path of lifecyclePaths) {
     const table = (await readJson(packageRoot, path)).document;
-    if (await schemaCode(packageRoot, 'contracts/schemas/transition-table.schema.json', table) !== null || !tableComplete(table)) {
-      codes.push('adapter.lifecycle_incomplete');
-    }
+    const lifecycleSchemaCode = await schemaCode(
+      packageRoot, 'contracts/schemas/transition-table.schema.json', table,
+    );
+    if (lifecycleSchemaCode !== null || !tableComplete(table)) codes.push('adapter.lifecycle_incomplete');
+    if (lifecycleSchemaCode !== null) continue;
     const terminalStates = receiptTerminalStates.get(table?.table_id);
     if (terminalStates === undefined || table?.transitions?.some((row) =>
       (row.allowed && row.emitted_records.includes('AdapterRunReceipt') !== terminalStates.has(row.terminal_state)) ||
@@ -171,12 +173,47 @@ export async function checkIntelligenceAdapterProtocol(packageRoot, manifest, co
       continue;
     }
     const document = fixture.subject.document;
-    scenarioIds.push(document.scenario_id);
+    scenarioIds.push(document?.scenario_id);
     const scenarioCode = await schemaCode(packageRoot, fixture.subject.schema, document);
-    if (scenarioCode !== null) codes.push(scenarioCode);
-    for (const attempt of document.attempts ?? []) {
-      const envelopeCode = await schemaCode(packageRoot, 'contracts/schemas/processing-envelope.schema.json', attempt.envelope);
-      if (envelopeCode !== null && document.case_id !== 'missing-retention-facts-denied') codes.push(envelopeCode);
+    if (scenarioCode !== null) {
+      codes.push(scenarioCode);
+      continue;
+    }
+    const envelopeSchemaErrors = [];
+    let envelopeSchemaFailureCode = null;
+    for (const attempt of document.attempts) {
+      const envelopeSchemaPath = 'contracts/schemas/processing-envelope.schema.json';
+      const code = await schemaCode(packageRoot, envelopeSchemaPath, attempt.envelope);
+      if (code !== null) {
+        let errors;
+        try {
+          errors = await validateAgainstSchemaPath(packageRoot, envelopeSchemaPath, attempt.envelope);
+        } catch {
+          envelopeSchemaFailureCode = code;
+          break;
+        }
+        envelopeSchemaErrors.push(...errors.map(({path, keyword}) => ({
+          attempt_sequence: attempt.envelope.attempt_sequence,
+          code,
+          path,
+          keyword,
+        })));
+      }
+    }
+    if (envelopeSchemaFailureCode !== null) {
+      codes.push(envelopeSchemaFailureCode);
+      continue;
+    }
+    const expectedEnvelopeSchemaError = document.expected_envelope_schema_error;
+    if (expectedEnvelopeSchemaError === undefined) {
+      if (envelopeSchemaErrors.length > 0) {
+        envelopeSchemaErrors.forEach(({code}) => codes.push(code));
+        continue;
+      }
+    } else if (!isDeepStrictEqual(envelopeSchemaErrors, [expectedEnvelopeSchemaError])) {
+      if (envelopeSchemaErrors.length === 0) codes.push('schema.constraint');
+      else envelopeSchemaErrors.forEach(({code}) => codes.push(code));
+      continue;
     }
     for (const receipt of document.recovery?.prior_receipts ?? []) {
       if (await schemaCode(packageRoot, 'contracts/schemas/adapter-run-receipt.schema.json', receipt) !== null ||

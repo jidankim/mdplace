@@ -130,7 +130,7 @@ export async function checkArtifactBindings(packageRoot, manifest) {
   if (actualPaths.some((path) => !listedPaths.has(path))) codes.push('artifact.unlisted');
   const normativeBindings = artifacts
     .filter(({authority}) => authority === 'normative')
-    .sort((left, right) => left.path.localeCompare(right.path))
+    .sort((left, right) => left.path < right.path ? -1 : left.path > right.path ? 1 : 0)
     .map(({path, sha256: digest}) => `${path}\0${digest}\n`)
     .join('');
   const normativeDigest = sha256(normativeBindings);

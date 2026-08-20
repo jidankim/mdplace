@@ -208,7 +208,13 @@
         "prior_transmission": null,
         "prior_receipts": []
       },
-      "illegal_transition": null
+      "illegal_transition": null,
+      "expected_envelope_schema_error": {
+        "attempt_sequence": 0,
+        "code": "schema.constraint",
+        "path": "$/retention_facts",
+        "keyword": "minItems"
+      }
     }
   },
   "expected": {

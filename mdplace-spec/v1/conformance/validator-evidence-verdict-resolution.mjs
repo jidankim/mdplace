@@ -175,7 +175,7 @@ test('evidence authority cannot be downgraded by changing the validator version 
   }
   manifest.normative_digest = digest(manifest.artifacts
     .filter(({authority}) => authority === 'normative')
-    .sort((left, right) => left.path.localeCompare(right.path))
+    .sort((left, right) => left.path < right.path ? -1 : left.path > right.path ? 1 : 0)
     .map(({path, sha256}) => `${path}\0${sha256}\n`)
     .join(''));
   manifest.conformance_digest = conformanceDigestForArtifacts(manifest.artifacts);

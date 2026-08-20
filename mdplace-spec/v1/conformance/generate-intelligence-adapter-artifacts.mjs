@@ -403,7 +403,15 @@ function definitions(context) {
     ['NEG', 'timeout-recorded', 'negative', (value) => { value.attempts[0].double.behavior = 'timeout'; value.attempts[0].double.raw_output = null; value.attempts[0].double.duration_ms = value.attempts[0].envelope.ceilings.runtime_ms + 1; }],
     ['NEG', 'retry-exhaustion-recorded', 'negative', (value) => { value.attempts[0].double.behavior = 'transient_failure'; value.attempts[0].double.raw_output = null; }],
     ['NEG', 'forbidden-fallback-recorded', 'negative', (value) => { value.attempts = [attemptFor(context, value.scenario_id, 'primary', 'transient_failure'), attemptFor(context, value.scenario_id, 'retry', 'transient_failure'), attemptFor(context, value.scenario_id, 'fallback')]; value.chain_budget.max_fallbacks = 0; }],
-    ['NEG', 'missing-retention-facts-denied', 'negative', (value) => { value.attempts[0].envelope.retention_facts = []; }],
+    ['NEG', 'missing-retention-facts-denied', 'negative', (value) => {
+      value.expected_envelope_schema_error = {
+        attempt_sequence: 0,
+        code: 'schema.constraint',
+        path: '$/retention_facts',
+        keyword: 'minItems',
+      };
+      value.attempts[0].envelope.retention_facts = [];
+    }],
     ['NEG', 'unapproved-destination-denied', 'negative', (value) => { value.attempts[0].envelope.destination = {destination_id: 'destination:other', endpoint: 'https://other.test/v1/process', locality: 'remote'}; value.attempts[0].isolation.network_scope = ['https://other.test/v1/process']; }],
     ['NEG', 'unapproved-capability-denied', 'negative', (value) => {
       value.attempts = [attemptFor(context, value.scenario_id, 'primary', 'proposal', 'adapter-authorization:local-primary')];
@@ -691,7 +699,7 @@ async function currentArtifacts() {
 
 function normativeDigest(artifacts) {
   return sha256(artifacts.filter(({authority}) => authority === 'normative')
-    .sort((left, right) => left.path.localeCompare(right.path))
+    .sort((left, right) => left.path < right.path ? -1 : left.path > right.path ? 1 : 0)
     .map(({path, sha256: digest}) => `${path}\0${digest}\n`)
     .join(''));
 }
