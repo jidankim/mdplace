@@ -102,11 +102,28 @@
     "partitionReceipt": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["partition_id", "membership_sha256", "isolated"],
+      "required": ["partition_id", "membership_sha256", "shards", "isolated"],
       "properties": {
         "partition_id": {"enum": ["train", "calibration", "test"]},
         "membership_sha256": {"$ref": "#/$defs/sha256"},
+        "shards": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {"$ref": "#/$defs/shardReceipt"}
+        },
         "isolated": {"const": true}
+      }
+    },
+    "shardReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["shard_id", "lineage_range", "lineage_groups", "membership_sha256"],
+      "properties": {
+        "shard_id": {"type": "string", "pattern": "^(train|calibration|test)-[ab]$"},
+        "lineage_range": {"type": "string", "pattern": "^lineage:[0-9]{6}\\.\\.lineage:[0-9]{6}$"},
+        "lineage_groups": {"type": "integer", "minimum": 1},
+        "membership_sha256": {"$ref": "#/$defs/sha256"}
       }
     },
     "lineageIsolation": {

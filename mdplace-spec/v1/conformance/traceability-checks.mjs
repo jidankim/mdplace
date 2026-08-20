@@ -11,6 +11,8 @@ const requiredCategories = new Set([
   'authority_denial',
   'illegal_transition',
   'crash_recovery',
+  'below_boundary',
+  'over_boundary',
 ]);
 
 function result(id, codes) {

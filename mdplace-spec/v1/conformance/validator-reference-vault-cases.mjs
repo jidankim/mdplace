@@ -5,7 +5,9 @@ import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import test from 'node:test';
 
+import {checkReferenceVaultContract} from './reference-vault-checks.mjs';
 import {observeReferenceVaultScenario} from './reference-vault-observer.mjs';
+import {runConformance} from './traceability-checks.mjs';
 import {copyCommittedPackage} from './validator-test-support.mjs';
 
 const packageRoot = fileURLToPath(new URL('../', import.meta.url));
@@ -147,6 +149,80 @@ test('generation rejects a duplicate coverage dimension', async () => {
   // Then duplicate accounting is rejected at the closed schema boundary.
   assert.equal(observed.verdict, 'fail');
   assert.deepEqual(observed.codes, ['schema.constraint']);
+});
+
+test('Reference Vault contract fails closed after a root schema error', async (t) => {
+  // Given a present generator interface that does not satisfy its root schema.
+  const temporaryRoot = await copyCommittedPackage();
+  t.after(() => rm(resolve(temporaryRoot, '../..'), {recursive: true, force: true}));
+  await writeFile(`${temporaryRoot}/contracts/reference-vault/generator-interface.json`, '{}\n');
+
+  // When the dedicated contract check validates the package boundary.
+  const observed = await checkReferenceVaultContract(temporaryRoot);
+
+  // Then it reports the schema failure without dereferencing the invalid document.
+  assert.equal(observed.verdict, 'fail');
+  assert.ok(observed.codes.includes('schema.required_field'));
+});
+
+test('Reference Vault observer rejects an unresolved subject schema', async () => {
+  // Given an otherwise valid subject that names a missing package schema.
+  const subject = await validRedistributionSubject();
+  subject.schema = 'contracts/schemas/missing-reference-vault-scenario.schema.json';
+
+  // When the public observer resolves the declared schema boundary.
+  const observed = await observeReferenceVaultScenario(subject, packageRoot);
+
+  // Then unresolved schema state is reported as a deterministic fixture failure.
+  assert.equal(observed.verdict, 'fail');
+  assert.deepEqual(observed.codes, ['fixture.schema_unresolved']);
+});
+
+test('redistribution binds a lineage to its sealed source shard', async () => {
+  // Given a train lineage assigned to train-a but relabeled as a train-b source move.
+  const subject = await validRedistributionSubject();
+  subject.document.redistribution.source_shard = 'train-b';
+  subject.document.redistribution.target_shard = 'train-a';
+
+  // When the public observer evaluates the sealed shard commitments.
+  const observed = await observeReferenceVaultScenario(subject, packageRoot);
+
+  // Then partition membership alone cannot establish source-shard provenance.
+  assert.equal(observed.verdict, 'fail');
+  assert.deepEqual(observed.codes, ['corpus.lineage_crossing']);
+});
+
+test('conformance requires below- and over-boundary fixture categories', async () => {
+  // Given a conformance declaration that omits the below-boundary category requirement.
+  const conformance = JSON.parse(await readFile(`${packageRoot}/conformance/manifest.yaml`, 'utf8'));
+  const requirements = JSON.parse(await readFile(`${packageRoot}/normative/requirements.json`, 'utf8'));
+  conformance.required_categories = conformance.required_categories.filter((category) => category !== 'below_boundary');
+
+  // When category coverage is checked independently from the listed fixtures.
+  const observed = await runConformance(
+    packageRoot,
+    conformance,
+    requirements.requirements.map(({id}) => id),
+    {verifyPublishedReports: false},
+  );
+
+  // Then the missing boundary category is an explicit conformance failure.
+  assert.ok(observed.check.codes.includes('conformance.category_missing'));
+});
+
+test('denied Reference Vault transitions declare denial-specific retry results', async () => {
+  // Given both normative Reference Vault lifecycle tables.
+  const tables = await Promise.all([generationLifecycle, redistributionLifecycle]
+    .map((path) => readFile(path, 'utf8').then(JSON.parse)));
+
+  // When denied transitions are inspected independently from their emitted receipt names.
+  const retryResults = tables.flatMap(({transitions}) => transitions
+    .filter(({allowed}) => !allowed)
+    .map(({idempotency}) => idempotency.retry_result));
+
+  // Then no denial promises reuse of a nonexistent success receipt.
+  assert.ok(retryResults.length > 0);
+  assert.ok(retryResults.every((result) => result === 'return digest-identical denial result'));
 });
 
 test('recovery rejects a missing sealed recovery evidence report', async (t) => {

@@ -101,7 +101,7 @@
       "recovery": null,
       "lifecycle": {
         "table_ref": "contracts/transitions/reference-vault-generation-lifecycle.json",
-        "transition_sha256": "67bd2c8c465989d822a67b4d46bd45a35892701cdd834e3eb36e2f6b7781ea28",
+        "transition_sha256": "d65180644e29712bbfb6f3c49045266d757c043acdb6347ded2642a418664d5e",
         "from_state": "unbound",
         "command": "generate_manifest"
       }
@@ -112,19 +112,19 @@
     "codes": [
       "generator.lifecycle_illegal"
     ],
-      "outputs": [
-        "transition_sha256:67bd2c8c465989d822a67b4d46bd45a35892701cdd834e3eb36e2f6b7781ea28"
-      ],
+    "outputs": [
+      "transition_sha256:d65180644e29712bbfb6f3c49045266d757c043acdb6347ded2642a418664d5e"
+    ],
     "operations": [
       "observe validate_lifecycle"
     ],
     "receipts": [
-        "ReferenceVaultTransitionDenied"
+      "ReferenceVaultTransitionDenied"
     ],
     "filesystem_effects": [
       "none"
     ],
-      "terminal_state": "unbound",
+    "terminal_state": "unbound",
     "illegal_transition": true
   }
 }

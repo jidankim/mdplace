@@ -1,7 +1,13 @@
 import {createHash} from 'node:crypto';
 
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
-import {corpusManifestDigest, generatorBindingDigest, sha256Json} from './reference-vault-core.mjs';
+import {
+  classifyRedistributionShards,
+  corpusManifestDigest,
+  generatorBindingDigest,
+  lineageBelongsToPartition,
+  sha256Json,
+} from './reference-vault-core.mjs';
 import {readPackageFile} from './safe-path.mjs';
 
 const exactCounts = {
@@ -117,14 +123,6 @@ function bindingCode(document, manifest) {
   return null;
 }
 
-function lineageBelongsToPartition(lineageId, lineageRange) {
-  const lineage = /^lineage:([0-9]{6})$/.exec(lineageId);
-  const range = /^lineage:([0-9]{6})\.\.lineage:([0-9]{6})$/.exec(lineageRange);
-  if (lineage === null || range === null) return false;
-  const value = Number(lineage[1]);
-  return value >= Number(range[1]) && value <= Number(range[2]);
-}
-
 function corpusCode(document, manifest) {
   for (const [dimension, count] of Object.entries(exactCounts)) {
     if (document.scale.counts[dimension] !== count) return `corpus.${dimension}_count_mismatch`;
@@ -155,10 +153,10 @@ function corpusCode(document, manifest) {
   return null;
 }
 
-function redistributionCode(redistribution, partitionLineages, sealedManifestDigest) {
+function redistributionCode(redistribution, partitionLineages, manifest) {
   if (redistribution === null) return 'corpus.redistribution_illegal';
-  if (redistribution.expected_base_manifest_sha256 !== sealedManifestDigest ||
-      redistribution.observed_base_manifest_sha256 !== sealedManifestDigest) {
+  if (redistribution.expected_base_manifest_sha256 !== manifest.manifest_sha256 ||
+      redistribution.observed_base_manifest_sha256 !== manifest.manifest_sha256) {
     return 'corpus.redistribution_stale';
   }
   if (redistribution.source_partition !== redistribution.target_partition) return 'corpus.redistribution_illegal';
@@ -166,9 +164,11 @@ function redistributionCode(redistribution, partitionLineages, sealedManifestDig
   const sourceLineages = partitionLineages.find(({partition_id: id}) =>
     id === redistribution.source_partition)?.lineage_group_ids ?? [];
   if (!sourceLineages.includes(redistribution.lineage_group_id)) return 'corpus.lineage_crossing';
-  const prefix = `${redistribution.source_partition}-`;
-  if (!redistribution.source_shard.startsWith(prefix) || !redistribution.target_shard.startsWith(prefix) ||
-      redistribution.source_shard === redistribution.target_shard) return 'corpus.redistribution_illegal';
+  const {sourceShard, targetShard, sourceLineageBound} = classifyRedistributionShards(redistribution, manifest);
+  if (sourceShard === undefined || targetShard === undefined || sourceShard === targetShard) {
+    return 'corpus.redistribution_illegal';
+  }
+  if (!sourceLineageBound) return 'corpus.lineage_crossing';
   return null;
 }
 
@@ -207,7 +207,12 @@ async function lifecycleResult(packageRoot, lifecycle, actorRole) {
 }
 
 export async function observeReferenceVaultScenario(subject, packageRoot) {
-  const schemaErrors = await validateAgainstSchemaPath(packageRoot, subject.schema, subject.document);
+  let schemaErrors;
+  try {
+    schemaErrors = await validateAgainstSchemaPath(packageRoot, subject.schema, subject.document);
+  } catch {
+    return observedFailure(subject?.document?.operation ?? 'unknown', 'fixture.schema_unresolved');
+  }
   const schemaCode = schemaErrorCode(schemaErrors);
   if (schemaCode !== null) return observedFailure(subject.document?.operation ?? 'unknown', schemaCode);
   const document = subject.document;
@@ -229,7 +234,7 @@ export async function observeReferenceVaultScenario(subject, packageRoot) {
   let firstCode = bindingCode(document, manifest) ?? corpusCode(document, manifest);
   let lifecycleRow = null;
   if (firstCode === null && document.operation === 'redistribute') {
-    firstCode = redistributionCode(document.redistribution, document.partition_lineages, manifest.manifest_sha256);
+    firstCode = redistributionCode(document.redistribution, document.partition_lineages, manifest);
   }
   if (firstCode === null && document.operation === 'recover') {
     const evidence = await validatedArtifact(packageRoot, {

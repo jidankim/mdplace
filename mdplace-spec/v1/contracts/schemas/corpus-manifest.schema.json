@@ -75,10 +75,12 @@
     "shard": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["shard_id", "lineage_groups"],
+      "required": ["shard_id", "lineage_range", "lineage_groups", "membership_sha256"],
       "properties": {
         "shard_id": {"type": "string", "pattern": "^(train|calibration|test)-[ab]$"},
-        "lineage_groups": {"type": "integer", "minimum": 1}
+        "lineage_range": {"type": "string", "pattern": "^lineage:[0-9]{6}\\.\\.lineage:[0-9]{6}$"},
+        "lineage_groups": {"type": "integer", "minimum": 1},
+        "membership_sha256": {"$ref": "#/$defs/sha256"}
       }
     },
     "partition": {

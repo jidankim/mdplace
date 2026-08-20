@@ -2895,7 +2895,9 @@
         "FIX-RVG-EXACT-006",
         "FIX-RVG-POS-001",
         "FIX-RVG-POS-002",
-        "FIX-RVG-POS-003"
+        "FIX-RVG-POS-003",
+        "FIX-RVG-REC-001",
+        "FIX-RVG-REC-002"
       ],
       "negative_fixture_ids": [
         "FIX-RVG-BELOW-001",
@@ -2919,7 +2921,8 @@
         "FIX-RVG-ILLEGAL-001",
         "FIX-RVG-ILLEGAL-002",
         "FIX-RVG-STATE-001",
-        "FIX-RVG-AUTH-001"
+        "FIX-RVG-AUTH-001",
+        "FIX-RVG-REC-003"
       ],
       "acceptance_gate": "Exactly 35 public fixtures cover every fixed boundary plus determinism, identity, unique coverage, sealed membership, redistribution, stale state, authority, allowed and denied lifecycle behavior, crash, and artifact-bound recovery.",
       "scope": "reference-vault-generator",

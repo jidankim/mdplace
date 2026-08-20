@@ -54,13 +54,13 @@
       "order": 4,
       "inputs": ["lineage_ranges", "partitions"],
       "deterministic_rule": "Assign every complete lineage group to exactly one immutable partition and then one partition-local shard.",
-      "output": "partition_membership",
+      "output": "partition_and_shard_membership",
       "failure_code": "generator.partition_invalid"
     },
     {
       "step_id": "GEN-005",
       "order": 5,
-      "inputs": ["partition_membership", "scale_binding"],
+      "inputs": ["partition_and_shard_membership", "scale_binding"],
       "deterministic_rule": "Account every fixed scale dimension exactly once and reject every gap or duplicate.",
       "output": "coverage_accounts",
       "failure_code": "generator.coverage_invalid"
@@ -68,7 +68,7 @@
     {
       "step_id": "GEN-006",
       "order": 6,
-      "inputs": ["generator_binding", "partition_membership", "coverage_accounts"],
+      "inputs": ["generator_binding", "partition_and_shard_membership", "coverage_accounts"],
       "deterministic_rule": "Canonicalize the compact manifest and seal its digest after all invariants pass.",
       "output": "corpus_manifest",
       "failure_code": "generator.manifest_invalid"
@@ -81,7 +81,7 @@
       "allowed": true,
       "identity_effect": "preserve_partition_and_lineage",
       "failure_code": null,
-      "recovery": "Return the original receipt for an identical request."
+      "recovery": "Evaluate the current-manifest request through normal redistribution processing."
     },
     {
       "rule_id": "RED-002",

@@ -29,6 +29,41 @@ export function corpusManifestDigest(manifest) {
   return sha256Json(payload);
 }
 
+export function shardMembershipDigest(bindingSha256, partitionId, shard) {
+  return sha256Json({
+    binding_sha256: bindingSha256,
+    partition_id: partitionId,
+    shard_id: shard.shard_id,
+    lineage_range: shard.lineage_range,
+    lineage_groups: shard.lineage_groups,
+  });
+}
+
+export function lineageBelongsToPartition(lineageId, lineageRange) {
+  const lineage = /^lineage:([0-9]{6})$/.exec(lineageId);
+  const range = /^lineage:([0-9]{6})\.\.lineage:([0-9]{6})$/.exec(lineageRange);
+  if (lineage === null || range === null) return false;
+  const value = Number(lineage[1]);
+  return value >= Number(range[1]) && value <= Number(range[2]);
+}
+
+export function classifyRedistributionShards(redistribution, manifest) {
+  const partition = manifest.partitions.find(({partition_id: id}) => id === redistribution.source_partition);
+  const sourceShard = partition?.shards.find(({shard_id: id}) => id === redistribution.source_shard);
+  const targetShard = partition?.shards.find(({shard_id: id}) => id === redistribution.target_shard);
+  const sourceLineageBound = sourceShard !== undefined &&
+    sourceShard.membership_sha256 === shardMembershipDigest(
+      manifest.generator_binding.binding_sha256,
+      partition.partition_id,
+      sourceShard,
+    ) && lineageBelongsToPartition(redistribution.lineage_group_id, sourceShard.lineage_range);
+  return {sourceShard, targetShard, sourceLineageBound};
+}
+
+function lineageId(value) {
+  return `lineage:${String(value).padStart(6, '0')}`;
+}
+
 function partition(generator, definition) {
   const membership = {
     binding_sha256: generator.determinism.binding_sha256,
@@ -36,13 +71,31 @@ function partition(generator, definition) {
     lineage_range: definition.lineage_range,
     lineage_groups: definition.lineage_groups,
   };
+  const [firstLineage] = definition.lineage_range.match(/[0-9]{6}/g).map(Number);
+  const firstShardSize = Math.floor(definition.lineage_groups / 2);
+  const shardDefinitions = [
+    {
+      shard_id: `${definition.partition_id}-a`,
+      lineage_range: `${lineageId(firstLineage)}..${lineageId(firstLineage + firstShardSize - 1)}`,
+      lineage_groups: firstShardSize,
+    },
+    {
+      shard_id: `${definition.partition_id}-b`,
+      lineage_range: `${lineageId(firstLineage + firstShardSize)}..${lineageId(firstLineage + definition.lineage_groups - 1)}`,
+      lineage_groups: definition.lineage_groups - firstShardSize,
+    },
+  ];
   return {
     ...definition,
     membership: 'immutable',
-    shards: [
-      {shard_id: `${definition.partition_id}-a`, lineage_groups: Math.floor(definition.lineage_groups / 2)},
-      {shard_id: `${definition.partition_id}-b`, lineage_groups: Math.ceil(definition.lineage_groups / 2)},
-    ],
+    shards: shardDefinitions.map((shard) => ({
+      ...shard,
+      membership_sha256: shardMembershipDigest(
+        generator.determinism.binding_sha256,
+        definition.partition_id,
+        shard,
+      ),
+    })),
     membership_sha256: sha256Json(membership),
   };
 }

@@ -148,8 +148,12 @@ export async function referenceVaultEvidenceCodes(packageRoot, generator, scale,
     over: boundaryIds('over_boundary'),
   })) codes.push('corpus.boundary_evidence_invalid');
 
-  const expectedIsolation = manifest.partitions.map(({partition_id, membership_sha256}) =>
-    ({partition_id, membership_sha256, isolated: true}));
+  const expectedIsolation = manifest.partitions.map(({partition_id, membership_sha256, shards}) => ({
+    partition_id,
+    membership_sha256,
+    shards,
+    isolated: true,
+  }));
   if (!isDeepStrictEqual(recovery.lineage_isolation?.partitions, expectedIsolation) ||
       recovery.lineage_isolation?.cross_partition_lineages !== 0 ||
       recovery.lineage_isolation?.redistribution_unit !== 'whole_lineage_group_within_partition') {

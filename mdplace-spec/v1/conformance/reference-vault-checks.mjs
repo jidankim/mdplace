@@ -7,6 +7,7 @@ import {
   corpusManifestDigest,
   generatorBindingDigest,
   scaleManifestDigest,
+  shardMembershipDigest,
 } from './reference-vault-core.mjs';
 import {readPackageFile} from './safe-path.mjs';
 import {referenceVaultEvidenceCodes} from './reference-vault-evidence.mjs';
@@ -52,7 +53,12 @@ function partitionsAreIsolated(manifest) {
   const ranges = manifest.partitions.map(({lineage_range: range}) => range);
   return isDeepStrictEqual(ids, expected) && new Set(ranges).size === ranges.length &&
     manifest.partitions.every((partition) => partition.membership === 'immutable' &&
-      partition.shards.reduce((sum, shard) => sum + shard.lineage_groups, 0) === partition.lineage_groups);
+      partition.shards.reduce((sum, shard) => sum + shard.lineage_groups, 0) === partition.lineage_groups &&
+      partition.shards.every((shard) => shard.membership_sha256 === shardMembershipDigest(
+        manifest.generator_binding.binding_sha256,
+        partition.partition_id,
+        shard,
+      )));
 }
 
 function interfaceTablesAreComplete(generator) {
@@ -84,7 +90,7 @@ export async function checkReferenceVaultContract(packageRoot) {
     const code = await schemaCode(packageRoot, schemaPath, document);
     if (code !== null) codes.push(code);
   }
-  if (scale === null || generator === null || manifest === null) return result(codes);
+  if (codes.length > 0) return result(codes);
 
   const seedDigest = createHash('sha256').update(generator.determinism.seed).digest('hex');
   if (scale.scale_sha256 !== scaleManifestDigest(scale) ||
