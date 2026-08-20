@@ -5,7 +5,13 @@ import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import test from 'node:test';
 
-import {adapterReceiptDigest, canonicalDigest, parseReceiptStrings, sha256} from './intelligence-adapter-core.mjs';
+import {
+  adapterEvidenceClaims,
+  adapterReceiptDigest,
+  canonicalDigest,
+  parseReceiptStrings,
+  sha256,
+} from './intelligence-adapter-core.mjs';
 import {checkIntelligenceAdapterProtocol} from './intelligence-adapter-checks.mjs';
 import {observeIntelligenceAdapterScenario} from './intelligence-adapter-observer.mjs';
 import {forbiddenActionCode, preflightCode} from './intelligence-adapter-validation.mjs';
@@ -113,6 +119,40 @@ test('protocol evidence recomputes claim indexes and every recovery report fact'
   assert.ok(trustedEvidence.claims.retry_fixture_ids.includes('FIX-IAP-POS-004'));
   assert.ok(trustedEvidence.claims.retry_fixture_ids.includes('FIX-IAP-NEG-007'));
   assert.ok(!trustedEvidence.claims.retry_fixture_ids.includes('FIX-IAP-ILLEGAL-001'));
+  for (const fixtureId of [
+    'FIX-IAP-POS-001',
+    'FIX-IAP-POS-002',
+    'FIX-IAP-POS-003',
+    'FIX-IAP-POS-004',
+    'FIX-IAP-NEG-013',
+    'FIX-IAP-NEG-014',
+    'FIX-IAP-REC-002',
+  ]) assert.ok(trustedEvidence.claims.isolation_fixture_ids.includes(fixtureId));
+});
+
+test('evidence claims require every executed attempt receipt in exact chain order', async () => {
+  const document = await scenario('authorized-local-fallback-succeeds');
+  const observed = await observeIntelligenceAdapterScenario(document, packageRoot);
+  const receipts = parseReceiptStrings(observed.receipts);
+  const record = {fixtureId: 'FIX-IAP-POS-004', document, observed, receipts};
+
+  const complete = adapterEvidenceClaims([record]);
+  assert.equal(complete.exact_transmission_observed, true);
+  assert.equal(complete.all_outcomes_receipted, true);
+
+  const missingRetry = structuredClone(record);
+  missingRetry.receipts = missingRetry.receipts.filter(({attempt_sequence: sequence}) => sequence !== 1);
+  missingRetry.observed.observations = missingRetry.observed.observations.filter((value) =>
+    JSON.parse(value).attempt_id !== document.attempts[1].envelope.attempt_id);
+  const missingRetryClaims = adapterEvidenceClaims([missingRetry]);
+  assert.equal(missingRetryClaims.exact_transmission_observed, false);
+  assert.equal(missingRetryClaims.all_outcomes_receipted, false);
+
+  const reordered = structuredClone(record);
+  reordered.receipts.reverse();
+  const reorderedClaims = adapterEvidenceClaims([reordered]);
+  assert.equal(reorderedClaims.exact_transmission_observed, false);
+  assert.equal(reorderedClaims.all_outcomes_receipted, false);
 });
 
 test('attempt authorization denies an unapproved model before transmission', async () => {

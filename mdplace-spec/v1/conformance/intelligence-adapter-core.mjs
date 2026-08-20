@@ -96,6 +96,94 @@ function parsedObservations(observed) {
   });
 }
 
+function receiptMatchesAttempt(receipt, attempt) {
+  return receipt?.attempt_id === attempt?.envelope?.attempt_id &&
+    receipt?.attempt_class === attempt?.attempt_class &&
+    receipt?.attempt_sequence === attempt?.envelope?.attempt_sequence;
+}
+
+function isTransmissionObservation(observation) {
+  return typeof observation?.exact_transmitted_sha256 === 'string' &&
+    Number.isInteger(observation?.exact_transmitted_bytes) && observation.exact_transmitted_bytes > 0 &&
+    typeof observation?.exact_destination === 'string';
+}
+
+function observationMatchesReceipt(observation, receipt) {
+  return observation?.attempt_id === receipt?.attempt_id &&
+    observation?.attempt_class === receipt?.attempt_class &&
+    observation?.exact_transmitted_sha256 === receipt?.transmission_sha256 &&
+    observation?.exact_transmitted_bytes === receipt?.transmitted_bytes &&
+    observation?.exact_destination === receipt?.observed_destination;
+}
+
+function executeReceiptChainIsComplete(record, observations) {
+  const {attempts} = record.document;
+  const {receipts} = record;
+  if (receipts.length === 0 || receipts.length > attempts.length || observations.some((value) =>
+    !isTransmissionObservation(value))) return false;
+  if (receipts.some((receipt, index) => !receiptMatchesAttempt(receipt, attempts[index])) ||
+      new Set(receipts.map(({attempt_id: attemptId}) => attemptId)).size !== receipts.length ||
+      new Set(receipts.map(({attempt_sequence: sequence}) => sequence)).size !== receipts.length) return false;
+  for (let index = 0; index < receipts.length; index += 1) {
+    const receipt = receipts[index];
+    const next = receipts[index + 1];
+    const expectedNextClass = receipt.reason === 'adapter.retry_scheduled'
+      ? 'retry'
+      : receipt.reason === 'adapter.fallback_scheduled' ? 'fallback' : null;
+    if ((expectedNextClass === null && next !== undefined) ||
+        (expectedNextClass !== null && next?.attempt_class !== expectedNextClass)) return false;
+  }
+  const transmittedReceipts = receipts.filter(({transmitted_bytes: bytes}) => bytes > 0);
+  return observations.length === transmittedReceipts.length &&
+    observations.every((observation, index) => observationMatchesReceipt(observation, transmittedReceipts[index]));
+}
+
+function recoveryReceiptIsComplete(record, observations) {
+  const {document, receipts} = record;
+  const {recovery} = document;
+  const target = document.attempts.find(({envelope}) =>
+    envelope.attempt_id === recovery.target_attempt_id &&
+    envelope.attempt_sequence === recovery.target_attempt_sequence);
+  if (target === undefined || receipts.length !== 1 || observations.length !== 1 ||
+      !receiptMatchesAttempt(receipts[0], target)) return false;
+  const [receipt] = receipts;
+  const [observation] = observations;
+  if (recovery.crash_point === 'before_transmission') {
+    return receipt.transmitted_bytes === 0 && observation.attempt_id === receipt.attempt_id &&
+      observation.exact_transmitted_bytes === 0;
+  }
+  if (recovery.crash_point === 'after_transmission_before_receipt') {
+    return receipt.transmitted_bytes > 0 && isTransmissionObservation(observation) &&
+      observation.new_transmission === false && observationMatchesReceipt(observation, receipt);
+  }
+  if (recovery.crash_point === 'after_receipt') {
+    return recovery.prior_receipts.length === 1 &&
+      recovery.prior_receipts[0].receipt_sha256 === receipt.receipt_sha256 &&
+      observation.receipt_id === receipt.receipt_id && observation.new_transmission === false;
+  }
+  return false;
+}
+
+function illegalTransitionReceiptIsComplete(record, observations) {
+  const [attempt] = record.document.attempts;
+  const [receipt] = record.receipts;
+  const [observation] = observations;
+  const illegal = record.document.illegal_transition;
+  return record.receipts.length === 1 && observations.length === 1 && receiptMatchesAttempt(receipt, attempt) &&
+    receipt.transmitted_bytes === 0 && observation.table === illegal.table &&
+    observation.from_state === illegal.from_state && observation.command === illegal.command &&
+    observation.allowed === false;
+}
+
+function attemptEvidenceIsComplete(record, observations) {
+  if (record.document.operation === 'execute') return executeReceiptChainIsComplete(record, observations);
+  if (record.document.operation === 'recover') return recoveryReceiptIsComplete(record, observations);
+  if (record.document.operation === 'observe_illegal_transition') {
+    return illegalTransitionReceiptIsComplete(record, observations);
+  }
+  return false;
+}
+
 export function adapterEvidenceClaims(records) {
   const fixtureIdsMatching = (predicate) => records.filter(predicate).map(({fixtureId}) => fixtureId);
   const observationsByRecord = new Map(records.map((record) => [record.fixtureId, parsedObservations(record.observed)]));
@@ -104,16 +192,11 @@ export function adapterEvidenceClaims(records) {
   const fallbackReasons = new Set(['adapter.fallback_scheduled', 'adapter.fallback_exhausted']);
   const isolationReasons = new Set(['adapter.isolation_failed', 'adapter.canary_failed']);
   const canaryReasons = new Set(['adapter.canary_failed']);
-  const exactTransmissionObserved = records.every((record) => record.receipts
-    .filter(({transmitted_bytes: bytes}) => bytes > 0)
-    .every((receipt) => observationsByRecord.get(record.fixtureId).some((observation) =>
-      observation.exact_transmitted_sha256 === receipt.transmission_sha256 &&
-      observation.exact_transmitted_bytes === receipt.transmitted_bytes &&
-      observation.exact_destination === receipt.observed_destination) ||
-      (record.document.operation === 'recover' && record.document.recovery.crash_point === 'after_receipt' &&
-        record.document.recovery.prior_receipts.some(({receipt_sha256: digest}) => digest === receipt.receipt_sha256))));
+  const completeAttemptEvidence = records.every((record) =>
+    attemptEvidenceIsComplete(record, observationsByRecord.get(record.fixtureId)));
   return {
-    isolation_fixture_ids: fixtureIdsMatching((record) => hasReason(record, isolationReasons)),
+    isolation_fixture_ids: fixtureIdsMatching((record) => hasReason(record, isolationReasons) ||
+      observationsByRecord.get(record.fixtureId).some((observation) => observation.isolation !== undefined)),
     canary_fixture_ids: fixtureIdsMatching((record) => hasReason(record, canaryReasons) ||
       observationsByRecord.get(record.fixtureId).some((observation) => observation.isolation?.canary !== undefined)),
     instrumented_double_fixture_ids: fixtureIdsMatching((record) =>
@@ -133,8 +216,7 @@ export function adapterEvidenceClaims(records) {
       receipts.every(({filesystem_effects: effects}) => effects.length === 0)),
     zero_tool_effect: records.every(({receipts}) =>
       receipts.every(({tool_invocations: invocations}) => invocations.length === 0)),
-    exact_transmission_observed: exactTransmissionObserved,
-    all_outcomes_receipted: records.every((record) =>
-      record.receipts.length === Math.max(1, observationsByRecord.get(record.fixtureId).length)),
+    exact_transmission_observed: completeAttemptEvidence,
+    all_outcomes_receipted: completeAttemptEvidence,
   };
 }
