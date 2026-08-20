@@ -392,6 +392,9 @@ test('destination schemas bind HTTPS remote egress and local-only delivery schem
   credentialDocument.attempts[0].envelope.destination.endpoint = credentialEndpoint;
   credentialDocument.attempts[0].isolation.network_scope = [credentialEndpoint];
   const malformedEndpoints = [
+    'https://localhost/path',
+    'https://api.localhost/path',
+    'https://singlelabel/path',
     'https:///missing-host',
     'https://:443/path',
     'https://host:abc/path',
@@ -405,6 +408,7 @@ test('destination schemas bind HTTPS remote egress and local-only delivery schem
     'https://0x7f000001/path',
     'https://017700000001/path',
     'https://a.0/path',
+    `https://host.${'a'.repeat(64)}/path`,
     'https://host.test/a/../b',
     'https://HOST.test/path',
   ];
@@ -743,6 +747,18 @@ test('retry scheduling denies known aggregate input exhaustion before emitting a
 test('forbidden-action precedence is independent of caller array order', () => {
   assert.equal(forbiddenActionCode(['choose_note_placement', 'invoke_tool']), 'adapter.tool_request_denied');
   assert.equal(forbiddenActionCode(['invoke_tool', 'choose_note_placement']), 'adapter.tool_request_denied');
+});
+
+test('unknown adapter actions fail closed before transmission', async () => {
+  const document = await scenario('remote-valid-proposal-advice');
+  document.attempts[0].double.requested_actions = ['open_network_socket'];
+
+  const observed = await observeIntelligenceAdapterScenario(document, packageRoot);
+
+  assert.equal(forbiddenActionCode(['open_network_socket']), 'adapter.tool_request_denied');
+  assert.deepEqual(observed.codes, ['adapter.tool_request_denied']);
+  assert.deepEqual(observed.network_effects, ['none']);
+  assert.ok(!observed.operations.some((operation) => operation.startsWith('transmit exact')));
 });
 
 test('taxonomy caching, receipt reasons, and transmission dependencies are closed', async () => {

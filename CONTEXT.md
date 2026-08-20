@@ -257,7 +257,7 @@ A local or remote reasoning integration that produces evidence, placement candid
 _Avoid_: Source of truth, taxonomy authority
 
 **Processing Envelope**:
-A closed, immutable, least-privilege input for one Intelligence Adapter Attempt that binds the exact approved Processing Policy and Source Profile versions, provider, purpose, destination, transmitted fields and artifacts, applied redactions, effective capabilities, retention facts, credential boundary, contract versions, and input/output/runtime/cost ceilings before any payload byte is transmitted. A remote destination uses only its bound credential-free HTTPS endpoint with a lowercase, normalization-stable DNS-style authority, name-bearing final label, and default port; a local destination uses only its equivalently closed local endpoint and is not network egress. It contains untrusted data, never instructions or authority.
+A closed, immutable, least-privilege input for one Intelligence Adapter Attempt that binds the exact approved Processing Policy and Source Profile versions, provider, purpose, destination, transmitted fields and artifacts, applied redactions, effective capabilities, retention facts, credential boundary, contract versions, and input/output/runtime/cost ceilings before any payload byte is transmitted. A remote destination uses only its bound credential-free HTTPS endpoint with a lowercase, normalization-stable, multi-label DNS-style authority outside the `localhost` namespace, a name-bearing final label, and default port; a local destination uses only its equivalently closed local endpoint and is not network egress. It contains untrusted data, never instructions or authority.
 _Avoid_: Prompt, ambient context, blanket provider request
 
 **Intelligence Adapter Attempt**:

@@ -10,6 +10,7 @@ import {
   forbiddenActionCode,
   highestPrecedenceCode,
   preflightCode,
+  unknownActionCode,
   validateProposal,
 } from './intelligence-adapter-validation.mjs';
 import {readPackageFile} from './safe-path.mjs';
@@ -499,6 +500,7 @@ export async function observeIntelligenceAdapterScenario(subject, packageRoot) {
   const chainDenial = highestPrecedenceCode([
     preflightCode(subject.attempts[0], context),
     chainPreflightCode(subject, context),
+    ...subject.attempts.map(({double}) => unknownActionCode(double.requested_actions)),
   ]);
   if (chainDenial !== null) {
     const attempt = subject.attempts[0];

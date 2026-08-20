@@ -68,7 +68,7 @@ function isSubset(requested, approved, identity = (value) => value) {
     requestedIdentities.every((value) => approvedIdentities.has(value));
 }
 
-const remoteEndpointPattern = /^https:\/\/[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*(?:\/[A-Za-z0-9._~!$&'()*+,;=:@/-]*)?$/;
+const remoteEndpointPattern = /^https:\/\/[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+(?:\/[A-Za-z0-9._~!$&'()*+,;=:@/-]*)?$/;
 const localEndpointPattern = /^local:\/\/[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*(?:\/[A-Za-z0-9._~!$&'()*+,;=:@/-]*)?$/;
 
 function destinationTransportIsValid(destination) {
@@ -86,7 +86,10 @@ function destinationTransportIsValid(destination) {
       /^[a-z][a-z0-9-]{0,62}$/.test(lastAuthorityLabel) && rawRoundTrips &&
       endpoint.username === '' && endpoint.password === '' &&
       endpoint.port === '' && endpoint.search === '' && endpoint.hash === '';
-    if (destination.locality === 'remote') return authorityIsSafe && endpoint.protocol === 'https:';
+    const remoteAuthorityIsSafe = endpoint.hostname.includes('.') && !endpoint.hostname.endsWith('.localhost');
+    if (destination.locality === 'remote') {
+      return authorityIsSafe && remoteAuthorityIsSafe && endpoint.protocol === 'https:';
+    }
     if (destination.locality === 'local') return authorityIsSafe && endpoint.protocol === 'local:';
     return false;
   } catch {
@@ -236,11 +239,15 @@ const actionCodes = new Map([
   ['choose_note_placement', 'adapter.placement_authority_denied'],
 ]);
 
+export function unknownActionCode(actions) {
+  return Array.isArray(actions) && actions.every((action) => actionCodes.has(action))
+    ? null
+    : 'adapter.tool_request_denied';
+}
+
 export function forbiddenActionCode(actions) {
-  for (const [action, code] of actionCodes) {
-    if (actions.includes(action)) return code;
-  }
-  return null;
+  const knownCodes = Array.isArray(actions) ? actions.map((action) => actionCodes.get(action) ?? null) : [];
+  return highestPrecedenceCode([unknownActionCode(actions), ...knownCodes]);
 }
 
 function proposalBinding(envelope) {
