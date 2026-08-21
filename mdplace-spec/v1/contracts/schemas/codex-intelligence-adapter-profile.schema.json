@@ -1,0 +1,216 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:codex-intelligence-adapter-profile:v1",
+  "title": "mdplace Codex Intelligence Adapter profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_id",
+    "profile_id",
+    "owner",
+    "version",
+    "protocol_ref",
+    "approved_processing_envelope_ref",
+    "decision_inputs",
+    "interface",
+    "exact_destination",
+    "evidence_refs",
+    "ceilings",
+    "authority",
+    "specification_only",
+    "live_codex_behavior_asserted",
+    "network_operation_performed"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "../schemas/codex-intelligence-adapter-profile.schema.json"
+    },
+    "schema_id": {
+      "const": "mdplace.codex-intelligence-adapter-profile/v1"
+    },
+    "profile_id": {
+      "const": "codex-adapter"
+    },
+    "owner": {
+      "const": "codex-adapter"
+    },
+    "version": {
+      "const": "1.0.0"
+    },
+    "protocol_ref": {
+      "const": "normative/intelligence-adapter-protocol.md"
+    },
+    "approved_processing_envelope_ref": {
+      "const": "contracts/intelligence-adapter/approved-context.json#/policy_binding"
+    },
+    "decision_inputs": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": "https://github.com/jidankim/mdplace/issues/11#issuecomment-5118839348"
+        },
+        {
+          "const": "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "interface": {
+      "$ref": "#/$defs/interface"
+    },
+    "exact_destination": {
+      "const": "https://codex.openai.test/v1/execute"
+    },
+    "evidence_refs": {
+      "$ref": "#/$defs/evidenceRefs"
+    },
+    "ceilings": {
+      "$ref": "#/$defs/ceilings"
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "semantic",
+        "note_placement",
+        "taxonomy",
+        "projection",
+        "filesystem",
+        "tool",
+        "command",
+        "automation"
+      ],
+      "properties": {
+        "semantic": {
+          "const": "none"
+        },
+        "note_placement": {
+          "const": "none"
+        },
+        "taxonomy": {
+          "const": "none"
+        },
+        "projection": {
+          "const": "none"
+        },
+        "filesystem": {
+          "const": "none"
+        },
+        "tool": {
+          "const": "none"
+        },
+        "command": {
+          "const": "none"
+        },
+        "automation": {
+          "const": "none"
+        }
+      }
+    },
+    "specification_only": {
+      "const": true
+    },
+    "live_codex_behavior_asserted": {
+      "const": false
+    },
+    "network_operation_performed": {
+      "const": false
+    }
+  },
+  "$defs": {
+    "interface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "command",
+        "subcommand",
+        "interface_version",
+        "approved_cli_version",
+        "mode",
+        "payload_channel",
+        "output_mode"
+      ],
+      "properties": {
+        "command": {
+          "const": "codex"
+        },
+        "subcommand": {
+          "const": "exec"
+        },
+        "interface_version": {
+          "const": "1.0.0"
+        },
+        "approved_cli_version": {
+          "const": "0.104.0"
+        },
+        "mode": {
+          "const": "non_interactive"
+        },
+        "payload_channel": {
+          "const": "framed_stdin"
+        },
+        "output_mode": {
+          "const": "bounded_jsonl_with_schema_final"
+        }
+      }
+    },
+    "evidenceRefs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "boundary",
+        "authentication_prerequisite",
+        "capability_proof",
+        "network_proof"
+      ],
+      "properties": {
+        "boundary": {
+          "const": "contracts/codex-intelligence-adapter/boundary.json"
+        },
+        "authentication_prerequisite": {
+          "const": "contracts/codex-intelligence-adapter/authentication-prerequisite.json"
+        },
+        "capability_proof": {
+          "const": "contracts/codex-intelligence-adapter/capability-proof.json"
+        },
+        "network_proof": {
+          "const": "contracts/codex-intelligence-adapter/network-proof.json"
+        }
+      }
+    },
+    "ceilings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "input_bytes",
+        "jsonl_bytes",
+        "output_bytes",
+        "runtime_ms",
+        "tokens",
+        "cost_microunits"
+      ],
+      "properties": {
+        "input_bytes": {
+          "const": 4096
+        },
+        "jsonl_bytes": {
+          "const": 8192
+        },
+        "output_bytes": {
+          "const": 3000
+        },
+        "runtime_ms": {
+          "const": 800
+        },
+        "tokens": {
+          "const": 2000
+        },
+        "cost_microunits": {
+          "const": 5000
+        }
+      }
+    }
+  }
+}

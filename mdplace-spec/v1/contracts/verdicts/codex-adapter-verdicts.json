@@ -1,0 +1,38 @@
+{
+  "$schema": "../schemas/codex-adapter-verdict-table.schema.json",
+  "schema_id": "mdplace.codex-adapter-verdict-table/v1",
+  "table_id": "VERDICT-CODEX-ADAPTER-V1",
+  "profile_id": "codex-adapter",
+  "precedence": [
+    "fail",
+    "unsupported",
+    "inconclusive",
+    "pass"
+  ],
+  "rows": [
+    {
+      "verdict": "pass",
+      "meaning": "Every mandatory Codex boundary and digest is current and passing.",
+      "required_fact_effect": "satisfied",
+      "claim_effect": "eligible_pass"
+    },
+    {
+      "verdict": "fail",
+      "meaning": "Observed behavior contradicts the approved Codex boundary or a bound artifact is invalid.",
+      "required_fact_effect": "non_pass",
+      "claim_effect": "deny_pass"
+    },
+    {
+      "verdict": "unsupported",
+      "meaning": "A mandatory Codex interface, capability, network, or authentication fact is unsupported.",
+      "required_fact_effect": "non_pass",
+      "claim_effect": "deny_pass"
+    },
+    {
+      "verdict": "inconclusive",
+      "meaning": "Available Codex evidence cannot determine a mandatory fact.",
+      "required_fact_effect": "non_pass",
+      "claim_effect": "deny_pass"
+    }
+  ]
+}

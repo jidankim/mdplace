@@ -1,0 +1,74 @@
+{
+  "$schema": "../../../contracts/schemas/validator-invocation.schema.json",
+  "schema_id": "mdplace.validator-invocation/v1",
+  "extension_id": "mdplace.validator-extension/evidence/v1",
+  "invocation_id": "invocation:codex-adapter-profile",
+  "package_series": "mdplace-spec/v1",
+  "release_version": "1.0.0",
+  "validator_id": "mdplace.package-validator",
+  "validator_version": "1.2.0",
+  "subject": {
+    "kind": "codex_adapter_claim",
+    "subject_id": "codex-adapter:claim-v1",
+    "schema": "contracts/schemas/codex-adapter-claim-manifest.schema.json",
+    "sha256": "7baf923c5145b1a7308afa649431f8052c010a79067926fe47897da8f3203da3",
+    "path": "contracts/codex-intelligence-adapter/claim-manifest.json"
+  },
+  "requirement_ids": [
+    "REQ-CODEX-001",
+    "REQ-CODEX-002",
+    "REQ-CODEX-003",
+    "REQ-CODEX-004",
+    "REQ-CODEX-005",
+    "REQ-CODEX-006",
+    "REQ-CODEX-007",
+    "REQ-CODEX-008"
+  ],
+  "input_digests": [
+    {
+      "ordinal": 0,
+      "label": "requirements",
+      "path": "normative/requirements.json",
+      "sha256": "2c112fe3248cb6ab3d3eebdf1801435c22827c2c5aa155edff4cd86285c37489"
+    },
+    {
+      "ordinal": 1,
+      "label": "boundary",
+      "path": "contracts/codex-intelligence-adapter/boundary.json",
+      "sha256": "ebd492711cb60b22e316d2703d2c22d928ceb63d49022582b1aa2398a5911dc7"
+    },
+    {
+      "ordinal": 2,
+      "label": "authentication",
+      "path": "contracts/codex-intelligence-adapter/authentication-prerequisite.json",
+      "sha256": "34694252b7eaa71d3da78bcf9447370766b53397a48a20f1159938005938c2b9"
+    },
+    {
+      "ordinal": 3,
+      "label": "capability",
+      "path": "contracts/codex-intelligence-adapter/capability-proof.json",
+      "sha256": "71923d793b2a081a3349ac74f8049863d482dfbcf853b73a978b8e5bb4387e44"
+    },
+    {
+      "ordinal": 4,
+      "label": "network",
+      "path": "contracts/codex-intelligence-adapter/network-proof.json",
+      "sha256": "1bba1d77be7e50e44c3503c8aac0384e1fbcc004a62df8ba8bd6ad6ea2400445"
+    },
+    {
+      "ordinal": 5,
+      "label": "fixture_manifest",
+      "path": "contracts/codex-intelligence-adapter/fixture-manifest.json",
+      "sha256": "838d1aaf08f84385c1418c56406316c94a3a6de03dfc32d0c2b053689fd8356a"
+    }
+  ],
+  "execution_context": {
+    "runner_id": "mdplace.package-validator",
+    "platform": "platform_neutral",
+    "architecture": "architecture_neutral",
+    "filesystem": "package_fixture",
+    "locale": "C.UTF-8",
+    "timezone": "UTC",
+    "network_access": "denied"
+  }
+}

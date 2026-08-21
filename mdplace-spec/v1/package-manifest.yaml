@@ -45,19 +45,19 @@
       "path": "README.md",
       "authority": "informative",
       "media_type": "text/markdown",
-      "sha256": "8f3094b77d85443b26bf9af6af818d34dd48c3048ebbdccbd35c4d7dd98e3b1c"
+      "sha256": "1c16c5724d2b60d63c9427b6b5b4ff26a0f57b6591f35654b0ba15dc245682a7"
     },
     {
       "path": "claims-and-evidence.yaml",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "ac361e27ab3a8ec60a0e7e3c738c2df35be48b30481cf704e834d2c9fab484c2"
+      "sha256": "9eb3a18dda42c4eb99727b68acc71788f223d788517a6cc163a3df1ea6e94edc"
     },
     {
       "path": "conformance/README.md",
       "authority": "informative",
       "media_type": "text/markdown",
-      "sha256": "c18a43c2a904a908a051df58a4ea2498008821996a90b3fdc98e52d7b103492f"
+      "sha256": "d119dce2ef58f3f5249d5aa80af2de856e6586b207e1f7e7feb7d218f5b1a1bf"
     },
     {
       "path": "conformance/amendment-evidence.mjs",
@@ -81,7 +81,7 @@
       "path": "conformance/claim-manifests/codex-intelligence-adapter.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "69cac65ce0b6ae987d4cbecf11862ce0663c627ec98226ce3cef24cbf251969d"
+      "sha256": "37fc33f92bbb8cb14269102234ff1fb86d973043e9b3227e11e2a0654067174e"
     },
     {
       "path": "conformance/claim-manifests/core.json",
@@ -93,7 +93,7 @@
       "path": "conformance/claim-manifests/local-intelligence-adapter.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "a89c3efeefcedfc9a6bc9fe11b2b520344b2a68fac162fc2ea5a6f5cfbfb9d3c"
+      "sha256": "697f3e2087b01a0346b628a52d9a324e45cfc2b3df5ec5fe7f213eaf680a717e"
     },
     {
       "path": "conformance/claim-manifests/new-leaf-automatic-promotion.json",
@@ -111,13 +111,55 @@
       "path": "conformance/claim-manifests/remote-intelligence-adapter.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "2f0f5c260c59838f2c25d08acbfe3dd0290b492c75a6a6a6eb2f5875556112a8"
+      "sha256": "f18b16bdaa0541a767e241a5e6cdcfb617f271b101d521b28062e207a4916e64"
     },
     {
       "path": "conformance/claim-manifests/web-clipper-product-readiness.json",
       "authority": "normative",
       "media_type": "application/json",
       "sha256": "50594123a1d512dc7386f65c63e17cdaefb5539c7ba4b90c62c15ee6a82758bb"
+    },
+    {
+      "path": "conformance/codex-adapter-artifact-rules.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "e7598675333571c30b3c29f5b399265e55b909f0ac676f09a39f71cc44100deb"
+    },
+    {
+      "path": "conformance/codex-adapter-checks.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "815ca2f10ec77a4e2773d6cf1a559a8b6dd76164afd5503c02425d3481550cbe"
+    },
+    {
+      "path": "conformance/codex-adapter-contracts.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "9d998530363ddd3c54f32a09f2215d13941309b16c05c414f68f7cd2b4209450"
+    },
+    {
+      "path": "conformance/codex-adapter-core.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "a07b5870ff177fb0f5aa4254c3eb3beb7a70b774b5600a1694b89687f9c0dfdc"
+    },
+    {
+      "path": "conformance/codex-adapter-fixtures.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "53c55b9e2c620035c8be49ac76d46779fb0072ecbed5acbaefd17d45cd2704dc"
+    },
+    {
+      "path": "conformance/codex-adapter-observer.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "2ed300b5c246b052623bff8d5dbc4b437d6bda65598b0bea8bbc12f1954ff42b"
+    },
+    {
+      "path": "conformance/codex-adapter-schemas.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "49eb3df9203384059665f47ff71f75c6b6e7d743e8aee109a9fbd68e58a1df51"
     },
     {
       "path": "conformance/control-plane-authentication.mjs",
@@ -207,7 +249,7 @@
       "path": "conformance/evidence-extension.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "4711155482daffd07fecb753096527c6d510c76954ce110537625b0ff241036b"
+      "sha256": "a872cb6787f961504ed0454a030b03150f90ca5bbb4633a0040d29dba321e2f4"
     },
     {
       "path": "conformance/evidence-freshness.mjs",
@@ -237,7 +279,25 @@
       "path": "conformance/evidence/claims/recovery-snapshot.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "8f1e994ff6c0ed89232041f15c4ab6b9ec828e0cd4cac0716a34b38de9aa7681"
+      "sha256": "be411e390aa1f68be556c37e187ccace093952938b61750717522b3a6d9fa531"
+    },
+    {
+      "path": "conformance/evidence/claims/unsupported-recovery-base.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "9b380ef110b131fe9b74416b126289c11a0ae049294bbd24af849e46246f83ab"
+    },
+    {
+      "path": "conformance/evidence/codex-adapter-evidence.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "e57ac1c31f4b8c089061c338ff46748aaf802d842f02b5f35ec1ea80154705f1"
+    },
+    {
+      "path": "conformance/evidence/codex-adapter-recovery-report.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "c55189aa0934bac6aa4f925c7bb5c95bd5e7ade9cdbabfeb452d6ff740d902ca"
     },
     {
       "path": "conformance/evidence/control-plane-doctor-report.json",
@@ -264,16 +324,22 @@
       "sha256": "be548ce235c5ed3cf93c63fe1ea8e5e2f42dbf7450acafc9580a0458e112ec3a"
     },
     {
+      "path": "conformance/evidence/envelopes/codex-adapter-profile.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "29a239fd8283d323c75404c83ddf24050c80a3fe93b6e9168a4e968cc29cdd9a"
+    },
+    {
       "path": "conformance/evidence/envelopes/local-adapter-profile.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "7787e4107d287a69ece2da5d02d80b166d5d793d8ce6f172e11f72240c75962e"
+      "sha256": "3b74b7a56afd61a8414b1a2ddd4789cdfa05e5f6e3a752e9bfa8901e3077e18d"
     },
     {
       "path": "conformance/evidence/envelopes/remote-adapter-profile.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "a4f11943ad0503f2bb4bcc86920d07055c8358ba9513fbb3cb9c79d60fcddb9b"
+      "sha256": "a3dac51e85d8e32a2ece29b1a08408a7cbec48164a000690fa5eca05e22761d6"
     },
     {
       "path": "conformance/evidence/envelopes/stale-claim-proof.json",
@@ -285,13 +351,13 @@
       "path": "conformance/evidence/envelopes/validator-evidence-reference.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "12ff60779e3d9953477065e787082f7cd9ba21864953cf1127da2848bfcf158d"
+      "sha256": "ae2b3cec01e239b21338ce05373e481b3e3936bbfe2e238703f2172f9307b2a7"
     },
     {
       "path": "conformance/evidence/evidence-recovery-report.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "19ad166da3453b12ea1375036a14a9c843d26ab14d0235c151e2eac115617120"
+      "sha256": "2ac59fa1193b312546265e226bf8e62b2b6ba3ff94abbc769886b0c28ece51f9"
     },
     {
       "path": "conformance/evidence/intelligence-adapter-evidence.json",
@@ -306,22 +372,28 @@
       "sha256": "681b2d61cec095c40e27d2c8f0ad62bf355f4764e8d6d256cedafa28b8f123a5"
     },
     {
+      "path": "conformance/evidence/invocations/codex-adapter-profile.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "0cdc8bf4376b3ec5e3597c3c9d52406d7f02c766d0d919a0b21a12e126e6c1e4"
+    },
+    {
       "path": "conformance/evidence/invocations/local-adapter-profile.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "c119b076613fa2e1298641248919940e9c252e2298d70bc4fcf93a12ef069aa3"
+      "sha256": "5ec0ca95741ac82451972810d4eac97cafffd79319c672f361527848892ed7bb"
     },
     {
       "path": "conformance/evidence/invocations/remote-adapter-profile.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "a0764c75eeacc95cab49a9d4529c229f909a0cc0f699130ebd1222ddf1284e12"
+      "sha256": "3f9d64468d4b4b55cdff9e63d52e4fca1af8ad2fc532b4e6b9eab251c74b12c4"
     },
     {
       "path": "conformance/evidence/invocations/validator-evidence-reference.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "e1032f9dde2fd1992f28dd883c7b0fbfcb7bc6ffe7f79b90c408235c092468bb"
+      "sha256": "c25fcd290eb3f71da8ff48db643b92de62caf7ef0433f4a2e1d721d82cd402f2"
     },
     {
       "path": "conformance/evidence/local-adapter-evidence.json",
@@ -369,13 +441,13 @@
       "path": "conformance/evidence/traceability-report.json",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "17b405572df82777e22eef17ca9df61f6461c384a9e3e3f26dd444a2762a370e"
+      "sha256": "a5c34ca199c21b5250bf60d2e44f8f48906cfea912cd8a5bd7a75288d394cbc7"
     },
     {
       "path": "conformance/evidence/validation-report.json",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "3caacdb0704af2fe7edd600ab0a2ea820a407b6d6e53a9b8e0f38633c507a335"
+      "sha256": "dcc0d3217f409a186a97ce8c739cd62e7d685995988fa9ba9e63c71567bb5ca0"
     },
     {
       "path": "conformance/evidence/vault-mutation-recovery-report.json",
@@ -393,7 +465,7 @@
       "path": "conformance/fixture-observer.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "ed8a7831d77cbe84fb19c3a83fa1cde34bc97c96a1a3125b9e0e119395096f0e"
+      "sha256": "46cbee92900caa54e0654d175a86a48ae721beb103601661f130ed30068eecee"
     },
     {
       "path": "conformance/fixtures/boundary/above-sha256.json",
@@ -453,7 +525,7 @@
       "path": "conformance/fixtures/negative/duplicate-envelope-references.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "d3a8a637cf84cb2459af987c11ecb443d29b82e574149407a64fb57510b9a93b"
+      "sha256": "9555945a338a21ae9b93d1b55d63af6219bb8bfb325c258c1f5a07c95ca339cc"
     },
     {
       "path": "conformance/fixtures/negative/duplicate-requirement-id.json",
@@ -465,13 +537,13 @@
       "path": "conformance/fixtures/negative/evidence-receipt-digest-tampered.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "892365b34b368e20bec32a36d453141f1f26ccacd05d02c56d5a85f9c2c8b0a2"
+      "sha256": "cfa296273db08a7059ea3517bf327de38d73961cc4c6b399b1fba7ccabd935a3"
     },
     {
       "path": "conformance/fixtures/negative/evidence-receipt-type-tampered.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "e38072ea58c7c32660d0cff37c5f0d5e9c6107a1b7e0aaf182df14c03e0a0618"
+      "sha256": "246e14e368dcc5e2006f070a4661aee998580b7402d51cc6b5b824a3b880b681"
     },
     {
       "path": "conformance/fixtures/negative/idempotency-conflict.json",
@@ -561,7 +633,7 @@
       "path": "conformance/fixtures/positive/authorized-release.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "6b47ab3f18511207f3cd5743ec471f751969a33b8514313225e83cfe00cc6d3b"
+      "sha256": "c749165fad2903c2fcc31cb594646f1e2f557d53ac36464acf970c6eb24b8eb9"
     },
     {
       "path": "conformance/fixtures/positive/authorized-submit.json",
@@ -597,7 +669,7 @@
       "path": "conformance/fixtures/positive/valid-evidence-envelope.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "25a1c79e0ccb2e1e68760ae753c32619f02f23b9427578b421addec25984ae6c"
+      "sha256": "8fb9db58a4bee70dec5f01a617e56f70447af8ed805af0fe0c324a885c278728"
     },
     {
       "path": "conformance/fixtures/positive/valid-package-amendment.json",
@@ -612,10 +684,16 @@
       "sha256": "9f1245603a6a7aa1a2d5a69f13f649aa286e242f15da2a1cf7a021267aadf270"
     },
     {
+      "path": "conformance/generate-codex-adapter-artifacts.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "4be5368b473f3f1352fa00b34ae9d9c27364c13db1117b9a52b39c48b1550d5d"
+    },
+    {
       "path": "conformance/generate-intelligence-adapter-artifacts.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "d0b449075bcc62935004bdc70bbceb4b33997ff2a02f1c8fd4ff7fe9c1a64857"
+      "sha256": "42c65802beb4187279452838124233cd0fa256099f876f0bed3e081ec5f5f79a"
     },
     {
       "path": "conformance/generate-local-adapter-artifacts.mjs",
@@ -723,7 +801,7 @@
       "path": "conformance/manifest.yaml",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "01ed33a9f60ebadf5a48a6b5bda79b4dc356996da12d8439e9c0e4381b819b3c"
+      "sha256": "26008c15d648f2042d20dec6fdee6700feaca170cd6fa0815df567c8aaa9cdfe"
     },
     {
       "path": "conformance/package-checks.mjs",
@@ -789,7 +867,7 @@
       "path": "conformance/reference-evidence.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "d929a591e23a23fbc17633e6f8c9ae4176e02f527ebb8dd87429e40520df3180"
+      "sha256": "c003878c30cceb771b8c8a979cf9878f9c6e8dcdfd55397a4907e3161f361e27"
     },
     {
       "path": "conformance/reference-vault-checks.mjs",
@@ -1240,6 +1318,438 @@
       "authority": "normative",
       "media_type": "application/json",
       "sha256": "fa97311bcf39f66ba81e6ce67c819ee79dfa21fbccf61e0453f1f981e903082c"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/ambiguous-capability-proof-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "0f2213753fb91ae42593d4e12a503d5f57c3163f2d50c5eb726d425d972564d9"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/ambiguous-network-proof-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "d662741195d03b0ffdf058608a276c0d3dbcf280e0c8044083336d7789320bdf"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/authentication-does-not-prove-capability.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "c8fc6fee174cc16b2c802dbfff213c9cd9b0c17dcfb6857f36299f24778f84bd"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/authentication-does-not-prove-deletion.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "98e90f440b09bf81954e743aca3296f636c7746b4fc655355bee2177485d64cd"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/authentication-does-not-prove-entitlement.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "faca7131473f5b3d0356e96623e0dee2552deae787dfe1fca9b0b708ec32507f"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/authentication-does-not-prove-network.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "c7ec8c58ac693b84ff2ad449b543c7c0e2f4d88849dd47367eaf6927c1f2e76a"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/authentication-does-not-prove-privacy.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "b0ec0fea388ea08fb93b86cc72cd26856bd41928db69ff6c5913142bba47fe0a"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/authentication-does-not-prove-residency.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "7ae0abecc4fb8c6d443d22875fc06e4bd69f40f2f1fb65ffd48cd7473f0e8d4b"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/authentication-does-not-prove-retention.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "4aa4e2b6b907bd2357261e6ed43086b4b8eef61b287ed81a98c99ab6e47ac2ad"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/authentication-does-not-prove-training.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "ccc5e4e9dc8317f7aca1d9fadffb69fb63c2d826e4835d73d65d0c11f49b97d4"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/automation-authority-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "040455438cdc8d60290f3d34f41f49612e786d291f99206b853143a2e4aa0916"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/command-authority-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "b2f780b257a6824a3e29e1dcdadaeeff98819fcc4101268b0e6d8a1cb2d40152"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/command-request-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "430acb18ac86a5d91026703492a2fdfa3100f5572bc331b14e909160781e86d3"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/cost-limit-exceeded.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "dd4df3205a555a049fb2d05974bc43cd00b3ece124412a987b95e7ed043744ee"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/crash-after-transmission-preserves-bytes.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "643025bec9532245fd321e232e3548b784687a30426984730d50b4db9f4f4648"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/crash-before-transmission-zero-bytes.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "90b8223d9e260cd27ef18c1a61517404a0b3cb4965143dd918bb068917abb648"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/embedded-tool-request-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "1cb8b370375cd4ffefb3690623ec66308f58beb30fe148af634e802a7102f854"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/exact-cost-ceiling.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "65592df76e3d3035af67d032f31cc5511db335faa9fe423be4e21d9337456577"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/exact-input-ceiling.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "1de7fe4ab0cdbc8e803f4d91054c295b43ad452ebae7b63268d0b2651248f150"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/exact-jsonl-ceiling.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "ac0de52b6cdcb3f22d50993cfbc823c70d1732b0060071dcb30701d53ebb604c"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/exact-output-ceiling.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "acbb87c9dda0aade2e494a2e46ce1423e4fc53c43aa2a24557bca5dbb60f8585"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/exact-runtime-ceiling.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "dcc921d6e35cc47a0a7c0a5ea39a018001c967e04123f59887a6517278560691"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/exact-token-ceiling.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "f1646afd47ed034ecc7b000307e75a4a3b13b0c5b13830744d59d77de64b59d5"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/excessive-capability-proof-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "8ae4a2cca3417b3c8bfa94a5b1e303296a8376f8202cbd7a7cb4a6d065dcdec5"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/excessive-network-proof-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "44c9bde3f126f44743955fdb0be8bd716ff8c45c71552da42d6cb34ccf28515b"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/failed-authentication-prerequisite-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "219d42f5533c443b9929db5249be624a5c376964be1afd249a983214d685075a"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/filesystem-authority-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "d3b08c05b0f52ae41474e0ac02d876abaca363d069717c5d817d12cffaebd145"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/hostile-input-remains-inert.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "03a86ec90a010aa828bbce092b39b399ed9e3911da3ae42c6ae7a10e2c694fc7"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/illegal-authentication-prerequisite-transition-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "72987f11ab837a987d4626a3e0404ee65e2ad91099187ea8f06bfed7bc95d357"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/illegal-capability-proof-transition-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "c790b3c47c50a7e95b337adf47b6a8baf0cff939ddece1f0676f639769965620"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/illegal-denial-transition-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "215d4f97cdb8c0af6b061a2b568859937462f126adbf6329e24eb45961f8bf9b"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/illegal-failure-transition-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "916e5cf84b53680c76a35ea25745ed1e85e87958873351bf0b1f608f21d49a6e"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/illegal-network-proof-transition-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "9eab4238ca84d697f68971f4d28613f403bb498bb00e2cc9c9ecd7d5f7bdce9c"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/illegal-proposal-validation-transition-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "5bca83f35e12ecda83594ceb82ea6252f10668b9b7c68e04dbcb609469514b6d"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/illegal-recovery-transition-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "5f6d572f2fd1920d6a913165e7cc5b1af2ea5651aadd5fa007f7be762c149104"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/inconclusive-authentication-prerequisite-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "cde2d38647943bf56c25e351349e014f460e35b8c54c45fbf720906877c71f73"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/inconclusive-capability-proof-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "81939c5a0905616cfb462a541d91f8ea5e551ead04bccb28e479b8b2c37211e7"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/inconclusive-network-proof-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "33bfabe7b8b69eb66f58dae405eb6cc58def880a6b1d5786e6641017b337d7b6"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/input-limit-exceeded.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "1ec844c84166c47e541583f3575418dbd86abab8afabbf621aa6327eb5d01729"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/interactive-only-execution-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "987466ef1279fde0c7f4c34c1544584c1d48461496339b0c71b5015dc1ef1fb9"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/jsonl-limit-exceeded.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "70d7ad5d75d0d8dcf9a2a5f644e5fadd3ae453eec60695a7e9dadc7b6f7bd9a7"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/malformed-output-rejected.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "c4f37a7cbd5500ba25e6f1280fe70ffa2c480451237c03f55691208c75843290"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/mismatch-capability-proof-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "ab6d9b391d3ae651501cf1986f934147ae0571767d8d1569d4fa5167296fb74a"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/mismatch-network-proof-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "60c75b47218ce7dbad09df9e3beb206485e41d8a5db0a2709eea90a68bdec6c7"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/missing-authentication-prerequisite-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "f77aa5542b91e7f637cbaad93343691335113a774fd449b78c8001a564470ccd"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/missing-boundary-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "7914a6a751bd1c4959c967913a662f56c375b233079b3a02258c2fd421c9603f"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/missing-capability-proof-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "51e50ed3d93510125a37f4e6ead716b4a3ad903288c29c76d0ee8aef9db2ec14"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/missing-network-proof-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "799c262f9c817ee8713b8716e62c6dfce08ba1a56730d6aca510d36599b1f576"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/note-placement-authority-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "eeb500fc7d95978d10901ce60e0c854b881d489a41cdeaf8b20eca36a1211e1a"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/output-limit-exceeded.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "e11882416b77d5eb2e8290a65bac8d2694ad886737da789b6fac78834963ce1d"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/projection-authority-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "48f86e6f1cb249c638ab49a1e36dafcf4006ae986dc599e14a9db89af786d106"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/recovery-rejects-stale-bindings.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "4298043be1196902ac745cc79d027010e085e5d8c310c4110b244ef4f89937d4"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/recovery-revalidates-current-bindings.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "6ec8b4c734e541ab0a8de21d127ed2e6b10a9401d68c719f2958ae47fde46ae3"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/runtime-limit-exceeded.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "3326b1b3d4e3389f169ba61fb3f9bce4bcf5fae31d23be8a7542941cefc35b26"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/secret-request-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "baaa0eaf87ba682f157324802374443ba7eaeef856504e7303f7cf9a00468524"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/semantic-authority-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "4fbc414eaa9c57602920267620a097a93a78c99e495383b0d65bf820db143caf"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/stale-authentication-prerequisite-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "d4c55f47f26bdc4133d498e93fc48c51e6e75fb2f1c4e38ea0fef973d2536952"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/stale-binding-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "3acd74aa653a226176db267a3bead8251160b6c99c0d13b0d6b934be8a67a683"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/stale-capability-proof-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "f899dfeafd5e2c8babc381ea8dbb2e2a706dabb932d550ade8ec53a45e64b3b0"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/stale-network-proof-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "44d2e85f5fae6fef9b3b37bf80de0e2d019ed3f5cd3220ac1d42fbe824a9ce00"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/taxonomy-authority-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "99a8766b01ab5871a065aa05e86292d04970265938e1944574b2a81bae8d7bdc"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/token-limit-exceeded.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "ffe191341e1dc61527a292c12ba67788350bf795b89d98ee3df19042e12c3955"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/tool-authority-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "2eaecd7d98395bfb54fb97aae65417135479ce4eb9414254afdbdf92dccd4fbf"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/unapproved-destination-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "1291af09a2a1b8938667bfb75dc9dc8427b3815933871886f0299133e9c68f93"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/unapproved-fallback-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "9d9c34e4bd34b38df0cedb6c690e9c1fd163c92b40780391d1b6ed24f96b0ee8"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/unapproved-payload-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "20f040dea0c89188aaef015ddc6a51118f3e3ddf249da91ff3ede693e500f576"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/unavailable-isolation-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "9e0056a6e05822c67d5998714e380734b136e30851546a1efb3f807ee85355fa"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/unsupported-authentication-prerequisite-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "2acf4ca95051b1fa6bed91d9cd9c4ac1ab8eb9b3ced49e41e1bf2405ef3ea4d8"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/unsupported-capability-proof-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "f8e365beb1c52fff640fd6a2ccd0786b505089d235927f614dc6fcacd05a938e"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/unsupported-network-proof-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "ec2813b52e9635a2f1488fd93435077c63841536213ca3f349d261d47edbc66a"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/valid-abstention-remains-advice.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "5eb67197e57be57510a8e211c10ba1ba57e6032f18174809b7337f3ec1fafa8c"
+    },
+    {
+      "path": "conformance/scenarios/codex-intelligence-adapter/valid-noninteractive-proposal.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "5def53afef1619ffcb767ad6b468cfc283ddad0e956b8503be4852f1972290bf"
     },
     {
       "path": "conformance/scenarios/control-plane/authenticated-local-control-access.json",
@@ -1707,7 +2217,7 @@
       "path": "conformance/scenarios/evidence-crash-recovery.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "9a2734947039021de19e443cbd4f9467e222f5145c25bb50b4758d66b81a4d20"
+      "sha256": "7bf5d55b96234c6f034b5f90bcdea9f16d8de412c60abe03081808cbfbf3a8e1"
     },
     {
       "path": "conformance/scenarios/evidence-illegal-awaiting-readback.json",
@@ -1749,7 +2259,7 @@
       "path": "conformance/scenarios/evidence-stale-recovery-pass.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "834b548f22f8a0a38601099937092940641dedfd5ddcf080327f4bf6c6a06df3"
+      "sha256": "2b368db2b913b1bd92f15d091c18e6d8a8d7683932e17cf0c49f5720af3022ee"
     },
     {
       "path": "conformance/scenarios/evidence-stale-version.json",
@@ -1761,7 +2271,7 @@
       "path": "conformance/scenarios/evidence-unsupported-recovery.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "e96605b13db0ad2e8881ac6715e392dacd50f4cea8c0f9ab8fd4c7d75efbcf94"
+      "sha256": "2f3d3a916be1039e9707e0a61f7e683669e185fb5f8b0ea57c0a7002a612b05a"
     },
     {
       "path": "conformance/scenarios/illegal-release.json",
@@ -3675,7 +4185,7 @@
       "path": "conformance/schema-instances.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "0fb183093da2e35d26f1ee0b841c3c4d31e6b4442e18d96a47fc25e1b900e28d"
+      "sha256": "654ffa9a5aa1f8d61d994bb7e5acb408b4c6f651f9a6bf044021ba9a03f9a7b5"
     },
     {
       "path": "conformance/semantic-kernel-authority.mjs",
@@ -3723,25 +4233,25 @@
       "path": "conformance/state-observations/candidate/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "d1f8dbb51ab2303b00f8178c18e89531d71b2e68647baaa55067c6e13c5cd916"
+      "sha256": "4263409de8d907cb9dd34c0b8dce84155d9054833cbf59326f259129816afaba"
     },
     {
       "path": "conformance/state-observations/draft/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "c9460ae69889cacd0abcf19eea76c6c09433c6aed039fbf82c5125a6c9fa0994"
+      "sha256": "5831186bc1647affec4924d9400ca7e25e8a7c7338b2e38a609083867bbefa1c"
     },
     {
       "path": "conformance/state-observations/release-ready/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "004b6de0aa874731790c74c6ef866b18b4d29a15b4c4abc28f612dd421461ce5"
+      "sha256": "ab8a2e1aebbd7e4d2151efc23cce12720706860ee2f237a40483e3cf035a366a"
     },
     {
       "path": "conformance/state-observations/released/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "492c11b63a492267fb362df0ba3a86b4b6e3e9bdf8cb4306ddfc0b4d318a48b1"
+      "sha256": "e5bb3ba8cf772264b56e53639613a9db956ec8ae7dc65a90ad4fa14d7f231f02"
     },
     {
       "path": "conformance/traceability-checks.mjs",
@@ -3765,7 +4275,7 @@
       "path": "conformance/validation-report.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "ef8bab3b58c3fedd9f79448acc08ce8ef9f34bedc6e9fb04f7cd22515f05ea15"
+      "sha256": "3e47eaf5545650a57e7cf816c3cd7df17cc2d43019885aa55e472f492f9950ff"
     },
     {
       "path": "conformance/validator-boundary-cases.mjs",
@@ -3780,10 +4290,16 @@
       "sha256": "43f357ea11d69e1ba382f0029c05919dbbc3669546f03782ab673aca3f5482aa"
     },
     {
+      "path": "conformance/validator-codex-adapter-cases.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "9034b088c07e0e671a829ad91da1030a28cb3610c32a96eaf74cf019eccea064"
+    },
+    {
       "path": "conformance/validator-contract-cases.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "fbfcfc71edeb6536eccda379b1650110c1a2bd22113f0714a4a319ba1bb7720b"
+      "sha256": "a7b8d950c433f3a0d306ffeb459b9468128a8fffc36f332da55d67e93f08b74d"
     },
     {
       "path": "conformance/validator-control-plane-cases.mjs",
@@ -3819,7 +4335,7 @@
       "path": "conformance/validator-evidence-checks.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "64162c36e84166e4a9105c9c4d8adb7b0a0639403c04a4b7c744322afe05c3ec"
+      "sha256": "877f77be54ce34660fb0cc750eca27de96e6cad37a529ffd5aa194dcbe251332"
     },
     {
       "path": "conformance/validator-evidence-domain-invariants.mjs",
@@ -3999,7 +4515,7 @@
       "path": "conformance/validator-rules.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "0ed204d1aeab81f096df93e529fd8a31357d1b0265c84eba736c326eece9243d"
+      "sha256": "fa2e012898212ee69c279d41d6b155e378cbe2476250ff183c163e82fb56a58d"
     },
     {
       "path": "conformance/validator-security-cases.mjs",
@@ -4053,7 +4569,7 @@
       "path": "conformance/validator.test.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "2d5a63f652eda0f7b6c01c1d899a7526461585b54fd764984de7adb585f72382"
+      "sha256": "642df667143f30106c6b49ea06571d77c97440b9f79775f77f1fffbb6f5ad2b9"
     },
     {
       "path": "conformance/vault-mutation-digests.mjs",
@@ -4084,6 +4600,48 @@
       "authority": "informative",
       "media_type": "text/javascript",
       "sha256": "5ef6d8ab12bb760bd9bd989fee7dac9314a0e0b4969df325d575e87c3f0fe3c5"
+    },
+    {
+      "path": "contracts/codex-intelligence-adapter/authentication-prerequisite.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "34694252b7eaa71d3da78bcf9447370766b53397a48a20f1159938005938c2b9"
+    },
+    {
+      "path": "contracts/codex-intelligence-adapter/boundary.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "ebd492711cb60b22e316d2703d2c22d928ceb63d49022582b1aa2398a5911dc7"
+    },
+    {
+      "path": "contracts/codex-intelligence-adapter/capability-proof.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "71923d793b2a081a3349ac74f8049863d482dfbcf853b73a978b8e5bb4387e44"
+    },
+    {
+      "path": "contracts/codex-intelligence-adapter/claim-manifest.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "7baf923c5145b1a7308afa649431f8052c010a79067926fe47897da8f3203da3"
+    },
+    {
+      "path": "contracts/codex-intelligence-adapter/fixture-manifest.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "838d1aaf08f84385c1418c56406316c94a3a6de03dfc32d0c2b053689fd8356a"
+    },
+    {
+      "path": "contracts/codex-intelligence-adapter/network-proof.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "1bba1d77be7e50e44c3503c8aac0384e1fbcc004a62df8ba8bd6ad6ea2400445"
+    },
+    {
+      "path": "contracts/codex-intelligence-adapter/profile.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "5fe6130f3807b3d75a03ae9f4dff002bd55b904a6ea5924f7f94c946af76fe98"
     },
     {
       "path": "contracts/control-plane/agent-state.json",
@@ -4272,10 +4830,94 @@
       "sha256": "bb509cff711a92e51f632caf65b08af3a23258861e5b301eb5021adb30d4c9e5"
     },
     {
+      "path": "contracts/schemas/codex-adapter-boundary.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "590939a4d8cbd0eb78b85432093f5d0727fd66150880461c210ce817764708bd"
+    },
+    {
+      "path": "contracts/schemas/codex-adapter-claim-manifest.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "bb91e9fb991b4c2c2fb6703f92020642674ad55e31ae986ceeb2e71368eb990e"
+    },
+    {
+      "path": "contracts/schemas/codex-adapter-denial.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "2309a4e735e55335fe2402749d88a4f4318eec4a1cc948adb9195c3ca7f9021e"
+    },
+    {
+      "path": "contracts/schemas/codex-adapter-evidence.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "377e4b068a615b2a5627daa03adba8071e043f9c72e2abf435d97584eecf14e8"
+    },
+    {
+      "path": "contracts/schemas/codex-adapter-fixture-manifest.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "7ebc227b17bb29cd98edd2e71d80174a6245dd9e42c37fea4693fd52a3d07a1a"
+    },
+    {
+      "path": "contracts/schemas/codex-adapter-proposal.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "0697ec9e8a2ff91dc58d83931625ac46a458a22312bced5dfecdc3fb919d2743"
+    },
+    {
+      "path": "contracts/schemas/codex-adapter-receipt.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "0b1b60abbbad74065de88b00376ea41a5c7795fec56c4eb0de634ffb4b28d963"
+    },
+    {
+      "path": "contracts/schemas/codex-adapter-recovery-report.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "34b8c4287fe58a6a1538b60ed00204708900e1bbd7ab0642cc59d58b7f2ba2cf"
+    },
+    {
+      "path": "contracts/schemas/codex-adapter-scenario.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "9ea6c81530eddb067b012e1d83a5e1ac5980a26caa487b75f6e52e9f267b9060"
+    },
+    {
+      "path": "contracts/schemas/codex-adapter-verdict-table.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "c3b521fa3f8e978d7d26b5770747d802940d2dbb55e435abfb701cdc3a7db96f"
+    },
+    {
+      "path": "contracts/schemas/codex-authentication-prerequisite.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "96c98c83ed3fe830434e1926903225782ecd4436d8c7f38add04492051bfe4df"
+    },
+    {
+      "path": "contracts/schemas/codex-capability-proof.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "c19e73e94a4d9b6673adcbda27aff378eeb115ea73e03e316a8742a8e4dd8fc0"
+    },
+    {
+      "path": "contracts/schemas/codex-intelligence-adapter-profile.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "959532eb983cbd36aa84982152e453ab98253d2aa09a0e25486be22689c918f4"
+    },
+    {
+      "path": "contracts/schemas/codex-network-proof.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "e9f1e8ea8fc7fc483edfca82390375fff52dbe9a15e673cb4f8f09a5ff67b879"
+    },
+    {
       "path": "contracts/schemas/conformance-fixture.schema.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "568cdfa1e2ae086e98b79b6aad11bbc01ab2ba6dc3750c09c0a44af9087a4ddd"
+      "sha256": "d6ac162c7a7ec6f6656bc79510cdf1ce7a864e1ba9fbcdb2143323f1e4f479ae"
     },
     {
       "path": "contracts/schemas/conformance-manifest.schema.json",
@@ -4707,7 +5349,7 @@
       "path": "contracts/schemas/validator-extension-registry.schema.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "da7090af2a049d937beb12776b7cd6bb6bad10f9ce904efcfcdfbffad81a2b40"
+      "sha256": "52d22876b4db13f48fe3c83a589f1ed1d087dc283a8a1b4166de89fd6be06c2e"
     },
     {
       "path": "contracts/schemas/validator-invocation.schema.json",
@@ -4774,6 +5416,48 @@
       "authority": "normative",
       "media_type": "application/json",
       "sha256": "cd1ff594c8ad87d9c7212233d8c077ea8e79ff7e9375be50945cca31f28848b8"
+    },
+    {
+      "path": "contracts/transitions/codex-adapter-authentication-prerequisite-lifecycle.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "2d3227d3563eb2be9ff810f6ade600c95fd497123eeae85a6a836d4f65a43d7d"
+    },
+    {
+      "path": "contracts/transitions/codex-adapter-capability-proof-lifecycle.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "f2e94d73dd90ee6d79ab7f6fa5aee111a35b6aa145a859c21a880690344cdbf5"
+    },
+    {
+      "path": "contracts/transitions/codex-adapter-denial-lifecycle.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "a5e22328bb156046e045e305bc67eff3153233560a01b65e7351c26e988f7b19"
+    },
+    {
+      "path": "contracts/transitions/codex-adapter-failure-lifecycle.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "f78dec0a4459923bc5249f26058c9300eb7a3c888d1d9a6c72e1d512eeb1f87b"
+    },
+    {
+      "path": "contracts/transitions/codex-adapter-network-proof-lifecycle.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "c6cf00b43e72eda8cc98495026c7593cbb3f286d42a2f8891e61d5d87dab5521"
+    },
+    {
+      "path": "contracts/transitions/codex-adapter-proposal-validation-lifecycle.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "c0d66127a402a6c5f3fdd164a4143b19b156806e2a4b45c119841dc8d3fdaf05"
+    },
+    {
+      "path": "contracts/transitions/codex-adapter-recovery-lifecycle.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "1db874914121cfb6aa5982c5fd35055e32d9555a50c1ef94330501774a43b2a9"
     },
     {
       "path": "contracts/transitions/control-channel-lifecycle.json",
@@ -4977,7 +5661,7 @@
       "path": "contracts/validator-extensions.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "5d3220a6806ed3094e05bd9940e3703163a2ce5f263b3b35dc3a4938877217a4"
+      "sha256": "58052da34fb57e46329118ea4d43f6fe96f2ceb990a7e48ea870d0a7b925dcc5"
     },
     {
       "path": "contracts/vault-mutation-gate/authorized-plan.json",
@@ -5004,6 +5688,12 @@
       "sha256": "3ef125a5286f668b9778b930ec88a53b86b814bcd6ad72a87857bb0ab50b2db2"
     },
     {
+      "path": "contracts/verdicts/codex-adapter-verdicts.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "e75dd7a90b75d42aeed5e1e74be874a45b30caf0c62e49103cb046282599804c"
+    },
+    {
       "path": "contracts/verdicts/local-adapter-verdicts.json",
       "authority": "normative",
       "media_type": "application/json",
@@ -5020,6 +5710,12 @@
       "authority": "normative",
       "media_type": "application/json",
       "sha256": "0b8835675f0c24acae0207bd4cd34f4b584d742babcefcf6addad3e88bfa1761"
+    },
+    {
+      "path": "normative/codex-intelligence-adapter-profile.md",
+      "authority": "normative",
+      "media_type": "text/markdown",
+      "sha256": "92beea18078105b17c9d50fa8ab2568cc556b84d9c39a825227b36f6aef1da63"
     },
     {
       "path": "normative/control-plane-contract.md",
@@ -5067,7 +5763,7 @@
       "path": "normative/requirements.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "35e879083994819e103701994017e42c5ea95c07c037afad7dd5af13538ab465"
+      "sha256": "2c112fe3248cb6ab3d3eebdf1801435c22827c2c5aa155edff4cd86285c37489"
     },
     {
       "path": "normative/semantic-kernel-contract.md",
@@ -5091,11 +5787,11 @@
       "path": "traceability.yaml",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "a302b24cc210cbfd7a89bc3eb6d1526896baa4dcc70f603706b08df8fbe42a4c"
+      "sha256": "1499651b1145eb0a3ccbf70a8808ce7d830a740efbb5f4c4187413c45a4cceea"
     }
   ],
-  "normative_digest": "03abf38e25b79d0bca6aabf542ae0352dbcf25463c210f5449a041443c146a56",
-  "conformance_digest": "a06c8ee7e6c63b53ae582e200c37a482dbebe16a6e150e0913f88408c81da3f1",
+  "normative_digest": "9c32999e97868fb9f925de5662da5a85fe8730ab633ab492d76b1fed9792b3e0",
+  "conformance_digest": "b526d7685f4352e5966f09f10a86234c88b57a35354658763dbcdaf24dfb8dee",
   "amendment_policy": {
     "immutable_after_release": true,
     "in_place_mutation": "forbidden",

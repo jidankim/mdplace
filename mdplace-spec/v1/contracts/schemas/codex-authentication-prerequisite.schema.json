@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:codex-authentication-prerequisite:v1",
+  "title": "mdplace Codex authentication prerequisite",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_id",
+    "prerequisite_id",
+    "profile_id",
+    "status",
+    "mechanism",
+    "opaque",
+    "satisfied",
+    "secret_observed",
+    "claims_established",
+    "observed_at",
+    "expires_at"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "../schemas/codex-authentication-prerequisite.schema.json"
+    },
+    "schema_id": {
+      "const": "mdplace.codex-authentication-prerequisite/v1"
+    },
+    "prerequisite_id": {
+      "const": "codex-authentication:v1"
+    },
+    "profile_id": {
+      "const": "codex-adapter"
+    },
+    "status": {
+      "enum": [
+        "current",
+        "missing",
+        "stale",
+        "ambiguous",
+        "unsupported",
+        "inconclusive",
+        "mismatch",
+        "excessive",
+        "failed"
+      ]
+    },
+    "mechanism": {
+      "const": "documented_saved_codex_login"
+    },
+    "opaque": {
+      "const": true
+    },
+    "satisfied": {
+      "type": "boolean"
+    },
+    "secret_observed": {
+      "const": false
+    },
+    "claims_established": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

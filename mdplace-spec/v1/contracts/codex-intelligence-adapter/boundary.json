@@ -1,0 +1,49 @@
+{
+  "$schema": "../schemas/codex-adapter-boundary.schema.json",
+  "authentication_prerequisite_ref": "contracts/codex-intelligence-adapter/authentication-prerequisite.json",
+  "authentication_prerequisite_sha256": "34694252b7eaa71d3da78bcf9447370766b53397a48a20f1159938005938c2b9",
+  "boundary_id": "codex-boundary:v1",
+  "capability_proof_ref": "contracts/codex-intelligence-adapter/capability-proof.json",
+  "capability_proof_sha256": "71923d793b2a081a3349ac74f8049863d482dfbcf853b73a978b8e5bb4387e44",
+  "exact_destination": "https://codex.openai.test/v1/execute",
+  "expires_at": "2026-09-23T00:00:00.000Z",
+  "interface": {
+    "approved_cli_version": "0.104.0",
+    "command": "codex",
+    "interface_version": "1.0.0",
+    "mode": "non_interactive",
+    "output_mode": "bounded_jsonl_with_schema_final",
+    "payload_channel": "framed_stdin",
+    "subcommand": "exec"
+  },
+  "isolation": {
+    "ambient_configuration": "unreadable",
+    "authority": {
+      "automation": "none",
+      "command": "none",
+      "filesystem": "none",
+      "note_placement": "none",
+      "projection": "none",
+      "semantic": "none",
+      "taxonomy": "none",
+      "tool": "none"
+    },
+    "fresh_process": true,
+    "scratch_only": true,
+    "tools": [],
+    "vault_visible": false
+  },
+  "network_proof_ref": "contracts/codex-intelligence-adapter/network-proof.json",
+  "network_proof_sha256": "1bba1d77be7e50e44c3503c8aac0384e1fbcc004a62df8ba8bd6ad6ea2400445",
+  "observed_at": "2026-08-23T00:00:00.000Z",
+  "payload_bytes": 61,
+  "payload_sha256": "12d307aa1d93ae1345f627de8e1f5f4c9e5807eb6959fe89f6af530169afe73c",
+  "processing_envelope_ref": "contracts/intelligence-adapter/approved-context.json#/policy_binding",
+  "processing_envelope_sha256": "3d2d68e8f3c98384d1b611804f341c7697e55ed1b22dbf7530286e93ee72205a",
+  "profile_id": "codex-adapter",
+  "schema_id": "mdplace.codex-adapter-boundary/v1",
+  "status": "current",
+  "transmitted_fields": [
+    "field:source-content"
+  ]
+}

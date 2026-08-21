@@ -1,0 +1,50 @@
+{
+  "$schema": "../schemas/codex-intelligence-adapter-profile.schema.json",
+  "schema_id": "mdplace.codex-intelligence-adapter-profile/v1",
+  "profile_id": "codex-adapter",
+  "owner": "codex-adapter",
+  "version": "1.0.0",
+  "protocol_ref": "normative/intelligence-adapter-protocol.md",
+  "approved_processing_envelope_ref": "contracts/intelligence-adapter/approved-context.json#/policy_binding",
+  "decision_inputs": [
+    "https://github.com/jidankim/mdplace/issues/11#issuecomment-5118839348",
+    "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+  ],
+  "interface": {
+    "command": "codex",
+    "subcommand": "exec",
+    "interface_version": "1.0.0",
+    "approved_cli_version": "0.104.0",
+    "mode": "non_interactive",
+    "payload_channel": "framed_stdin",
+    "output_mode": "bounded_jsonl_with_schema_final"
+  },
+  "exact_destination": "https://codex.openai.test/v1/execute",
+  "evidence_refs": {
+    "boundary": "contracts/codex-intelligence-adapter/boundary.json",
+    "authentication_prerequisite": "contracts/codex-intelligence-adapter/authentication-prerequisite.json",
+    "capability_proof": "contracts/codex-intelligence-adapter/capability-proof.json",
+    "network_proof": "contracts/codex-intelligence-adapter/network-proof.json"
+  },
+  "ceilings": {
+    "input_bytes": 4096,
+    "jsonl_bytes": 8192,
+    "output_bytes": 3000,
+    "runtime_ms": 800,
+    "tokens": 2000,
+    "cost_microunits": 5000
+  },
+  "authority": {
+    "semantic": "none",
+    "note_placement": "none",
+    "taxonomy": "none",
+    "projection": "none",
+    "filesystem": "none",
+    "tool": "none",
+    "command": "none",
+    "automation": "none"
+  },
+  "specification_only": true,
+  "live_codex_behavior_asserted": false,
+  "network_operation_performed": false
+}

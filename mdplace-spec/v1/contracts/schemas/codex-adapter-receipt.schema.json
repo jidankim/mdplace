@@ -1,0 +1,228 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:codex-adapter-receipt:v1",
+  "title": "mdplace deterministic Codex receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "receipt_id",
+    "profile_id",
+    "scenario_id",
+    "outcome",
+    "boundary_sha256",
+    "authentication_prerequisite_sha256",
+    "capability_proof_sha256",
+    "network_proof_sha256",
+    "processing_envelope_sha256",
+    "destination",
+    "transmitted_bytes",
+    "transmitted_sha256",
+    "output_sha256",
+    "proposal_id",
+    "denial",
+    "tool_events_observed",
+    "semantic_effects",
+    "filesystem_effects",
+    "authority_effects",
+    "tool_invocations",
+    "receipt_sha256"
+  ],
+  "properties": {
+    "schema_id": {
+      "const": "mdplace.codex-adapter-receipt/v1"
+    },
+    "receipt_id": {
+      "type": "string",
+      "pattern": "^codex-receipt:cdx-[0-9]{3}$"
+    },
+    "profile_id": {
+      "const": "codex-adapter"
+    },
+    "scenario_id": {
+      "type": "string",
+      "pattern": "^CDX-[0-9]{3}$"
+    },
+    "outcome": {
+      "enum": [
+        "accepted",
+        "denied",
+        "rejected",
+        "recovery_required",
+        "recovered"
+      ]
+    },
+    "boundary_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "authentication_prerequisite_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "capability_proof_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "network_proof_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "processing_envelope_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "destination": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uri"
+    },
+    "transmitted_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "transmitted_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "output_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "proposal_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^codex-proposal:cdx-[0-9]{3}$"
+    },
+    "denial": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/denial"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "tool_events_observed": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "semantic_effects": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "filesystem_effects": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "authority_effects": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "tool_invocations": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "receipt_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "$defs": {
+    "denial": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "urn:mdplace:schema:codex-adapter-denial:v1",
+      "title": "mdplace Codex denial evidence",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_id",
+        "denial_id",
+        "profile_id",
+        "scenario_id",
+        "code",
+        "boundary",
+        "transmitted_bytes",
+        "transmitted_sha256",
+        "destination",
+        "semantic_effects",
+        "filesystem_effects",
+        "tool_invocations"
+      ],
+      "properties": {
+        "schema_id": {
+          "const": "mdplace.codex-adapter-denial/v1"
+        },
+        "denial_id": {
+          "type": "string",
+          "pattern": "^codex-denial:cdx-[0-9]{3}$"
+        },
+        "profile_id": {
+          "const": "codex-adapter"
+        },
+        "scenario_id": {
+          "type": "string",
+          "pattern": "^CDX-[0-9]{3}$"
+        },
+        "code": {
+          "type": "string",
+          "pattern": "^codex\\.[a-z0-9_]+$"
+        },
+        "boundary": {
+          "enum": [
+            "pre_transmission",
+            "post_response_validation",
+            "recovery"
+          ]
+        },
+        "transmitted_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "transmitted_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "destination": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
+        "semantic_effects": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "filesystem_effects": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "tool_invocations": {
+          "type": "array",
+          "maxItems": 0
+        }
+      }
+    }
+  }
+}

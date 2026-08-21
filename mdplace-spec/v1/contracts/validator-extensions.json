@@ -22,9 +22,15 @@
         "contracts/schemas/evidence-transition-attempt.schema.json",
         "contracts/schemas/verdict-table.schema.json",
         "contracts/schemas/local-adapter-claim-manifest.schema.json",
-        "contracts/schemas/remote-adapter-claim-manifest.schema.json"
+        "contracts/schemas/remote-adapter-claim-manifest.schema.json",
+        "contracts/schemas/codex-adapter-claim-manifest.schema.json"
       ],
-      "verdicts": ["fail", "unsupported", "inconclusive", "pass"]
+      "verdicts": [
+        "fail",
+        "unsupported",
+        "inconclusive",
+        "pass"
+      ]
     }
   ]
 }

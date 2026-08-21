@@ -1,0 +1,53 @@
+{
+  "$schema": "../../contracts/schemas/codex-adapter-recovery-report.schema.json",
+  "schema_id": "mdplace.codex-adapter-recovery-report/v1",
+  "report_id": "codex-adapter-recovery:v1",
+  "profile_id": "codex-adapter",
+  "claim_manifest_sha256": "7baf923c5145b1a7308afa649431f8052c010a79067926fe47897da8f3203da3",
+  "evidence_digest": "88e4c7c547a938a4050e105784f467c4ca2d70acb6aeea3ee54dbceeb94d8ae8",
+  "parsed_artifacts_revalidated": true,
+  "cases": [
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-062",
+      "boundary_revalidated": false,
+      "capability_revalidated": false,
+      "network_revalidated": false,
+      "authentication_revalidated": false,
+      "processing_envelope_revalidated": false,
+      "terminal_state": "recovery_required",
+      "receipt_sha256": "dadd16aa42cb739aefaaf594f87aedc8a7f17c129a38aa2da67acbace747faba"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-063",
+      "boundary_revalidated": false,
+      "capability_revalidated": false,
+      "network_revalidated": false,
+      "authentication_revalidated": false,
+      "processing_envelope_revalidated": false,
+      "terminal_state": "recovery_required",
+      "receipt_sha256": "35469f09f80427e69e2f1b60124606cc7d6ebd60b384283c7393e7d157a0b177"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-064",
+      "boundary_revalidated": true,
+      "capability_revalidated": true,
+      "network_revalidated": true,
+      "authentication_revalidated": true,
+      "processing_envelope_revalidated": true,
+      "terminal_state": "recovered",
+      "receipt_sha256": "c19d748091cc14ef66b5bf733d26b1cf53b3f6b27c054265abc5c17715a20184"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-065",
+      "boundary_revalidated": false,
+      "capability_revalidated": false,
+      "network_revalidated": false,
+      "authentication_revalidated": false,
+      "processing_envelope_revalidated": false,
+      "terminal_state": "recovery_required",
+      "receipt_sha256": "c8dbf0fd22138a1195e6dbe33a2de0e3e754918e8831359b84723b216a79033d"
+    }
+  ],
+  "network_operations": 0,
+  "verdict": "pass"
+}

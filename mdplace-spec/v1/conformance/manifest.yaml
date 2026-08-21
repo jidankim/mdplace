@@ -6180,6 +6180,1806 @@
       }
     },
     {
+      "fixture_id": "FIX-CODEX-PROFILE-001",
+      "path": "scenarios/codex-intelligence-adapter/valid-noninteractive-proposal.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-002",
+      "path": "scenarios/codex-intelligence-adapter/valid-abstention-remains-advice.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-003",
+      "path": "scenarios/codex-intelligence-adapter/hostile-input-remains-inert.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-004",
+      "path": "scenarios/codex-intelligence-adapter/exact-input-ceiling.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-005",
+      "path": "scenarios/codex-intelligence-adapter/exact-jsonl-ceiling.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-006",
+      "path": "scenarios/codex-intelligence-adapter/exact-output-ceiling.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-007",
+      "path": "scenarios/codex-intelligence-adapter/exact-runtime-ceiling.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-008",
+      "path": "scenarios/codex-intelligence-adapter/exact-token-ceiling.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-009",
+      "path": "scenarios/codex-intelligence-adapter/exact-cost-ceiling.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-010",
+      "path": "scenarios/codex-intelligence-adapter/input-limit-exceeded.json",
+      "category": "over_boundary",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-011",
+      "path": "scenarios/codex-intelligence-adapter/jsonl-limit-exceeded.json",
+      "category": "over_boundary",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-012",
+      "path": "scenarios/codex-intelligence-adapter/output-limit-exceeded.json",
+      "category": "over_boundary",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-013",
+      "path": "scenarios/codex-intelligence-adapter/runtime-limit-exceeded.json",
+      "category": "over_boundary",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-014",
+      "path": "scenarios/codex-intelligence-adapter/token-limit-exceeded.json",
+      "category": "over_boundary",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-015",
+      "path": "scenarios/codex-intelligence-adapter/cost-limit-exceeded.json",
+      "category": "over_boundary",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-016",
+      "path": "scenarios/codex-intelligence-adapter/interactive-only-execution-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-017",
+      "path": "scenarios/codex-intelligence-adapter/missing-boundary-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-018",
+      "path": "scenarios/codex-intelligence-adapter/stale-binding-denied.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-019",
+      "path": "scenarios/codex-intelligence-adapter/missing-authentication-prerequisite-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-020",
+      "path": "scenarios/codex-intelligence-adapter/stale-authentication-prerequisite-denied.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-021",
+      "path": "scenarios/codex-intelligence-adapter/unsupported-authentication-prerequisite-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-022",
+      "path": "scenarios/codex-intelligence-adapter/inconclusive-authentication-prerequisite-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-023",
+      "path": "scenarios/codex-intelligence-adapter/failed-authentication-prerequisite-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-024",
+      "path": "scenarios/codex-intelligence-adapter/missing-capability-proof-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-025",
+      "path": "scenarios/codex-intelligence-adapter/stale-capability-proof-denied.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-026",
+      "path": "scenarios/codex-intelligence-adapter/ambiguous-capability-proof-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-027",
+      "path": "scenarios/codex-intelligence-adapter/unsupported-capability-proof-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-028",
+      "path": "scenarios/codex-intelligence-adapter/inconclusive-capability-proof-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-029",
+      "path": "scenarios/codex-intelligence-adapter/mismatch-capability-proof-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-030",
+      "path": "scenarios/codex-intelligence-adapter/excessive-capability-proof-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-031",
+      "path": "scenarios/codex-intelligence-adapter/missing-network-proof-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-032",
+      "path": "scenarios/codex-intelligence-adapter/stale-network-proof-denied.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-033",
+      "path": "scenarios/codex-intelligence-adapter/ambiguous-network-proof-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-034",
+      "path": "scenarios/codex-intelligence-adapter/unsupported-network-proof-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-035",
+      "path": "scenarios/codex-intelligence-adapter/inconclusive-network-proof-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-036",
+      "path": "scenarios/codex-intelligence-adapter/mismatch-network-proof-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-037",
+      "path": "scenarios/codex-intelligence-adapter/excessive-network-proof-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-038",
+      "path": "scenarios/codex-intelligence-adapter/unapproved-destination-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-039",
+      "path": "scenarios/codex-intelligence-adapter/unapproved-payload-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-040",
+      "path": "scenarios/codex-intelligence-adapter/unavailable-isolation-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-041",
+      "path": "scenarios/codex-intelligence-adapter/unapproved-fallback-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-042",
+      "path": "scenarios/codex-intelligence-adapter/embedded-tool-request-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-043",
+      "path": "scenarios/codex-intelligence-adapter/command-request-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-044",
+      "path": "scenarios/codex-intelligence-adapter/secret-request-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-045",
+      "path": "scenarios/codex-intelligence-adapter/malformed-output-rejected.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-046",
+      "path": "scenarios/codex-intelligence-adapter/semantic-authority-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-047",
+      "path": "scenarios/codex-intelligence-adapter/note-placement-authority-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-048",
+      "path": "scenarios/codex-intelligence-adapter/taxonomy-authority-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-049",
+      "path": "scenarios/codex-intelligence-adapter/projection-authority-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-050",
+      "path": "scenarios/codex-intelligence-adapter/filesystem-authority-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-051",
+      "path": "scenarios/codex-intelligence-adapter/tool-authority-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-052",
+      "path": "scenarios/codex-intelligence-adapter/command-authority-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-053",
+      "path": "scenarios/codex-intelligence-adapter/automation-authority-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-054",
+      "path": "scenarios/codex-intelligence-adapter/authentication-does-not-prove-capability.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-055",
+      "path": "scenarios/codex-intelligence-adapter/authentication-does-not-prove-network.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-056",
+      "path": "scenarios/codex-intelligence-adapter/authentication-does-not-prove-residency.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-057",
+      "path": "scenarios/codex-intelligence-adapter/authentication-does-not-prove-retention.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-058",
+      "path": "scenarios/codex-intelligence-adapter/authentication-does-not-prove-training.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-059",
+      "path": "scenarios/codex-intelligence-adapter/authentication-does-not-prove-deletion.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-060",
+      "path": "scenarios/codex-intelligence-adapter/authentication-does-not-prove-entitlement.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-061",
+      "path": "scenarios/codex-intelligence-adapter/authentication-does-not-prove-privacy.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-062",
+      "path": "scenarios/codex-intelligence-adapter/crash-before-transmission-zero-bytes.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-063",
+      "path": "scenarios/codex-intelligence-adapter/crash-after-transmission-preserves-bytes.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-064",
+      "path": "scenarios/codex-intelligence-adapter/recovery-revalidates-current-bindings.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-065",
+      "path": "scenarios/codex-intelligence-adapter/recovery-rejects-stale-bindings.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-066",
+      "path": "scenarios/codex-intelligence-adapter/illegal-capability-proof-transition-denied.json",
+      "category": "illegal_transition",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": true
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-067",
+      "path": "scenarios/codex-intelligence-adapter/illegal-network-proof-transition-denied.json",
+      "category": "illegal_transition",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": true
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-068",
+      "path": "scenarios/codex-intelligence-adapter/illegal-authentication-prerequisite-transition-denied.json",
+      "category": "illegal_transition",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": true
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-069",
+      "path": "scenarios/codex-intelligence-adapter/illegal-proposal-validation-transition-denied.json",
+      "category": "illegal_transition",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": true
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-070",
+      "path": "scenarios/codex-intelligence-adapter/illegal-denial-transition-denied.json",
+      "category": "illegal_transition",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": true
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-071",
+      "path": "scenarios/codex-intelligence-adapter/illegal-failure-transition-denied.json",
+      "category": "illegal_transition",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": true
+      }
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-072",
+      "path": "scenarios/codex-intelligence-adapter/illegal-recovery-transition-denied.json",
+      "category": "illegal_transition",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": true
+      }
+    },
+    {
       "fixture_id": "FIX-RAP-PROFILE-001",
       "path": "scenarios/remote-intelligence-adapter/permitted-primary-exact-bytes.json",
       "category": "positive",

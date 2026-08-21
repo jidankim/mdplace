@@ -1,0 +1,451 @@
+{
+  "$schema": "../schemas/transition-table.schema.json",
+  "schema_id": "mdplace.transition-table/v1",
+  "table_id": "TRANS-CDXNET",
+  "lifecycle": "Codex Intelligence Adapter network-proof",
+  "version": "1.0.0",
+  "states": [
+    "unproven",
+    "proven",
+    "denied"
+  ],
+  "commands": [
+    "authorize_remote_egress",
+    "transmit_remote_payload",
+    "deny_remote_egress"
+  ],
+  "transitions": [
+    {
+      "transition_id": "TR-CDXNET-001",
+      "command_or_event": "authorize_remote_egress",
+      "from_state": "unproven",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Codex boundary, capability, network, authentication, and Processing Envelope bindings are current"
+      ],
+      "base_references": [
+        "boundary_sha256",
+        "capability_proof_sha256",
+        "network_proof_sha256",
+        "authentication_prerequisite_sha256",
+        "processing_envelope_sha256"
+      ],
+      "emitted_records": [
+        "CodexAdapterTransitionObserved"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "proven",
+      "failure_result": {
+        "code": "codex.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "CodexAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate the exact parsed boundary and Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-CDXNET-002",
+      "command_or_event": "transmit_remote_payload",
+      "from_state": "unproven",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Codex boundary, capability, network, authentication, and Processing Envelope bindings are current"
+      ],
+      "base_references": [
+        "boundary_sha256",
+        "capability_proof_sha256",
+        "network_proof_sha256",
+        "authentication_prerequisite_sha256",
+        "processing_envelope_sha256"
+      ],
+      "emitted_records": [
+        "CodexAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "unproven",
+      "failure_result": {
+        "code": "codex.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "CodexAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate the exact parsed boundary and Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-CDXNET-003",
+      "command_or_event": "deny_remote_egress",
+      "from_state": "unproven",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Codex boundary, capability, network, authentication, and Processing Envelope bindings are current"
+      ],
+      "base_references": [
+        "boundary_sha256",
+        "capability_proof_sha256",
+        "network_proof_sha256",
+        "authentication_prerequisite_sha256",
+        "processing_envelope_sha256"
+      ],
+      "emitted_records": [
+        "CodexAdapterTransitionObserved"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "denied",
+      "failure_result": {
+        "code": "codex.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "CodexAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate the exact parsed boundary and Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-CDXNET-004",
+      "command_or_event": "authorize_remote_egress",
+      "from_state": "proven",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Codex boundary, capability, network, authentication, and Processing Envelope bindings are current"
+      ],
+      "base_references": [
+        "boundary_sha256",
+        "capability_proof_sha256",
+        "network_proof_sha256",
+        "authentication_prerequisite_sha256",
+        "processing_envelope_sha256"
+      ],
+      "emitted_records": [
+        "CodexAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "proven",
+      "failure_result": {
+        "code": "codex.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "CodexAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate the exact parsed boundary and Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-CDXNET-005",
+      "command_or_event": "transmit_remote_payload",
+      "from_state": "proven",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Codex boundary, capability, network, authentication, and Processing Envelope bindings are current"
+      ],
+      "base_references": [
+        "boundary_sha256",
+        "capability_proof_sha256",
+        "network_proof_sha256",
+        "authentication_prerequisite_sha256",
+        "processing_envelope_sha256"
+      ],
+      "emitted_records": [
+        "CodexAdapterTransitionObserved"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "proven",
+      "failure_result": {
+        "code": "codex.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "CodexAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate the exact parsed boundary and Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-CDXNET-006",
+      "command_or_event": "deny_remote_egress",
+      "from_state": "proven",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Codex boundary, capability, network, authentication, and Processing Envelope bindings are current"
+      ],
+      "base_references": [
+        "boundary_sha256",
+        "capability_proof_sha256",
+        "network_proof_sha256",
+        "authentication_prerequisite_sha256",
+        "processing_envelope_sha256"
+      ],
+      "emitted_records": [
+        "CodexAdapterTransitionObserved"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "denied",
+      "failure_result": {
+        "code": "codex.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "CodexAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate the exact parsed boundary and Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-CDXNET-007",
+      "command_or_event": "authorize_remote_egress",
+      "from_state": "denied",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Codex boundary, capability, network, authentication, and Processing Envelope bindings are current"
+      ],
+      "base_references": [
+        "boundary_sha256",
+        "capability_proof_sha256",
+        "network_proof_sha256",
+        "authentication_prerequisite_sha256",
+        "processing_envelope_sha256"
+      ],
+      "emitted_records": [
+        "CodexAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "denied",
+      "failure_result": {
+        "code": "codex.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "CodexAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate the exact parsed boundary and Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-CDXNET-008",
+      "command_or_event": "transmit_remote_payload",
+      "from_state": "denied",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Codex boundary, capability, network, authentication, and Processing Envelope bindings are current"
+      ],
+      "base_references": [
+        "boundary_sha256",
+        "capability_proof_sha256",
+        "network_proof_sha256",
+        "authentication_prerequisite_sha256",
+        "processing_envelope_sha256"
+      ],
+      "emitted_records": [
+        "CodexAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "denied",
+      "failure_result": {
+        "code": "codex.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "CodexAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate the exact parsed boundary and Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-CDXNET-009",
+      "command_or_event": "deny_remote_egress",
+      "from_state": "denied",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Codex boundary, capability, network, authentication, and Processing Envelope bindings are current"
+      ],
+      "base_references": [
+        "boundary_sha256",
+        "capability_proof_sha256",
+        "network_proof_sha256",
+        "authentication_prerequisite_sha256",
+        "processing_envelope_sha256"
+      ],
+      "emitted_records": [
+        "CodexAdapterTransitionObserved"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "denied",
+      "failure_result": {
+        "code": "codex.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "CodexAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate the exact parsed boundary and Claim Manifest before another transition."
+    }
+  ]
+}

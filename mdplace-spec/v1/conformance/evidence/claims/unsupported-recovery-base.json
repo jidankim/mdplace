@@ -1,0 +1,36 @@
+{
+  "$schema": "../../../contracts/schemas/claim-manifest.schema.json",
+  "schema_id": "mdplace.claim-manifest/v1",
+  "manifest_kind": "profile_claim",
+  "claim_id": "CLAIM-UNSUPPORTED-001",
+  "profile": "core",
+  "package_series": "mdplace-spec/v1",
+  "release_version": "1.0.0",
+  "validator_id": "mdplace.package-validator",
+  "validator_version": "1.2.0",
+  "subject": {
+    "kind": "conformance_fixture",
+    "subject_id": "fixture:unsupported-recovery-base",
+    "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+  },
+  "requirement_id": "REQ-VAL-005",
+  "evidence_requirements": [
+    {
+      "evidence_kind": "unsupported_proof",
+      "mandatory": true
+    }
+  ],
+  "evidence_bindings": [
+    {
+      "evidence_kind": "unsupported_proof",
+      "mandatory": true,
+      "availability": "unsupported",
+      "applicability": "applicable",
+      "evidence_ref": null,
+      "evidence_digest": null,
+      "verdict": "unsupported"
+    }
+  ],
+  "applicability": "applicable",
+  "verdict": "unsupported"
+}

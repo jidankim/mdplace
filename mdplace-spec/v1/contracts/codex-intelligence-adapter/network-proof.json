@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/codex-network-proof.schema.json",
+  "schema_id": "mdplace.codex-network-proof/v1",
+  "proof_id": "codex-network-proof:v1",
+  "profile_id": "codex-adapter",
+  "status": "current",
+  "boundary_id": "network-boundary:codex-fixture-v1",
+  "allowed_destination": "https://codex.openai.test/v1/execute",
+  "authentication_only_destinations": [
+    "https://auth.openai.test/login"
+  ],
+  "observed_payload_destinations": [
+    "https://codex.openai.test/v1/execute"
+  ],
+  "unauthorized_destination_bytes": 0,
+  "proof_result": "exact",
+  "observed_at": "2026-08-23T00:00:00.000Z",
+  "expires_at": "2026-09-23T00:00:00.000Z"
+}

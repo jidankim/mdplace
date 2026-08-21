@@ -667,7 +667,22 @@ async function synchronizeValidatorEvidence() {
   await writeJsonFile('conformance/scenarios/evidence-stale-recovery-pass.json', staleFixture);
 
   const unsupportedFixture = await readJsonFile('conformance/scenarios/evidence-unsupported-recovery.json');
-  await synchronizeDeclaredDigests(unsupportedFixture.subject.document);
+  const unsupportedClaimPath = 'conformance/evidence/claims/unsupported-recovery-base.json';
+  const unsupportedClaim = await readJsonFile(unsupportedClaimPath);
+  const unsupportedClaimSha256 = await fileDigest(unsupportedClaimPath);
+  unsupportedFixture.subject.document.claim_id = unsupportedClaim.claim_id;
+  unsupportedFixture.subject.document.claim = {
+    claim_id: unsupportedClaim.claim_id,
+    path: unsupportedClaimPath,
+    sha256: unsupportedClaimSha256,
+  };
+  unsupportedFixture.subject.document.prior_verdict = unsupportedClaim.verdict;
+  unsupportedFixture.subject.document.recomputed_bindings = [{
+    path: unsupportedClaimPath,
+    expected_sha256: unsupportedClaimSha256,
+    observed_sha256: unsupportedClaimSha256,
+    matches: true,
+  }];
   await writeJsonFile('conformance/scenarios/evidence-unsupported-recovery.json', unsupportedFixture);
 }
 

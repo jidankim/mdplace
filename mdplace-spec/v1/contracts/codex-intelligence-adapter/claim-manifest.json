@@ -1,0 +1,513 @@
+{
+  "$schema": "../schemas/codex-adapter-claim-manifest.schema.json",
+  "schema_id": "mdplace.codex-adapter-claim-manifest/v1",
+  "manifest_id": "codex-adapter-claim:v1",
+  "package_series": "mdplace-spec/v1",
+  "release_version": "1.0.0",
+  "validator_id": "mdplace.package-validator",
+  "validator_version": "1.2.0",
+  "rows": [
+    {
+      "id": "codex-adapter",
+      "owner": "codex-adapter",
+      "verdict": "pass",
+      "evidence_digest": "88e4c7c547a938a4050e105784f467c4ca2d70acb6aeea3ee54dbceeb94d8ae8",
+      "evidence_material": [
+        {
+          "ordinal": 0,
+          "label": "codex_material_001",
+          "path": "normative/codex-intelligence-adapter-profile.md",
+          "sha256": "92beea18078105b17c9d50fa8ab2568cc556b84d9c39a825227b36f6aef1da63"
+        },
+        {
+          "ordinal": 1,
+          "label": "codex_material_002",
+          "path": "contracts/codex-intelligence-adapter/profile.json",
+          "sha256": "5fe6130f3807b3d75a03ae9f4dff002bd55b904a6ea5924f7f94c946af76fe98"
+        },
+        {
+          "ordinal": 2,
+          "label": "codex_material_003",
+          "path": "contracts/codex-intelligence-adapter/boundary.json",
+          "sha256": "ebd492711cb60b22e316d2703d2c22d928ceb63d49022582b1aa2398a5911dc7"
+        },
+        {
+          "ordinal": 3,
+          "label": "codex_material_004",
+          "path": "contracts/codex-intelligence-adapter/authentication-prerequisite.json",
+          "sha256": "34694252b7eaa71d3da78bcf9447370766b53397a48a20f1159938005938c2b9"
+        },
+        {
+          "ordinal": 4,
+          "label": "codex_material_005",
+          "path": "contracts/codex-intelligence-adapter/capability-proof.json",
+          "sha256": "71923d793b2a081a3349ac74f8049863d482dfbcf853b73a978b8e5bb4387e44"
+        },
+        {
+          "ordinal": 5,
+          "label": "codex_material_006",
+          "path": "contracts/codex-intelligence-adapter/network-proof.json",
+          "sha256": "1bba1d77be7e50e44c3503c8aac0384e1fbcc004a62df8ba8bd6ad6ea2400445"
+        },
+        {
+          "ordinal": 6,
+          "label": "codex_material_007",
+          "path": "contracts/codex-intelligence-adapter/fixture-manifest.json",
+          "sha256": "838d1aaf08f84385c1418c56406316c94a3a6de03dfc32d0c2b053689fd8356a"
+        },
+        {
+          "ordinal": 7,
+          "label": "codex_material_008",
+          "path": "contracts/verdicts/codex-adapter-verdicts.json",
+          "sha256": "e75dd7a90b75d42aeed5e1e74be874a45b30caf0c62e49103cb046282599804c"
+        },
+        {
+          "ordinal": 8,
+          "label": "codex_material_009",
+          "path": "conformance/evidence/codex-adapter-evidence.json",
+          "sha256": "e57ac1c31f4b8c089061c338ff46748aaf802d842f02b5f35ec1ea80154705f1"
+        },
+        {
+          "ordinal": 9,
+          "label": "codex_material_010",
+          "path": "conformance/scenarios/codex-intelligence-adapter/valid-noninteractive-proposal.json",
+          "sha256": "5def53afef1619ffcb767ad6b468cfc283ddad0e956b8503be4852f1972290bf"
+        },
+        {
+          "ordinal": 10,
+          "label": "codex_material_011",
+          "path": "conformance/scenarios/codex-intelligence-adapter/valid-abstention-remains-advice.json",
+          "sha256": "5eb67197e57be57510a8e211c10ba1ba57e6032f18174809b7337f3ec1fafa8c"
+        },
+        {
+          "ordinal": 11,
+          "label": "codex_material_012",
+          "path": "conformance/scenarios/codex-intelligence-adapter/hostile-input-remains-inert.json",
+          "sha256": "03a86ec90a010aa828bbce092b39b399ed9e3911da3ae42c6ae7a10e2c694fc7"
+        },
+        {
+          "ordinal": 12,
+          "label": "codex_material_013",
+          "path": "conformance/scenarios/codex-intelligence-adapter/exact-input-ceiling.json",
+          "sha256": "1de7fe4ab0cdbc8e803f4d91054c295b43ad452ebae7b63268d0b2651248f150"
+        },
+        {
+          "ordinal": 13,
+          "label": "codex_material_014",
+          "path": "conformance/scenarios/codex-intelligence-adapter/exact-jsonl-ceiling.json",
+          "sha256": "ac0de52b6cdcb3f22d50993cfbc823c70d1732b0060071dcb30701d53ebb604c"
+        },
+        {
+          "ordinal": 14,
+          "label": "codex_material_015",
+          "path": "conformance/scenarios/codex-intelligence-adapter/exact-output-ceiling.json",
+          "sha256": "acbb87c9dda0aade2e494a2e46ce1423e4fc53c43aa2a24557bca5dbb60f8585"
+        },
+        {
+          "ordinal": 15,
+          "label": "codex_material_016",
+          "path": "conformance/scenarios/codex-intelligence-adapter/exact-runtime-ceiling.json",
+          "sha256": "dcc921d6e35cc47a0a7c0a5ea39a018001c967e04123f59887a6517278560691"
+        },
+        {
+          "ordinal": 16,
+          "label": "codex_material_017",
+          "path": "conformance/scenarios/codex-intelligence-adapter/exact-token-ceiling.json",
+          "sha256": "f1646afd47ed034ecc7b000307e75a4a3b13b0c5b13830744d59d77de64b59d5"
+        },
+        {
+          "ordinal": 17,
+          "label": "codex_material_018",
+          "path": "conformance/scenarios/codex-intelligence-adapter/exact-cost-ceiling.json",
+          "sha256": "65592df76e3d3035af67d032f31cc5511db335faa9fe423be4e21d9337456577"
+        },
+        {
+          "ordinal": 18,
+          "label": "codex_material_019",
+          "path": "conformance/scenarios/codex-intelligence-adapter/input-limit-exceeded.json",
+          "sha256": "1ec844c84166c47e541583f3575418dbd86abab8afabbf621aa6327eb5d01729"
+        },
+        {
+          "ordinal": 19,
+          "label": "codex_material_020",
+          "path": "conformance/scenarios/codex-intelligence-adapter/jsonl-limit-exceeded.json",
+          "sha256": "70d7ad5d75d0d8dcf9a2a5f644e5fadd3ae453eec60695a7e9dadc7b6f7bd9a7"
+        },
+        {
+          "ordinal": 20,
+          "label": "codex_material_021",
+          "path": "conformance/scenarios/codex-intelligence-adapter/output-limit-exceeded.json",
+          "sha256": "e11882416b77d5eb2e8290a65bac8d2694ad886737da789b6fac78834963ce1d"
+        },
+        {
+          "ordinal": 21,
+          "label": "codex_material_022",
+          "path": "conformance/scenarios/codex-intelligence-adapter/runtime-limit-exceeded.json",
+          "sha256": "3326b1b3d4e3389f169ba61fb3f9bce4bcf5fae31d23be8a7542941cefc35b26"
+        },
+        {
+          "ordinal": 22,
+          "label": "codex_material_023",
+          "path": "conformance/scenarios/codex-intelligence-adapter/token-limit-exceeded.json",
+          "sha256": "ffe191341e1dc61527a292c12ba67788350bf795b89d98ee3df19042e12c3955"
+        },
+        {
+          "ordinal": 23,
+          "label": "codex_material_024",
+          "path": "conformance/scenarios/codex-intelligence-adapter/cost-limit-exceeded.json",
+          "sha256": "dd4df3205a555a049fb2d05974bc43cd00b3ece124412a987b95e7ed043744ee"
+        },
+        {
+          "ordinal": 24,
+          "label": "codex_material_025",
+          "path": "conformance/scenarios/codex-intelligence-adapter/interactive-only-execution-denied.json",
+          "sha256": "987466ef1279fde0c7f4c34c1544584c1d48461496339b0c71b5015dc1ef1fb9"
+        },
+        {
+          "ordinal": 25,
+          "label": "codex_material_026",
+          "path": "conformance/scenarios/codex-intelligence-adapter/missing-boundary-denied.json",
+          "sha256": "7914a6a751bd1c4959c967913a662f56c375b233079b3a02258c2fd421c9603f"
+        },
+        {
+          "ordinal": 26,
+          "label": "codex_material_027",
+          "path": "conformance/scenarios/codex-intelligence-adapter/stale-binding-denied.json",
+          "sha256": "3acd74aa653a226176db267a3bead8251160b6c99c0d13b0d6b934be8a67a683"
+        },
+        {
+          "ordinal": 27,
+          "label": "codex_material_028",
+          "path": "conformance/scenarios/codex-intelligence-adapter/missing-authentication-prerequisite-denied.json",
+          "sha256": "f77aa5542b91e7f637cbaad93343691335113a774fd449b78c8001a564470ccd"
+        },
+        {
+          "ordinal": 28,
+          "label": "codex_material_029",
+          "path": "conformance/scenarios/codex-intelligence-adapter/stale-authentication-prerequisite-denied.json",
+          "sha256": "d4c55f47f26bdc4133d498e93fc48c51e6e75fb2f1c4e38ea0fef973d2536952"
+        },
+        {
+          "ordinal": 29,
+          "label": "codex_material_030",
+          "path": "conformance/scenarios/codex-intelligence-adapter/unsupported-authentication-prerequisite-denied.json",
+          "sha256": "2acf4ca95051b1fa6bed91d9cd9c4ac1ab8eb9b3ced49e41e1bf2405ef3ea4d8"
+        },
+        {
+          "ordinal": 30,
+          "label": "codex_material_031",
+          "path": "conformance/scenarios/codex-intelligence-adapter/inconclusive-authentication-prerequisite-denied.json",
+          "sha256": "cde2d38647943bf56c25e351349e014f460e35b8c54c45fbf720906877c71f73"
+        },
+        {
+          "ordinal": 31,
+          "label": "codex_material_032",
+          "path": "conformance/scenarios/codex-intelligence-adapter/failed-authentication-prerequisite-denied.json",
+          "sha256": "219d42f5533c443b9929db5249be624a5c376964be1afd249a983214d685075a"
+        },
+        {
+          "ordinal": 32,
+          "label": "codex_material_033",
+          "path": "conformance/scenarios/codex-intelligence-adapter/missing-capability-proof-denied.json",
+          "sha256": "51e50ed3d93510125a37f4e6ead716b4a3ad903288c29c76d0ee8aef9db2ec14"
+        },
+        {
+          "ordinal": 33,
+          "label": "codex_material_034",
+          "path": "conformance/scenarios/codex-intelligence-adapter/stale-capability-proof-denied.json",
+          "sha256": "f899dfeafd5e2c8babc381ea8dbb2e2a706dabb932d550ade8ec53a45e64b3b0"
+        },
+        {
+          "ordinal": 34,
+          "label": "codex_material_035",
+          "path": "conformance/scenarios/codex-intelligence-adapter/ambiguous-capability-proof-denied.json",
+          "sha256": "0f2213753fb91ae42593d4e12a503d5f57c3163f2d50c5eb726d425d972564d9"
+        },
+        {
+          "ordinal": 35,
+          "label": "codex_material_036",
+          "path": "conformance/scenarios/codex-intelligence-adapter/unsupported-capability-proof-denied.json",
+          "sha256": "f8e365beb1c52fff640fd6a2ccd0786b505089d235927f614dc6fcacd05a938e"
+        },
+        {
+          "ordinal": 36,
+          "label": "codex_material_037",
+          "path": "conformance/scenarios/codex-intelligence-adapter/inconclusive-capability-proof-denied.json",
+          "sha256": "81939c5a0905616cfb462a541d91f8ea5e551ead04bccb28e479b8b2c37211e7"
+        },
+        {
+          "ordinal": 37,
+          "label": "codex_material_038",
+          "path": "conformance/scenarios/codex-intelligence-adapter/mismatch-capability-proof-denied.json",
+          "sha256": "ab6d9b391d3ae651501cf1986f934147ae0571767d8d1569d4fa5167296fb74a"
+        },
+        {
+          "ordinal": 38,
+          "label": "codex_material_039",
+          "path": "conformance/scenarios/codex-intelligence-adapter/excessive-capability-proof-denied.json",
+          "sha256": "8ae4a2cca3417b3c8bfa94a5b1e303296a8376f8202cbd7a7cb4a6d065dcdec5"
+        },
+        {
+          "ordinal": 39,
+          "label": "codex_material_040",
+          "path": "conformance/scenarios/codex-intelligence-adapter/missing-network-proof-denied.json",
+          "sha256": "799c262f9c817ee8713b8716e62c6dfce08ba1a56730d6aca510d36599b1f576"
+        },
+        {
+          "ordinal": 40,
+          "label": "codex_material_041",
+          "path": "conformance/scenarios/codex-intelligence-adapter/stale-network-proof-denied.json",
+          "sha256": "44d2e85f5fae6fef9b3b37bf80de0e2d019ed3f5cd3220ac1d42fbe824a9ce00"
+        },
+        {
+          "ordinal": 41,
+          "label": "codex_material_042",
+          "path": "conformance/scenarios/codex-intelligence-adapter/ambiguous-network-proof-denied.json",
+          "sha256": "d662741195d03b0ffdf058608a276c0d3dbcf280e0c8044083336d7789320bdf"
+        },
+        {
+          "ordinal": 42,
+          "label": "codex_material_043",
+          "path": "conformance/scenarios/codex-intelligence-adapter/unsupported-network-proof-denied.json",
+          "sha256": "ec2813b52e9635a2f1488fd93435077c63841536213ca3f349d261d47edbc66a"
+        },
+        {
+          "ordinal": 43,
+          "label": "codex_material_044",
+          "path": "conformance/scenarios/codex-intelligence-adapter/inconclusive-network-proof-denied.json",
+          "sha256": "33bfabe7b8b69eb66f58dae405eb6cc58def880a6b1d5786e6641017b337d7b6"
+        },
+        {
+          "ordinal": 44,
+          "label": "codex_material_045",
+          "path": "conformance/scenarios/codex-intelligence-adapter/mismatch-network-proof-denied.json",
+          "sha256": "60c75b47218ce7dbad09df9e3beb206485e41d8a5db0a2709eea90a68bdec6c7"
+        },
+        {
+          "ordinal": 45,
+          "label": "codex_material_046",
+          "path": "conformance/scenarios/codex-intelligence-adapter/excessive-network-proof-denied.json",
+          "sha256": "44c9bde3f126f44743955fdb0be8bd716ff8c45c71552da42d6cb34ccf28515b"
+        },
+        {
+          "ordinal": 46,
+          "label": "codex_material_047",
+          "path": "conformance/scenarios/codex-intelligence-adapter/unapproved-destination-denied.json",
+          "sha256": "1291af09a2a1b8938667bfb75dc9dc8427b3815933871886f0299133e9c68f93"
+        },
+        {
+          "ordinal": 47,
+          "label": "codex_material_048",
+          "path": "conformance/scenarios/codex-intelligence-adapter/unapproved-payload-denied.json",
+          "sha256": "20f040dea0c89188aaef015ddc6a51118f3e3ddf249da91ff3ede693e500f576"
+        },
+        {
+          "ordinal": 48,
+          "label": "codex_material_049",
+          "path": "conformance/scenarios/codex-intelligence-adapter/unavailable-isolation-denied.json",
+          "sha256": "9e0056a6e05822c67d5998714e380734b136e30851546a1efb3f807ee85355fa"
+        },
+        {
+          "ordinal": 49,
+          "label": "codex_material_050",
+          "path": "conformance/scenarios/codex-intelligence-adapter/unapproved-fallback-denied.json",
+          "sha256": "9d9c34e4bd34b38df0cedb6c690e9c1fd163c92b40780391d1b6ed24f96b0ee8"
+        },
+        {
+          "ordinal": 50,
+          "label": "codex_material_051",
+          "path": "conformance/scenarios/codex-intelligence-adapter/embedded-tool-request-denied.json",
+          "sha256": "1cb8b370375cd4ffefb3690623ec66308f58beb30fe148af634e802a7102f854"
+        },
+        {
+          "ordinal": 51,
+          "label": "codex_material_052",
+          "path": "conformance/scenarios/codex-intelligence-adapter/command-request-denied.json",
+          "sha256": "430acb18ac86a5d91026703492a2fdfa3100f5572bc331b14e909160781e86d3"
+        },
+        {
+          "ordinal": 52,
+          "label": "codex_material_053",
+          "path": "conformance/scenarios/codex-intelligence-adapter/secret-request-denied.json",
+          "sha256": "baaa0eaf87ba682f157324802374443ba7eaeef856504e7303f7cf9a00468524"
+        },
+        {
+          "ordinal": 53,
+          "label": "codex_material_054",
+          "path": "conformance/scenarios/codex-intelligence-adapter/malformed-output-rejected.json",
+          "sha256": "c4f37a7cbd5500ba25e6f1280fe70ffa2c480451237c03f55691208c75843290"
+        },
+        {
+          "ordinal": 54,
+          "label": "codex_material_055",
+          "path": "conformance/scenarios/codex-intelligence-adapter/semantic-authority-denied.json",
+          "sha256": "4fbc414eaa9c57602920267620a097a93a78c99e495383b0d65bf820db143caf"
+        },
+        {
+          "ordinal": 55,
+          "label": "codex_material_056",
+          "path": "conformance/scenarios/codex-intelligence-adapter/note-placement-authority-denied.json",
+          "sha256": "eeb500fc7d95978d10901ce60e0c854b881d489a41cdeaf8b20eca36a1211e1a"
+        },
+        {
+          "ordinal": 56,
+          "label": "codex_material_057",
+          "path": "conformance/scenarios/codex-intelligence-adapter/taxonomy-authority-denied.json",
+          "sha256": "99a8766b01ab5871a065aa05e86292d04970265938e1944574b2a81bae8d7bdc"
+        },
+        {
+          "ordinal": 57,
+          "label": "codex_material_058",
+          "path": "conformance/scenarios/codex-intelligence-adapter/projection-authority-denied.json",
+          "sha256": "48f86e6f1cb249c638ab49a1e36dafcf4006ae986dc599e14a9db89af786d106"
+        },
+        {
+          "ordinal": 58,
+          "label": "codex_material_059",
+          "path": "conformance/scenarios/codex-intelligence-adapter/filesystem-authority-denied.json",
+          "sha256": "d3b08c05b0f52ae41474e0ac02d876abaca363d069717c5d817d12cffaebd145"
+        },
+        {
+          "ordinal": 59,
+          "label": "codex_material_060",
+          "path": "conformance/scenarios/codex-intelligence-adapter/tool-authority-denied.json",
+          "sha256": "2eaecd7d98395bfb54fb97aae65417135479ce4eb9414254afdbdf92dccd4fbf"
+        },
+        {
+          "ordinal": 60,
+          "label": "codex_material_061",
+          "path": "conformance/scenarios/codex-intelligence-adapter/command-authority-denied.json",
+          "sha256": "b2f780b257a6824a3e29e1dcdadaeeff98819fcc4101268b0e6d8a1cb2d40152"
+        },
+        {
+          "ordinal": 61,
+          "label": "codex_material_062",
+          "path": "conformance/scenarios/codex-intelligence-adapter/automation-authority-denied.json",
+          "sha256": "040455438cdc8d60290f3d34f41f49612e786d291f99206b853143a2e4aa0916"
+        },
+        {
+          "ordinal": 62,
+          "label": "codex_material_063",
+          "path": "conformance/scenarios/codex-intelligence-adapter/authentication-does-not-prove-capability.json",
+          "sha256": "c8fc6fee174cc16b2c802dbfff213c9cd9b0c17dcfb6857f36299f24778f84bd"
+        },
+        {
+          "ordinal": 63,
+          "label": "codex_material_064",
+          "path": "conformance/scenarios/codex-intelligence-adapter/authentication-does-not-prove-network.json",
+          "sha256": "c7ec8c58ac693b84ff2ad449b543c7c0e2f4d88849dd47367eaf6927c1f2e76a"
+        },
+        {
+          "ordinal": 64,
+          "label": "codex_material_065",
+          "path": "conformance/scenarios/codex-intelligence-adapter/authentication-does-not-prove-residency.json",
+          "sha256": "7ae0abecc4fb8c6d443d22875fc06e4bd69f40f2f1fb65ffd48cd7473f0e8d4b"
+        },
+        {
+          "ordinal": 65,
+          "label": "codex_material_066",
+          "path": "conformance/scenarios/codex-intelligence-adapter/authentication-does-not-prove-retention.json",
+          "sha256": "4aa4e2b6b907bd2357261e6ed43086b4b8eef61b287ed81a98c99ab6e47ac2ad"
+        },
+        {
+          "ordinal": 66,
+          "label": "codex_material_067",
+          "path": "conformance/scenarios/codex-intelligence-adapter/authentication-does-not-prove-training.json",
+          "sha256": "ccc5e4e9dc8317f7aca1d9fadffb69fb63c2d826e4835d73d65d0c11f49b97d4"
+        },
+        {
+          "ordinal": 67,
+          "label": "codex_material_068",
+          "path": "conformance/scenarios/codex-intelligence-adapter/authentication-does-not-prove-deletion.json",
+          "sha256": "98e90f440b09bf81954e743aca3296f636c7746b4fc655355bee2177485d64cd"
+        },
+        {
+          "ordinal": 68,
+          "label": "codex_material_069",
+          "path": "conformance/scenarios/codex-intelligence-adapter/authentication-does-not-prove-entitlement.json",
+          "sha256": "faca7131473f5b3d0356e96623e0dee2552deae787dfe1fca9b0b708ec32507f"
+        },
+        {
+          "ordinal": 69,
+          "label": "codex_material_070",
+          "path": "conformance/scenarios/codex-intelligence-adapter/authentication-does-not-prove-privacy.json",
+          "sha256": "b0ec0fea388ea08fb93b86cc72cd26856bd41928db69ff6c5913142bba47fe0a"
+        },
+        {
+          "ordinal": 70,
+          "label": "codex_material_071",
+          "path": "conformance/scenarios/codex-intelligence-adapter/crash-before-transmission-zero-bytes.json",
+          "sha256": "90b8223d9e260cd27ef18c1a61517404a0b3cb4965143dd918bb068917abb648"
+        },
+        {
+          "ordinal": 71,
+          "label": "codex_material_072",
+          "path": "conformance/scenarios/codex-intelligence-adapter/crash-after-transmission-preserves-bytes.json",
+          "sha256": "643025bec9532245fd321e232e3548b784687a30426984730d50b4db9f4f4648"
+        },
+        {
+          "ordinal": 72,
+          "label": "codex_material_073",
+          "path": "conformance/scenarios/codex-intelligence-adapter/recovery-revalidates-current-bindings.json",
+          "sha256": "6ec8b4c734e541ab0a8de21d127ed2e6b10a9401d68c719f2958ae47fde46ae3"
+        },
+        {
+          "ordinal": 73,
+          "label": "codex_material_074",
+          "path": "conformance/scenarios/codex-intelligence-adapter/recovery-rejects-stale-bindings.json",
+          "sha256": "4298043be1196902ac745cc79d027010e085e5d8c310c4110b244ef4f89937d4"
+        },
+        {
+          "ordinal": 74,
+          "label": "codex_material_075",
+          "path": "conformance/scenarios/codex-intelligence-adapter/illegal-capability-proof-transition-denied.json",
+          "sha256": "c790b3c47c50a7e95b337adf47b6a8baf0cff939ddece1f0676f639769965620"
+        },
+        {
+          "ordinal": 75,
+          "label": "codex_material_076",
+          "path": "conformance/scenarios/codex-intelligence-adapter/illegal-network-proof-transition-denied.json",
+          "sha256": "9eab4238ca84d697f68971f4d28613f403bb498bb00e2cc9c9ecd7d5f7bdce9c"
+        },
+        {
+          "ordinal": 76,
+          "label": "codex_material_077",
+          "path": "conformance/scenarios/codex-intelligence-adapter/illegal-authentication-prerequisite-transition-denied.json",
+          "sha256": "72987f11ab837a987d4626a3e0404ee65e2ad91099187ea8f06bfed7bc95d357"
+        },
+        {
+          "ordinal": 77,
+          "label": "codex_material_078",
+          "path": "conformance/scenarios/codex-intelligence-adapter/illegal-proposal-validation-transition-denied.json",
+          "sha256": "5bca83f35e12ecda83594ceb82ea6252f10668b9b7c68e04dbcb609469514b6d"
+        },
+        {
+          "ordinal": 78,
+          "label": "codex_material_079",
+          "path": "conformance/scenarios/codex-intelligence-adapter/illegal-denial-transition-denied.json",
+          "sha256": "215d4f97cdb8c0af6b061a2b568859937462f126adbf6329e24eb45961f8bf9b"
+        },
+        {
+          "ordinal": 79,
+          "label": "codex_material_080",
+          "path": "conformance/scenarios/codex-intelligence-adapter/illegal-failure-transition-denied.json",
+          "sha256": "916e5cf84b53680c76a35ea25745ed1e85e87958873351bf0b1f608f21d49a6e"
+        },
+        {
+          "ordinal": 80,
+          "label": "codex_material_081",
+          "path": "conformance/scenarios/codex-intelligence-adapter/illegal-recovery-transition-denied.json",
+          "sha256": "5f6d572f2fd1920d6a913165e7cc5b1af2ea5651aadd5fa007f7be762c149104"
+        }
+      ],
+      "dependencies_elevated": {
+        "core": false,
+        "product_readiness": false,
+        "local_adapter": false,
+        "remote_adapter": false,
+        "placement_automation": false,
+        "other_profiles": false
+      }
+    }
+  ]
+}

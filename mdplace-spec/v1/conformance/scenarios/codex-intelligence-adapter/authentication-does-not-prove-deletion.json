@@ -1,0 +1,106 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-CODEX-PROFILE-059",
+  "category": "negative",
+  "requirement_ids": [
+    "REQ-CODEX-001",
+    "REQ-CODEX-002",
+    "REQ-CODEX-003",
+    "REQ-CODEX-004",
+    "REQ-CODEX-005",
+    "REQ-CODEX-006",
+    "REQ-CODEX-007",
+    "REQ-CODEX-008"
+  ],
+  "subject": {
+    "kind": "codex_intelligence_adapter",
+    "schema": "contracts/schemas/codex-adapter-scenario.schema.json",
+    "document": {
+      "schema_id": "mdplace.codex-adapter-scenario/v1",
+      "scenario_id": "CDX-059",
+      "case_id": "authentication-does-not-prove-deletion",
+      "category": "negative",
+      "operation": "execute",
+      "evaluated_at": "2026-08-24T00:00:00.000Z",
+      "boundary_json": "{\"$schema\":\"../schemas/codex-adapter-boundary.schema.json\",\"authentication_prerequisite_ref\":\"contracts/codex-intelligence-adapter/authentication-prerequisite.json\",\"authentication_prerequisite_sha256\":\"6e8cff8a096da1998f02116d8f9bfa3801b49aadb7ac7765e005180b7a84b0d5\",\"boundary_id\":\"codex-boundary:v1\",\"capability_proof_ref\":\"contracts/codex-intelligence-adapter/capability-proof.json\",\"capability_proof_sha256\":\"f92d20f305cf2dcc0b1e7f2a8af3288007229bf00c44ff1c9beb81295b2432ca\",\"exact_destination\":\"https://codex.openai.test/v1/execute\",\"expires_at\":\"2026-09-23T00:00:00.000Z\",\"interface\":{\"approved_cli_version\":\"0.104.0\",\"command\":\"codex\",\"interface_version\":\"1.0.0\",\"mode\":\"non_interactive\",\"output_mode\":\"bounded_jsonl_with_schema_final\",\"payload_channel\":\"framed_stdin\",\"subcommand\":\"exec\"},\"isolation\":{\"ambient_configuration\":\"unreadable\",\"authority\":{\"automation\":\"none\",\"command\":\"none\",\"filesystem\":\"none\",\"note_placement\":\"none\",\"projection\":\"none\",\"semantic\":\"none\",\"taxonomy\":\"none\",\"tool\":\"none\"},\"fresh_process\":true,\"scratch_only\":true,\"tools\":[],\"vault_visible\":false},\"network_proof_ref\":\"contracts/codex-intelligence-adapter/network-proof.json\",\"network_proof_sha256\":\"ccb3d7159145ead2e926210cd5b4102bbbb64f08cf837b5e638a9895c69e3bb1\",\"observed_at\":\"2026-08-23T00:00:00.000Z\",\"payload_bytes\":61,\"payload_sha256\":\"12d307aa1d93ae1345f627de8e1f5f4c9e5807eb6959fe89f6af530169afe73c\",\"processing_envelope_ref\":\"contracts/intelligence-adapter/approved-context.json#/policy_binding\",\"processing_envelope_sha256\":\"3c34c378f61189445a0baff90862db68b25afe63b4d4752a7bfe7a8bf3409398\",\"profile_id\":\"codex-adapter\",\"schema_id\":\"mdplace.codex-adapter-boundary/v1\",\"status\":\"current\",\"transmitted_fields\":[\"field:source-content\"]}",
+      "boundary_sha256": "6b5c82a7853040986d62c35e27c26cd239ade54ad6cd6a7521db1b9be549db16",
+      "authentication_json": "{\"$schema\":\"../schemas/codex-authentication-prerequisite.schema.json\",\"claims_established\":[],\"expires_at\":\"2026-09-23T00:00:00.000Z\",\"mechanism\":\"documented_saved_codex_login\",\"observed_at\":\"2026-08-23T00:00:00.000Z\",\"opaque\":true,\"prerequisite_id\":\"codex-authentication:v1\",\"profile_id\":\"codex-adapter\",\"satisfied\":true,\"schema_id\":\"mdplace.codex-authentication-prerequisite/v1\",\"secret_observed\":false,\"status\":\"current\"}",
+      "authentication_sha256": "6e8cff8a096da1998f02116d8f9bfa3801b49aadb7ac7765e005180b7a84b0d5",
+      "capability_json": "{\"$schema\":\"../schemas/codex-capability-proof.schema.json\",\"cli_version\":\"0.104.0\",\"deny_set_sha256\":\"1b9beaa90620fc5d942cf4f3f4e32466f4178b66ae0679d5b479eb723a11456f\",\"disabled_capability_features\":[\"shell\",\"unified_exec\",\"browser\",\"computer_use\",\"image_generation\",\"mcp\",\"plugins\",\"skills\",\"hooks\",\"multi_agent\",\"web_search\",\"workspace_dependencies\"],\"effective_capabilities\":[\"emit_jsonl\",\"emit_schema_validated_proposal\"],\"enabled_non_capability_features\":[\"jsonl_output\",\"schema_constrained_final\"],\"expires_at\":\"2026-09-23T00:00:00.000Z\",\"inventories\":{\"apps\":[],\"host_files\":[],\"instruction_roots\":[],\"mcp_servers\":[],\"model_visible_tools\":[],\"plugins\":[],\"skills\":[]},\"observed_at\":\"2026-08-23T00:00:00.000Z\",\"profile_id\":\"codex-adapter\",\"proof_id\":\"codex-capability-proof:v1\",\"proof_result\":\"exact\",\"schema_id\":\"mdplace.codex-capability-proof/v1\",\"status\":\"current\"}",
+      "capability_sha256": "f92d20f305cf2dcc0b1e7f2a8af3288007229bf00c44ff1c9beb81295b2432ca",
+      "network_json": "{\"$schema\":\"../schemas/codex-network-proof.schema.json\",\"allowed_destination\":\"https://codex.openai.test/v1/execute\",\"authentication_only_destinations\":[\"https://auth.openai.test/login\"],\"boundary_id\":\"network-boundary:codex-fixture-v1\",\"expires_at\":\"2026-09-23T00:00:00.000Z\",\"observed_at\":\"2026-08-23T00:00:00.000Z\",\"observed_payload_destinations\":[\"https://codex.openai.test/v1/execute\"],\"profile_id\":\"codex-adapter\",\"proof_id\":\"codex-network-proof:v1\",\"proof_result\":\"exact\",\"schema_id\":\"mdplace.codex-network-proof/v1\",\"status\":\"current\",\"unauthorized_destination_bytes\":0}",
+      "network_sha256": "ccb3d7159145ead2e926210cd5b4102bbbb64f08cf837b5e638a9895c69e3bb1",
+      "processing_envelope_json": "{\"$schema\":\"contracts/schemas/processing-envelope.schema.json\",\"attempt_id\":\"adapter-attempt:cdx-059\",\"attempt_sequence\":0,\"authorization_id\":\"adapter-authorization:remote-primary\",\"bindings\":{\"adapter_id\":\"adapter:codex\",\"model_id\":\"model:codex-fixture\",\"model_version\":\"2026-08-01\",\"policy\":{\"id\":\"policy:core-processing\",\"sha256\":\"27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766\",\"version\":\"1.0.0\"},\"provider_id\":\"provider:codex\",\"source_note_id\":\"file:01J00000000000000000000000\",\"source_note_version_sha256\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"source_profile\":{\"id\":\"source-profile:web-clipper\",\"sha256\":\"e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549\",\"version\":\"1.0.0\"},\"taxonomy_revision\":{\"id\":\"taxonomy-revision:fixture-001\",\"revision\":1,\"sha256\":\"6e77aeb5337715429270fd9c18cd01d388033efade5ce207b834516b2f96b1e6\"},\"vault_id\":\"vault:fixture-vault\"},\"cached_proposal_binding\":null,\"capabilities\":[\"capability:produce-proposal\"],\"ceilings\":{\"cost_microunits\":5000,\"input_bytes\":4096,\"output_bytes\":3000,\"runtime_ms\":800},\"chain_id\":\"adapter-chain:cdx-059\",\"contracts\":{\"adapter_contract_version\":\"1.0.0\",\"prompt_contract_version\":\"1.0.0\",\"proposal_schema_id\":\"mdplace.intelligence-proposal/v1\",\"proposal_schema_version\":\"1.0.0\"},\"credential_boundary\":{\"adapter_visibility\":\"none\",\"authentication_method\":\"local_process\",\"credential_ref\":\"credential-ref:codex-login\",\"provider_id\":\"provider:codex\",\"purpose_id\":\"purpose:placement\",\"store\":\"os_credential_store\"},\"destination\":{\"destination_id\":\"destination:codex-fixture\",\"endpoint\":\"https://codex.openai.test/v1/execute\",\"locality\":\"remote\"},\"envelope_id\":\"envelope:cdx-059\",\"payload_segments\":[{\"byte_length\":61,\"field_id\":\"field:source-content\",\"segment_id\":\"segment:cdx-059\",\"sha256\":\"12d307aa1d93ae1345f627de8e1f5f4c9e5807eb6959fe89f6af530169afe73c\",\"utf8\":\"Static authorized payload for the Codex Intelligence Adapter.\"}],\"purpose_id\":\"purpose:placement\",\"redactions\":[{\"receipt_sha256\":\"4a1b52bf2f36e1bc834b20df223c921abb8ea01bb0d673bb08da5d4e6bfda807\",\"rule_id\":\"redaction:remove-secrets\",\"status\":\"applied\"}],\"retention_artifacts\":[\"artifact:intelligence-proposal\"],\"retention_facts\":[{\"data_use\":\"provider_training_unknown\",\"max_days\":0,\"region\":\"unsupported\",\"retention_fact_id\":\"retention:codex-fixture\",\"status\":\"unknown_acknowledged\",\"subprocessors\":[]}],\"schema_id\":\"mdplace.processing-envelope/v1\",\"transmitted_artifacts\":[\"artifact:intelligence-proposal\"],\"transmitted_fields\":[{\"data_class\":\"data:source-content\",\"field_id\":\"field:source-content\",\"redaction_receipt_sha256\":\"4a1b52bf2f36e1bc834b20df223c921abb8ea01bb0d673bb08da5d4e6bfda807\",\"segment_id\":\"segment:cdx-059\"}]}",
+      "processing_envelope_sha256": "3c34c378f61189445a0baff90862db68b25afe63b4d4752a7bfe7a8bf3409398",
+      "payload_base64": "U3RhdGljIGF1dGhvcml6ZWQgcGF5bG9hZCBmb3IgdGhlIENvZGV4IEludGVsbGlnZW5jZSBBZGFwdGVyLg==",
+      "payload_bytes": 61,
+      "payload_sha256": "12d307aa1d93ae1345f627de8e1f5f4c9e5807eb6959fe89f6af530169afe73c",
+      "requested_destination": "https://codex.openai.test/v1/execute",
+      "transmitted_bytes": 61,
+      "transmitted_sha256": "12d307aa1d93ae1345f627de8e1f5f4c9e5807eb6959fe89f6af530169afe73c",
+      "raw_output": "{\"abstention_reason\":\"insufficient_evidence\",\"advisory_only\":true,\"authority\":{\"automation\":\"none\",\"command\":\"none\",\"filesystem\":\"none\",\"note_placement\":\"none\",\"projection\":\"none\",\"semantic\":\"none\",\"taxonomy\":\"none\",\"tool\":\"none\"},\"candidates\":[],\"filesystem_effects\":[],\"processing_envelope_sha256\":\"3c34c378f61189445a0baff90862db68b25afe63b4d4752a7bfe7a8bf3409398\",\"profile_id\":\"codex-adapter\",\"proposal_id\":\"codex-proposal:cdx-059\",\"proposal_schema_id\":\"mdplace.intelligence-proposal/v1\",\"rationale\":\"bounded inert advice\",\"raw_output_sha256\":\"bad33a104e5f47d13390e2bab45ae1daff8e873fe10baad24c62577d4f23ba62\",\"schema_id\":\"mdplace.codex-adapter-proposal/v1\",\"semantic_effects\":[],\"tool_requests\":[],\"validated\":true,\"warnings\":[]}",
+      "output_bytes": 733,
+      "jsonl_bytes": 1024,
+      "runtime_ms": 250,
+      "tokens": 500,
+      "cost_microunits": 1000,
+      "ceilings": {
+        "input_bytes": 4096,
+        "jsonl_bytes": 8192,
+        "output_bytes": 3000,
+        "runtime_ms": 800,
+        "tokens": 2000,
+        "cost_microunits": 5000
+      },
+      "interface_mode": "non_interactive",
+      "authentication_variant": "current",
+      "capability_variant": "current",
+      "network_variant": "current",
+      "behavior": "complete",
+      "output_kind": "valid",
+      "claimed_authority": "none",
+      "claimed_auth_fact": "deletion",
+      "transition_ref": null
+    }
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": [
+      "codex.authentication_does_not_prove_deletion"
+    ],
+    "inputs": [
+      "boundary:6b5c82a7853040986d62c35e27c26cd239ade54ad6cd6a7521db1b9be549db16",
+      "payload:12d307aa1d93ae1345f627de8e1f5f4c9e5807eb6959fe89f6af530169afe73c",
+      "destination:https://codex.openai.test/v1/execute"
+    ],
+    "outputs": [
+      "Codex attempt denied or rejected"
+    ],
+    "operations": [
+      "prove documented non-interactive Codex boundary",
+      "prove opaque authentication prerequisite",
+      "prove exact effective capabilities",
+      "prove exact network boundary",
+      "bind approved Processing Envelope",
+      "observe exact transmitted bytes",
+      "validate inert Codex proposal bytes"
+    ],
+    "receipts": [
+      "{\"authentication_prerequisite_sha256\":\"6e8cff8a096da1998f02116d8f9bfa3801b49aadb7ac7765e005180b7a84b0d5\",\"authority_effects\":[],\"boundary_sha256\":\"6b5c82a7853040986d62c35e27c26cd239ade54ad6cd6a7521db1b9be549db16\",\"capability_proof_sha256\":\"f92d20f305cf2dcc0b1e7f2a8af3288007229bf00c44ff1c9beb81295b2432ca\",\"denial\":{\"boundary\":\"post_response_validation\",\"code\":\"codex.authentication_does_not_prove_deletion\",\"denial_id\":\"codex-denial:cdx-059\",\"destination\":\"https://codex.openai.test/v1/execute\",\"filesystem_effects\":[],\"profile_id\":\"codex-adapter\",\"scenario_id\":\"CDX-059\",\"schema_id\":\"mdplace.codex-adapter-denial/v1\",\"semantic_effects\":[],\"tool_invocations\":[],\"transmitted_bytes\":61,\"transmitted_sha256\":\"12d307aa1d93ae1345f627de8e1f5f4c9e5807eb6959fe89f6af530169afe73c\"},\"destination\":\"https://codex.openai.test/v1/execute\",\"filesystem_effects\":[],\"network_proof_sha256\":\"ccb3d7159145ead2e926210cd5b4102bbbb64f08cf837b5e638a9895c69e3bb1\",\"outcome\":\"rejected\",\"output_sha256\":\"936c5bb855b3168004b1806cb4b0bd1ff7ff13627e7ca16e1fbc927d70d58d28\",\"processing_envelope_sha256\":\"3c34c378f61189445a0baff90862db68b25afe63b4d4752a7bfe7a8bf3409398\",\"profile_id\":\"codex-adapter\",\"proposal_id\":null,\"receipt_id\":\"codex-receipt:cdx-059\",\"receipt_sha256\":\"96f1c84adbadc998119d2eb4c21f7f43e9a99e46f2a62cb3a940f1adc816200d\",\"scenario_id\":\"CDX-059\",\"schema_id\":\"mdplace.codex-adapter-receipt/v1\",\"semantic_effects\":[],\"tool_events_observed\":0,\"tool_invocations\":[],\"transmitted_bytes\":61,\"transmitted_sha256\":\"12d307aa1d93ae1345f627de8e1f5f4c9e5807eb6959fe89f6af530169afe73c\"}"
+    ],
+    "filesystem_effects": [
+      "none"
+    ],
+    "network_effects": [
+      "transmitted 61 exact bytes to https://codex.openai.test/v1/execute"
+    ],
+    "observations": [
+      "semantic_effects=0",
+      "filesystem_effects=0",
+      "tool_invocations=0"
+    ],
+    "terminal_state": "rejected",
+    "illegal_transition": false
+  }
+}

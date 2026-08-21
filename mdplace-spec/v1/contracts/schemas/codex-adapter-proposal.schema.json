@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:codex-adapter-proposal:v1",
+  "title": "mdplace inert Codex proposal",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "proposal_id",
+    "profile_id",
+    "processing_envelope_sha256",
+    "raw_output_sha256",
+    "proposal_schema_id",
+    "validated",
+    "advisory_only",
+    "candidates",
+    "rationale",
+    "warnings",
+    "abstention_reason",
+    "tool_requests",
+    "authority",
+    "semantic_effects",
+    "filesystem_effects"
+  ],
+  "properties": {
+    "schema_id": {
+      "const": "mdplace.codex-adapter-proposal/v1"
+    },
+    "proposal_id": {
+      "type": "string",
+      "pattern": "^codex-proposal:cdx-[0-9]{3}$"
+    },
+    "profile_id": {
+      "const": "codex-adapter"
+    },
+    "processing_envelope_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "raw_output_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "proposal_schema_id": {
+      "const": "mdplace.intelligence-proposal/v1"
+    },
+    "validated": {
+      "const": true
+    },
+    "advisory_only": {
+      "const": true
+    },
+    "candidates": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "rationale": {
+      "type": "string"
+    },
+    "warnings": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "abstention_reason": {
+      "const": "insufficient_evidence"
+    },
+    "tool_requests": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "semantic",
+        "note_placement",
+        "taxonomy",
+        "projection",
+        "filesystem",
+        "tool",
+        "command",
+        "automation"
+      ],
+      "properties": {
+        "semantic": {
+          "const": "none"
+        },
+        "note_placement": {
+          "const": "none"
+        },
+        "taxonomy": {
+          "const": "none"
+        },
+        "projection": {
+          "const": "none"
+        },
+        "filesystem": {
+          "const": "none"
+        },
+        "tool": {
+          "const": "none"
+        },
+        "command": {
+          "const": "none"
+        },
+        "automation": {
+          "const": "none"
+        }
+      }
+    },
+    "semantic_effects": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "filesystem_effects": {
+      "type": "array",
+      "maxItems": 0
+    }
+  }
+}

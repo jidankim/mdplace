@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:codex-adapter-recovery-report:v1",
+  "title": "mdplace Codex recovery report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_id",
+    "report_id",
+    "profile_id",
+    "claim_manifest_sha256",
+    "evidence_digest",
+    "parsed_artifacts_revalidated",
+    "cases",
+    "network_operations",
+    "verdict"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "../../contracts/schemas/codex-adapter-recovery-report.schema.json"
+    },
+    "schema_id": {
+      "const": "mdplace.codex-adapter-recovery-report/v1"
+    },
+    "report_id": {
+      "const": "codex-adapter-recovery:v1"
+    },
+    "profile_id": {
+      "const": "codex-adapter"
+    },
+    "claim_manifest_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "evidence_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "parsed_artifacts_revalidated": {
+      "const": true
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "$ref": "#/$defs/case"
+      }
+    },
+    "network_operations": {
+      "const": 0
+    },
+    "verdict": {
+      "const": "pass"
+    }
+  },
+  "$defs": {
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fixture_id",
+        "boundary_revalidated",
+        "capability_revalidated",
+        "network_revalidated",
+        "authentication_revalidated",
+        "processing_envelope_revalidated",
+        "terminal_state",
+        "receipt_sha256"
+      ],
+      "properties": {
+        "fixture_id": {
+          "type": "string",
+          "pattern": "^FIX-CODEX-PROFILE-[0-9]{3}$"
+        },
+        "boundary_revalidated": {
+          "type": "boolean"
+        },
+        "capability_revalidated": {
+          "type": "boolean"
+        },
+        "network_revalidated": {
+          "type": "boolean"
+        },
+        "authentication_revalidated": {
+          "type": "boolean"
+        },
+        "processing_envelope_revalidated": {
+          "type": "boolean"
+        },
+        "terminal_state": {
+          "enum": [
+            "recovery_required",
+            "recovered"
+          ]
+        },
+        "receipt_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    }
+  }
+}

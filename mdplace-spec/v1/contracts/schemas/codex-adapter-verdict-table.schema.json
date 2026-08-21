@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:codex-adapter-verdict-table:v1",
+  "title": "mdplace Codex verdict table",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_id",
+    "table_id",
+    "profile_id",
+    "precedence",
+    "rows"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "../schemas/codex-adapter-verdict-table.schema.json"
+    },
+    "schema_id": {
+      "const": "mdplace.codex-adapter-verdict-table/v1"
+    },
+    "table_id": {
+      "const": "VERDICT-CODEX-ADAPTER-V1"
+    },
+    "profile_id": {
+      "const": "codex-adapter"
+    },
+    "precedence": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": "fail"
+        },
+        {
+          "const": "unsupported"
+        },
+        {
+          "const": "inconclusive"
+        },
+        {
+          "const": "pass"
+        }
+      ],
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "rows": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "verdict",
+          "meaning",
+          "required_fact_effect",
+          "claim_effect"
+        ],
+        "properties": {
+          "verdict": {
+            "enum": [
+              "pass",
+              "fail",
+              "unsupported",
+              "inconclusive"
+            ]
+          },
+          "meaning": {
+            "type": "string",
+            "minLength": 1
+          },
+          "required_fact_effect": {
+            "enum": [
+              "satisfied",
+              "non_pass"
+            ]
+          },
+          "claim_effect": {
+            "enum": [
+              "eligible_pass",
+              "deny_pass"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
