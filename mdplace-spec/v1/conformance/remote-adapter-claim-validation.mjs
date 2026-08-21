@@ -200,6 +200,9 @@ export async function deriveRemoteAdapterVerdict(
     )) return 'fail';
   }
   for (const [index, binding] of bindings.entries()) {
+    const [expectedCaseId, , expectedOverrides] = remoteAdapterCases[index];
+    const expectedScenarioId = `RAP-${String(index + 1).padStart(3, '0')}`;
+    const expectedOperation = expectedOverrides.operation ?? 'execute';
     const fixtureRead = await readPackageFile(packageRoot, binding.path);
     if (fixtureRead.status === 'absent') return 'unsupported';
     if (fixtureRead.status !== 'present') return 'fail';
@@ -223,6 +226,11 @@ export async function deriveRemoteAdapterVerdict(
           'contracts/schemas/remote-adapter-profile-receipt.schema.json',
           receipt,
         ) || fixture.fixture_id !== expectedBindings[index].fixture_id ||
+        fixture.subject.document.case_id !== expectedCaseId ||
+        fixture.subject.document.scenario_id !== expectedScenarioId ||
+        fixture.subject.document.operation !== expectedOperation ||
+        (expectedOperation === 'recover' &&
+          fixture.subject.document.behavior !== expectedOverrides.behavior) ||
         fixture.expected?.verdict !== binding.verdict || receipt.receipt_sha256 !== binding.receipt_sha256 ||
         receipt.receipt_sha256 !== remoteAdapterReceiptDigest(receipt) ||
         !receiptMatchesFixture(receipt, fixture)) return 'fail';

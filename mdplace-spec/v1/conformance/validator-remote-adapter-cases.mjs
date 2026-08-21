@@ -555,6 +555,7 @@ test('packaged recovery records cannot redefine current claim bindings', async (
   const fixture = JSON.parse(await readFile(fixturePath, 'utf8'));
   const record = recovery.cases.find(({fixture_id: fixtureId}) => fixtureId === fixture.fixture_id);
 
+  fixture.subject.document.behavior = 'recover_stale_claim';
   record.claim_manifest_sha256 = '0'.repeat(64);
   record.claim_digest_revalidated = false;
   record.terminal_state = 'recovery_required';
