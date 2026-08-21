@@ -599,6 +599,22 @@ test('recovery report cases must preserve the exact fixture order', async (t) =>
   assert.equal(await deriveRemoteAdapterVerdict(evidence, packageRoot), 'fail');
 });
 
+test('non-pass recovery reports cannot earn a passing claim verdict', async (t) => {
+  const packageRoot = await copyCommittedPackage();
+  t.after(() => rm(resolve(packageRoot, '../..'), {recursive: true, force: true}));
+  const evidence = JSON.parse(await readFile(resolve(
+    packageRoot,
+    'conformance/evidence/remote-adapter-evidence.json',
+  ), 'utf8'));
+  const recoveryPath = resolve(packageRoot, 'conformance/evidence/remote-adapter-recovery-report.json');
+  const recovery = JSON.parse(await readFile(recoveryPath, 'utf8'));
+  for (const verdict of ['fail', 'unsupported', 'inconclusive']) {
+    recovery.verdict = verdict;
+    await writeFile(recoveryPath, `${JSON.stringify(recovery, null, 2)}\n`);
+    assert.equal(await deriveRemoteAdapterVerdict(evidence, packageRoot), 'fail', verdict);
+  }
+});
+
 test('Remote Intelligence Adapter claim fails closed when bound fixture bytes change', async (t) => {
   const check = await remoteCheckAfterMutation(t, async (packageRoot) => {
     const path = resolve(
