@@ -66,6 +66,14 @@ async function exactEvidence(packageRoot, profile, credential, retention) {
     Date.parse(document.observed_at) <= evaluatedAt && Date.parse(document.expires_at) > evaluatedAt;
   const dimensions = ['residency', 'retention', 'training', 'deletion', 'entitlement', 'privacy_behavior'];
   const facts = retention?.facts ?? [];
+  const adapterChain = profile?.adapter_chain;
+  const exactAdapterChain = Array.isArray(adapterChain) && adapterChain.length === 2 &&
+    adapterChain[0].ordinal === 0 && adapterChain[0].role === 'primary' &&
+    adapterChain[1].ordinal === 1 && adapterChain[1].role === 'fallback' &&
+    adapterChain[0].adapter_id !== adapterChain[1].adapter_id &&
+    adapterChain[0].model_id !== adapterChain[1].model_id &&
+    adapterChain.every(({provider_id: providerId, endpoint}) =>
+      providerId === profile.provider.provider_id && endpoint === profile.provider.endpoint);
   const expectedStatuses = {
     residency: 'unsupported',
     retention: 'disclosed',
@@ -83,6 +91,7 @@ async function exactEvidence(packageRoot, profile, credential, retention) {
     }))).every(Boolean);
   return profile?.profile_id === 'remote-adapter' && profile.owner === 'remote-adapter' &&
     profile.locality === 'remote' && profile.specification_only === true &&
+    exactAdapterChain &&
     profile.network_operation_performed === false && Object.values(profile.authority ?? {}).every((value) => value === 'none') &&
     current(credential) && credential.prerequisite === 'satisfied' && credential.adapter_visibility === 'none' &&
     credential.secret_access === 'none' && credential.ambient_configuration === 'unreadable' &&

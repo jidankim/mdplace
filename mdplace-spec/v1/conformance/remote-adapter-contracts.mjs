@@ -14,6 +14,26 @@ export const remoteAdapterProfile = {
     destination_id: 'destination:remote-alpha',
     endpoint: 'https://api.remote-alpha.test/v1/process',
   },
+  adapter_chain: [
+    {
+      ordinal: 0,
+      role: 'primary',
+      adapter_id: 'adapter:remote-alpha',
+      provider_id: 'provider:remote-alpha',
+      model_id: 'model:remote-alpha',
+      model_version: '2026-08-01',
+      endpoint: 'https://api.remote-alpha.test/v1/process',
+    },
+    {
+      ordinal: 1,
+      role: 'fallback',
+      adapter_id: 'adapter:remote-alpha-fallback',
+      provider_id: 'provider:remote-alpha',
+      model_id: 'model:remote-alpha-fallback',
+      model_version: '2026-08-15',
+      endpoint: 'https://api.remote-alpha.test/v1/process',
+    },
+  ],
   ceilings: {
     input_bytes: 4096,
     output_bytes: 3000,

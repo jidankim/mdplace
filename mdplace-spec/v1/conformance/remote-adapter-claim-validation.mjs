@@ -16,6 +16,33 @@ const dependencyBoundary = {
   placement_automation: false,
   other_profiles: false,
 };
+const digestPattern = /^[a-f0-9]{64}$/;
+
+export function deriveRemoteAdapterVerdict(evidence) {
+  if (evidence === null || typeof evidence !== 'object' || Array.isArray(evidence)) return 'unsupported';
+  const bindings = evidence.fixture_bindings;
+  const receipts = evidence.receipt_sha256s;
+  const mandatoryDigests = [
+    evidence.credential_boundary_evidence_sha256,
+    evidence.retention_evidence_sha256,
+    evidence.fixture_manifest_sha256,
+  ];
+  const invalidBinding = (binding) => binding === null || typeof binding !== 'object' ||
+    Array.isArray(binding) || typeof binding.fixture_id !== 'string' || typeof binding.path !== 'string' ||
+    !digestPattern.test(binding.fixture_sha256) || !digestPattern.test(binding.receipt_sha256) ||
+    !['pass', 'fail', 'unsupported', 'inconclusive'].includes(binding.verdict);
+  if ((evidence.network_operations !== undefined && evidence.network_operations !== 0) ||
+      mandatoryDigests.some((digest) => digest !== undefined && !digestPattern.test(digest)) ||
+      (Array.isArray(bindings) && bindings.some(invalidBinding)) ||
+      (Array.isArray(bindings) && !bindings.some(invalidBinding) &&
+        (new Set(bindings.map(({fixture_id: id}) => id)).size !== bindings.length ||
+          new Set(bindings.map(({path}) => path)).size !== bindings.length))) return 'fail';
+  if (!Array.isArray(bindings) || bindings.length === 0 || !Array.isArray(receipts) ||
+      mandatoryDigests.some((digest) => digest === undefined)) return 'unsupported';
+  if (bindings.length !== remoteAdapterCases.length || receipts.length !== bindings.length ||
+      !isDeepStrictEqual(receipts, bindings.map(({receipt_sha256: digest}) => digest))) return 'inconclusive';
+  return 'pass';
+}
 
 async function readJson(packageRoot, path) {
   const read = await readPackageFile(packageRoot, path);
@@ -65,9 +92,11 @@ export async function remoteAdapterClaimCodes(claim, packageRoot) {
   const genericBinding = genericClaim?.evidence_bindings?.find(
     ({evidence_kind: kind}) => kind === 'remote_adapter_conformance',
   );
+  const derivedVerdict = deriveRemoteAdapterVerdict(evidence);
   if (evidence === null || genericClaim === null || envelope === null ||
-      row.verdict !== evidence.verdict || genericClaim.verdict !== row.verdict ||
-      genericBinding?.verdict !== row.verdict || envelope.verdict !== row.verdict || codes.length > 0) {
+      evidence.verdict !== derivedVerdict || row.verdict !== derivedVerdict ||
+      genericClaim.verdict !== derivedVerdict || genericBinding?.verdict !== derivedVerdict ||
+      envelope.verdict !== derivedVerdict || codes.length > 0) {
     codes.push('remote.claim_verdict_invalid');
   }
   return codes;

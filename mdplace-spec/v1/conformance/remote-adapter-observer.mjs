@@ -84,9 +84,30 @@ async function observationCodes(observations, denyBeforeEgress, scenario, packag
     ...Array.from({length: scenario.retries}, () => 'retry'),
     ...Array.from({length: scenario.fallbacks}, () => 'fallback'),
   ];
+  const operationMatchesTopology = {
+    execute: scenario.retries === 0 && scenario.fallbacks === 0,
+    retry: scenario.retries > 0 && scenario.fallbacks === 0,
+    fallback: scenario.fallbacks > 0,
+    recover: scenario.retries === 0 && scenario.fallbacks === 0,
+  }[scenario.operation] === true;
+  let adapterChain = null;
+  if (!denyBeforeEgress) {
+    const profileRead = await readPackageFile(
+      packageRoot,
+      'contracts/remote-intelligence-adapter/profile.json',
+    );
+    if (profileRead.status === 'present') {
+      try {
+        adapterChain = JSON.parse(profileRead.content.toString('utf8')).adapter_chain;
+      } catch {
+        adapterChain = null;
+      }
+    }
+  }
   if (denyBeforeEgress) {
     if (authorized.length !== 0) codes.push('remote.attempt_authorization_invalid');
   } else if (authorized.length !== observations.length ||
+      !operationMatchesTopology ||
       !isDeepStrictEqual(expectedKinds, observations.map(({attempt_kind: kind}) => kind)) ||
       scenario.retries + scenario.fallbacks !== scenario.attempts - 1 ||
       authorized[0]?.processing_envelope_json !== scenario.processing_envelope_json ||
@@ -117,7 +138,10 @@ async function observationCodes(observations, denyBeforeEgress, scenario, packag
       }
     } else {
       if (observation.destination !== approvedDestination || payload.length === 0 ||
-          !['egress_complete', 'egress_completion_unknown'].includes(observation.boundary)) {
+          !['egress_complete', 'egress_completion_unknown'].includes(observation.boundary) ||
+          (observation.boundary === 'egress_complete' &&
+            (typeof observation.provider_request_id !== 'string' || observation.provider_request_id.length === 0)) ||
+          (observation.boundary === 'egress_completion_unknown' && observation.provider_request_id !== null)) {
         codes.push('remote.permitted_egress_invalid');
       }
       const binding = authorized[index];
@@ -136,11 +160,22 @@ async function observationCodes(observations, denyBeforeEgress, scenario, packag
         codes.push('remote.attempt_authorization_invalid');
         continue;
       }
+      const expectedAdapter = Array.isArray(adapterChain)
+        ? adapterChain[observation.attempt_kind === 'fallback' ? 1 : 0] ?? null
+        : null;
       if (await schemaCode(packageRoot, 'contracts/schemas/processing-envelope.schema.json', boundEnvelope) !== null ||
           boundEnvelope.attempt_id !== observation.attempt_id || boundEnvelope.attempt_sequence !== index ||
           boundEnvelope.authorization_id !== binding.authorization_id ||
-          boundEnvelope.bindings?.provider_id !== approvedProvider ||
-          boundEnvelope.destination?.endpoint !== approvedDestination ||
+          expectedAdapter === null ||
+          boundEnvelope.bindings?.adapter_id !== expectedAdapter.adapter_id ||
+          boundEnvelope.bindings?.provider_id !== expectedAdapter.provider_id ||
+          boundEnvelope.bindings?.model_id !== expectedAdapter.model_id ||
+          boundEnvelope.bindings?.model_version !== expectedAdapter.model_version ||
+          boundEnvelope.destination?.destination_id !== 'destination:remote-alpha' ||
+          boundEnvelope.destination?.endpoint !== expectedAdapter.endpoint ||
+          boundEnvelope.destination?.locality !== 'remote' ||
+          boundEnvelope.credential_boundary?.provider_id !== expectedAdapter.provider_id ||
+          boundEnvelope.credential_boundary?.adapter_visibility !== 'none' ||
           !isDeepStrictEqual(boundEnvelope.ceilings, {
             input_bytes: 4096,
             output_bytes: 3000,
@@ -229,8 +264,15 @@ export async function observeRemoteAdapterScenario(subject, packageRoot, recover
     if (scenario.provider_fact_claim !== null && statuses[scenario.provider_fact_claim] !== 'disclosed') {
       codes.push('remote.provider_fact_unproven');
     }
-    if (scenario.behavior === 'crash_before_egress' || scenario.behavior === 'crash_after_egress') {
+    const unknownCompletion = attempts.status === 'parsed' && attempts.document.some(
+      ({boundary}) => boundary === 'egress_completion_unknown',
+    );
+    if (scenario.behavior === 'crash_before_egress' || scenario.behavior === 'crash_after_egress' ||
+        unknownCompletion) {
       codes.push('remote.recovery_required');
+    }
+    if (scenario.behavior === 'crash_after_egress' && !unknownCompletion) {
+      codes.push('remote.recovery_boundary_invalid');
     }
     if (scenario.operation === 'recover') codes.push(...await recoveryCodes(packageRoot, scenario, recoveryRecord));
   }

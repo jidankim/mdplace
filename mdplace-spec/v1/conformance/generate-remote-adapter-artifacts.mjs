@@ -15,6 +15,7 @@ import {
   remoteSha256,
 } from './remote-adapter-core.mjs';
 import {remoteAdapterCases, remoteAdapterScenario} from './remote-adapter-fixtures.mjs';
+import {deriveRemoteAdapterVerdict} from './remote-adapter-claim-validation.mjs';
 import {observeRemoteAdapterScenario} from './remote-adapter-observer.mjs';
 import {
   authoredRemoteRecoveryRecord,
@@ -149,7 +150,7 @@ async function writeMachineEvidence(entries, fixtures) {
       verdict: fixtures[index].expected.verdict,
     };
   }));
-  await writeJson('conformance/evidence/remote-adapter-evidence.json', {
+  const machineEvidence = {
     $schema: '../../contracts/schemas/remote-adapter-evidence.schema.json',
     schema_id: 'mdplace.remote-adapter-evidence/v1',
     evidence_id: 'remote-adapter-evidence:v1',
@@ -161,8 +162,9 @@ async function writeMachineEvidence(entries, fixtures) {
     retention_evidence_sha256: await fileDigest('contracts/remote-intelligence-adapter/retention-evidence.json'),
     fixture_manifest_sha256: await fileDigest('contracts/remote-intelligence-adapter/fixture-manifest.json'),
     network_operations: 0,
-    verdict: 'pass',
-  });
+  };
+  machineEvidence.verdict = deriveRemoteAdapterVerdict(machineEvidence);
+  await writeJson('conformance/evidence/remote-adapter-evidence.json', machineEvidence);
   const paths = [...remoteAdapterEvidencePaths, ...entries.map(({path}) => `conformance/${path}`)];
   const material = await Promise.all(paths.map(async (path, ordinal) => ({
     ordinal,
@@ -179,7 +181,7 @@ async function writeMachineEvidence(entries, fixtures) {
     validator_id: 'mdplace.package-validator',
     validator_version: '1.2.0',
     rows: [{
-      id: 'remote-adapter', owner: 'remote-adapter', verdict: 'pass',
+      id: 'remote-adapter', owner: 'remote-adapter', verdict: machineEvidence.verdict,
       evidence_digest: remoteAdapterEvidenceDigest(material), evidence_material: material,
       dependencies_elevated: {core: false, product_readiness: false, local_adapter: false, codex_adapter: false, placement_automation: false, other_profiles: false},
     }],
@@ -279,6 +281,8 @@ async function updateCatalogs(entries, fixtures) {
 
 async function writeClaimEnvelope() {
   const claimPath = 'contracts/remote-intelligence-adapter/claim-manifest.json';
+  const independentClaim = await readJson(claimPath);
+  const derivedVerdict = independentClaim.rows[0].verdict;
   const subject = {
     kind: 'remote_adapter_claim', subject_id: 'remote-adapter:claim-v1',
     schema: 'contracts/schemas/remote-adapter-claim-manifest.schema.json', sha256: await fileDigest(claimPath),
@@ -321,15 +325,15 @@ async function writeClaimEnvelope() {
       {ordinal: 0, label: 'profile', path: 'contracts/remote-intelligence-adapter/profile.json', sha256: await fileDigest('contracts/remote-intelligence-adapter/profile.json')},
       {ordinal: 1, label: 'normative_contract', path: 'normative/remote-intelligence-adapter-profile.md', sha256: await fileDigest('normative/remote-intelligence-adapter-profile.md')},
     ],
-    execution_context: invocation.execution_context, verdict: 'pass', codes: [],
+    execution_context: invocation.execution_context, verdict: derivedVerdict, codes: [],
   });
   const generic = await readJson('conformance/claim-manifests/remote-intelligence-adapter.json');
   Object.assign(generic, {
     subject: {kind: subject.kind, subject_id: subject.subject_id, sha256: subject.sha256},
     requirement_id: 'REQ-RAP-007',
     evidence_requirements: [{evidence_kind: 'remote_adapter_conformance', mandatory: true}],
-    evidence_bindings: [{evidence_kind: 'remote_adapter_conformance', mandatory: true, availability: 'present', applicability: 'applicable', evidence_ref: evidencePath, evidence_digest: await fileDigest(evidencePath), verdict: 'pass'}],
-    applicability: 'applicable', verdict: 'pass',
+    evidence_bindings: [{evidence_kind: 'remote_adapter_conformance', mandatory: true, availability: 'present', applicability: 'applicable', evidence_ref: evidencePath, evidence_digest: await fileDigest(evidencePath), verdict: derivedVerdict}],
+    applicability: 'applicable', verdict: derivedVerdict,
   });
   await writeJson('conformance/claim-manifests/remote-intelligence-adapter.json', generic);
   const index = await readJson('claims-and-evidence.yaml');

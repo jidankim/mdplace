@@ -4,6 +4,18 @@ import {remoteAdapterEvidenceEvaluatedAt, remoteSha256} from './remote-adapter-c
 const approvedProvider = 'provider:remote-alpha';
 const approvedDestination = 'https://api.remote-alpha.test/v1/process';
 const policyDigest = '27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766';
+const adapterBindings = {
+  primary: {
+    adapter_id: 'adapter:remote-alpha',
+    model_id: 'model:remote-alpha',
+    model_version: '2026-08-01',
+  },
+  fallback: {
+    adapter_id: 'adapter:remote-alpha-fallback',
+    model_id: 'model:remote-alpha-fallback',
+    model_version: '2026-08-15',
+  },
+};
 
 function boundJson(document, variant = 'current') {
   if (variant === 'missing') return {json: null, sha256: null};
@@ -17,6 +29,7 @@ function boundJson(document, variant = 'current') {
 
 function envelopeFor(baseEnvelope, scenarioId, sequence, kind, targetBytes, stalePolicy) {
   const envelope = structuredClone(baseEnvelope);
+  const adapter = kind === 'fallback' ? adapterBindings.fallback : adapterBindings.primary;
   const suffix = scenarioId.toLowerCase();
   envelope.envelope_id = `envelope:${suffix}-${sequence}`;
   envelope.chain_id = `adapter-chain:${suffix}`;
@@ -24,6 +37,7 @@ function envelopeFor(baseEnvelope, scenarioId, sequence, kind, targetBytes, stal
   envelope.attempt_sequence = sequence;
   envelope.authorization_id = `adapter-authorization:remote-${kind === 'initial' ? 'primary' : kind}`;
   envelope.destination.endpoint = approvedDestination;
+  Object.assign(envelope.bindings, adapter);
   envelope.bindings.policy.sha256 = stalePolicy ? '0'.repeat(64) : policyDigest;
   envelope.ceilings = {input_bytes: 4096, output_bytes: 3000, runtime_ms: 800, cost_microunits: 5000};
   envelope.retention_facts = [{
@@ -88,7 +102,7 @@ export const remoteAdapterCases = [
   ['exact-output-ceiling', 'exact_boundary', {outputBytes: 3000}],
   ['exact-runtime-ceiling', 'exact_boundary', {runtimeMs: 800}],
   ['exact-cost-ceiling', 'exact_boundary', {costMicrounits: 5000}],
-  ['exact-attempt-ceiling', 'exact_boundary', {attempts: 3, retries: 1, fallbacks: 1}],
+  ['exact-attempt-ceiling', 'exact_boundary', {operation: 'fallback', attempts: 3, retries: 1, fallbacks: 1}],
   ['exact-retry-ceiling', 'exact_boundary', {operation: 'retry', attempts: 2, retries: 1}],
   ['exact-fallback-ceiling', 'exact_boundary', {operation: 'fallback', attempts: 2, fallbacks: 1}],
   ['missing-processing-envelope-denied', 'negative', {envelopeVariant: 'missing', behavior: 'missing'}],

@@ -10,14 +10,14 @@
   "invocation": {
     "invocation_id": "invocation:remote-adapter-profile",
     "path": "conformance/evidence/invocations/remote-adapter-profile.json",
-    "sha256": "17529cb90e479e7d123bb8a501b533ca60b7423421caa824a4ba2a4038541433"
+    "sha256": "7f1727b00b1d513c0f4266b60e3f7a084e0b73c662ffa90aae2ef86b66215585"
   },
   "requirement_id": "REQ-RAP-007",
   "subject": {
     "kind": "remote_adapter_claim",
     "subject_id": "remote-adapter:claim-v1",
     "schema": "contracts/schemas/remote-adapter-claim-manifest.schema.json",
-    "sha256": "21b75f9c3b07a2151e425cab710d7199e601a88cff5bc60a56c0c966cac71b56"
+    "sha256": "b57438789d79d06dbf5c422356a9f47c708b455911474a632f2ee4530aea6d2d"
   },
   "input_digests": [
     {
@@ -30,13 +30,13 @@
       "ordinal": 1,
       "label": "credential_boundary",
       "path": "contracts/remote-intelligence-adapter/credential-boundary-evidence.json",
-      "sha256": "bd45d892a7b68d4bf47017a520b3d40b6b7c032eb200f892e3f5831124508103"
+      "sha256": "085c054bfe1e3be1a6eec3581102c50de9f3197a2ee6995f0d9674994d9d51d0"
     },
     {
       "ordinal": 2,
       "label": "retention",
       "path": "contracts/remote-intelligence-adapter/retention-evidence.json",
-      "sha256": "3269abee9ef70c1c97892240a54ca8f3d50c7dcac00bcd611b6ceed2243f935d"
+      "sha256": "ffb6b3d6352602bf80e63b98fbdde345005b574cf9a72fd0546bf108d31b10c2"
     },
     {
       "ordinal": 3,
@@ -50,13 +50,13 @@
       "ordinal": 0,
       "label": "remote_adapter_evidence",
       "path": "conformance/evidence/remote-adapter-evidence.json",
-      "sha256": "27546e03780d61b45ef3f3941122934478d28db042837656dfc19120fae63a86"
+      "sha256": "43c80d38b2fabb46fde1ff93102e4b52fc07fb256102a063c37bdf1a2695edcf"
     },
     {
       "ordinal": 1,
       "label": "recovery_report",
       "path": "conformance/evidence/remote-adapter-recovery-report.json",
-      "sha256": "ff1d96118a60e1d7cb4f0c45cf97e39c6c896dac3ef8dfe607b6d0c76f18f7db"
+      "sha256": "55d340f4deda51ca45c50fe02900a510c791969e7a4664f25c1949c3c1102ab0"
     }
   ],
   "receipts": [
@@ -65,7 +65,7 @@
       "receipt_id": "receipt:remote-adapter-profile",
       "receipt_type": "EvidenceValidationReceipt",
       "path": "conformance/evidence/remote-adapter-recovery-report.json",
-      "sha256": "ff1d96118a60e1d7cb4f0c45cf97e39c6c896dac3ef8dfe607b6d0c76f18f7db"
+      "sha256": "55d340f4deda51ca45c50fe02900a510c791969e7a4664f25c1949c3c1102ab0"
     }
   ],
   "artifact_digests": [
@@ -73,13 +73,13 @@
       "ordinal": 0,
       "label": "profile",
       "path": "contracts/remote-intelligence-adapter/profile.json",
-      "sha256": "7f73de38e8ae88a14cd20d3ad992ac1ea47fa65397051739e17d53e10efc7fd1"
+      "sha256": "244d8d72abdb592de9c492d4ead65ac4c94bcce34e49ec50ad014416b974e11d"
     },
     {
       "ordinal": 1,
       "label": "normative_contract",
       "path": "normative/remote-intelligence-adapter-profile.md",
-      "sha256": "df26629ad4ee9cfae66de7fc7c927e5a1284e378101b8046684c21d659c51cf9"
+      "sha256": "bd68eb1418037587c42c988f2a38937ff7018a09013dcbbdbf8b717d3c7c7c06"
     }
   ],
   "execution_context": {

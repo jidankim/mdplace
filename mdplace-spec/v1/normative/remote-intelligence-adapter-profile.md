@@ -16,7 +16,7 @@ Positive, negative, exact-boundary, stale-state, authority-denial, and crash/rec
 
 ## REQ-RAP-004: Permitted egress and every pre-egress denial are byte exact
 
-Before each permitted initial, retry, or fallback attempt, the observer binds the approved destination and exact payload bytes. Its receipt records the measured byte count and SHA-256 of those same bytes. Missing, stale, malformed, unsupported, unauthorized, over-budget, unapproved-destination, forbidden-retry, forbidden-fallback, and failed-boundary inputs are denied before egress with an empty payload, zero transmitted bytes, and no provider request identifier. Retries and fallbacks remain independently authorized and bounded.
+Before each permitted initial, retry, or fallback attempt, the observer binds the approved destination and exact payload bytes. Its receipt records the measured byte count and SHA-256 of those same bytes. Missing, stale, malformed, unsupported, unauthorized, over-budget, unapproved-destination, forbidden-retry, forbidden-fallback, and failed-boundary inputs are denied before egress with an empty payload, zero transmitted bytes, and no provider request identifier. A retry remains on its current adapter-chain entry; a fallback advances to the next distinct pre-authorized entry. Both remain independently authorized and bounded. Any attempt whose egress completion is unknown enters recovery without blind retry.
 
 ## REQ-RAP-005: Credential evidence proves only the normative prerequisite boundary
 
@@ -28,7 +28,7 @@ Retention evidence records only disclosed facts bound to a provider artifact dig
 
 ## REQ-RAP-007: The independent verdict derives from one exact evidence digest
 
-The Remote Intelligence Adapter Claim Manifest contains exactly one row with `id: remote-adapter` and `owner: remote-adapter`. Its only verdicts are pass, fail, unsupported, or inconclusive, resolved in that precedence. The row binds one ordered evidence digest covering the profile, credential-boundary evidence, retention evidence, fixture manifest, every fixture, machine evidence, and every profile receipt. Missing, stale, failed, unsupported, or inconclusive Remote Intelligence Adapter evidence cannot elevate Core, Web Clipper product readiness, Local Intelligence Adapter, Codex Intelligence Adapter, Placement Automation, or any other claim.
+The Remote Intelligence Adapter Claim Manifest contains exactly one row with `id: remote-adapter` and `owner: remote-adapter`. Its only verdicts are pass, fail, unsupported, or inconclusive, resolved in that precedence and derived independently from mandatory machine-evidence validity, availability, and completeness. A verdict label cannot override that derivation. The row binds one ordered evidence digest covering the profile, credential-boundary evidence, retention evidence, fixture manifest, every fixture, machine evidence, and every profile receipt. Missing, stale, failed, unsupported, or inconclusive Remote Intelligence Adapter evidence cannot elevate Core, Web Clipper product readiness, Local Intelligence Adapter, Codex Intelligence Adapter, Placement Automation, or any other claim.
 
 ## REQ-RAP-008: The Remote Intelligence Adapter is advisory-only
 

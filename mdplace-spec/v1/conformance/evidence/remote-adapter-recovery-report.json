@@ -3,45 +3,45 @@
   "schema_id": "mdplace.remote-adapter-recovery-report/v1",
   "report_id": "remote-adapter-recovery:v1",
   "profile_id": "remote-adapter",
-  "claim_manifest_sha256": "21b75f9c3b07a2151e425cab710d7199e601a88cff5bc60a56c0c966cac71b56",
-  "evidence_digest": "c2c29f450da0bbd6cec87fff39804b104c8ea32dc86b16c9810e0260334534db",
+  "claim_manifest_sha256": "b57438789d79d06dbf5c422356a9f47c708b455911474a632f2ee4530aea6d2d",
+  "evidence_digest": "0b52a63a7108feb22bb01ed2980decaa474a0ef4caac865f36d76b241c307628",
   "parsed_artifacts_revalidated": true,
   "cases": [
     {
       "fixture_id": "FIX-RAP-PROFILE-048",
       "scenario_id": "RAP-048",
       "crash_boundary": "after_egress",
-      "claim_manifest_sha256": "21b75f9c3b07a2151e425cab710d7199e601a88cff5bc60a56c0c966cac71b56",
-      "evidence_digest": "c2c29f450da0bbd6cec87fff39804b104c8ea32dc86b16c9810e0260334534db",
+      "claim_manifest_sha256": "b57438789d79d06dbf5c422356a9f47c708b455911474a632f2ee4530aea6d2d",
+      "evidence_digest": "0b52a63a7108feb22bb01ed2980decaa474a0ef4caac865f36d76b241c307628",
       "attempts_revalidated": true,
       "claim_digest_revalidated": true,
       "parsed_evidence_revalidated": true,
       "terminal_state": "recovered",
-      "receipt_sha256": "b94df3f578ad6fc7dadab12fdb9af20ebb12e696f88115f768cc0f1017f30d80"
+      "receipt_sha256": "723a592552060663dae23d22a96af9a473323975c0ea32932d73877a9cc983e2"
     },
     {
       "fixture_id": "FIX-RAP-PROFILE-049",
       "scenario_id": "RAP-049",
       "crash_boundary": "after_egress",
       "claim_manifest_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
-      "evidence_digest": "c2c29f450da0bbd6cec87fff39804b104c8ea32dc86b16c9810e0260334534db",
+      "evidence_digest": "0b52a63a7108feb22bb01ed2980decaa474a0ef4caac865f36d76b241c307628",
       "attempts_revalidated": true,
       "claim_digest_revalidated": false,
       "parsed_evidence_revalidated": true,
       "terminal_state": "recovery_required",
-      "receipt_sha256": "5d29d2f21226d233ffc7347efed9cc29615a1ca843691676ae5cc6a127402a13"
+      "receipt_sha256": "70330d0147b8622fa46c313a7ff744a85f82163ac4002a92f188ed1e5dd30f8c"
     },
     {
       "fixture_id": "FIX-RAP-PROFILE-050",
       "scenario_id": "RAP-050",
       "crash_boundary": "after_egress",
-      "claim_manifest_sha256": "21b75f9c3b07a2151e425cab710d7199e601a88cff5bc60a56c0c966cac71b56",
+      "claim_manifest_sha256": "b57438789d79d06dbf5c422356a9f47c708b455911474a632f2ee4530aea6d2d",
       "evidence_digest": "0000000000000000000000000000000000000000000000000000000000000000",
       "attempts_revalidated": true,
       "claim_digest_revalidated": false,
       "parsed_evidence_revalidated": true,
       "terminal_state": "recovery_required",
-      "receipt_sha256": "81a48ff9523714f9a2b51cf69921e51d90274e07b39a7f78302e3e270a8551e0"
+      "receipt_sha256": "9dfbbf24ca9bcdc10cb9a8eee59cf3b40c23b46d7e8319b588649b8373a813ad"
     }
   ],
   "network_operations": 0,
