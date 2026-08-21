@@ -19,6 +19,14 @@ const dependencyBoundary = {
   other_profiles: false,
 };
 const digestPattern = /^[a-f0-9]{64}$/;
+const providerFactDimensions = [
+  'residency',
+  'retention',
+  'training',
+  'deletion',
+  'entitlement',
+  'privacy_behavior',
+];
 
 async function schemaIsValid(packageRoot, schema, document) {
   try {
@@ -30,7 +38,8 @@ async function schemaIsValid(packageRoot, schema, document) {
 
 async function readMandatoryDocument(packageRoot, path, digest, schema) {
   const read = await readPackageFile(packageRoot, path);
-  if (read.status !== 'present') return {status: 'missing', document: null};
+  if (read.status === 'absent') return {status: 'missing', document: null};
+  if (read.status !== 'present') return {status: 'invalid', document: null};
   if (remoteSha256(read.content) !== digest) return {status: 'invalid', document: null};
   let document;
   try {
@@ -42,6 +51,43 @@ async function readMandatoryDocument(packageRoot, path, digest, schema) {
     status: await schemaIsValid(packageRoot, schema, document) ? 'present' : 'invalid',
     document,
   };
+}
+
+function receiptMatchesFixture(receipt, fixture) {
+  const scenario = fixture.subject?.document;
+  if (scenario === null || typeof scenario !== 'object' || Array.isArray(scenario)) return false;
+  let attempts;
+  let retention;
+  try {
+    attempts = JSON.parse(scenario.attempt_observations_json)
+      .map(({payload_base64: ignored, ...attempt}) => {
+        void ignored;
+        return attempt;
+      });
+  } catch {
+    return false;
+  }
+  try {
+    retention = scenario.retention_evidence_json === null
+      ? null
+      : JSON.parse(scenario.retention_evidence_json);
+  } catch {
+    retention = null;
+  }
+  const providerFactStatuses = Object.fromEntries(providerFactDimensions.map((dimension) => [
+    dimension,
+    retention?.facts?.find((fact) => fact.dimension === dimension)?.status ?? 'unsupported',
+  ]));
+  const expected = fixture.expected;
+  const reason = expected.terminal_state === 'recovered'
+    ? 'remote.recovery_completed'
+    : expected.codes[0] ?? 'remote.egress_permitted';
+  return receipt.receipt_id === `remote-adapter-receipt:${scenario.scenario_id.toLowerCase()}` &&
+    receipt.scenario_id === scenario.scenario_id && receipt.outcome === expected.terminal_state &&
+    receipt.reason === reason && isDeepStrictEqual(receipt.attempts, attempts) &&
+    receipt.credential_boundary_sha256 === scenario.credential_evidence_sha256 &&
+    receipt.retention_evidence_sha256 === scenario.retention_evidence_sha256 &&
+    isDeepStrictEqual(receipt.provider_fact_statuses, providerFactStatuses);
 }
 
 export async function deriveRemoteAdapterVerdict(evidence, packageRoot) {
@@ -113,12 +159,14 @@ export async function deriveRemoteAdapterVerdict(evidence, packageRoot) {
   )) return 'fail';
   for (const [index, binding] of bindings.entries()) {
     const fixtureRead = await readPackageFile(packageRoot, binding.path);
-    if (fixtureRead.status !== 'present') return 'unsupported';
+    if (fixtureRead.status === 'absent') return 'unsupported';
+    if (fixtureRead.status !== 'present') return 'fail';
     if (remoteSha256(fixtureRead.content) !== binding.fixture_sha256) return 'fail';
     let fixture;
     let receipt;
     try {
       fixture = JSON.parse(fixtureRead.content.toString('utf8'));
+      if (!Array.isArray(fixture.expected?.receipts) || fixture.expected.receipts.length !== 1) return 'fail';
       receipt = JSON.parse(fixture.expected.receipts[0]);
     } catch {
       return 'fail';
@@ -128,9 +176,14 @@ export async function deriveRemoteAdapterVerdict(evidence, packageRoot) {
           packageRoot,
           'contracts/schemas/remote-adapter-scenario.schema.json',
           fixture.subject?.document,
+        ) || !await schemaIsValid(
+          packageRoot,
+          'contracts/schemas/remote-adapter-profile-receipt.schema.json',
+          receipt,
         ) || fixture.fixture_id !== expectedBindings[index].fixture_id ||
         fixture.expected?.verdict !== binding.verdict || receipt.receipt_sha256 !== binding.receipt_sha256 ||
-        receipt.receipt_sha256 !== remoteAdapterReceiptDigest(receipt)) return 'fail';
+        receipt.receipt_sha256 !== remoteAdapterReceiptDigest(receipt) ||
+        !receiptMatchesFixture(receipt, fixture)) return 'fail';
   }
   return 'pass';
 }

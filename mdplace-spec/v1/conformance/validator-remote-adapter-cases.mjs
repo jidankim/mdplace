@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {readFile, rm, writeFile} from 'node:fs/promises';
+import {readFile, rm, symlink, unlink, writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import test from 'node:test';
 
@@ -12,7 +12,10 @@ import {
   remoteAdapterEvidenceDigest,
   remoteSha256,
 } from './remote-adapter-core.mjs';
-import {observeRemoteAdapterScenario} from './remote-adapter-observer.mjs';
+import {
+  observeRemoteAdapterScenario,
+  remoteAdapterReceiptDigest,
+} from './remote-adapter-observer.mjs';
 import {canonicalJson} from './semantic-kernel-core.mjs';
 import {copyCommittedPackage, runPreparedPackage} from './validator-test-support.mjs';
 
@@ -431,6 +434,61 @@ test('forged machine-evidence bindings cannot earn a passing claim', async (t) =
 
   assert.ok((await remoteAdapterClaimCodes(claim, packageRoot))
     .includes('remote.claim_verdict_invalid'));
+});
+
+test('self-rehashed receipts must remain bound to their fixture scenario', async (t) => {
+  const packageRoot = await copyCommittedPackage();
+  t.after(() => rm(resolve(packageRoot, '../..'), {recursive: true, force: true}));
+  const claimPath = resolve(packageRoot, 'contracts/remote-intelligence-adapter/claim-manifest.json');
+  const evidencePath = resolve(packageRoot, 'conformance/evidence/remote-adapter-evidence.json');
+  const fixtureRelative = 'conformance/scenarios/remote-intelligence-adapter/permitted-primary-exact-bytes.json';
+  const fixturePath = resolve(packageRoot, fixtureRelative);
+  const claim = JSON.parse(await readFile(claimPath, 'utf8'));
+  const evidence = JSON.parse(await readFile(evidencePath, 'utf8'));
+  const fixture = JSON.parse(await readFile(fixturePath, 'utf8'));
+  const receipt = JSON.parse(fixture.expected.receipts[0]);
+
+  receipt.scenario_id = 'RAP-999';
+  receipt.receipt_sha256 = remoteAdapterReceiptDigest(receipt);
+  fixture.expected.receipts[0] = canonicalJson(receipt);
+  const fixtureBytes = `${JSON.stringify(fixture, null, 2)}\n`;
+  await writeFile(fixturePath, fixtureBytes);
+  evidence.fixture_bindings[0].fixture_sha256 = remoteSha256(fixtureBytes);
+  evidence.fixture_bindings[0].receipt_sha256 = receipt.receipt_sha256;
+  evidence.receipt_sha256s[0] = receipt.receipt_sha256;
+  const evidenceBytes = `${JSON.stringify(evidence, null, 2)}\n`;
+  await writeFile(evidencePath, evidenceBytes);
+  claim.rows[0].evidence_material.find(({path}) => path === fixtureRelative).sha256 =
+    remoteSha256(fixtureBytes);
+  claim.rows[0].evidence_material.find(
+    ({path}) => path === 'conformance/evidence/remote-adapter-evidence.json',
+  ).sha256 = remoteSha256(evidenceBytes);
+  claim.rows[0].evidence_digest = remoteAdapterEvidenceDigest(claim.rows[0].evidence_material);
+
+  assert.ok((await remoteAdapterClaimCodes(claim, packageRoot))
+    .includes('remote.claim_verdict_invalid'));
+});
+
+test('unsafe and oversized mandatory evidence derives fail, not unsupported', async (t) => {
+  const packageRoot = await copyCommittedPackage();
+  t.after(() => rm(resolve(packageRoot, '../..'), {recursive: true, force: true}));
+  const evidence = JSON.parse(await readFile(resolve(
+    packageRoot,
+    'conformance/evidence/remote-adapter-evidence.json',
+  ), 'utf8'));
+  const credentialPath = resolve(
+    packageRoot,
+    'contracts/remote-intelligence-adapter/credential-boundary-evidence.json',
+  );
+  const original = await readFile(credentialPath);
+
+  await unlink(credentialPath);
+  await symlink('retention-evidence.json', credentialPath);
+  assert.equal(await deriveRemoteAdapterVerdict(evidence, packageRoot), 'fail');
+  await unlink(credentialPath);
+  await writeFile(credentialPath, original);
+  await writeFile(credentialPath, Buffer.alloc(1_048_577));
+  assert.equal(await deriveRemoteAdapterVerdict(evidence, packageRoot), 'fail');
 });
 
 test('Remote Intelligence Adapter claim fails closed when bound fixture bytes change', async (t) => {
