@@ -6,7 +6,10 @@ import {
   remoteSha256,
 } from './remote-adapter-core.mjs';
 import {remoteAdapterCases} from './remote-adapter-fixtures.mjs';
-import {remoteAdapterReceiptDigest} from './remote-adapter-observer.mjs';
+import {
+  observeRemoteAdapterScenario,
+  remoteAdapterReceiptDigest,
+} from './remote-adapter-observer.mjs';
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {readPackageFile} from './safe-path.mjs';
 
@@ -90,7 +93,11 @@ function receiptMatchesFixture(receipt, fixture) {
     isDeepStrictEqual(receipt.provider_fact_statuses, providerFactStatuses);
 }
 
-export async function deriveRemoteAdapterVerdict(evidence, packageRoot) {
+export async function deriveRemoteAdapterVerdict(
+  evidence,
+  packageRoot,
+  {validateObservations = true} = {},
+) {
   if (evidence === null || typeof evidence !== 'object' || Array.isArray(evidence)) return 'unsupported';
   const bindings = evidence.fixture_bindings;
   const receipts = evidence.receipt_sha256s;
@@ -157,6 +164,24 @@ export async function deriveRemoteAdapterVerdict(evidence, packageRoot) {
     })),
     expectedBindings,
   )) return 'fail';
+  let recoveryReport = null;
+  if (validateObservations) {
+    const recoveryRead = await readPackageFile(
+      packageRoot,
+      'conformance/evidence/remote-adapter-recovery-report.json',
+    );
+    if (recoveryRead.status !== 'present') return 'fail';
+    try {
+      recoveryReport = JSON.parse(recoveryRead.content.toString('utf8'));
+    } catch {
+      return 'fail';
+    }
+    if (!await schemaIsValid(
+      packageRoot,
+      'contracts/schemas/remote-adapter-recovery-report.schema.json',
+      recoveryReport,
+    )) return 'fail';
+  }
   for (const [index, binding] of bindings.entries()) {
     const fixtureRead = await readPackageFile(packageRoot, binding.path);
     if (fixtureRead.status === 'absent') return 'unsupported';
@@ -184,6 +209,13 @@ export async function deriveRemoteAdapterVerdict(evidence, packageRoot) {
         fixture.expected?.verdict !== binding.verdict || receipt.receipt_sha256 !== binding.receipt_sha256 ||
         receipt.receipt_sha256 !== remoteAdapterReceiptDigest(receipt) ||
         !receiptMatchesFixture(receipt, fixture)) return 'fail';
+    if (validateObservations) {
+      const recoveryRecord = fixture.subject.document.operation === 'recover'
+        ? recoveryReport.cases.find(({fixture_id: fixtureId}) => fixtureId === fixture.fixture_id) ?? null
+        : null;
+      const observed = await observeRemoteAdapterScenario(fixture.subject, packageRoot, recoveryRecord);
+      if (!isDeepStrictEqual(observed, fixture.expected)) return 'fail';
+    }
   }
   return 'pass';
 }

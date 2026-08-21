@@ -164,7 +164,11 @@ async function writeMachineEvidence(entries, fixtures) {
     network_operations: 0,
     verdict: 'pass',
   };
-  machineEvidence.verdict = await deriveRemoteAdapterVerdict(machineEvidence, packageRoot);
+  machineEvidence.verdict = await deriveRemoteAdapterVerdict(
+    machineEvidence,
+    packageRoot,
+    {validateObservations: false},
+  );
   await writeJson('conformance/evidence/remote-adapter-evidence.json', machineEvidence);
   const paths = [...remoteAdapterEvidencePaths, ...entries.map(({path}) => `conformance/${path}`)];
   const material = await Promise.all(paths.map(async (path, ordinal) => ({
