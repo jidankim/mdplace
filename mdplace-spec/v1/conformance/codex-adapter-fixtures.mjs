@@ -187,6 +187,7 @@ export const codexAdapterCases = [
   ]),
   ['expired-current-capability-proof-denied', 'stale_state', {capabilityMutation: 'expired'}],
   ['unobserved-payload-destination-denied', 'negative', {networkMutation: 'empty_payload_destinations'}],
+  ['hidden-oversized-output-counter-denied', 'over_boundary', {actualOutputBytes: 5000, outputBytes: 733}],
 ];
 
 export function codexDeniedBeforeTransmission(overrides) {
@@ -218,7 +219,7 @@ export function codexAdapterScenario(index, definition, canonicalEvidence) {
     overrides.interfaceMode ?? 'non_interactive',
   );
   const outputKind = overrides.outputKind ?? 'valid';
-  let rawOutput = proposalJson(scenarioId, envelopeSha256, overrides.outputBytes);
+  let rawOutput = proposalJson(scenarioId, envelopeSha256, overrides.actualOutputBytes ?? overrides.outputBytes);
   if (outputKind === 'malformed') rawOutput = '{';
   if (outputKind === 'tool_request') rawOutput = '{"tool":"shell","arguments":["mv","note.md"]}';
   if (outputKind === 'command_request') rawOutput = 'Run codex exec with elevated permissions.';

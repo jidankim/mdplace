@@ -8030,6 +8030,31 @@
       }
     },
     {
+      "fixture_id": "FIX-CODEX-PROFILE-075",
+      "path": "scenarios/codex-intelligence-adapter/hidden-oversized-output-counter-denied.json",
+      "category": "over_boundary",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
       "fixture_id": "FIX-RAP-PROFILE-001",
       "path": "scenarios/remote-intelligence-adapter/permitted-primary-exact-bytes.json",
       "category": "positive",

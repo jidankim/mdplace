@@ -105,10 +105,13 @@ function boundaryBindingCode(document, bindings) {
 }
 
 function resourceCode(document) {
+  const actualOutputBytes = typeof document.raw_output === 'string' ? Buffer.byteLength(document.raw_output) : 0;
+  if (actualOutputBytes > document.ceilings.output_bytes) return 'output_limit_exceeded';
+  if (document.output_bytes !== actualOutputBytes) return 'output_measurement_mismatch';
   const checks = [
     ['payload_bytes', 'input_bytes', 'input_limit_exceeded'], ['jsonl_bytes', 'jsonl_bytes', 'jsonl_limit_exceeded'],
-    ['output_bytes', 'output_bytes', 'output_limit_exceeded'], ['runtime_ms', 'runtime_ms', 'runtime_limit_exceeded'],
-    ['tokens', 'tokens', 'token_limit_exceeded'], ['cost_microunits', 'cost_microunits', 'cost_limit_exceeded'],
+    ['runtime_ms', 'runtime_ms', 'runtime_limit_exceeded'], ['tokens', 'tokens', 'token_limit_exceeded'],
+    ['cost_microunits', 'cost_microunits', 'cost_limit_exceeded'],
   ];
   return checks.find(([observed, ceiling]) => document[observed] > document.ceilings[ceiling])?.[2] ?? null;
 }

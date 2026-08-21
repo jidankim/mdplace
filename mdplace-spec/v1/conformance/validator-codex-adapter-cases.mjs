@@ -122,6 +122,31 @@ test('network proof without the exact observed destination denies before transmi
   assert.equal(receipt.destination, null);
 });
 
+test('actual Codex output bytes cannot be hidden by a smaller declared counter', async (t) => {
+  // Given a schema-valid proposal whose actual bytes exceed the ceiling while its counter remains below it.
+  const packageRoot = await copyCommittedPackage();
+  t.after(() => rm(resolve(packageRoot, '../..'), {recursive: true, force: true}));
+  const fixture = JSON.parse(await readFile(
+    resolve(packageRoot, 'conformance/scenarios/codex-intelligence-adapter/valid-noninteractive-proposal.json'),
+    'utf8',
+  ));
+  const proposal = JSON.parse(fixture.subject.document.raw_output);
+  proposal.rationale = `${proposal.rationale}${'x'.repeat(5000)}`;
+  proposal.raw_output_sha256 = codexSha256(canonicalJson({...proposal, raw_output_sha256: '0'.repeat(64)}));
+  fixture.subject.document.raw_output = canonicalJson(proposal);
+
+  // When the public observer measures the actual returned bytes.
+  const observed = await observeCodexAdapterScenario(fixture.subject, packageRoot);
+  const receipt = JSON.parse(observed.receipts[0]);
+
+  // Then the real byte length wins and the response is rejected without effects.
+  assert.deepEqual(observed.codes, ['codex.output_limit_exceeded']);
+  assert.equal(observed.terminal_state, 'rejected');
+  assert.ok(receipt.transmitted_bytes > 0);
+  assert.deepEqual(receipt.semantic_effects, []);
+  assert.deepEqual(receipt.filesystem_effects, []);
+});
+
 test('committed package proves the independent Codex Intelligence Adapter profile', async (t) => {
   // Given the committed specification package with its Codex Intelligence Adapter artifacts.
   const packageRoot = await copyCommittedPackage();
