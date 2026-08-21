@@ -405,7 +405,7 @@ test('coordinated verdict labels cannot override independently derived evidence'
     .includes('remote.claim_verdict_invalid'));
 });
 
-test('valid-format wrong mandatory digests cannot earn a passing claim', async (t) => {
+test('forged machine-evidence bindings cannot earn a passing claim', async (t) => {
   const packageRoot = await copyCommittedPackage();
   t.after(() => rm(resolve(packageRoot, '../..'), {recursive: true, force: true}));
   const claimPath = resolve(packageRoot, 'contracts/remote-intelligence-adapter/claim-manifest.json');
@@ -413,7 +413,14 @@ test('valid-format wrong mandatory digests cannot earn a passing claim', async (
   const claim = JSON.parse(await readFile(claimPath, 'utf8'));
   const evidence = JSON.parse(await readFile(evidencePath, 'utf8'));
 
-  evidence.fixture_bindings[0].fixture_sha256 = '0'.repeat(64);
+  evidence.fixture_bindings[0] = {
+    ...evidence.fixture_bindings[0],
+    fixture_id: 'FIX-RAP-PROFILE-999',
+    path: 'conformance/scenarios/remote-intelligence-adapter/forged-binding.json',
+    fixture_sha256: '0'.repeat(64),
+    receipt_sha256: '1'.repeat(64),
+  };
+  evidence.receipt_sha256s[0] = '1'.repeat(64);
   const evidenceBytes = `${JSON.stringify(evidence, null, 2)}\n`;
   await writeFile(evidencePath, evidenceBytes);
   const materialEntry = claim.rows[0].evidence_material.find(
