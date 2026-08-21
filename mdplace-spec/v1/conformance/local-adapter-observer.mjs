@@ -2,7 +2,7 @@ import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {
   localAdapterAttemptObservation,
   localAdapterEvidenceStatus,
-  localAdapterRecoveryCode,
+  localAdapterRecoveryValidation,
 } from './local-adapter-evidence-validation.mjs';
 import {adapterReceiptDigest, createAdapterReceipt, sha256} from './intelligence-adapter-core.mjs';
 import {preflightCode, validateProposal} from './intelligence-adapter-validation.mjs';
@@ -93,7 +93,7 @@ async function proposalResult(document, envelope, packageRoot) {
   };
 }
 
-async function evaluate(document, packageRoot, recoveryBindings) {
+async function evaluate(document, packageRoot, recoveryRecord) {
   const [observationResult, statuses] = await Promise.all([
     localAdapterAttemptObservation(document, packageRoot),
     evidenceStatuses(document, packageRoot),
@@ -119,10 +119,12 @@ async function evaluate(document, packageRoot, recoveryBindings) {
   if (code === null && outputBytes > document.ceilings.output_bytes) code = 'local.output_budget_exhausted';
   if (code === null && document.runtime_ms > document.ceilings.runtime_ms) code = 'local.runtime_budget_exhausted';
   if (code === null && document.attempts > document.ceilings.attempts) code = 'local.attempt_budget_exhausted';
-  if (code === null) code = behaviorCodes.get(document.behavior) ?? null;
+  if (code === null && document.operation !== 'recover') {
+    code = behaviorCodes.get(document.behavior) ?? null;
+  }
   if (code === null && document.behavior === 'malformed_output') code = 'local.malformed_output';
   if (code === null && document.operation === 'recover') {
-    code = await localAdapterRecoveryCode(recoveryBindings, packageRoot);
+    code = (await localAdapterRecoveryValidation(recoveryRecord, document, packageRoot)).code;
   }
   const proposal = code === null && document.operation !== 'transition'
     ? await proposalResult(document, envelope, packageRoot)
@@ -188,9 +190,9 @@ function terminalState(document, code) {
   return 'denied';
 }
 
-export async function observeLocalAdapterScenario(subject, packageRoot, recoveryBindings = null) {
+export async function observeLocalAdapterScenario(subject, packageRoot, recoveryRecord = null) {
   const document = subject?.document ?? subject;
-  const evaluated = await evaluate(document, packageRoot, recoveryBindings);
+  const evaluated = await evaluate(document, packageRoot, recoveryRecord);
   const {code, envelope, statuses, observation} = evaluated;
   if (observation === null) {
     return {

@@ -5,7 +5,6 @@ import {resolve} from 'node:path';
 import test from 'node:test';
 
 import {validateAgainstSchemaPath} from './json-schema.mjs';
-import {localAdapterRecoveryValidation} from './local-adapter-evidence-validation.mjs';
 import {observeLocalAdapterScenario} from './local-adapter-observer.mjs';
 import {copyCommittedPackage, runPreparedPackage} from './validator-test-support.mjs';
 
@@ -16,18 +15,6 @@ async function localCheckAfterMutation(t, mutate) {
   const result = runPreparedPackage(packageRoot);
   const report = JSON.parse(result.stdout);
   return report.checks.find(({id}) => id === 'local-intelligence-adapter-profile');
-}
-
-async function currentRecoveryBindings(packageRoot) {
-  const claimBytes = await readFile(resolve(
-    packageRoot,
-    'contracts/local-intelligence-adapter/claim-manifest.json',
-  ));
-  const claim = JSON.parse(claimBytes.toString('utf8'));
-  return {
-    claimSha256: createHash('sha256').update(claimBytes).digest('hex'),
-    evidenceDigest: claim.rows[0].evidence_digest,
-  };
 }
 
 test('committed package proves the independent Local Intelligence Adapter profile', async (t) => {
@@ -104,46 +91,69 @@ test('Local Intelligence Adapter attempts emit the inherited Adapter Run Receipt
   ), []);
 });
 
-test('Local Intelligence Adapter recovery reads current claim bytes before its verdict', async (t) => {
-  const packageRoot = await copyCommittedPackage();
-  t.after(() => rm(resolve(packageRoot, '../..'), {recursive: true, force: true}));
-  const fixture = JSON.parse(await readFile(resolve(
-    packageRoot,
-    'conformance/scenarios/local-intelligence-adapter/recovery-revalidates-current-digests.json',
-  ), 'utf8'));
-  const claimPath = resolve(packageRoot, 'contracts/local-intelligence-adapter/claim-manifest.json');
-  const claim = JSON.parse(await readFile(claimPath, 'utf8'));
-  claim.rows[0].evidence_digest = '0'.repeat(64);
-  await writeFile(claimPath, `${JSON.stringify(claim, null, 2)}\n`);
+test('Local Intelligence Adapter public validator rejects a stale recovery claim digest', async (t) => {
+  // Given a persisted recovery record whose claim digest no longer names the current claim bytes.
+  const check = await localCheckAfterMutation(t, async (packageRoot) => {
+    const path = resolve(packageRoot, 'conformance/evidence/local-adapter-recovery-report.json');
+    const report = JSON.parse(await readFile(path, 'utf8'));
+    report.cases[0].claim_manifest_sha256 = '0'.repeat(64);
+    await writeFile(path, `${JSON.stringify(report, null, 2)}\n`);
+  });
 
-  const bindings = await currentRecoveryBindings(packageRoot);
-  const observed = await observeLocalAdapterScenario(fixture.subject, packageRoot, bindings);
-
-  assert.equal(observed.verdict, 'fail');
-  assert.ok(observed.codes.includes('local.recovery_evidence_digest_mismatch'));
+  // When the public package validator evaluates recovery, then it fails closed.
+  assert.equal(check.verdict, 'fail');
+  assert.ok(check.codes.includes('local.observable_mismatch'));
+  assert.ok(check.codes.includes('local.recovery_evidence_invalid'));
 });
 
-test('Local Intelligence Adapter recovery requires exact externally supplied bindings', async (t) => {
+test('Local Intelligence Adapter public validator rejects every mismatched recovery target field', async (t) => {
+  const mismatches = [
+    ['attempt_id', 'adapter-attempt:lia-999'],
+    ['attempt_sequence', 1],
+    ['crash_boundary', 'before_receipt'],
+  ];
+  for (const [field, value] of mismatches) await t.test(field, async (t) => {
+    // Given a persisted recovery record naming a different exact target field.
+    const check = await localCheckAfterMutation(t, async (packageRoot) => {
+      const path = resolve(packageRoot, 'conformance/evidence/local-adapter-recovery-report.json');
+      const report = JSON.parse(await readFile(path, 'utf8'));
+      report.cases[0][field] = value;
+      await writeFile(path, `${JSON.stringify(report, null, 2)}\n`);
+    });
+
+    // When the public package validator evaluates recovery, then it rejects the wrong target.
+    assert.equal(check.verdict, 'fail');
+    assert.ok(check.codes.includes('local.observable_mismatch'));
+    assert.ok(check.codes.includes('local.recovery_evidence_invalid'));
+  });
+});
+
+test('Local Intelligence Adapter recovery consumes the persisted external recovery record', async (t) => {
+  // Given the committed positive recovery fixture and its report record outside claim material.
   const packageRoot = await copyCommittedPackage();
   t.after(() => rm(resolve(packageRoot, '../..'), {recursive: true, force: true}));
   const fixture = JSON.parse(await readFile(resolve(
     packageRoot,
     'conformance/scenarios/local-intelligence-adapter/recovery-revalidates-current-digests.json',
   ), 'utf8'));
-  const bindings = await currentRecoveryBindings(packageRoot);
-
-  const withoutBindings = await observeLocalAdapterScenario(fixture.subject, packageRoot);
-  const withBindings = await observeLocalAdapterScenario(fixture.subject, packageRoot, bindings);
-
-  assert.equal(withoutBindings.verdict, 'fail');
-  assert.ok(withoutBindings.codes.includes('local.recovery_claim_digest_mismatch'));
-  assert.equal(withBindings.verdict, 'pass');
-  const staleClaim = await localAdapterRecoveryValidation(
-    {...bindings, claimSha256: '0'.repeat(64)},
+  const recoveryReport = JSON.parse(await readFile(resolve(
     packageRoot,
+    'conformance/evidence/local-adapter-recovery-report.json',
+  ), 'utf8'));
+
+  // When recovery is attempted without and then with that persisted external record.
+  const withoutRecord = await observeLocalAdapterScenario(fixture.subject, packageRoot);
+  const observed = await observeLocalAdapterScenario(
+    fixture.subject,
+    packageRoot,
+    recoveryReport.cases.find(({fixture_id: id}) => id === fixture.fixture_id),
   );
-  assert.equal(staleClaim.claimDigestRevalidated, false);
-  assert.equal(staleClaim.parsedEvidenceRevalidated, true);
+
+  // Then recovery requires the external record, whose exact bindings permit the committed verdict.
+  assert.equal(withoutRecord.verdict, 'fail');
+  assert.ok(withoutRecord.codes.includes('local.recovery_claim_digest_mismatch'));
+  assert.equal(observed.verdict, 'pass');
+  assert.deepEqual(observed.codes, []);
 });
 
 test('Local Intelligence Adapter receipt isolation is copied from a digest-bound observation', async (t) => {

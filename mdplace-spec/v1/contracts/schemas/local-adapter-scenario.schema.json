@@ -4,7 +4,7 @@
   "title": "mdplace Local Intelligence Adapter conformance scenario",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_id", "scenario_id", "case_id", "operation", "evaluated_at", "processing_envelope_json", "processing_envelope_sha256", "capability_evidence_json", "capability_evidence_sha256", "isolation_evidence_json", "isolation_evidence_sha256", "attempt_observation_json", "attempt_observation_sha256", "instruction_kind", "claimed_authority", "behavior", "output_bytes", "runtime_ms", "attempts", "ceilings", "raw_output", "recovery_binding", "transition_ref"],
+  "required": ["schema_id", "scenario_id", "case_id", "operation", "evaluated_at", "processing_envelope_json", "processing_envelope_sha256", "capability_evidence_json", "capability_evidence_sha256", "isolation_evidence_json", "isolation_evidence_sha256", "attempt_observation_json", "attempt_observation_sha256", "instruction_kind", "claimed_authority", "behavior", "output_bytes", "runtime_ms", "attempts", "ceilings", "raw_output", "transition_ref"],
   "properties": {
     "schema_id": {"const": "mdplace.local-adapter-scenario/v1"},
     "scenario_id": {"type": "string", "pattern": "^LIA-[0-9]{3}$"},
@@ -27,9 +27,14 @@
     "attempts": {"type": "integer", "minimum": 0},
     "ceilings": {"$ref": "#/$defs/ceilings"},
     "raw_output": {"type": ["string", "null"]},
-    "recovery_binding": {"enum": ["none", "current", "stale_claim", "stale_evidence"]},
     "transition_ref": {"type": ["string", "null"], "pattern": "^contracts/transitions/local-adapter-[a-z-]{1,32}-lifecycle\\.json#[a-z_]{1,32}:[a-z_]{1,32}$"}
   },
+  "allOf": [
+    {
+      "if": {"properties": {"operation": {"const": "recover"}}, "required": ["operation"]},
+      "then": {"properties": {"behavior": {"enum": ["crash_before_receipt", "crash_after_receipt"]}}}
+    }
+  ],
   "$defs": {
     "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
     "ceilings": {"type": "object", "additionalProperties": false, "required": ["input_bytes", "output_bytes", "runtime_ms", "attempts"], "properties": {"input_bytes": {"const": 4096}, "output_bytes": {"const": 3000}, "runtime_ms": {"const": 800}, "attempts": {"const": 2}}}

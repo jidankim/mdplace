@@ -32,7 +32,7 @@ The Local Intelligence Adapter Claim Manifest contains exactly one row with `id:
 
 ## REQ-LIA-008: Recovery revalidates parsed evidence before reading a verdict
 
-Recovery receives the exact Claim Manifest SHA-256 and claim-row evidence digest as explicit evaluator inputs outside the recursively covered fixture material. It parses and schema-validates capability evidence, isolation evidence, the fixture manifest, machine evidence, and the Claim Manifest, recomputes every bound digest, and revalidates both supplied digests before reading the verdict. Either supplied digest being absent is a mismatch. Claim-digest failure does not skip independent evidence parsing, and a stale, malformed, absent, unsupported, inconclusive, or digest-mismatched input remains non-pass.
+Recovery receives a closed recovery-report record outside the recursively covered fixture material. That record supplies the exact target attempt identity, sequence, compatible crash boundary, Claim Manifest SHA-256, and claim-row evidence digest. Recovery parses and schema-validates capability evidence, isolation evidence, the fixture manifest, machine evidence, and the Claim Manifest, recomputes every bound digest, and revalidates the target attempt plus both supplied digests before reading the verdict. Either supplied digest being absent is a mismatch. Claim-digest failure does not skip independent evidence parsing, and a stale, malformed, absent, unsupported, inconclusive, attempt-mismatched, or digest-mismatched input remains non-pass.
 
 ## REQ-LIA-009: Traceability preserves the accepted decision input
 

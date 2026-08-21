@@ -77,19 +77,41 @@ export async function localAdapterAttemptObservation(document, packageRoot) {
   }
 }
 
-export async function localAdapterRecoveryBindings(document, packageRoot) {
-  if (document.operation !== 'recover') return null;
-  const claim = await readJson(packageRoot, 'contracts/local-intelligence-adapter/claim-manifest.json');
-  const bindings = {
-    claimSha256: claim.read.status === 'present' ? sha256(claim.read.content) : null,
-    evidenceDigest: claim.document?.rows?.[0]?.evidence_digest ?? null,
-  };
-  if (document.recovery_binding === 'stale_claim') bindings.claimSha256 = '0'.repeat(64);
-  if (document.recovery_binding === 'stale_evidence') bindings.evidenceDigest = '0'.repeat(64);
-  return bindings;
+const recoveryBoundaries = new Map([
+  ['crash_before_receipt', 'before_receipt'],
+  ['crash_after_receipt', 'after_receipt'],
+]);
+
+export function localAdapterRecoveryTarget(document) {
+  if (document?.operation !== 'recover') return null;
+  let envelope;
+  try {
+    envelope = JSON.parse(document.processing_envelope_json);
+  } catch {
+    return null;
+  }
+  const crashBoundary = recoveryBoundaries.get(document.behavior) ?? null;
+  return typeof envelope?.attempt_id === 'string' &&
+    Number.isInteger(envelope.attempt_sequence) && crashBoundary !== null
+    ? {
+        attempt_id: envelope.attempt_id,
+        attempt_sequence: envelope.attempt_sequence,
+        crash_boundary: crashBoundary,
+      }
+    : null;
 }
 
-export async function localAdapterRecoveryValidation(bindings, packageRoot) {
+export async function localAdapterRecoveryRecord(fixtureId, packageRoot) {
+  const report = await readJson(
+    packageRoot,
+    'conformance/evidence/local-adapter-recovery-report.json',
+  );
+  return Array.isArray(report.document?.cases)
+    ? report.document.cases.find(({fixture_id: id}) => id === fixtureId) ?? null
+    : null;
+}
+
+export async function localAdapterRecoveryValidation(recoveryRecord, document, packageRoot) {
   const claim = await readJson(packageRoot, 'contracts/local-intelligence-adapter/claim-manifest.json');
   let claimSchemaValid = false;
   try {
@@ -98,10 +120,17 @@ export async function localAdapterRecoveryValidation(bindings, packageRoot) {
       'contracts/schemas/local-adapter-claim-manifest.schema.json',
       claim.document,
     )) === null;
-  } catch {}
+  } catch {
+    claimSchemaValid = false;
+  }
+  const target = localAdapterRecoveryTarget(document);
+  const attemptRevalidated = target !== null &&
+    recoveryRecord?.attempt_id === target.attempt_id &&
+    recoveryRecord?.attempt_sequence === target.attempt_sequence &&
+    recoveryRecord?.crash_boundary === target.crash_boundary;
   const claimDigestRevalidated = claimSchemaValid &&
-    typeof bindings?.claimSha256 === 'string' &&
-    bindings.claimSha256 === sha256(claim.read.content);
+    typeof recoveryRecord?.claim_manifest_sha256 === 'string' &&
+    recoveryRecord.claim_manifest_sha256 === sha256(claim.read.content);
   const requiredEvidence = [
     ['contracts/local-intelligence-adapter/capability-evidence.json', 'contracts/schemas/local-adapter-capability-evidence.schema.json'],
     ['contracts/local-intelligence-adapter/isolation-evidence.json', 'contracts/schemas/local-adapter-isolation-evidence.schema.json'],
@@ -127,19 +156,16 @@ export async function localAdapterRecoveryValidation(bindings, packageRoot) {
     'local.claim_evidence_digest_mismatch',
   ].includes(code));
   const evidenceDigestMatches = claimSchemaValid &&
-    typeof bindings?.evidenceDigest === 'string' &&
-    bindings.evidenceDigest === claim.document.rows[0].evidence_digest;
+    typeof recoveryRecord?.evidence_digest === 'string' &&
+    recoveryRecord.evidence_digest === claim.document.rows[0].evidence_digest;
   const parsedEvidenceRevalidated = evidenceResults.every(Boolean) &&
     !materialInvalid && evidenceDigestMatches;
   let code = null;
   if (!claimDigestRevalidated) code = 'local.recovery_claim_digest_mismatch';
   else if (!parsedEvidenceRevalidated) code = 'local.recovery_evidence_digest_mismatch';
+  else if (!attemptRevalidated) code = 'local.recovery_attempt_mismatch';
   else if ((await localAdapterClaimCodes(claim.document, packageRoot)).length > 0) {
     code = 'local.recovery_claim_invalid';
   }
-  return {code, claimDigestRevalidated, parsedEvidenceRevalidated};
-}
-
-export async function localAdapterRecoveryCode(bindings, packageRoot) {
-  return (await localAdapterRecoveryValidation(bindings, packageRoot)).code;
+  return {code, attemptRevalidated, claimDigestRevalidated, parsedEvidenceRevalidated};
 }

@@ -30,7 +30,7 @@ const requirementDefinitions = [
   ['Local execution cases are deterministic and bounded', ['Conformance Fixture', 'Intelligence Adapter Attempt']],
   ['Capability, isolation, verdict, failure, and recovery transitions are complete', ['Intelligence Adapter Attempt', 'Conformance Verdict']],
   ['The independent claim row binds one exact evidence digest', ['Claim Manifest', 'Conformance Profile', 'Conformance Verdict']],
-  ['Recovery revalidates parsed evidence before reading a verdict', ['Claim Manifest', 'Conformance Verdict']],
+  ['Recovery revalidates parsed evidence before reading a verdict', ['Claim Manifest', 'Conformance Verdict', 'Intelligence Adapter Attempt', 'Adapter Run Receipt']],
   ['Traceability preserves the accepted decision input', ['Traceability Record', 'Conformance Fixture']],
   ['The profile is specification and conformance only', ['Specification Package', 'Conformance Profile', 'Semantic Kernel', 'Vault Mutation Gate']],
 ];

@@ -176,9 +176,9 @@ export const localAdapterCases = [
   ['misleading-success-denied', 'negative', {behavior: 'misleading_success', rawOutput: 'SUCCESS: taxonomy updated and note moved'}],
   ['crash-before-receipt-requires-recovery', 'crash_recovery', {behavior: 'crash_before_receipt'}],
   ['crash-after-receipt-requires-recovery', 'crash_recovery', {behavior: 'crash_after_receipt'}],
-  ['recovery-revalidates-current-digests', 'crash_recovery', {operation: 'recover', recoveryBinding: 'current'}],
-  ['recovery-rejects-stale-evidence-digest', 'stale_state', {operation: 'recover', recoveryBinding: 'stale_evidence'}],
-  ['recovery-rejects-stale-claim-digest', 'stale_state', {operation: 'recover', recoveryBinding: 'stale_claim'}],
+  ['recovery-revalidates-current-digests', 'crash_recovery', {operation: 'recover', behavior: 'crash_after_receipt', recoveryBinding: 'current'}],
+  ['recovery-rejects-stale-evidence-digest', 'stale_state', {operation: 'recover', behavior: 'crash_after_receipt', recoveryBinding: 'stale_evidence'}],
+  ['recovery-rejects-stale-claim-digest', 'stale_state', {operation: 'recover', behavior: 'crash_after_receipt', recoveryBinding: 'stale_claim'}],
   ['illegal-capability-transition-denied', 'illegal_transition', {operation: 'transition', rawOutput: null, transition_ref: 'contracts/transitions/local-adapter-capability-lifecycle.json#unverified:record_adapter_outcome'}],
   ['illegal-isolation-transition-denied', 'illegal_transition', {operation: 'transition', rawOutput: null, transition_ref: 'contracts/transitions/local-adapter-isolation-lifecycle.json#verified:verify_adapter_isolation'}],
   ['illegal-verdict-transition-denied', 'illegal_transition', {operation: 'transition', rawOutput: null, transition_ref: 'contracts/transitions/local-adapter-verdict-lifecycle.json#pass:record_pass'}],
@@ -210,7 +210,6 @@ export function localAdapterScenario(index, definition, evidence) {
     output_bytes: typeof rawOutput === 'string' ? Buffer.byteLength(rawOutput) : 0,
     runtime_ms: runtimeMs, attempts: overrides.attempts ?? 1,
     ceilings: {input_bytes: 4096, output_bytes: 3000, runtime_ms: 800, attempts: 2},
-    raw_output: rawOutput, recovery_binding: overrides.recoveryBinding ?? 'none',
-    transition_ref: overrides.transition_ref ?? null,
+    raw_output: rawOutput, transition_ref: overrides.transition_ref ?? null,
   };
 }

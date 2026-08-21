@@ -10,10 +10,7 @@ import {
   sha256,
 } from './local-adapter-core.mjs';
 import {localAdapterCases} from './local-adapter-fixtures.mjs';
-import {
-  localAdapterRecoveryBindings,
-  localAdapterRecoveryValidation,
-} from './local-adapter-evidence-validation.mjs';
+import {localAdapterRecoveryValidation} from './local-adapter-evidence-validation.mjs';
 import {observeLocalAdapterScenario} from './local-adapter-observer.mjs';
 import {readPackageFile} from './safe-path.mjs';
 
@@ -157,8 +154,10 @@ export async function checkLocalAdapterProfile(packageRoot, conformance, traceab
       codes.push('schema.instance_missing');
       continue;
     }
-    const recoveryBindings = await localAdapterRecoveryBindings(fixture.subject.document, packageRoot);
-    const observed = await observeLocalAdapterScenario(fixture.subject, packageRoot, recoveryBindings);
+    const recoveryRecord = fixture.subject.document.operation === 'recover'
+      ? recovery.cases.find(({fixture_id: id}) => id === entry.fixture_id) ?? null
+      : null;
+    const observed = await observeLocalAdapterScenario(fixture.subject, packageRoot, recoveryRecord);
     if (!isDeepStrictEqual(observed, fixture.expected)) codes.push('local.observable_mismatch');
     if (observed.receipts.length !== 1) {
       codes.push('local.receipt_invalid');
@@ -177,14 +176,15 @@ export async function checkLocalAdapterProfile(packageRoot, conformance, traceab
         receipt.tool_invocations.length !== 0) {
       codes.push('local.receipt_invalid');
     }
-    const recoveryValidation = recoveryBindings === null
+    const recoveryValidation = recoveryRecord === null
       ? null
-      : await localAdapterRecoveryValidation(recoveryBindings, packageRoot);
+      : await localAdapterRecoveryValidation(recoveryRecord, fixture.subject.document, packageRoot);
     observedRecords.push({
       entry,
       fixture,
       observed,
       receipt,
+      recoveryRecord,
       recoveryValidation,
       fixtureSha256: sha256(fixtureResult.read.content),
     });
@@ -202,8 +202,20 @@ export async function checkLocalAdapterProfile(packageRoot, conformance, traceab
     codes.push('local.machine_evidence_invalid');
   }
   const recoveryRecords = observedRecords.filter(({fixture}) => fixture.subject.document.operation === 'recover');
-  const expectedRecoveryCases = recoveryRecords.map(({entry, observed, receipt, recoveryValidation}) => ({
+  const expectedRecoveryCases = recoveryRecords.map(({
+    entry,
+    observed,
+    receipt,
+    recoveryRecord,
+    recoveryValidation,
+  }) => ({
     fixture_id: entry.fixture_id,
+    attempt_id: recoveryRecord?.attempt_id,
+    attempt_sequence: recoveryRecord?.attempt_sequence,
+    crash_boundary: recoveryRecord?.crash_boundary,
+    claim_manifest_sha256: recoveryRecord?.claim_manifest_sha256,
+    evidence_digest: recoveryRecord?.evidence_digest,
+    attempt_revalidated: recoveryValidation.attemptRevalidated,
     claim_digest_revalidated: recoveryValidation.claimDigestRevalidated,
     parsed_evidence_revalidated: recoveryValidation.parsedEvidenceRevalidated,
     terminal_state: observed.terminal_state,

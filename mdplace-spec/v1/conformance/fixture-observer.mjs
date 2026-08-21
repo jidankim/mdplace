@@ -11,7 +11,7 @@ import {observeTransition} from './transition-observer.mjs';
 import {observeVaultMutationScenario} from './vault-mutation-gate-observer.mjs';
 import {observeReferenceVaultScenario} from './reference-vault-observer.mjs';
 import {observeIntelligenceAdapterScenario} from './intelligence-adapter-observer.mjs';
-import {localAdapterRecoveryBindings} from './local-adapter-evidence-validation.mjs';
+import {localAdapterRecoveryRecord} from './local-adapter-evidence-validation.mjs';
 import {observeLocalAdapterScenario} from './local-adapter-observer.mjs';
 import {authorityMatches, manifestFields, packageArtifactPathAllowed, transitionFields} from './validator-rules.mjs';
 
@@ -189,8 +189,10 @@ export async function observeFixture(fixture, packageRoot, options = {}) {
     case 'intelligence_adapter':
       return observeIntelligenceAdapterScenario(fixture.subject.document, packageRoot);
     case 'local_intelligence_adapter': {
-      const recoveryBindings = await localAdapterRecoveryBindings(fixture.subject.document, packageRoot);
-      return observeLocalAdapterScenario(fixture.subject, packageRoot, recoveryBindings);
+      const recoveryRecord = fixture.subject.document.operation === 'recover'
+        ? await localAdapterRecoveryRecord(fixture.fixture_id, packageRoot)
+        : null;
+      return observeLocalAdapterScenario(fixture.subject, packageRoot, recoveryRecord);
     }
     default:
       return {

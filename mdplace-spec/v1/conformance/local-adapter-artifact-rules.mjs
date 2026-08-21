@@ -8,5 +8,6 @@ export const localAdapterExecutablePaths = new Set([
   'conformance/local-adapter-evidence-validation.mjs',
   'conformance/local-adapter-fixtures.mjs',
   'conformance/local-adapter-observer.mjs',
+  'conformance/local-adapter-recovery-authoring.mjs',
   'conformance/validator-local-adapter-cases.mjs',
 ]);

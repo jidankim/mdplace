@@ -10,21 +10,21 @@
   "invocation": {
     "invocation_id": "invocation:local-adapter-profile",
     "path": "conformance/evidence/invocations/local-adapter-profile.json",
-    "sha256": "3506eabdb51b7596cdfaa67dd4d93ddf2f45c6c6b7b811616c8f23b2b2c85f0a"
+    "sha256": "f31768bc316be4a84358afe306d4f7bfb95e422309c10c3a23c9541091e49aef"
   },
   "requirement_id": "REQ-LIA-007",
   "subject": {
     "kind": "local_adapter_claim",
     "subject_id": "local-adapter:claim-v1",
     "schema": "contracts/schemas/local-adapter-claim-manifest.schema.json",
-    "sha256": "8f19f27b9e52ad4c629f253b7f61d05149e9446bae9bf1a6dcc2ad4a68eb314c"
+    "sha256": "9be283dbcc57b6c452512d6a7be06fa90b3a89415397cefd99be85d84ba731b1"
   },
   "input_digests": [
     {
       "ordinal": 0,
       "label": "requirements",
       "path": "normative/requirements.json",
-      "sha256": "5a4dc27d66e16c28ebb2ecd47de35113544be65a12789c155a57de2a9367f959"
+      "sha256": "33ba682a343f14e762bef900bfc9ad1e710eb1cbb8e1f9e818f91c6302214aaa"
     },
     {
       "ordinal": 1,
@@ -50,13 +50,13 @@
       "ordinal": 0,
       "label": "local_adapter_evidence",
       "path": "conformance/evidence/local-adapter-evidence.json",
-      "sha256": "b55e14e370311ec22e53d76e601c9a60298568d0c5d0f73517dd0c41c1a3f139"
+      "sha256": "1f99fd839fc0130746e1852d90c66b860987b1d89999cc38eddabb3e808d9b19"
     },
     {
       "ordinal": 1,
       "label": "recovery_report",
       "path": "conformance/evidence/local-adapter-recovery-report.json",
-      "sha256": "8cc8af59f9c3bc0e5a5a54129e79800fc7d51e5a7214901b981b9d88bb1783f5"
+      "sha256": "6cb32bdbe6a25c12ba315537ff4fcf75e895ab211ebc72fe1742fc5ab4d6981a"
     }
   ],
   "receipts": [
@@ -65,7 +65,7 @@
       "receipt_id": "receipt:local-adapter-profile",
       "receipt_type": "EvidenceValidationReceipt",
       "path": "conformance/evidence/local-adapter-recovery-report.json",
-      "sha256": "8cc8af59f9c3bc0e5a5a54129e79800fc7d51e5a7214901b981b9d88bb1783f5"
+      "sha256": "6cb32bdbe6a25c12ba315537ff4fcf75e895ab211ebc72fe1742fc5ab4d6981a"
     }
   ],
   "artifact_digests": [
@@ -79,7 +79,7 @@
       "ordinal": 1,
       "label": "normative_contract",
       "path": "normative/local-intelligence-adapter-profile.md",
-      "sha256": "a292af30c1bd221b0b47dfcf410a344ffa55807a905ff2575df2f3a3f744b2a4"
+      "sha256": "39723011d2bdcb863904f4eb75b427678cfd9ec2a23196b00a9e520f434fd81f"
     }
   ],
   "execution_context": {

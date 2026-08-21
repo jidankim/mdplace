@@ -15,11 +15,12 @@ import {
   sha256,
 } from './local-adapter-core.mjs';
 import {localAdapterCases, localAdapterScenario} from './local-adapter-fixtures.mjs';
-import {
-  localAdapterRecoveryBindings,
-  localAdapterRecoveryValidation,
-} from './local-adapter-evidence-validation.mjs';
+import {localAdapterRecoveryValidation} from './local-adapter-evidence-validation.mjs';
 import {observeLocalAdapterScenario} from './local-adapter-observer.mjs';
+import {
+  authoredRecoveryRecord,
+  currentClaimBinding,
+} from './local-adapter-recovery-authoring.mjs';
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const relativeFixturePath = (caseId) => `scenarios/local-intelligence-adapter/${caseId}.json`;
@@ -69,30 +70,32 @@ async function writeFixtures() {
     capability: await readJson('contracts/local-intelligence-adapter/capability-evidence.json'),
     isolation: await readJson('contracts/local-intelligence-adapter/isolation-evidence.json'),
   };
+  const claimBinding = await currentClaimBinding(packageRoot);
   const entries = localAdapterCases.map(([caseId, category], index) => ({
     fixture_id: `FIX-LIA-PROFILE-${String(index + 1).padStart(3, '0')}`,
     path: relativeFixturePath(caseId), category, requirement_ids: localAdapterRequirementIds,
   }));
-  await writeJson('contracts/local-intelligence-adapter/fixture-manifest.json', {
+  const fixtureManifest = {
     $schema: '../schemas/local-adapter-fixture-manifest.schema.json',
     schema_id: 'mdplace.local-adapter-fixture-manifest/v1', manifest_id: 'local-adapter-fixtures:v1',
     profile_id: 'local-adapter', requirements: localAdapterRequirementIds, fixtures: entries,
-  });
-  const fixtures = [];
-  for (const [index, definition] of localAdapterCases.entries()) {
+  };
+  const fixtures = await Promise.all(localAdapterCases.map(async (definition, index) => {
     const [caseId, category] = definition;
     const scenario = localAdapterScenario(index, definition, evidence);
-    const recoveryBindings = await localAdapterRecoveryBindings(scenario, packageRoot);
-    const expected = await observeLocalAdapterScenario(scenario, packageRoot, recoveryBindings);
-    const fixture = {
+    const recoveryRecord = authoredRecoveryRecord(definition, scenario, claimBinding);
+    const expected = await observeLocalAdapterScenario(scenario, packageRoot, recoveryRecord);
+    return {
       $schema: '../../../contracts/schemas/conformance-fixture.schema.json',
       schema_id: 'mdplace.conformance-fixture/v1', fixture_id: entries[index].fixture_id,
       category, requirement_ids: localAdapterRequirementIds,
       subject: {kind: 'local_intelligence_adapter', schema: 'contracts/schemas/local-adapter-scenario.schema.json', document: scenario},
       expected,
     };
-    await writeJson(packageFixturePath(caseId), fixture);
-    fixtures.push(fixture);
+  }));
+  await writeJson('contracts/local-intelligence-adapter/fixture-manifest.json', fixtureManifest);
+  for (const [index, fixture] of fixtures.entries()) {
+    await writeJson(packageFixturePath(localAdapterCases[index][0]), fixture);
   }
   return {entries, fixtures};
 }
@@ -134,13 +137,24 @@ async function writeMachineEvidence(entries, fixtures) {
     }],
   };
   await writeJson('contracts/local-intelligence-adapter/claim-manifest.json', claim);
+  const claimBinding = await currentClaimBinding(packageRoot);
   const recoveryCases = (await Promise.all(fixtureBindings.map(async (binding, index) => {
     const fixture = fixtures[index];
     if (fixture.subject.document.operation !== 'recover') return null;
-    const bindings = await localAdapterRecoveryBindings(fixture.subject.document, packageRoot);
-    const validation = await localAdapterRecoveryValidation(bindings, packageRoot);
+    const recoveryRecord = authoredRecoveryRecord(
+      localAdapterCases[index],
+      fixture.subject.document,
+      claimBinding,
+    );
+    const validation = await localAdapterRecoveryValidation(
+      recoveryRecord,
+      fixture.subject.document,
+      packageRoot,
+    );
     return {
       fixture_id: binding.fixture_id,
+      ...recoveryRecord,
+      attempt_revalidated: validation.attemptRevalidated,
       claim_digest_revalidated: validation.claimDigestRevalidated,
       parsed_evidence_revalidated: validation.parsedEvidenceRevalidated,
       terminal_state: fixture.expected.terminal_state,
