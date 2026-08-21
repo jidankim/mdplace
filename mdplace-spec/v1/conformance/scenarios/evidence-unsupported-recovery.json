@@ -3,7 +3,10 @@
   "schema_id": "mdplace.conformance-fixture/v1",
   "fixture_id": "FIX-VAL-REC-003",
   "category": "crash_recovery",
-  "requirement_ids": ["REQ-VAL-005", "REQ-VAL-006"],
+  "requirement_ids": [
+    "REQ-VAL-005",
+    "REQ-VAL-006"
+  ],
   "subject": {
     "kind": "extension",
     "extension_id": "mdplace.validator-extension/evidence/v1",
@@ -16,11 +19,11 @@
       "release_version": "1.0.0",
       "validator_id": "mdplace.package-validator",
       "validator_version": "1.2.0",
-      "claim_id": "CLAIM-REMOTEADAPTER-001",
+      "claim_id": "CLAIM-CODEXADAPTER-001",
       "claim": {
-        "claim_id": "CLAIM-REMOTEADAPTER-001",
-        "path": "conformance/claim-manifests/remote-intelligence-adapter.json",
-        "sha256": "120c0bd6720509eba8606b6f7bec29bbb6e2f7b38ab92eda4a87e75daedbf154"
+        "claim_id": "CLAIM-CODEXADAPTER-001",
+        "path": "conformance/claim-manifests/codex-intelligence-adapter.json",
+        "sha256": "69cac65ce0b6ae987d4cbecf11862ce0663c627ec98226ce3cef24cbf251969d"
       },
       "recorded_claim": null,
       "prior_verdict": "unsupported",
@@ -28,26 +31,48 @@
       "fresh_evidence_supplied": false,
       "recomputed_bindings": [
         {
-          "path": "conformance/claim-manifests/remote-intelligence-adapter.json",
-          "expected_sha256": "120c0bd6720509eba8606b6f7bec29bbb6e2f7b38ab92eda4a87e75daedbf154",
-          "observed_sha256": "120c0bd6720509eba8606b6f7bec29bbb6e2f7b38ab92eda4a87e75daedbf154",
+          "path": "conformance/claim-manifests/codex-intelligence-adapter.json",
+          "expected_sha256": "69cac65ce0b6ae987d4cbecf11862ce0663c627ec98226ce3cef24cbf251969d",
+          "observed_sha256": "69cac65ce0b6ae987d4cbecf11862ce0663c627ec98226ce3cef24cbf251969d",
           "matches": true
         }
       ],
-      "operations": ["reopen declared artifact", "recompute sha256", "preserve unsupported verdict"],
-      "receipts": ["EvidenceRecoveryReport"],
-      "filesystem_effects": ["none"],
+      "operations": [
+        "reopen declared artifact",
+        "recompute sha256",
+        "preserve unsupported verdict"
+      ],
+      "receipts": [
+        "EvidenceRecoveryReport"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
       "terminal_state": "verdict_recorded",
       "effective_verdict": "pass"
     }
   },
   "expected": {
     "verdict": "fail",
-    "codes": ["evidence.recovery_verdict_upgrade"],
-    "outputs": ["recovery report rejected"],
-    "operations": ["resolve validator extension", "validate extension document", "verify specification and validator bindings", "recompute evidence bindings", "preserve non-pass verdict"],
-    "receipts": ["EvidenceValidationReceipt"],
-    "filesystem_effects": ["none"],
+    "codes": [
+      "evidence.recovery_verdict_upgrade"
+    ],
+    "outputs": [
+      "recovery report rejected"
+    ],
+    "operations": [
+      "resolve validator extension",
+      "validate extension document",
+      "verify specification and validator bindings",
+      "recompute evidence bindings",
+      "preserve non-pass verdict"
+    ],
+    "receipts": [
+      "EvidenceValidationReceipt"
+    ],
+    "filesystem_effects": [
+      "none"
+    ],
     "terminal_state": "rejected",
     "illegal_transition": false
   }

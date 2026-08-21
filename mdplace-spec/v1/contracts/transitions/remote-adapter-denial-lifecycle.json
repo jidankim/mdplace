@@ -1,0 +1,201 @@
+{
+  "$schema": "../schemas/transition-table.schema.json",
+  "schema_id": "mdplace.transition-table/v1",
+  "table_id": "TRANS-RAP-DENIAL",
+  "lifecycle": "Remote Intelligence Adapter denial",
+  "version": "1.0.0",
+  "states": [
+    "evaluating",
+    "denied"
+  ],
+  "commands": [
+    "authorize_remote_egress",
+    "deny_remote_egress"
+  ],
+  "transitions": [
+    {
+      "transition_id": "TR-RAPDEN-001",
+      "command_or_event": "authorize_remote_egress",
+      "from_state": "evaluating",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterTransitionObserved"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "evaluating",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPDEN-002",
+      "command_or_event": "deny_remote_egress",
+      "from_state": "evaluating",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterTransitionObserved"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "denied",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPDEN-003",
+      "command_or_event": "authorize_remote_egress",
+      "from_state": "denied",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "denied",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPDEN-004",
+      "command_or_event": "deny_remote_egress",
+      "from_state": "denied",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterTransitionObserved"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "denied",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    }
+  ]
+}

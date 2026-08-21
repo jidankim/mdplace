@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:remote-adapter-fixture-manifest:v1",
+  "title": "mdplace Remote Intelligence Adapter fixture manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "manifest_id", "profile_id", "requirements", "fixtures"],
+  "properties": {
+    "$schema": {"const": "../schemas/remote-adapter-fixture-manifest.schema.json"},
+    "schema_id": {"const": "mdplace.remote-adapter-fixture-manifest/v1"},
+    "manifest_id": {"const": "remote-adapter-fixtures:v1"},
+    "profile_id": {"const": "remote-adapter"},
+    "requirements": {"type": "array", "minItems": 10, "maxItems": 10, "uniqueItems": true, "items": {"type": "string", "pattern": "^REQ-RAP-[0-9]{3}$"}},
+    "fixtures": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/fixture"}}
+  },
+  "$defs": {
+    "fixture": {"type": "object", "additionalProperties": false, "required": ["fixture_id", "path", "category", "requirement_ids"], "properties": {"fixture_id": {"type": "string", "pattern": "^FIX-RAP-PROFILE-[0-9]{3}$"}, "path": {"type": "string", "pattern": "^scenarios/remote-intelligence-adapter/[a-z0-9][a-z0-9-]*\\.json$"}, "category": {"enum": ["positive", "negative", "exact_boundary", "over_boundary", "stale_state", "authority_denial", "illegal_transition", "crash_recovery"]}, "requirement_ids": {"type": "array", "minItems": 10, "maxItems": 10, "uniqueItems": true, "items": {"type": "string", "pattern": "^REQ-RAP-[0-9]{3}$"}}}}
+  }
+}

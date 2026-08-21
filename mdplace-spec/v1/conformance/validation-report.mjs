@@ -17,6 +17,7 @@ import {checkVaultMutationGateContract} from './vault-mutation-gate-checks.mjs';
 import {checkReferenceVaultContract} from './reference-vault-checks.mjs';
 import {checkIntelligenceAdapterProtocol} from './intelligence-adapter-checks.mjs';
 import {checkLocalAdapterProfile} from './local-adapter-checks.mjs';
+import {checkRemoteAdapterProfile} from './remote-adapter-checks.mjs';
 
 function check(id, codes) {
   const uniqueCodes = [...new Set(codes)];
@@ -57,6 +58,9 @@ export async function buildValidationReport(packageRoot, options = {}) {
   const localAdapterTables = await Promise.all([
     'capability', 'isolation', 'verdict', 'failure', 'recovery',
   ].map((name) => readJson(`contracts/transitions/local-adapter-${name}-lifecycle.json`, true)));
+  const remoteAdapterTables = await Promise.all([
+    'permitted-egress', 'denial', 'failure', 'retry', 'fallback', 'recovery', 'verdict',
+  ].map((name) => readJson(`contracts/transitions/remote-adapter-${name}-lifecycle.json`, true)));
   const conformance = await readJson('conformance/manifest.yaml', true);
   const traceability = await readJson('traceability.yaml', true);
   const checks = [];
@@ -76,6 +80,9 @@ export async function buildValidationReport(packageRoot, options = {}) {
   localAdapterTables.forEach((adapterTable, index) => {
     if (adapterTable !== null) checks.push(checkTransitionTable(adapterTable, `local-adapter-lifecycle-${index + 1}`));
   });
+  remoteAdapterTables.forEach((adapterTable, index) => {
+    if (adapterTable !== null) checks.push(checkTransitionTable(adapterTable, `remote-adapter-lifecycle-${index + 1}`));
+  });
   checks.push(await checkSchemas(packageRoot));
   checks.push(await checkSchemaInstances(packageRoot, conformance ?? {fixtures: []}));
   checks.push(await checkValidatorEvidence(packageRoot));
@@ -87,6 +94,7 @@ export async function buildValidationReport(packageRoot, options = {}) {
   checks.push(await checkReferenceVaultContract(packageRoot));
   checks.push(await checkIntelligenceAdapterProtocol(packageRoot, manifest, conformance, traceability));
   checks.push(await checkLocalAdapterProfile(packageRoot, conformance, traceability));
+  checks.push(await checkRemoteAdapterProfile(packageRoot, conformance, traceability));
   if (traceability !== null) {
     checks.push(await checkTraceability(
       packageRoot,

@@ -8,10 +8,29 @@
   "release_version": "1.0.0",
   "validator_id": "mdplace.package-validator",
   "validator_version": "1.2.0",
-  "subject": {"kind": "conformance_fixture", "subject_id": "fixture:claim-profile-remote-adapter", "sha256": "7e4ae31dadea100c88591afd63ac9473cbecec0a178d57afc7da4b0427292397"},
-  "requirement_id": "REQ-VAL-004",
-  "evidence_requirements": [{"evidence_kind": "remote_adapter_conformance", "mandatory": true}],
-  "evidence_bindings": [{"evidence_kind": "remote_adapter_conformance", "mandatory": true, "availability": "unsupported", "applicability": "applicable", "evidence_ref": null, "evidence_digest": null, "verdict": "unsupported"}],
+  "subject": {
+    "kind": "remote_adapter_claim",
+    "subject_id": "remote-adapter:claim-v1",
+    "sha256": "606c4f932c925f34b278147b37c0c7b61ab9b83fc1a100b722ec98f4b90c06e0"
+  },
+  "requirement_id": "REQ-RAP-007",
+  "evidence_requirements": [
+    {
+      "evidence_kind": "remote_adapter_conformance",
+      "mandatory": true
+    }
+  ],
+  "evidence_bindings": [
+    {
+      "evidence_kind": "remote_adapter_conformance",
+      "mandatory": true,
+      "availability": "present",
+      "applicability": "applicable",
+      "evidence_ref": "conformance/evidence/envelopes/remote-adapter-profile.json",
+      "evidence_digest": "81d7db64f9e5d5f20e3190b06335c9664fa0a03047087fc6cd751a523e2c1953",
+      "verdict": "pass"
+    }
+  ],
   "applicability": "applicable",
-  "verdict": "unsupported"
+  "verdict": "pass"
 }

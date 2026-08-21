@@ -1,0 +1,38 @@
+{
+  "$schema": "../schemas/remote-adapter-verdict-table.schema.json",
+  "schema_id": "mdplace.remote-adapter-verdict-table/v1",
+  "table_id": "VERDICT-REMOTE-ADAPTER-V1",
+  "profile_id": "remote-adapter",
+  "precedence": [
+    "fail",
+    "unsupported",
+    "inconclusive",
+    "pass"
+  ],
+  "rows": [
+    {
+      "verdict": "pass",
+      "meaning": "Every mandatory Remote Intelligence Adapter boundary and digest is current and passing.",
+      "required_fact_effect": "satisfied",
+      "claim_effect": "eligible_pass"
+    },
+    {
+      "verdict": "fail",
+      "meaning": "Observed behavior contradicts the closed remote profile or a bound artifact is invalid.",
+      "required_fact_effect": "non_pass",
+      "claim_effect": "deny_pass"
+    },
+    {
+      "verdict": "unsupported",
+      "meaning": "A mandatory Remote Intelligence Adapter capability or provider fact cannot be evaluated.",
+      "required_fact_effect": "non_pass",
+      "claim_effect": "deny_pass"
+    },
+    {
+      "verdict": "inconclusive",
+      "meaning": "Available Remote Intelligence Adapter evidence cannot determine a mandatory fact.",
+      "required_fact_effect": "non_pass",
+      "claim_effect": "deny_pass"
+    }
+  ]
+}

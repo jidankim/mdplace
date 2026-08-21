@@ -1,0 +1,49 @@
+{
+  "$schema": "../../contracts/schemas/remote-adapter-recovery-report.schema.json",
+  "schema_id": "mdplace.remote-adapter-recovery-report/v1",
+  "report_id": "remote-adapter-recovery:v1",
+  "profile_id": "remote-adapter",
+  "claim_manifest_sha256": "606c4f932c925f34b278147b37c0c7b61ab9b83fc1a100b722ec98f4b90c06e0",
+  "evidence_digest": "3210c192eb65e891532cde2adabab102a9df109d2a779efe53fb7f6d0eb4bc38",
+  "parsed_artifacts_revalidated": true,
+  "cases": [
+    {
+      "fixture_id": "FIX-RAP-PROFILE-048",
+      "scenario_id": "RAP-048",
+      "crash_boundary": "after_egress",
+      "claim_manifest_sha256": "606c4f932c925f34b278147b37c0c7b61ab9b83fc1a100b722ec98f4b90c06e0",
+      "evidence_digest": "3210c192eb65e891532cde2adabab102a9df109d2a779efe53fb7f6d0eb4bc38",
+      "attempts_revalidated": true,
+      "claim_digest_revalidated": true,
+      "parsed_evidence_revalidated": true,
+      "terminal_state": "recovered",
+      "receipt_sha256": "da40f5eb4faf8fd7e35ea4152dc5a92f833f4f7aca023b286178586c0e49c47e"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-049",
+      "scenario_id": "RAP-049",
+      "crash_boundary": "after_egress",
+      "claim_manifest_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "evidence_digest": "3210c192eb65e891532cde2adabab102a9df109d2a779efe53fb7f6d0eb4bc38",
+      "attempts_revalidated": true,
+      "claim_digest_revalidated": false,
+      "parsed_evidence_revalidated": true,
+      "terminal_state": "recovery_required",
+      "receipt_sha256": "f4a65da1eb4eb75b80069be4a38081cac6a8ac83421867392e7b2b7c110edcac"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-050",
+      "scenario_id": "RAP-050",
+      "crash_boundary": "after_egress",
+      "claim_manifest_sha256": "606c4f932c925f34b278147b37c0c7b61ab9b83fc1a100b722ec98f4b90c06e0",
+      "evidence_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+      "attempts_revalidated": true,
+      "claim_digest_revalidated": false,
+      "parsed_evidence_revalidated": true,
+      "terminal_state": "recovery_required",
+      "receipt_sha256": "b8f18202e8e717c112401ae63353387924234a0fbe3cad3304bcce31d7a97425"
+    }
+  ],
+  "network_operations": 0,
+  "verdict": "pass"
+}

@@ -13,6 +13,8 @@ import {observeReferenceVaultScenario} from './reference-vault-observer.mjs';
 import {observeIntelligenceAdapterScenario} from './intelligence-adapter-observer.mjs';
 import {localAdapterRecoveryRecord} from './local-adapter-evidence-validation.mjs';
 import {observeLocalAdapterScenario} from './local-adapter-observer.mjs';
+import {observeRemoteAdapterScenario} from './remote-adapter-observer.mjs';
+import {remoteAdapterRecoveryRecord} from './remote-adapter-recovery-authoring.mjs';
 import {authorityMatches, manifestFields, packageArtifactPathAllowed, transitionFields} from './validator-rules.mjs';
 
 const operationBySchema = new Map([
@@ -193,6 +195,12 @@ export async function observeFixture(fixture, packageRoot, options = {}) {
         ? await localAdapterRecoveryRecord(fixture.fixture_id, packageRoot)
         : null;
       return observeLocalAdapterScenario(fixture.subject, packageRoot, recoveryRecord);
+    }
+    case 'remote_intelligence_adapter': {
+      const recoveryRecord = fixture.subject.document.operation === 'recover'
+        ? await remoteAdapterRecoveryRecord(fixture.fixture_id, packageRoot)
+        : null;
+      return observeRemoteAdapterScenario(fixture.subject, packageRoot, recoveryRecord);
     }
     default:
       return {

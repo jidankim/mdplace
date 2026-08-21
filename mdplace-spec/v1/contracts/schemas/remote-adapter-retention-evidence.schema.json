@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:remote-adapter-retention-evidence:v1",
+  "title": "mdplace Remote Intelligence Adapter provider-fact evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "profile_id", "evidence_id", "status", "profile_sha256", "provider_id", "destination", "facts", "observed_at", "expires_at"],
+  "properties": {
+    "$schema": {"const": "../schemas/remote-adapter-retention-evidence.schema.json"},
+    "schema_id": {"const": "mdplace.remote-adapter-retention-evidence/v1"},
+    "profile_id": {"const": "remote-adapter"},
+    "evidence_id": {"const": "remote-retention-evidence:v1"},
+    "status": {"enum": ["current", "stale", "unsupported", "inconclusive"]},
+    "profile_sha256": {"$ref": "#/$defs/digest"},
+    "provider_id": {"const": "provider:remote-alpha"},
+    "destination": {"const": "https://api.remote-alpha.test/v1/process"},
+    "facts": {"type": "array", "minItems": 6, "maxItems": 6, "items": {"$ref": "#/$defs/fact"}},
+    "observed_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "fact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dimension", "status", "value", "evidence_ref", "evidence_sha256"],
+      "properties": {
+        "dimension": {"enum": ["residency", "retention", "training", "deletion", "entitlement", "privacy_behavior"]},
+        "status": {"enum": ["disclosed", "unsupported", "inconclusive"]},
+        "value": {"type": ["string", "null"]},
+        "evidence_ref": {"type": ["string", "null"]},
+        "evidence_sha256": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"}
+      },
+      "allOf": [
+        {"if": {"properties": {"status": {"const": "disclosed"}}, "required": ["status"]}, "then": {"properties": {"value": {"type": "string", "minLength": 1}, "evidence_ref": {"type": "string", "minLength": 1}, "evidence_sha256": {"$ref": "#/$defs/digest"}}}},
+        {"if": {"properties": {"status": {"enum": ["unsupported", "inconclusive"]}}, "required": ["status"]}, "then": {"properties": {"value": {"const": null}, "evidence_ref": {"const": null}, "evidence_sha256": {"const": null}}}}
+      ]
+    }
+  }
+}

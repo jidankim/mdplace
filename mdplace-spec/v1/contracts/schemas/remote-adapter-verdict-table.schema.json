@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:remote-adapter-verdict-table:v1",
+  "title": "mdplace Remote Intelligence Adapter verdict table",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "table_id", "profile_id", "precedence", "rows"],
+  "properties": {
+    "$schema": {"const": "../schemas/remote-adapter-verdict-table.schema.json"},
+    "schema_id": {"const": "mdplace.remote-adapter-verdict-table/v1"},
+    "table_id": {"const": "VERDICT-REMOTE-ADAPTER-V1"},
+    "profile_id": {"const": "remote-adapter"},
+    "precedence": {"type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "prefixItems": [{"const": "fail"}, {"const": "unsupported"}, {"const": "inconclusive"}, {"const": "pass"}], "items": false},
+    "rows": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"$ref": "#/$defs/row"}}
+  },
+  "$defs": {
+    "row": {"type": "object", "additionalProperties": false, "required": ["verdict", "meaning", "required_fact_effect", "claim_effect"], "properties": {"verdict": {"enum": ["pass", "fail", "unsupported", "inconclusive"]}, "meaning": {"type": "string", "minLength": 1}, "required_fact_effect": {"enum": ["satisfied", "non_pass"]}, "claim_effect": {"enum": ["eligible_pass", "deny_pass"]}}}
+  }
+}

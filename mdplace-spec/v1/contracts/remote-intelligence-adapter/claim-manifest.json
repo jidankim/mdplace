@@ -1,0 +1,399 @@
+{
+  "$schema": "../schemas/remote-adapter-claim-manifest.schema.json",
+  "schema_id": "mdplace.remote-adapter-claim-manifest/v1",
+  "manifest_id": "remote-adapter-claim:v1",
+  "package_series": "mdplace-spec/v1",
+  "release_version": "1.0.0",
+  "validator_id": "mdplace.package-validator",
+  "validator_version": "1.2.0",
+  "rows": [
+    {
+      "id": "remote-adapter",
+      "owner": "remote-adapter",
+      "verdict": "pass",
+      "evidence_digest": "3210c192eb65e891532cde2adabab102a9df109d2a779efe53fb7f6d0eb4bc38",
+      "evidence_material": [
+        {
+          "ordinal": 0,
+          "label": "remote_material_001",
+          "path": "contracts/remote-intelligence-adapter/profile.json",
+          "sha256": "7f73de38e8ae88a14cd20d3ad992ac1ea47fa65397051739e17d53e10efc7fd1"
+        },
+        {
+          "ordinal": 1,
+          "label": "remote_material_002",
+          "path": "contracts/remote-intelligence-adapter/credential-boundary-evidence.json",
+          "sha256": "bd45d892a7b68d4bf47017a520b3d40b6b7c032eb200f892e3f5831124508103"
+        },
+        {
+          "ordinal": 2,
+          "label": "remote_material_003",
+          "path": "contracts/remote-intelligence-adapter/retention-evidence.json",
+          "sha256": "be5ad9fd042b87583d83bd682a19efedcdcb5d8b4e8c99ef97e1bad13cf9d063"
+        },
+        {
+          "ordinal": 3,
+          "label": "remote_material_004",
+          "path": "contracts/remote-intelligence-adapter/fixture-manifest.json",
+          "sha256": "6c25b07752f8aa8559fbda02c33fe93b1dcf5bea1c96498c86fdd595455f279a"
+        },
+        {
+          "ordinal": 4,
+          "label": "remote_material_005",
+          "path": "conformance/evidence/remote-adapter-evidence.json",
+          "sha256": "02b81182f76a3eab8f36dba966ef16abd275149b6e9e421f8efffab8835f48e8"
+        },
+        {
+          "ordinal": 5,
+          "label": "remote_material_006",
+          "path": "conformance/scenarios/remote-intelligence-adapter/permitted-primary-exact-bytes.json",
+          "sha256": "12981541b97a224ac4a6198e243cb5356d91b994b6752dcec22eefd0fbd6f1a1"
+        },
+        {
+          "ordinal": 6,
+          "label": "remote_material_007",
+          "path": "conformance/scenarios/remote-intelligence-adapter/permitted-retry-exact-bytes.json",
+          "sha256": "9b721df53a4d3421a571a2df97ead7b386bd1a55dc77a1b80e1983911a7fef62"
+        },
+        {
+          "ordinal": 7,
+          "label": "remote_material_008",
+          "path": "conformance/scenarios/remote-intelligence-adapter/permitted-fallback-exact-bytes.json",
+          "sha256": "7f5bfae71e5113a00f7199a4dc88115efc2dbb59becbe410551941ac376d3786"
+        },
+        {
+          "ordinal": 8,
+          "label": "remote_material_009",
+          "path": "conformance/scenarios/remote-intelligence-adapter/exact-input-ceiling.json",
+          "sha256": "83c936e97428fa040effbe374e9aa295eaf7c1b3308d7b31f0eb5199b9af6282"
+        },
+        {
+          "ordinal": 9,
+          "label": "remote_material_010",
+          "path": "conformance/scenarios/remote-intelligence-adapter/exact-output-ceiling.json",
+          "sha256": "b29a127c8d2486ea1e3135421ab7d85478448af4375e6219eee920c08dd2b3fd"
+        },
+        {
+          "ordinal": 10,
+          "label": "remote_material_011",
+          "path": "conformance/scenarios/remote-intelligence-adapter/exact-runtime-ceiling.json",
+          "sha256": "369437ec511228190c98bc9d77bf05aa90dacb322c862555d4d52d3080d8441d"
+        },
+        {
+          "ordinal": 11,
+          "label": "remote_material_012",
+          "path": "conformance/scenarios/remote-intelligence-adapter/exact-cost-ceiling.json",
+          "sha256": "2cb56e46a199c6f67d77282dbeacf1e925662b31b3cc0467fbaee153904b17a5"
+        },
+        {
+          "ordinal": 12,
+          "label": "remote_material_013",
+          "path": "conformance/scenarios/remote-intelligence-adapter/exact-attempt-ceiling.json",
+          "sha256": "91c1b0c468b5434c874a1cba5f376c44bab568e82c11d3b561270ce3f6957fd4"
+        },
+        {
+          "ordinal": 13,
+          "label": "remote_material_014",
+          "path": "conformance/scenarios/remote-intelligence-adapter/exact-retry-ceiling.json",
+          "sha256": "2a8b97ebf3e8159d14a9663bb256ece38e119514ab99192674649880cc6d585b"
+        },
+        {
+          "ordinal": 14,
+          "label": "remote_material_015",
+          "path": "conformance/scenarios/remote-intelligence-adapter/exact-fallback-ceiling.json",
+          "sha256": "300c1a3f87cc6e62ecc3bdeff1d9cdbe2e3e507c8ba72f28369e6fd4ae3bce2d"
+        },
+        {
+          "ordinal": 15,
+          "label": "remote_material_016",
+          "path": "conformance/scenarios/remote-intelligence-adapter/missing-processing-envelope-denied.json",
+          "sha256": "00b3196d7519beeb6f7c43dcc5de7326df17e156f07003b272e673c7355c4407"
+        },
+        {
+          "ordinal": 16,
+          "label": "remote_material_017",
+          "path": "conformance/scenarios/remote-intelligence-adapter/stale-policy-binding-denied.json",
+          "sha256": "f8b176993aece17dab2207d1a8b2e6a65544c0d1b5de04022fd4c4230516ede1"
+        },
+        {
+          "ordinal": 17,
+          "label": "remote_material_018",
+          "path": "conformance/scenarios/remote-intelligence-adapter/malformed-processing-envelope-denied.json",
+          "sha256": "378009512b676e0da2c52f1804ff94f0b20e380657816ec96f4f90779f385f38"
+        },
+        {
+          "ordinal": 18,
+          "label": "remote_material_019",
+          "path": "conformance/scenarios/remote-intelligence-adapter/unsupported-provider-denied.json",
+          "sha256": "c0b8a324ad14ce17cfc5a8dc577ec3337f95cb291b1bcd266d65a10c96503f5f"
+        },
+        {
+          "ordinal": 19,
+          "label": "remote_material_020",
+          "path": "conformance/scenarios/remote-intelligence-adapter/unauthorized-provider-denied.json",
+          "sha256": "40ecc6053862df27bd70050549337cddf21d1933e73a592f71c09b4f82d63e9f"
+        },
+        {
+          "ordinal": 20,
+          "label": "remote_material_021",
+          "path": "conformance/scenarios/remote-intelligence-adapter/input-budget-exhausted.json",
+          "sha256": "04d1b23d697505bfb65079b28c31d3a3e1998be9860f8eb174d39d1411deb14a"
+        },
+        {
+          "ordinal": 21,
+          "label": "remote_material_022",
+          "path": "conformance/scenarios/remote-intelligence-adapter/output-budget-exhausted.json",
+          "sha256": "219a3d4100bbcf515baa7c7555802a2aafc8c379c5b37ab992b52848298494b2"
+        },
+        {
+          "ordinal": 22,
+          "label": "remote_material_023",
+          "path": "conformance/scenarios/remote-intelligence-adapter/runtime-budget-exhausted.json",
+          "sha256": "5a4da5586fc25dc3ce4e6bfc1aeee2fb4c88b85402aa8c5c705079a2deb334e9"
+        },
+        {
+          "ordinal": 23,
+          "label": "remote_material_024",
+          "path": "conformance/scenarios/remote-intelligence-adapter/cost-budget-exhausted.json",
+          "sha256": "4b40181518c786254dcb4bf0b9f086fbfddfb287d01bc56d6a841fb72f0da3ae"
+        },
+        {
+          "ordinal": 24,
+          "label": "remote_material_025",
+          "path": "conformance/scenarios/remote-intelligence-adapter/unapproved-destination-denied.json",
+          "sha256": "bee90368f55130d058da5d398f1f83eca0193c766b8d118bc663a526a50d2290"
+        },
+        {
+          "ordinal": 25,
+          "label": "remote_material_026",
+          "path": "conformance/scenarios/remote-intelligence-adapter/forbidden-retry-denied.json",
+          "sha256": "f38dcad28d647c473581ecb91a9866dfa5ba5ff16cd305cfe8ada1fe8278f289"
+        },
+        {
+          "ordinal": 26,
+          "label": "remote_material_027",
+          "path": "conformance/scenarios/remote-intelligence-adapter/forbidden-fallback-denied.json",
+          "sha256": "85fa4640eb6b3e4842d1fc816116a8cac91bdce8fe794948cbcc48595989c5c5"
+        },
+        {
+          "ordinal": 27,
+          "label": "remote_material_028",
+          "path": "conformance/scenarios/remote-intelligence-adapter/failed-credential-boundary-denied.json",
+          "sha256": "13934040f5af0ab5241785cf7504d6ff91e18f08204e4b6fb19b53a972b4a240"
+        },
+        {
+          "ordinal": 28,
+          "label": "remote_material_029",
+          "path": "conformance/scenarios/remote-intelligence-adapter/missing-credential-boundary-denied.json",
+          "sha256": "154d006d2290117b991ee7094a882d6be2e1923d7838c0beca6c60633ed41be2"
+        },
+        {
+          "ordinal": 29,
+          "label": "remote_material_030",
+          "path": "conformance/scenarios/remote-intelligence-adapter/stale-credential-boundary-denied.json",
+          "sha256": "2639efd1585d33c887420df48d6956e70ccccdee9f6fe0fa51639b4f25a52fe1"
+        },
+        {
+          "ordinal": 30,
+          "label": "remote_material_031",
+          "path": "conformance/scenarios/remote-intelligence-adapter/malformed-credential-boundary-denied.json",
+          "sha256": "f3e44aa745c384eda6c4c479ba7b02302ceafd62cbd6a5966684aaee6b0610f2"
+        },
+        {
+          "ordinal": 31,
+          "label": "remote_material_032",
+          "path": "conformance/scenarios/remote-intelligence-adapter/unsupported-credential-boundary-denied.json",
+          "sha256": "927f3787e44d58af4d74a04902cf0ab0d09ceb7e69681260ddca4d228c9763f2"
+        },
+        {
+          "ordinal": 32,
+          "label": "remote_material_033",
+          "path": "conformance/scenarios/remote-intelligence-adapter/missing-retention-evidence-denied.json",
+          "sha256": "2367e30d404ffbe8386f3de27e8b6f9977bc0c3948dbe1b7de74dc7ae8a77a2d"
+        },
+        {
+          "ordinal": 33,
+          "label": "remote_material_034",
+          "path": "conformance/scenarios/remote-intelligence-adapter/stale-retention-evidence-denied.json",
+          "sha256": "e7c5b1342fe4331aa9a25ff089d61802429e8962844fc8c466ea256abbf30ebb"
+        },
+        {
+          "ordinal": 34,
+          "label": "remote_material_035",
+          "path": "conformance/scenarios/remote-intelligence-adapter/malformed-retention-evidence-denied.json",
+          "sha256": "59adc2505ae9e6bce2c0b7c334e0bfa840bdeb5118734436b7222988b959a7cc"
+        },
+        {
+          "ordinal": 35,
+          "label": "remote_material_036",
+          "path": "conformance/scenarios/remote-intelligence-adapter/unsupported-retention-evidence-denied.json",
+          "sha256": "b96df485fb1c4d91e64909db0df4bccf137fb9e072a26e9c10d3e615f38e8ba3"
+        },
+        {
+          "ordinal": 36,
+          "label": "remote_material_037",
+          "path": "conformance/scenarios/remote-intelligence-adapter/inconclusive-retention-evidence-denied.json",
+          "sha256": "364f4244a23eace519036ebe720edebe702bcb128daccdbccaa52732b512273d"
+        },
+        {
+          "ordinal": 37,
+          "label": "remote_material_038",
+          "path": "conformance/scenarios/remote-intelligence-adapter/authentication-does-not-establish-residency.json",
+          "sha256": "42e901c5d4c9362eaf1ea145931900b2ed6cc0be0059a5133c11b4e0148ac585"
+        },
+        {
+          "ordinal": 38,
+          "label": "remote_material_039",
+          "path": "conformance/scenarios/remote-intelligence-adapter/transport-does-not-establish-training.json",
+          "sha256": "91de4f7515c8f9d14bf60d4e44340d94b7f3284077da2e6e2e3424ac2dec4629"
+        },
+        {
+          "ordinal": 39,
+          "label": "remote_material_040",
+          "path": "conformance/scenarios/remote-intelligence-adapter/provider-output-does-not-establish-deletion.json",
+          "sha256": "cbf80111299341aefebe332a733d482c589eb631278619dcdf12245406c41860"
+        },
+        {
+          "ordinal": 40,
+          "label": "remote_material_041",
+          "path": "conformance/scenarios/remote-intelligence-adapter/retry-does-not-establish-entitlement.json",
+          "sha256": "7877d8ae9539408c75f423df22ed911655f0ada87faa7181f86de94d72f05989"
+        },
+        {
+          "ordinal": 41,
+          "label": "remote_material_042",
+          "path": "conformance/scenarios/remote-intelligence-adapter/fallback-does-not-establish-privacy-behavior.json",
+          "sha256": "49ffe1b7d67e9e59ae01a28e4242cddd5d15d0e038d6dfc1148490cfdc76f3c8"
+        },
+        {
+          "ordinal": 42,
+          "label": "remote_material_043",
+          "path": "conformance/scenarios/remote-intelligence-adapter/absence-of-contrary-evidence-does-not-establish-training.json",
+          "sha256": "cbe5fc12a90803f4bb131250acac0591d1372db65be5fa142c69bbe973574f79"
+        },
+        {
+          "ordinal": 43,
+          "label": "remote_material_044",
+          "path": "conformance/scenarios/remote-intelligence-adapter/semantic-authority-denied.json",
+          "sha256": "c95510065da8ddc7f2a6ac242e4351015fc5aaeb27182414161e1db627c29ac6"
+        },
+        {
+          "ordinal": 44,
+          "label": "remote_material_045",
+          "path": "conformance/scenarios/remote-intelligence-adapter/note-placement-authority-denied.json",
+          "sha256": "7b823ef6b032dfa440d74750b3ef98701c99488cd7856c50893db15b0d685641"
+        },
+        {
+          "ordinal": 45,
+          "label": "remote_material_046",
+          "path": "conformance/scenarios/remote-intelligence-adapter/taxonomy-authority-denied.json",
+          "sha256": "0ff6ec8d650d2edcfa8ed42221d33099b370a3d2053288e4d8ce6540088c67d7"
+        },
+        {
+          "ordinal": 46,
+          "label": "remote_material_047",
+          "path": "conformance/scenarios/remote-intelligence-adapter/projection-authority-denied.json",
+          "sha256": "c225d4ef227f0081dd173083bf6719eed000970fd89105435a9b6cace3547eaa"
+        },
+        {
+          "ordinal": 47,
+          "label": "remote_material_048",
+          "path": "conformance/scenarios/remote-intelligence-adapter/filesystem-authority-denied.json",
+          "sha256": "55499277fcd9efcf9b8d4bd95c95be31ccef2ea694505ec36882b6b809b577a1"
+        },
+        {
+          "ordinal": 48,
+          "label": "remote_material_049",
+          "path": "conformance/scenarios/remote-intelligence-adapter/tool-authority-denied.json",
+          "sha256": "821f1ba44b228042f6550f18a7dee89d8949fe92caa485be480cb436335b72b8"
+        },
+        {
+          "ordinal": 49,
+          "label": "remote_material_050",
+          "path": "conformance/scenarios/remote-intelligence-adapter/automation-authority-denied.json",
+          "sha256": "d40ef8e21050d30c571ce4116ff6ab4ec35620a95c6e3c7368431dd1013f5146"
+        },
+        {
+          "ordinal": 50,
+          "label": "remote_material_051",
+          "path": "conformance/scenarios/remote-intelligence-adapter/crash-before-egress-zero-byte-recovery.json",
+          "sha256": "ed5747677a098d7d712709da69e88ae2437c0f059c7c2f1dc16ac842ba971db1"
+        },
+        {
+          "ordinal": 51,
+          "label": "remote_material_052",
+          "path": "conformance/scenarios/remote-intelligence-adapter/crash-after-egress-preserves-attempt.json",
+          "sha256": "18c7a7b465a37947c0e23486130de13edbec3b78c88c0c10535cfb2b9132b8da"
+        },
+        {
+          "ordinal": 52,
+          "label": "remote_material_053",
+          "path": "conformance/scenarios/remote-intelligence-adapter/recovery-revalidates-current-digests.json",
+          "sha256": "d7b8feab72f2ec577a53dd31bc82c4432f8794b944ab47db4177197d0c7eee52"
+        },
+        {
+          "ordinal": 53,
+          "label": "remote_material_054",
+          "path": "conformance/scenarios/remote-intelligence-adapter/recovery-rejects-stale-claim-digest.json",
+          "sha256": "cdfaf8ff092c79e749d67178b16cb45c65be5facfa85b4d5cb49c5bf5c10cf8c"
+        },
+        {
+          "ordinal": 54,
+          "label": "remote_material_055",
+          "path": "conformance/scenarios/remote-intelligence-adapter/recovery-rejects-stale-evidence-digest.json",
+          "sha256": "44c99ba24481485239a7834135958102149c132ece12058d238a7fa1ebc7d42e"
+        },
+        {
+          "ordinal": 55,
+          "label": "remote_material_056",
+          "path": "conformance/scenarios/remote-intelligence-adapter/illegal-permitted-egress-transition-denied.json",
+          "sha256": "636dbfd8c5b725659988547a5746b65df3968074e66fe81cac948a9afbb806eb"
+        },
+        {
+          "ordinal": 56,
+          "label": "remote_material_057",
+          "path": "conformance/scenarios/remote-intelligence-adapter/illegal-denial-transition-denied.json",
+          "sha256": "37cd66d26e652c0bd7dca1bf32e344d1e6318c2e1aec45de9fe1aab266709753"
+        },
+        {
+          "ordinal": 57,
+          "label": "remote_material_058",
+          "path": "conformance/scenarios/remote-intelligence-adapter/illegal-failure-transition-denied.json",
+          "sha256": "eed27d21b7edfb2e8a37a3c30caefc3722f53a838783d91e76bb21afc84b4abf"
+        },
+        {
+          "ordinal": 58,
+          "label": "remote_material_059",
+          "path": "conformance/scenarios/remote-intelligence-adapter/illegal-retry-transition-denied.json",
+          "sha256": "98827b05e053e01ca418253409e034b6f3e789789832553487e2c7ffdba0b808"
+        },
+        {
+          "ordinal": 59,
+          "label": "remote_material_060",
+          "path": "conformance/scenarios/remote-intelligence-adapter/illegal-fallback-transition-denied.json",
+          "sha256": "ade2c4bd31f25b5ee6c6e519ccc455c3c7065fe6e325d45d7b6ae67a6ce0efec"
+        },
+        {
+          "ordinal": 60,
+          "label": "remote_material_061",
+          "path": "conformance/scenarios/remote-intelligence-adapter/illegal-recovery-transition-denied.json",
+          "sha256": "52a60a261ce5816fd85ac17f691d3fac58d749b18b5ff0bea7632563b2e5c31b"
+        },
+        {
+          "ordinal": 61,
+          "label": "remote_material_062",
+          "path": "conformance/scenarios/remote-intelligence-adapter/illegal-verdict-transition-denied.json",
+          "sha256": "a7dba6a4d4b57e535e29baf0589abee663f8f2ab7f91aadcd4021330fc2bb8bf"
+        }
+      ],
+      "dependencies_elevated": {
+        "core": false,
+        "product_readiness": false,
+        "local_adapter": false,
+        "codex_adapter": false,
+        "placement_automation": false,
+        "other_profiles": false
+      }
+    }
+  ]
+}

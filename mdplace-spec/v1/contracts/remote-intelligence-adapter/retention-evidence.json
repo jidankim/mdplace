@@ -1,0 +1,56 @@
+{
+  "$schema": "../schemas/remote-adapter-retention-evidence.schema.json",
+  "schema_id": "mdplace.remote-adapter-retention-evidence/v1",
+  "profile_id": "remote-adapter",
+  "evidence_id": "remote-retention-evidence:v1",
+  "status": "current",
+  "profile_sha256": "7f73de38e8ae88a14cd20d3ad992ac1ea47fa65397051739e17d53e10efc7fd1",
+  "provider_id": "provider:remote-alpha",
+  "destination": "https://api.remote-alpha.test/v1/process",
+  "facts": [
+    {
+      "dimension": "residency",
+      "status": "unsupported",
+      "value": null,
+      "evidence_ref": null,
+      "evidence_sha256": null
+    },
+    {
+      "dimension": "retention",
+      "status": "disclosed",
+      "value": "maximum 30 days",
+      "evidence_ref": "artifact:provider-disclosure-remote-alpha-v1",
+      "evidence_sha256": "a36aefd65157e6eb33c36824c4ec6fe343270a8fda2df3ed7a5ed722e774b322"
+    },
+    {
+      "dimension": "training",
+      "status": "inconclusive",
+      "value": null,
+      "evidence_ref": null,
+      "evidence_sha256": null
+    },
+    {
+      "dimension": "deletion",
+      "status": "unsupported",
+      "value": null,
+      "evidence_ref": null,
+      "evidence_sha256": null
+    },
+    {
+      "dimension": "entitlement",
+      "status": "unsupported",
+      "value": null,
+      "evidence_ref": null,
+      "evidence_sha256": null
+    },
+    {
+      "dimension": "privacy_behavior",
+      "status": "inconclusive",
+      "value": null,
+      "evidence_ref": null,
+      "evidence_sha256": null
+    }
+  ],
+  "observed_at": "2026-08-22T00:00:00.000Z",
+  "expires_at": "2026-09-21T00:00:00.000Z"
+}

@@ -1,0 +1,472 @@
+{
+  "$schema": "../../contracts/schemas/remote-adapter-evidence.schema.json",
+  "schema_id": "mdplace.remote-adapter-evidence/v1",
+  "evidence_id": "remote-adapter-evidence:v1",
+  "profile_id": "remote-adapter",
+  "validator_version": "1.2.0",
+  "fixture_bindings": [
+    {
+      "fixture_id": "FIX-RAP-PROFILE-001",
+      "path": "conformance/scenarios/remote-intelligence-adapter/permitted-primary-exact-bytes.json",
+      "fixture_sha256": "12981541b97a224ac4a6198e243cb5356d91b994b6752dcec22eefd0fbd6f1a1",
+      "receipt_sha256": "4f544ed762bcbcc77f084b0451a743dc90c91487326ef622c87d35fcb438bdcc",
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-002",
+      "path": "conformance/scenarios/remote-intelligence-adapter/permitted-retry-exact-bytes.json",
+      "fixture_sha256": "9b721df53a4d3421a571a2df97ead7b386bd1a55dc77a1b80e1983911a7fef62",
+      "receipt_sha256": "13313ba422671bc478f6f50355f5b245eebed1c7fb8b23fb60ff68c833109dc2",
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-003",
+      "path": "conformance/scenarios/remote-intelligence-adapter/permitted-fallback-exact-bytes.json",
+      "fixture_sha256": "7f5bfae71e5113a00f7199a4dc88115efc2dbb59becbe410551941ac376d3786",
+      "receipt_sha256": "7fcf2712025e2cfd819276f8c75f68a283bbfdf093b2324ab809f9fc3f827165",
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-004",
+      "path": "conformance/scenarios/remote-intelligence-adapter/exact-input-ceiling.json",
+      "fixture_sha256": "83c936e97428fa040effbe374e9aa295eaf7c1b3308d7b31f0eb5199b9af6282",
+      "receipt_sha256": "d36519b9687157970c68add39fc536003273c77284a525461fb03cc1218d0363",
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-005",
+      "path": "conformance/scenarios/remote-intelligence-adapter/exact-output-ceiling.json",
+      "fixture_sha256": "b29a127c8d2486ea1e3135421ab7d85478448af4375e6219eee920c08dd2b3fd",
+      "receipt_sha256": "501418b2241553c37c10db10858ae93748ecfb2df5c031799c6896e8903bc758",
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-006",
+      "path": "conformance/scenarios/remote-intelligence-adapter/exact-runtime-ceiling.json",
+      "fixture_sha256": "369437ec511228190c98bc9d77bf05aa90dacb322c862555d4d52d3080d8441d",
+      "receipt_sha256": "9d945c35c44ac9872e24d6deb77b3f306822c2c77bad84f8687d00cc75c46533",
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-007",
+      "path": "conformance/scenarios/remote-intelligence-adapter/exact-cost-ceiling.json",
+      "fixture_sha256": "2cb56e46a199c6f67d77282dbeacf1e925662b31b3cc0467fbaee153904b17a5",
+      "receipt_sha256": "c5989b83a5a0579f73b46a18b7350ba0308c0959f9f8da932a19ecff1c7c7e2a",
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-008",
+      "path": "conformance/scenarios/remote-intelligence-adapter/exact-attempt-ceiling.json",
+      "fixture_sha256": "91c1b0c468b5434c874a1cba5f376c44bab568e82c11d3b561270ce3f6957fd4",
+      "receipt_sha256": "8dcce24c042c8d14d30bfaaf35bf4d2bfb47caa613529a28863315f4bcb4c5b5",
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-009",
+      "path": "conformance/scenarios/remote-intelligence-adapter/exact-retry-ceiling.json",
+      "fixture_sha256": "2a8b97ebf3e8159d14a9663bb256ece38e119514ab99192674649880cc6d585b",
+      "receipt_sha256": "9302eaffa8aad3edd660e3eb7d354dd397c570901abb06b0a3a50215fe8e1ed0",
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-010",
+      "path": "conformance/scenarios/remote-intelligence-adapter/exact-fallback-ceiling.json",
+      "fixture_sha256": "300c1a3f87cc6e62ecc3bdeff1d9cdbe2e3e507c8ba72f28369e6fd4ae3bce2d",
+      "receipt_sha256": "17667469deb4c28458c04a16c97339b2a260e3d1ba06a93943b20744baced549",
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-011",
+      "path": "conformance/scenarios/remote-intelligence-adapter/missing-processing-envelope-denied.json",
+      "fixture_sha256": "00b3196d7519beeb6f7c43dcc5de7326df17e156f07003b272e673c7355c4407",
+      "receipt_sha256": "0462fc769f9648be8d9d6543ddbae5079714dd0fd807f32edaf9583d0049f2e3",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-012",
+      "path": "conformance/scenarios/remote-intelligence-adapter/stale-policy-binding-denied.json",
+      "fixture_sha256": "f8b176993aece17dab2207d1a8b2e6a65544c0d1b5de04022fd4c4230516ede1",
+      "receipt_sha256": "884174d23b2386e370cdd0cd990556afe4ed1ece95d98258051c692649e13cec",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-013",
+      "path": "conformance/scenarios/remote-intelligence-adapter/malformed-processing-envelope-denied.json",
+      "fixture_sha256": "378009512b676e0da2c52f1804ff94f0b20e380657816ec96f4f90779f385f38",
+      "receipt_sha256": "2e5212352819c1293ff75eb9b98cd2864d0aa4eeab16e6211eaa6eee5c9782ed",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-014",
+      "path": "conformance/scenarios/remote-intelligence-adapter/unsupported-provider-denied.json",
+      "fixture_sha256": "c0b8a324ad14ce17cfc5a8dc577ec3337f95cb291b1bcd266d65a10c96503f5f",
+      "receipt_sha256": "aff590eb9966cc318b0b270a5b5e379f9b1095db491d661c4e66cb7a6bed8d42",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-015",
+      "path": "conformance/scenarios/remote-intelligence-adapter/unauthorized-provider-denied.json",
+      "fixture_sha256": "40ecc6053862df27bd70050549337cddf21d1933e73a592f71c09b4f82d63e9f",
+      "receipt_sha256": "35f2cab3aa146f0ced82c3f0ae579b96361afe2e6b352fd32a47cf53e5a15b3f",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-016",
+      "path": "conformance/scenarios/remote-intelligence-adapter/input-budget-exhausted.json",
+      "fixture_sha256": "04d1b23d697505bfb65079b28c31d3a3e1998be9860f8eb174d39d1411deb14a",
+      "receipt_sha256": "8c55cd05b49b85d42170cb37562658fe8ca4581f4f017874922b8a742eab2fb8",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-017",
+      "path": "conformance/scenarios/remote-intelligence-adapter/output-budget-exhausted.json",
+      "fixture_sha256": "219a3d4100bbcf515baa7c7555802a2aafc8c379c5b37ab992b52848298494b2",
+      "receipt_sha256": "0253f60a2d51bb43e39e1f1538cbc9a70d127cc3023b45dd419a7ca8804aea51",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-018",
+      "path": "conformance/scenarios/remote-intelligence-adapter/runtime-budget-exhausted.json",
+      "fixture_sha256": "5a4da5586fc25dc3ce4e6bfc1aeee2fb4c88b85402aa8c5c705079a2deb334e9",
+      "receipt_sha256": "4d8f63eb93c57d2a3beb26528a1c2e78e1ec8eefd8c957d58093b07a5c7c25a8",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-019",
+      "path": "conformance/scenarios/remote-intelligence-adapter/cost-budget-exhausted.json",
+      "fixture_sha256": "4b40181518c786254dcb4bf0b9f086fbfddfb287d01bc56d6a841fb72f0da3ae",
+      "receipt_sha256": "5f8b66330509f30677b77aea5d4d587b9fadd1585b23f032e4af4d12b75e9689",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-020",
+      "path": "conformance/scenarios/remote-intelligence-adapter/unapproved-destination-denied.json",
+      "fixture_sha256": "bee90368f55130d058da5d398f1f83eca0193c766b8d118bc663a526a50d2290",
+      "receipt_sha256": "134d16b2cce7c8ad71c0174d28a1369f2fe8bd7f1ba4c2937738244c8fa9101c",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-021",
+      "path": "conformance/scenarios/remote-intelligence-adapter/forbidden-retry-denied.json",
+      "fixture_sha256": "f38dcad28d647c473581ecb91a9866dfa5ba5ff16cd305cfe8ada1fe8278f289",
+      "receipt_sha256": "620cf9fdc97ffacea2564670d54ff7b3f9f71b23682818fdaccef9d13d8490be",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-022",
+      "path": "conformance/scenarios/remote-intelligence-adapter/forbidden-fallback-denied.json",
+      "fixture_sha256": "85fa4640eb6b3e4842d1fc816116a8cac91bdce8fe794948cbcc48595989c5c5",
+      "receipt_sha256": "a92cc981c111a3a9470f701b0f7116f4a968c4076801e3f69fc2667b08261469",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-023",
+      "path": "conformance/scenarios/remote-intelligence-adapter/failed-credential-boundary-denied.json",
+      "fixture_sha256": "13934040f5af0ab5241785cf7504d6ff91e18f08204e4b6fb19b53a972b4a240",
+      "receipt_sha256": "5b8c54274dae549b3aa1f11564f323c6abbb0e902d402fe76a14dd048792d8cb",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-024",
+      "path": "conformance/scenarios/remote-intelligence-adapter/missing-credential-boundary-denied.json",
+      "fixture_sha256": "154d006d2290117b991ee7094a882d6be2e1923d7838c0beca6c60633ed41be2",
+      "receipt_sha256": "edf97f743840a014af5f067aaf392ff6e289b9f2e5250b45a299a7a1c855cce1",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-025",
+      "path": "conformance/scenarios/remote-intelligence-adapter/stale-credential-boundary-denied.json",
+      "fixture_sha256": "2639efd1585d33c887420df48d6956e70ccccdee9f6fe0fa51639b4f25a52fe1",
+      "receipt_sha256": "a84d63d90e47a3ae8c78fadf9513dabd83b6ee4f7a1f1fc3c7fd407ab7a8e6fa",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-026",
+      "path": "conformance/scenarios/remote-intelligence-adapter/malformed-credential-boundary-denied.json",
+      "fixture_sha256": "f3e44aa745c384eda6c4c479ba7b02302ceafd62cbd6a5966684aaee6b0610f2",
+      "receipt_sha256": "24e00dd287b80a22846b724cdd6a48c9f5af5c2f3562842116f76170817da414",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-027",
+      "path": "conformance/scenarios/remote-intelligence-adapter/unsupported-credential-boundary-denied.json",
+      "fixture_sha256": "927f3787e44d58af4d74a04902cf0ab0d09ceb7e69681260ddca4d228c9763f2",
+      "receipt_sha256": "8eebabcfd352ac0b7403a4ef0a560ff544e995b7d4d60620e39e2aedade80d0c",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-028",
+      "path": "conformance/scenarios/remote-intelligence-adapter/missing-retention-evidence-denied.json",
+      "fixture_sha256": "2367e30d404ffbe8386f3de27e8b6f9977bc0c3948dbe1b7de74dc7ae8a77a2d",
+      "receipt_sha256": "6464b9042c9e94bebc89fa35a1304f360c81c8866fe9ce54db6580615319276d",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-029",
+      "path": "conformance/scenarios/remote-intelligence-adapter/stale-retention-evidence-denied.json",
+      "fixture_sha256": "e7c5b1342fe4331aa9a25ff089d61802429e8962844fc8c466ea256abbf30ebb",
+      "receipt_sha256": "a21465cee1e4258598af22bc4f900c132d91769235e04218be19acca8750b531",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-030",
+      "path": "conformance/scenarios/remote-intelligence-adapter/malformed-retention-evidence-denied.json",
+      "fixture_sha256": "59adc2505ae9e6bce2c0b7c334e0bfa840bdeb5118734436b7222988b959a7cc",
+      "receipt_sha256": "21ac88ad11ce03df270837d755d097bba3d6a93c17a6ad96f7401e0581cd1d59",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-031",
+      "path": "conformance/scenarios/remote-intelligence-adapter/unsupported-retention-evidence-denied.json",
+      "fixture_sha256": "b96df485fb1c4d91e64909db0df4bccf137fb9e072a26e9c10d3e615f38e8ba3",
+      "receipt_sha256": "f99283f6a60cbb09eb0efb0264c77f1f5f5e13a81dcde7a5e224dce0262b381f",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-032",
+      "path": "conformance/scenarios/remote-intelligence-adapter/inconclusive-retention-evidence-denied.json",
+      "fixture_sha256": "364f4244a23eace519036ebe720edebe702bcb128daccdbccaa52732b512273d",
+      "receipt_sha256": "ece813812d70cd5843ba0c84cb8763546154a4431670d67a09675b54fcb5a180",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-033",
+      "path": "conformance/scenarios/remote-intelligence-adapter/authentication-does-not-establish-residency.json",
+      "fixture_sha256": "42e901c5d4c9362eaf1ea145931900b2ed6cc0be0059a5133c11b4e0148ac585",
+      "receipt_sha256": "d1feb230ec329a2d039c78d8f2692759beefd37854ed31b5b290962985c0ac66",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-034",
+      "path": "conformance/scenarios/remote-intelligence-adapter/transport-does-not-establish-training.json",
+      "fixture_sha256": "91de4f7515c8f9d14bf60d4e44340d94b7f3284077da2e6e2e3424ac2dec4629",
+      "receipt_sha256": "04e26a3f2d905e3ce8d888f35f6a42a4746981cb15da3d57820752f03f125802",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-035",
+      "path": "conformance/scenarios/remote-intelligence-adapter/provider-output-does-not-establish-deletion.json",
+      "fixture_sha256": "cbf80111299341aefebe332a733d482c589eb631278619dcdf12245406c41860",
+      "receipt_sha256": "53e6b74a9b314d6a825d82053e0dc0a65d970b27b110548874c0bac8a21c5272",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-036",
+      "path": "conformance/scenarios/remote-intelligence-adapter/retry-does-not-establish-entitlement.json",
+      "fixture_sha256": "7877d8ae9539408c75f423df22ed911655f0ada87faa7181f86de94d72f05989",
+      "receipt_sha256": "f3c4a5a1eb4f28fe6d4f34f059a64f4ee6c5a87b4cc29b360286f9c62fb21d9e",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-037",
+      "path": "conformance/scenarios/remote-intelligence-adapter/fallback-does-not-establish-privacy-behavior.json",
+      "fixture_sha256": "49ffe1b7d67e9e59ae01a28e4242cddd5d15d0e038d6dfc1148490cfdc76f3c8",
+      "receipt_sha256": "4bcc06084c224fdf01689dc63f3f549c20472d9d4e3dcfbe0b3bdeedaf403805",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-038",
+      "path": "conformance/scenarios/remote-intelligence-adapter/absence-of-contrary-evidence-does-not-establish-training.json",
+      "fixture_sha256": "cbe5fc12a90803f4bb131250acac0591d1372db65be5fa142c69bbe973574f79",
+      "receipt_sha256": "786cf0914fa1a58a4519fea7d13ade171448d13ce0ddc566a2d17915cecc0c2c",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-039",
+      "path": "conformance/scenarios/remote-intelligence-adapter/semantic-authority-denied.json",
+      "fixture_sha256": "c95510065da8ddc7f2a6ac242e4351015fc5aaeb27182414161e1db627c29ac6",
+      "receipt_sha256": "a125d8687f10d1b4a24cbfb757b66ce1882b72848a06c0b987b7d1d65cbdbc4d",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-040",
+      "path": "conformance/scenarios/remote-intelligence-adapter/note-placement-authority-denied.json",
+      "fixture_sha256": "7b823ef6b032dfa440d74750b3ef98701c99488cd7856c50893db15b0d685641",
+      "receipt_sha256": "d6ed66dc27968150405325397ebdac0e68c2b3a69e08b2a6b0c3923e9666b17a",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-041",
+      "path": "conformance/scenarios/remote-intelligence-adapter/taxonomy-authority-denied.json",
+      "fixture_sha256": "0ff6ec8d650d2edcfa8ed42221d33099b370a3d2053288e4d8ce6540088c67d7",
+      "receipt_sha256": "cdc9db2a07b6f88462c420be4ff0824efbfd4003d2f799ba434bab0bee78cc9e",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-042",
+      "path": "conformance/scenarios/remote-intelligence-adapter/projection-authority-denied.json",
+      "fixture_sha256": "c225d4ef227f0081dd173083bf6719eed000970fd89105435a9b6cace3547eaa",
+      "receipt_sha256": "57e22f1aac0d25b0f6f06ce209f85586fa46b5347032307b45eb26f6339c2dc5",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-043",
+      "path": "conformance/scenarios/remote-intelligence-adapter/filesystem-authority-denied.json",
+      "fixture_sha256": "55499277fcd9efcf9b8d4bd95c95be31ccef2ea694505ec36882b6b809b577a1",
+      "receipt_sha256": "845936e2372de53855de404bb74d096d770724043e1b7b5fcfdf1f08a9300027",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-044",
+      "path": "conformance/scenarios/remote-intelligence-adapter/tool-authority-denied.json",
+      "fixture_sha256": "821f1ba44b228042f6550f18a7dee89d8949fe92caa485be480cb436335b72b8",
+      "receipt_sha256": "05214f011778644bac8c470e4f201b7500f8a283ad7876e7785fc0c434e5ef2c",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-045",
+      "path": "conformance/scenarios/remote-intelligence-adapter/automation-authority-denied.json",
+      "fixture_sha256": "d40ef8e21050d30c571ce4116ff6ab4ec35620a95c6e3c7368431dd1013f5146",
+      "receipt_sha256": "0f0ce4ff06f0458bf8f96ffebe7f8a45e4a194419897318c872c35e3adb2dcb2",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-046",
+      "path": "conformance/scenarios/remote-intelligence-adapter/crash-before-egress-zero-byte-recovery.json",
+      "fixture_sha256": "ed5747677a098d7d712709da69e88ae2437c0f059c7c2f1dc16ac842ba971db1",
+      "receipt_sha256": "8e2c062c38a89579ea103f6f56b395de930e173f0eda94b49c3941cd6ef7800b",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-047",
+      "path": "conformance/scenarios/remote-intelligence-adapter/crash-after-egress-preserves-attempt.json",
+      "fixture_sha256": "18c7a7b465a37947c0e23486130de13edbec3b78c88c0c10535cfb2b9132b8da",
+      "receipt_sha256": "d2e8a646ffc6dcd138e6277237ea01deefea3392107461a7bde73833ad1ea3f3",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-048",
+      "path": "conformance/scenarios/remote-intelligence-adapter/recovery-revalidates-current-digests.json",
+      "fixture_sha256": "d7b8feab72f2ec577a53dd31bc82c4432f8794b944ab47db4177197d0c7eee52",
+      "receipt_sha256": "da40f5eb4faf8fd7e35ea4152dc5a92f833f4f7aca023b286178586c0e49c47e",
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-049",
+      "path": "conformance/scenarios/remote-intelligence-adapter/recovery-rejects-stale-claim-digest.json",
+      "fixture_sha256": "cdfaf8ff092c79e749d67178b16cb45c65be5facfa85b4d5cb49c5bf5c10cf8c",
+      "receipt_sha256": "f4a65da1eb4eb75b80069be4a38081cac6a8ac83421867392e7b2b7c110edcac",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-050",
+      "path": "conformance/scenarios/remote-intelligence-adapter/recovery-rejects-stale-evidence-digest.json",
+      "fixture_sha256": "44c99ba24481485239a7834135958102149c132ece12058d238a7fa1ebc7d42e",
+      "receipt_sha256": "b8f18202e8e717c112401ae63353387924234a0fbe3cad3304bcce31d7a97425",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-051",
+      "path": "conformance/scenarios/remote-intelligence-adapter/illegal-permitted-egress-transition-denied.json",
+      "fixture_sha256": "636dbfd8c5b725659988547a5746b65df3968074e66fe81cac948a9afbb806eb",
+      "receipt_sha256": "413dc03bf1df2d9c468373e3a63fda8481f31065dc63b1572864c8f9b6853a44",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-052",
+      "path": "conformance/scenarios/remote-intelligence-adapter/illegal-denial-transition-denied.json",
+      "fixture_sha256": "37cd66d26e652c0bd7dca1bf32e344d1e6318c2e1aec45de9fe1aab266709753",
+      "receipt_sha256": "56ca1ed08e2ea41fe45402de7f170668625f43841fc06f11b67cb674306eaaa4",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-053",
+      "path": "conformance/scenarios/remote-intelligence-adapter/illegal-failure-transition-denied.json",
+      "fixture_sha256": "eed27d21b7edfb2e8a37a3c30caefc3722f53a838783d91e76bb21afc84b4abf",
+      "receipt_sha256": "f2698f115ba25253deeb8b83ba5a3fc400457781d34f481dca4c1c958b40f6e0",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-054",
+      "path": "conformance/scenarios/remote-intelligence-adapter/illegal-retry-transition-denied.json",
+      "fixture_sha256": "98827b05e053e01ca418253409e034b6f3e789789832553487e2c7ffdba0b808",
+      "receipt_sha256": "cd9e1e7b6373e5c548a2c23012f702b5af7300ce421cdf09856d54bf1a54dfdd",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-055",
+      "path": "conformance/scenarios/remote-intelligence-adapter/illegal-fallback-transition-denied.json",
+      "fixture_sha256": "ade2c4bd31f25b5ee6c6e519ccc455c3c7065fe6e325d45d7b6ae67a6ce0efec",
+      "receipt_sha256": "7a50d5f9988df0d6541b71ee92c53ff55ab30694f60a9144547adb7dbaf4a9e1",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-056",
+      "path": "conformance/scenarios/remote-intelligence-adapter/illegal-recovery-transition-denied.json",
+      "fixture_sha256": "52a60a261ce5816fd85ac17f691d3fac58d749b18b5ff0bea7632563b2e5c31b",
+      "receipt_sha256": "072076d4fbaa36f4367f2db41a2f051e324df2d31b229a81bc53d57896d63e19",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-057",
+      "path": "conformance/scenarios/remote-intelligence-adapter/illegal-verdict-transition-denied.json",
+      "fixture_sha256": "a7dba6a4d4b57e535e29baf0589abee663f8f2ab7f91aadcd4021330fc2bb8bf",
+      "receipt_sha256": "94b9fa24541574ff75e10119924bd769f118c7c5e12bfa30a7210940ab86a229",
+      "verdict": "fail"
+    }
+  ],
+  "receipt_sha256s": [
+    "4f544ed762bcbcc77f084b0451a743dc90c91487326ef622c87d35fcb438bdcc",
+    "13313ba422671bc478f6f50355f5b245eebed1c7fb8b23fb60ff68c833109dc2",
+    "7fcf2712025e2cfd819276f8c75f68a283bbfdf093b2324ab809f9fc3f827165",
+    "d36519b9687157970c68add39fc536003273c77284a525461fb03cc1218d0363",
+    "501418b2241553c37c10db10858ae93748ecfb2df5c031799c6896e8903bc758",
+    "9d945c35c44ac9872e24d6deb77b3f306822c2c77bad84f8687d00cc75c46533",
+    "c5989b83a5a0579f73b46a18b7350ba0308c0959f9f8da932a19ecff1c7c7e2a",
+    "8dcce24c042c8d14d30bfaaf35bf4d2bfb47caa613529a28863315f4bcb4c5b5",
+    "9302eaffa8aad3edd660e3eb7d354dd397c570901abb06b0a3a50215fe8e1ed0",
+    "17667469deb4c28458c04a16c97339b2a260e3d1ba06a93943b20744baced549",
+    "0462fc769f9648be8d9d6543ddbae5079714dd0fd807f32edaf9583d0049f2e3",
+    "884174d23b2386e370cdd0cd990556afe4ed1ece95d98258051c692649e13cec",
+    "2e5212352819c1293ff75eb9b98cd2864d0aa4eeab16e6211eaa6eee5c9782ed",
+    "aff590eb9966cc318b0b270a5b5e379f9b1095db491d661c4e66cb7a6bed8d42",
+    "35f2cab3aa146f0ced82c3f0ae579b96361afe2e6b352fd32a47cf53e5a15b3f",
+    "8c55cd05b49b85d42170cb37562658fe8ca4581f4f017874922b8a742eab2fb8",
+    "0253f60a2d51bb43e39e1f1538cbc9a70d127cc3023b45dd419a7ca8804aea51",
+    "4d8f63eb93c57d2a3beb26528a1c2e78e1ec8eefd8c957d58093b07a5c7c25a8",
+    "5f8b66330509f30677b77aea5d4d587b9fadd1585b23f032e4af4d12b75e9689",
+    "134d16b2cce7c8ad71c0174d28a1369f2fe8bd7f1ba4c2937738244c8fa9101c",
+    "620cf9fdc97ffacea2564670d54ff7b3f9f71b23682818fdaccef9d13d8490be",
+    "a92cc981c111a3a9470f701b0f7116f4a968c4076801e3f69fc2667b08261469",
+    "5b8c54274dae549b3aa1f11564f323c6abbb0e902d402fe76a14dd048792d8cb",
+    "edf97f743840a014af5f067aaf392ff6e289b9f2e5250b45a299a7a1c855cce1",
+    "a84d63d90e47a3ae8c78fadf9513dabd83b6ee4f7a1f1fc3c7fd407ab7a8e6fa",
+    "24e00dd287b80a22846b724cdd6a48c9f5af5c2f3562842116f76170817da414",
+    "8eebabcfd352ac0b7403a4ef0a560ff544e995b7d4d60620e39e2aedade80d0c",
+    "6464b9042c9e94bebc89fa35a1304f360c81c8866fe9ce54db6580615319276d",
+    "a21465cee1e4258598af22bc4f900c132d91769235e04218be19acca8750b531",
+    "21ac88ad11ce03df270837d755d097bba3d6a93c17a6ad96f7401e0581cd1d59",
+    "f99283f6a60cbb09eb0efb0264c77f1f5f5e13a81dcde7a5e224dce0262b381f",
+    "ece813812d70cd5843ba0c84cb8763546154a4431670d67a09675b54fcb5a180",
+    "d1feb230ec329a2d039c78d8f2692759beefd37854ed31b5b290962985c0ac66",
+    "04e26a3f2d905e3ce8d888f35f6a42a4746981cb15da3d57820752f03f125802",
+    "53e6b74a9b314d6a825d82053e0dc0a65d970b27b110548874c0bac8a21c5272",
+    "f3c4a5a1eb4f28fe6d4f34f059a64f4ee6c5a87b4cc29b360286f9c62fb21d9e",
+    "4bcc06084c224fdf01689dc63f3f549c20472d9d4e3dcfbe0b3bdeedaf403805",
+    "786cf0914fa1a58a4519fea7d13ade171448d13ce0ddc566a2d17915cecc0c2c",
+    "a125d8687f10d1b4a24cbfb757b66ce1882b72848a06c0b987b7d1d65cbdbc4d",
+    "d6ed66dc27968150405325397ebdac0e68c2b3a69e08b2a6b0c3923e9666b17a",
+    "cdc9db2a07b6f88462c420be4ff0824efbfd4003d2f799ba434bab0bee78cc9e",
+    "57e22f1aac0d25b0f6f06ce209f85586fa46b5347032307b45eb26f6339c2dc5",
+    "845936e2372de53855de404bb74d096d770724043e1b7b5fcfdf1f08a9300027",
+    "05214f011778644bac8c470e4f201b7500f8a283ad7876e7785fc0c434e5ef2c",
+    "0f0ce4ff06f0458bf8f96ffebe7f8a45e4a194419897318c872c35e3adb2dcb2",
+    "8e2c062c38a89579ea103f6f56b395de930e173f0eda94b49c3941cd6ef7800b",
+    "d2e8a646ffc6dcd138e6277237ea01deefea3392107461a7bde73833ad1ea3f3",
+    "da40f5eb4faf8fd7e35ea4152dc5a92f833f4f7aca023b286178586c0e49c47e",
+    "f4a65da1eb4eb75b80069be4a38081cac6a8ac83421867392e7b2b7c110edcac",
+    "b8f18202e8e717c112401ae63353387924234a0fbe3cad3304bcce31d7a97425",
+    "413dc03bf1df2d9c468373e3a63fda8481f31065dc63b1572864c8f9b6853a44",
+    "56ca1ed08e2ea41fe45402de7f170668625f43841fc06f11b67cb674306eaaa4",
+    "f2698f115ba25253deeb8b83ba5a3fc400457781d34f481dca4c1c958b40f6e0",
+    "cd9e1e7b6373e5c548a2c23012f702b5af7300ce421cdf09856d54bf1a54dfdd",
+    "7a50d5f9988df0d6541b71ee92c53ff55ab30694f60a9144547adb7dbaf4a9e1",
+    "072076d4fbaa36f4367f2db41a2f051e324df2d31b229a81bc53d57896d63e19",
+    "94b9fa24541574ff75e10119924bd769f118c7c5e12bfa30a7210940ab86a229"
+  ],
+  "credential_boundary_evidence_sha256": "bd45d892a7b68d4bf47017a520b3d40b6b7c032eb200f892e3f5831124508103",
+  "retention_evidence_sha256": "be5ad9fd042b87583d83bd682a19efedcdcb5d8b4e8c99ef97e1bad13cf9d063",
+  "fixture_manifest_sha256": "6c25b07752f8aa8559fbda02c33fe93b1dcf5bea1c96498c86fdd595455f279a",
+  "network_operations": 0,
+  "verdict": "pass"
+}

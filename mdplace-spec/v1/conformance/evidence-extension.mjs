@@ -13,6 +13,7 @@ import {invocationCodes} from './evidence-invocation-validation.mjs';
 import {recoveryCodes} from './evidence-recovery-validation.mjs';
 import {observeTransitionAttempt} from './evidence-transition-validation.mjs';
 import {localAdapterClaimCodes} from './local-adapter-claim-validation.mjs';
+import {remoteAdapterClaimCodes} from './remote-adapter-claim-validation.mjs';
 
 export async function observeEvidenceExtension(subject, packageRoot, context) {
   const currentContext = validationContext(context);
@@ -166,6 +167,16 @@ export async function observeEvidenceExtension(subject, packageRoot, context) {
         verdict: codes.length === 0 ? 'pass' : 'fail',
         codes,
         output: codes.length === 0 ? 'Local Intelligence Adapter Claim Manifest accepted' : 'Local Intelligence Adapter Claim Manifest rejected',
+        operations,
+        terminalState: codes.length === 0 ? 'validated' : 'rejected',
+      });
+    case 'remote-adapter-claim-manifest.schema.json':
+      operations.push('recompute Remote Intelligence Adapter claim evidence digest', 'preserve profile isolation');
+      codes.push(...await remoteAdapterClaimCodes(subject.document, packageRoot));
+      return observation({
+        verdict: codes.length === 0 ? 'pass' : 'fail',
+        codes,
+        output: codes.length === 0 ? 'Remote Intelligence Adapter Claim Manifest accepted' : 'Remote Intelligence Adapter Claim Manifest rejected',
         operations,
         terminalState: codes.length === 0 ? 'validated' : 'rejected',
       });

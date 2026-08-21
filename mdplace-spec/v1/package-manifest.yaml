@@ -45,19 +45,19 @@
       "path": "README.md",
       "authority": "informative",
       "media_type": "text/markdown",
-      "sha256": "a11464c57431bf09fa5c8a96708726b784f4781a22eeb3de4c84f3b6e804f683"
+      "sha256": "8f3094b77d85443b26bf9af6af818d34dd48c3048ebbdccbd35c4d7dd98e3b1c"
     },
     {
       "path": "claims-and-evidence.yaml",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "1ca132584490e2ec7a11adddcd403013470154aa8a0d8e769982c764233b9512"
+      "sha256": "f6c5442372f9e4c62694d0a9d58010b07feb5a7b57e1eb0cfbd3c94439694335"
     },
     {
       "path": "conformance/README.md",
       "authority": "informative",
       "media_type": "text/markdown",
-      "sha256": "df4886133173df7e08f8dab9db38f2f0764863f40e0aa46b3793be5d5143b185"
+      "sha256": "c18a43c2a904a908a051df58a4ea2498008821996a90b3fdc98e52d7b103492f"
     },
     {
       "path": "conformance/amendment-evidence.mjs",
@@ -93,7 +93,7 @@
       "path": "conformance/claim-manifests/local-intelligence-adapter.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "939cddecd0e5f821953f8451545efb214de441f881ae02019dac30fac41fdca2"
+      "sha256": "a89c3efeefcedfc9a6bc9fe11b2b520344b2a68fac162fc2ea5a6f5cfbfb9d3c"
     },
     {
       "path": "conformance/claim-manifests/new-leaf-automatic-promotion.json",
@@ -111,7 +111,7 @@
       "path": "conformance/claim-manifests/remote-intelligence-adapter.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "120c0bd6720509eba8606b6f7bec29bbb6e2f7b38ab92eda4a87e75daedbf154"
+      "sha256": "8592717f7af5603d84d78da2dfb5f71b0f9522567c229db3305816c0dd472ebb"
     },
     {
       "path": "conformance/claim-manifests/web-clipper-product-readiness.json",
@@ -207,7 +207,7 @@
       "path": "conformance/evidence-extension.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "4796f19e6d5fed454166fdaec1db6cbdb304064f5d5b72646cd95b4959dfb3e8"
+      "sha256": "4711155482daffd07fecb753096527c6d510c76954ce110537625b0ff241036b"
     },
     {
       "path": "conformance/evidence-freshness.mjs",
@@ -237,7 +237,7 @@
       "path": "conformance/evidence/claims/recovery-snapshot.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "d5794256bf2e94b4ce96dd0f4ebbb301eb286586bee73278ebeeb23d1add56bb"
+      "sha256": "1b72be46e99695753adb50bdd70437d5095e6bfb4c668affab57e66a851b87d2"
     },
     {
       "path": "conformance/evidence/control-plane-doctor-report.json",
@@ -267,7 +267,13 @@
       "path": "conformance/evidence/envelopes/local-adapter-profile.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "438a8955a27125e5eaac0c5e3427e6a6ce1666df3fcd5dc9f9e8e212ae04a636"
+      "sha256": "7787e4107d287a69ece2da5d02d80b166d5d793d8ce6f172e11f72240c75962e"
+    },
+    {
+      "path": "conformance/evidence/envelopes/remote-adapter-profile.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "81d7db64f9e5d5f20e3190b06335c9664fa0a03047087fc6cd751a523e2c1953"
     },
     {
       "path": "conformance/evidence/envelopes/stale-claim-proof.json",
@@ -279,13 +285,13 @@
       "path": "conformance/evidence/envelopes/validator-evidence-reference.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "7e4d3bdbc1dbe081d51003099b354450ca2862b3e07e4c322689742bdec8b43e"
+      "sha256": "1ad8686bfa80405e5651cf3f4af8f5db81ac7eeee92471aac6095d2679f7b880"
     },
     {
       "path": "conformance/evidence/evidence-recovery-report.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "550be0bf18be11f518946b027a06e79e99e70792b769de2b4060667bee0a7791"
+      "sha256": "511bc46e7a4a7b300033a933796970607e3296a31d70c1c1b0b09c4c60d7d493"
     },
     {
       "path": "conformance/evidence/intelligence-adapter-evidence.json",
@@ -303,13 +309,19 @@
       "path": "conformance/evidence/invocations/local-adapter-profile.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "f31768bc316be4a84358afe306d4f7bfb95e422309c10c3a23c9541091e49aef"
+      "sha256": "c119b076613fa2e1298641248919940e9c252e2298d70bc4fcf93a12ef069aa3"
+    },
+    {
+      "path": "conformance/evidence/invocations/remote-adapter-profile.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "1d2d8c65668f671b365a6754685b5b8cacb5924c1de86a1958b4a7e97181bac5"
     },
     {
       "path": "conformance/evidence/invocations/validator-evidence-reference.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "eeea6f653b9d98ed3c65a4d171035541f582834ab8a358f586176d907eb9003c"
+      "sha256": "e1032f9dde2fd1992f28dd883c7b0fbfcb7bc6ffe7f79b90c408235c092468bb"
     },
     {
       "path": "conformance/evidence/local-adapter-evidence.json",
@@ -336,6 +348,18 @@
       "sha256": "ecbdb40e468710eb65b17b5dac8ba7bfd9fd73c46b365138f3710debaa19414f"
     },
     {
+      "path": "conformance/evidence/remote-adapter-evidence.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "02b81182f76a3eab8f36dba966ef16abd275149b6e9e421f8efffab8835f48e8"
+    },
+    {
+      "path": "conformance/evidence/remote-adapter-recovery-report.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "c66fcf3d85255655175b0703ad2022738bd613c87de8478ab7822ff3b63b7210"
+    },
+    {
       "path": "conformance/evidence/semantic-kernel-recovery-report.json",
       "authority": "normative",
       "media_type": "application/json",
@@ -345,13 +369,13 @@
       "path": "conformance/evidence/traceability-report.json",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "44f0594dfb91b905caa576935ea6ee943d2fc8f9a146720291bd892274935cbf"
+      "sha256": "39daa69f0fa16de722a994c86aaaca87ba5ea65d3b1ec5d992f1fdc0e499d8d8"
     },
     {
       "path": "conformance/evidence/validation-report.json",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "8d583c4ec725ad0269222f6ac70305a3e811f7cfc2d6b2875e87c8552714711d"
+      "sha256": "8086b0def8985f37a013fafef8931124cf4b1a5f7f43bd2c08542fc6eae51c41"
     },
     {
       "path": "conformance/evidence/vault-mutation-recovery-report.json",
@@ -369,7 +393,7 @@
       "path": "conformance/fixture-observer.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "a384d2d996f8e8586c258d5c3e3eab6c60efedcadb0b046079f40cc6bfa0db05"
+      "sha256": "ed8a7831d77cbe84fb19c3a83fa1cde34bc97c96a1a3125b9e0e119395096f0e"
     },
     {
       "path": "conformance/fixtures/boundary/above-sha256.json",
@@ -429,7 +453,7 @@
       "path": "conformance/fixtures/negative/duplicate-envelope-references.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "86e5ee1765bb5c4831c2fba2061ddebb0d25511dd2ad61cd76dda6d624946354"
+      "sha256": "0d5ddf41ac93c7583d0fe833364ac612800419d004cbc349f9c9098f0f0823eb"
     },
     {
       "path": "conformance/fixtures/negative/duplicate-requirement-id.json",
@@ -441,13 +465,13 @@
       "path": "conformance/fixtures/negative/evidence-receipt-digest-tampered.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "a75b8077924f6355e3312e41e3fc69b46f9279e80ce4b045d51bacade45955b0"
+      "sha256": "882dfad86307b0dd48e0897b73e9d374813598f29161dda197f450593810f776"
     },
     {
       "path": "conformance/fixtures/negative/evidence-receipt-type-tampered.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "c82b8058f31fb8300fa42d4d61b4a40ae42729231628fb69eaf13dd969edb806"
+      "sha256": "54de032ed598acb340e2e25bf633cf7df8ab63a94e5458f3ea0bc8728ee80f38"
     },
     {
       "path": "conformance/fixtures/negative/idempotency-conflict.json",
@@ -537,7 +561,7 @@
       "path": "conformance/fixtures/positive/authorized-release.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "32519d368ab1397d00cbfa3f84700d34207ceb34e9fc954753e928a3dbdd90c3"
+      "sha256": "6b47ab3f18511207f3cd5743ec471f751969a33b8514313225e83cfe00cc6d3b"
     },
     {
       "path": "conformance/fixtures/positive/authorized-submit.json",
@@ -573,7 +597,7 @@
       "path": "conformance/fixtures/positive/valid-evidence-envelope.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "4dffcfd6efbaec90496231807bbf9abe6b80869cb6f03d26ca61bd1127cb4ce6"
+      "sha256": "3de2aee1c953b59a16f4bef9cfd1fe4d4e61cf8f013e8db32ae26c338feb3c13"
     },
     {
       "path": "conformance/fixtures/positive/valid-package-amendment.json",
@@ -591,13 +615,19 @@
       "path": "conformance/generate-intelligence-adapter-artifacts.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "c1cb1d349776ca455b9e74bb9b2743ec40a9dbee7b624067d58f779b9cfb6777"
+      "sha256": "d0b449075bcc62935004bdc70bbceb4b33997ff2a02f1c8fd4ff7fe9c1a64857"
     },
     {
       "path": "conformance/generate-local-adapter-artifacts.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
       "sha256": "dc157a13945c0a1ba9c5ef17c41bdfe8df5e81d9f979ccd0e8340ad6847b30a9"
+    },
+    {
+      "path": "conformance/generate-remote-adapter-artifacts.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "450ad73655aefdfc5cced5eeac9d87c3f76c57a66cf8217dd67c77a6f862e78e"
     },
     {
       "path": "conformance/intelligence-adapter-checks.mjs",
@@ -687,7 +717,7 @@
       "path": "conformance/manifest.yaml",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "7606978e975ad836d050906af75c7ff175d3a0cf7ee255933b34374fd8bb3aa0"
+      "sha256": "01ed33a9f60ebadf5a48a6b5bda79b4dc356996da12d8439e9c0e4381b819b3c"
     },
     {
       "path": "conformance/package-checks.mjs",
@@ -753,7 +783,7 @@
       "path": "conformance/reference-evidence.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "f711fa97316cd5fc5b7af684092a0f48b4163b3c2fa2b4b970c0016157c22754"
+      "sha256": "d929a591e23a23fbc17633e6f8c9ae4176e02f527ebb8dd87429e40520df3180"
     },
     {
       "path": "conformance/reference-vault-checks.mjs",
@@ -1132,6 +1162,54 @@
       "authority": "normative",
       "media_type": "application/json",
       "sha256": "0109988d0c7f859ca2ae76caf2d744e389fc079993d8455e35a89a6fa015f613"
+    },
+    {
+      "path": "conformance/remote-adapter-artifact-rules.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "85d581975874cc0995a7ff490f2e470c8e1afeb99cff3e10a2735f0e262d9848"
+    },
+    {
+      "path": "conformance/remote-adapter-checks.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "aae68cf5b3cea715d18451f7686f4df0495411ef02497ed01c135c19433b66ea"
+    },
+    {
+      "path": "conformance/remote-adapter-claim-validation.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "ceb3638fb45417d884482ab1dbebb1ec22a3773f1274d2b41f4a2fd573019d05"
+    },
+    {
+      "path": "conformance/remote-adapter-contracts.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "1717ab862fcfd37e04ddb1c1588798b0837898946ed4e96891c85abf976a00c3"
+    },
+    {
+      "path": "conformance/remote-adapter-core.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "dd7842e8795299e2f6f5382f4f54ed898c061c659ae23d8ec40fde11399d3f2f"
+    },
+    {
+      "path": "conformance/remote-adapter-fixtures.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "42db87e5f6652fe1c498e3d3a142f717df90ac2443dfc2fbc595b04d1bad2052"
+    },
+    {
+      "path": "conformance/remote-adapter-observer.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "8b07adbe511a6e2d40ee160c0a99bb83f9411fff840af78b4f0ac91f695356e1"
+    },
+    {
+      "path": "conformance/remote-adapter-recovery-authoring.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "a34cf803f60a2372bf22250bd4a59cadf4ce824fc65101681231af56ca17f7dd"
     },
     {
       "path": "conformance/requirement-checks.mjs",
@@ -1617,7 +1695,7 @@
       "path": "conformance/scenarios/evidence-crash-recovery.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "a81a4e57649cdff72e9d6bd485459f69f7e3b42214c6866aa6861c805b66a0ba"
+      "sha256": "43685512810a1c4e8ddd8ca5b695944266383ba4117d111055cdf3781f6823a4"
     },
     {
       "path": "conformance/scenarios/evidence-illegal-awaiting-readback.json",
@@ -1659,7 +1737,7 @@
       "path": "conformance/scenarios/evidence-stale-recovery-pass.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "c10030acd621fa99d484f0d1dce7866f39121fecd479703b0feef8228f697cc0"
+      "sha256": "0087361d75a7911b060fc7a6ca9d698884ec329a0a321575bdb83dff86bf004d"
     },
     {
       "path": "conformance/scenarios/evidence-stale-version.json",
@@ -1671,7 +1749,7 @@
       "path": "conformance/scenarios/evidence-unsupported-recovery.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "4aae2d674973fbff2e3fd253cd5cc6a5ebbdf9953ed18240d2af43aab81d48e8"
+      "sha256": "e96605b13db0ad2e8881ac6715e392dacd50f4cea8c0f9ab8fd4c7d75efbcf94"
     },
     {
       "path": "conformance/scenarios/illegal-release.json",
@@ -2520,6 +2598,348 @@
       "sha256": "9f7f0222ffeb42b5d1c4cf15ead735cb108256e67271b8938deee752d2d28e83"
     },
     {
+      "path": "conformance/scenarios/remote-intelligence-adapter/absence-of-contrary-evidence-does-not-establish-training.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "cbe5fc12a90803f4bb131250acac0591d1372db65be5fa142c69bbe973574f79"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/authentication-does-not-establish-residency.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "42e901c5d4c9362eaf1ea145931900b2ed6cc0be0059a5133c11b4e0148ac585"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/automation-authority-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "d40ef8e21050d30c571ce4116ff6ab4ec35620a95c6e3c7368431dd1013f5146"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/cost-budget-exhausted.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "4b40181518c786254dcb4bf0b9f086fbfddfb287d01bc56d6a841fb72f0da3ae"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/crash-after-egress-preserves-attempt.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "18c7a7b465a37947c0e23486130de13edbec3b78c88c0c10535cfb2b9132b8da"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/crash-before-egress-zero-byte-recovery.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "ed5747677a098d7d712709da69e88ae2437c0f059c7c2f1dc16ac842ba971db1"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/exact-attempt-ceiling.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "91c1b0c468b5434c874a1cba5f376c44bab568e82c11d3b561270ce3f6957fd4"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/exact-cost-ceiling.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "2cb56e46a199c6f67d77282dbeacf1e925662b31b3cc0467fbaee153904b17a5"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/exact-fallback-ceiling.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "300c1a3f87cc6e62ecc3bdeff1d9cdbe2e3e507c8ba72f28369e6fd4ae3bce2d"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/exact-input-ceiling.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "83c936e97428fa040effbe374e9aa295eaf7c1b3308d7b31f0eb5199b9af6282"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/exact-output-ceiling.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "b29a127c8d2486ea1e3135421ab7d85478448af4375e6219eee920c08dd2b3fd"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/exact-retry-ceiling.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "2a8b97ebf3e8159d14a9663bb256ece38e119514ab99192674649880cc6d585b"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/exact-runtime-ceiling.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "369437ec511228190c98bc9d77bf05aa90dacb322c862555d4d52d3080d8441d"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/failed-credential-boundary-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "13934040f5af0ab5241785cf7504d6ff91e18f08204e4b6fb19b53a972b4a240"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/fallback-does-not-establish-privacy-behavior.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "49ffe1b7d67e9e59ae01a28e4242cddd5d15d0e038d6dfc1148490cfdc76f3c8"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/filesystem-authority-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "55499277fcd9efcf9b8d4bd95c95be31ccef2ea694505ec36882b6b809b577a1"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/forbidden-fallback-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "85fa4640eb6b3e4842d1fc816116a8cac91bdce8fe794948cbcc48595989c5c5"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/forbidden-retry-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "f38dcad28d647c473581ecb91a9866dfa5ba5ff16cd305cfe8ada1fe8278f289"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/illegal-denial-transition-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "37cd66d26e652c0bd7dca1bf32e344d1e6318c2e1aec45de9fe1aab266709753"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/illegal-failure-transition-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "eed27d21b7edfb2e8a37a3c30caefc3722f53a838783d91e76bb21afc84b4abf"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/illegal-fallback-transition-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "ade2c4bd31f25b5ee6c6e519ccc455c3c7065fe6e325d45d7b6ae67a6ce0efec"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/illegal-permitted-egress-transition-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "636dbfd8c5b725659988547a5746b65df3968074e66fe81cac948a9afbb806eb"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/illegal-recovery-transition-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "52a60a261ce5816fd85ac17f691d3fac58d749b18b5ff0bea7632563b2e5c31b"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/illegal-retry-transition-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "98827b05e053e01ca418253409e034b6f3e789789832553487e2c7ffdba0b808"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/illegal-verdict-transition-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "a7dba6a4d4b57e535e29baf0589abee663f8f2ab7f91aadcd4021330fc2bb8bf"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/inconclusive-retention-evidence-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "364f4244a23eace519036ebe720edebe702bcb128daccdbccaa52732b512273d"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/input-budget-exhausted.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "04d1b23d697505bfb65079b28c31d3a3e1998be9860f8eb174d39d1411deb14a"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/malformed-credential-boundary-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "f3e44aa745c384eda6c4c479ba7b02302ceafd62cbd6a5966684aaee6b0610f2"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/malformed-processing-envelope-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "378009512b676e0da2c52f1804ff94f0b20e380657816ec96f4f90779f385f38"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/malformed-retention-evidence-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "59adc2505ae9e6bce2c0b7c334e0bfa840bdeb5118734436b7222988b959a7cc"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/missing-credential-boundary-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "154d006d2290117b991ee7094a882d6be2e1923d7838c0beca6c60633ed41be2"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/missing-processing-envelope-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "00b3196d7519beeb6f7c43dcc5de7326df17e156f07003b272e673c7355c4407"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/missing-retention-evidence-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "2367e30d404ffbe8386f3de27e8b6f9977bc0c3948dbe1b7de74dc7ae8a77a2d"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/note-placement-authority-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "7b823ef6b032dfa440d74750b3ef98701c99488cd7856c50893db15b0d685641"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/output-budget-exhausted.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "219a3d4100bbcf515baa7c7555802a2aafc8c379c5b37ab992b52848298494b2"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/permitted-fallback-exact-bytes.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "7f5bfae71e5113a00f7199a4dc88115efc2dbb59becbe410551941ac376d3786"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/permitted-primary-exact-bytes.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "12981541b97a224ac4a6198e243cb5356d91b994b6752dcec22eefd0fbd6f1a1"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/permitted-retry-exact-bytes.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "9b721df53a4d3421a571a2df97ead7b386bd1a55dc77a1b80e1983911a7fef62"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/projection-authority-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "c225d4ef227f0081dd173083bf6719eed000970fd89105435a9b6cace3547eaa"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/provider-output-does-not-establish-deletion.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "cbf80111299341aefebe332a733d482c589eb631278619dcdf12245406c41860"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/recovery-rejects-stale-claim-digest.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "cdfaf8ff092c79e749d67178b16cb45c65be5facfa85b4d5cb49c5bf5c10cf8c"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/recovery-rejects-stale-evidence-digest.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "44c99ba24481485239a7834135958102149c132ece12058d238a7fa1ebc7d42e"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/recovery-revalidates-current-digests.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "d7b8feab72f2ec577a53dd31bc82c4432f8794b944ab47db4177197d0c7eee52"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/retry-does-not-establish-entitlement.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "7877d8ae9539408c75f423df22ed911655f0ada87faa7181f86de94d72f05989"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/runtime-budget-exhausted.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "5a4da5586fc25dc3ce4e6bfc1aeee2fb4c88b85402aa8c5c705079a2deb334e9"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/semantic-authority-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "c95510065da8ddc7f2a6ac242e4351015fc5aaeb27182414161e1db627c29ac6"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/stale-credential-boundary-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "2639efd1585d33c887420df48d6956e70ccccdee9f6fe0fa51639b4f25a52fe1"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/stale-policy-binding-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "f8b176993aece17dab2207d1a8b2e6a65544c0d1b5de04022fd4c4230516ede1"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/stale-retention-evidence-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "e7c5b1342fe4331aa9a25ff089d61802429e8962844fc8c466ea256abbf30ebb"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/taxonomy-authority-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "0ff6ec8d650d2edcfa8ed42221d33099b370a3d2053288e4d8ce6540088c67d7"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/tool-authority-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "821f1ba44b228042f6550f18a7dee89d8949fe92caa485be480cb436335b72b8"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/transport-does-not-establish-training.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "91de4f7515c8f9d14bf60d4e44340d94b7f3284077da2e6e2e3424ac2dec4629"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/unapproved-destination-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "bee90368f55130d058da5d398f1f83eca0193c766b8d118bc663a526a50d2290"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/unauthorized-provider-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "40ecc6053862df27bd70050549337cddf21d1933e73a592f71c09b4f82d63e9f"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/unsupported-credential-boundary-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "927f3787e44d58af4d74a04902cf0ab0d09ceb7e69681260ddca4d228c9763f2"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/unsupported-provider-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "c0b8a324ad14ce17cfc5a8dc577ec3337f95cb291b1bcd266d65a10c96503f5f"
+    },
+    {
+      "path": "conformance/scenarios/remote-intelligence-adapter/unsupported-retention-evidence-denied.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "b96df485fb1c4d91e64909db0df4bccf137fb9e072a26e9c10d3e615f38e8ba3"
+    },
+    {
       "path": "conformance/scenarios/semantic-kernel/append-during-recovery-denied.json",
       "authority": "normative",
       "media_type": "application/json",
@@ -3243,7 +3663,7 @@
       "path": "conformance/schema-instances.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "bd564154445452a2f4c35c8ad6659a6a7c8cd65453d0479650828bc5128d05a3"
+      "sha256": "f141c4105caf0b35dd4d7f7b8ee483d3d7237ac60946cccf1dad4f880eb0f9eb"
     },
     {
       "path": "conformance/semantic-kernel-authority.mjs",
@@ -3291,25 +3711,25 @@
       "path": "conformance/state-observations/candidate/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "616b948c9d885518d6cf893e3513e9f694121d75dddbf8a18f889d43b8cfbae9"
+      "sha256": "6ca883c3ed194ab3eb318f6ba2a9e8ddce8bff498c9ed9d07a9cb3d441a265e3"
     },
     {
       "path": "conformance/state-observations/draft/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "4b1cf7c66a3867c715bae12dd03e0486c5a8b8d2ab6d13758721167809611f4b"
+      "sha256": "1b14755cab5575e7493d85b8233bb3257bcf56de5861ae38a77e2d4f22309399"
     },
     {
       "path": "conformance/state-observations/release-ready/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "194e00acf13afa48fff7282cb968c43204de0303918743fa17bb8b1751630670"
+      "sha256": "6cf4df13b019a06e3e7925d481ad5b407b5593fdbe478d09862503d0a8113526"
     },
     {
       "path": "conformance/state-observations/released/package-manifest.yaml",
       "authority": "informative",
       "media_type": "application/json",
-      "sha256": "446f121bb224df2407a1e67e8781de9504d9a3f4244061af6aa14fcc06a8a4cd"
+      "sha256": "52d1a9156c3646e14a819dd3675aee9e1a259dfa02e820025fbe3de8ebcced4c"
     },
     {
       "path": "conformance/traceability-checks.mjs",
@@ -3333,7 +3753,7 @@
       "path": "conformance/validation-report.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "3a90d9bc5164e9d9ac7f35df0d555467df7a4ca17401d2839aa740bf5aa68c09"
+      "sha256": "ef8bab3b58c3fedd9f79448acc08ce8ef9f34bedc6e9fb04f7cd22515f05ea15"
     },
     {
       "path": "conformance/validator-boundary-cases.mjs",
@@ -3387,7 +3807,7 @@
       "path": "conformance/validator-evidence-checks.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "31a449416fa1028f8b58531efc791fc9081c7d70aef63152ee98145e5f27c535"
+      "sha256": "64162c36e84166e4a9105c9c4d8adb7b0a0639403c04a4b7c744322afe05c3ec"
     },
     {
       "path": "conformance/validator-evidence-domain-invariants.mjs",
@@ -3546,6 +3966,12 @@
       "sha256": "b218edbdec2267393920e0fbf86b6cb7d1fd2c8cc0d0d799fe0f0a333c1ff495"
     },
     {
+      "path": "conformance/validator-remote-adapter-cases.mjs",
+      "authority": "informative",
+      "media_type": "text/javascript",
+      "sha256": "7978f0036e9505ff0a537d5df463da66937380684bb1c439fbec4156c9a0b99e"
+    },
+    {
       "path": "conformance/validator-review-round-three-cases.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
@@ -3561,7 +3987,7 @@
       "path": "conformance/validator-rules.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "1b2eef8270172106e6544b1742d6ec2bc7475196be8a94a82372de47c7903bfa"
+      "sha256": "0ed204d1aeab81f096df93e529fd8a31357d1b0265c84eba736c326eece9243d"
     },
     {
       "path": "conformance/validator-security-cases.mjs",
@@ -3615,7 +4041,7 @@
       "path": "conformance/validator.test.mjs",
       "authority": "informative",
       "media_type": "text/javascript",
-      "sha256": "94ca271bc0391ceef11f44eed0fca251a437fac53ba9b4ff40fff643f3230de9"
+      "sha256": "2d5a63f652eda0f7b6c01c1d899a7526461585b54fd764984de7adb585f72382"
     },
     {
       "path": "conformance/vault-mutation-digests.mjs",
@@ -3762,6 +4188,36 @@
       "sha256": "7e4b8136922754cf505bcbc2356d2b528c935e95d8cdb524fc8c4e6cc2b5ceae"
     },
     {
+      "path": "contracts/remote-intelligence-adapter/claim-manifest.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "606c4f932c925f34b278147b37c0c7b61ab9b83fc1a100b722ec98f4b90c06e0"
+    },
+    {
+      "path": "contracts/remote-intelligence-adapter/credential-boundary-evidence.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "bd45d892a7b68d4bf47017a520b3d40b6b7c032eb200f892e3f5831124508103"
+    },
+    {
+      "path": "contracts/remote-intelligence-adapter/fixture-manifest.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "6c25b07752f8aa8559fbda02c33fe93b1dcf5bea1c96498c86fdd595455f279a"
+    },
+    {
+      "path": "contracts/remote-intelligence-adapter/profile.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "7f73de38e8ae88a14cd20d3ad992ac1ea47fa65397051739e17d53e10efc7fd1"
+    },
+    {
+      "path": "contracts/remote-intelligence-adapter/retention-evidence.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "be5ad9fd042b87583d83bd682a19efedcdcb5d8b4e8c99ef97e1bad13cf9d063"
+    },
+    {
       "path": "contracts/schemas/adapter-run-receipt.schema.json",
       "authority": "normative",
       "media_type": "application/json",
@@ -3807,7 +4263,7 @@
       "path": "contracts/schemas/conformance-fixture.schema.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "b227966d10e2571965af1b1337b1e11a4be823bb7f6e3b377e15f7cb521a0a1a"
+      "sha256": "568cdfa1e2ae086e98b79b6aad11bbc01ab2ba6dc3750c09c0a44af9087a4ddd"
     },
     {
       "path": "contracts/schemas/conformance-manifest.schema.json",
@@ -4086,6 +4542,66 @@
       "sha256": "d231150c1259f00875d150eff4c387f3195663efcef6cccee697e7fa453eda0c"
     },
     {
+      "path": "contracts/schemas/remote-adapter-claim-manifest.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "d2612fc4210e5bb4f1b9c00480a798836201b0fdf414e825f2183a2feff827dc"
+    },
+    {
+      "path": "contracts/schemas/remote-adapter-credential-boundary-evidence.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "c04620f5c43be90e723c6d34bcc6fccedda58d8f4ec8b02c6755e103db74c156"
+    },
+    {
+      "path": "contracts/schemas/remote-adapter-evidence.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "d506bacca8ec1c91628cf986eb2408931f26bfa83ca6fb0e0b136b9f5cd21f17"
+    },
+    {
+      "path": "contracts/schemas/remote-adapter-fixture-manifest.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "5e1f2128ad8aae0b5470c048e9084b5bc7e4e51c80d5f1f82b29beab1381f9b3"
+    },
+    {
+      "path": "contracts/schemas/remote-adapter-profile-receipt.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "db9c76cd072716243ee465a2f11c87ed5a12b89b9931ed06f13fa4f77ba50176"
+    },
+    {
+      "path": "contracts/schemas/remote-adapter-recovery-report.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "fd322b563103250fe9959a9e5e4b78cc1668769be5084144c75793d8dbdf3c99"
+    },
+    {
+      "path": "contracts/schemas/remote-adapter-retention-evidence.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "b4d08ca3dd7750a6ab613bdac951598a6aa45041244217ab527da78ce9cbf778"
+    },
+    {
+      "path": "contracts/schemas/remote-adapter-scenario.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "7c1b73ead42646f071bdba0c3b076cd733bac4a0727c136abd6022d3346b3553"
+    },
+    {
+      "path": "contracts/schemas/remote-adapter-verdict-table.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "410ac4021ade3a2576c07675cd81ba64078b3abee14b8883d9722494aa028b25"
+    },
+    {
+      "path": "contracts/schemas/remote-intelligence-adapter-profile.schema.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "175d11f2f9cb3af11e303a979367e7a037d0d9c220808af5e6c4992387e14f79"
+    },
+    {
       "path": "contracts/schemas/requirements.schema.json",
       "authority": "normative",
       "media_type": "application/json",
@@ -4173,7 +4689,7 @@
       "path": "contracts/schemas/validator-extension-registry.schema.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "50f8c3c632c9afc26015ebb05f1eb718531adec868e8f997c8493df5642bdedf"
+      "sha256": "da7090af2a049d937beb12776b7cd6bb6bad10f9ce904efcfcdfbffad81a2b40"
     },
     {
       "path": "contracts/schemas/validator-invocation.schema.json",
@@ -4368,6 +4884,48 @@
       "sha256": "913b22597b5ab1eb51fb9b69cf28531aa734644804289da5ac87320e4b4cf71a"
     },
     {
+      "path": "contracts/transitions/remote-adapter-denial-lifecycle.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "7b103370dd70ff877f10fc660b3418101a848c54c34276d249191d26aec073af"
+    },
+    {
+      "path": "contracts/transitions/remote-adapter-failure-lifecycle.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "5d03a24654e8c47494193be8e0bf131715fd17682873cfa2f7c6b3016b11e4ce"
+    },
+    {
+      "path": "contracts/transitions/remote-adapter-fallback-lifecycle.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "916d9e609ed229ffbe89bbd907f8965a64ead7c4178f59da8946ec64319dbb3f"
+    },
+    {
+      "path": "contracts/transitions/remote-adapter-permitted-egress-lifecycle.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "67bdf3420bda53cc3a02694d7e7ef8a7694964b559592df813a50e63400ae6dd"
+    },
+    {
+      "path": "contracts/transitions/remote-adapter-recovery-lifecycle.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "fac7e990ea4cac2ea766d0eb1bcdefa9606014db1ba9a08f0cb7f82003f448a2"
+    },
+    {
+      "path": "contracts/transitions/remote-adapter-retry-lifecycle.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "7e561d896ce268f197b87ceb822179b36b776618a73f9dd8ddf7566fcc366ded"
+    },
+    {
+      "path": "contracts/transitions/remote-adapter-verdict-lifecycle.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "b7e032bcb55494367b374225d91733af5a721b1e57bec639c63462c983029288"
+    },
+    {
       "path": "contracts/transitions/retry-lifecycle.json",
       "authority": "normative",
       "media_type": "application/json",
@@ -4401,7 +4959,7 @@
       "path": "contracts/validator-extensions.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "3b7e2147684c55d93ea158178836d8b5591a0817f4059f84842d530ab05a22e1"
+      "sha256": "5d3220a6806ed3094e05bd9940e3703163a2ce5f263b3b35dc3a4938877217a4"
     },
     {
       "path": "contracts/vault-mutation-gate/authorized-plan.json",
@@ -4432,6 +4990,12 @@
       "authority": "normative",
       "media_type": "application/json",
       "sha256": "2ff41971191b7e164c4b1102659d3ce5736b32d0546c4b5fad098e263eddfe83"
+    },
+    {
+      "path": "contracts/verdicts/remote-adapter-verdicts.json",
+      "authority": "normative",
+      "media_type": "application/json",
+      "sha256": "007dac933ee74d45541ed91fbd2837482660ec7b5ec23e1a7fc60af531ecc868"
     },
     {
       "path": "contracts/verdicts/validator-verdicts.json",
@@ -4476,10 +5040,16 @@
       "sha256": "296e752c40bbe7842abc2889925719bcb566cf59b8d686382b529a21124743f9"
     },
     {
+      "path": "normative/remote-intelligence-adapter-profile.md",
+      "authority": "normative",
+      "media_type": "text/markdown",
+      "sha256": "df26629ad4ee9cfae66de7fc7c927e5a1284e378101b8046684c21d659c51cf9"
+    },
+    {
       "path": "normative/requirements.json",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "33ba682a343f14e762bef900bfc9ad1e710eb1cbb8e1f9e818f91c6302214aaa"
+      "sha256": "35e879083994819e103701994017e42c5ea95c07c037afad7dd5af13538ab465"
     },
     {
       "path": "normative/semantic-kernel-contract.md",
@@ -4503,11 +5073,11 @@
       "path": "traceability.yaml",
       "authority": "normative",
       "media_type": "application/json",
-      "sha256": "daf2bcbfa9e59ed4ad39e2bb4150bd9920bd0f021ba85fec1aa7b7de9c28e2d9"
+      "sha256": "6fb0000ce45413c14d35b11e78e13f08b181827e7c02fcb5e7d534e690806310"
     }
   ],
-  "normative_digest": "75bc55240a41e9e789af355ab36d06994b99c2364ef3c89c79e40639f9928084",
-  "conformance_digest": "b379d5ffcb9ef3c2496e7f865b643a82ce86b78274c9793846227d4153d8875d",
+  "normative_digest": "1ed1a58ef2eaefff76a3e8b9dba6910fc6c6f731f61471cb76dfa4e7bcf143cf",
+  "conformance_digest": "7458569b56d3b3b0c64aff01058946dabbde066ccfb61b83465359bfaf34969b",
   "amendment_policy": {
     "immutable_after_release": true,
     "in_place_mutation": "forbidden",

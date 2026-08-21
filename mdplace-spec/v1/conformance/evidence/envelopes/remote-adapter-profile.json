@@ -1,0 +1,96 @@
+{
+  "$schema": "../../../contracts/schemas/evidence-envelope.schema.json",
+  "schema_id": "mdplace.evidence-envelope/v1",
+  "envelope_id": "evidence:remote-adapter-profile",
+  "extension_id": "mdplace.validator-extension/evidence/v1",
+  "package_series": "mdplace-spec/v1",
+  "release_version": "1.0.0",
+  "validator_id": "mdplace.package-validator",
+  "validator_version": "1.2.0",
+  "invocation": {
+    "invocation_id": "invocation:remote-adapter-profile",
+    "path": "conformance/evidence/invocations/remote-adapter-profile.json",
+    "sha256": "1d2d8c65668f671b365a6754685b5b8cacb5924c1de86a1958b4a7e97181bac5"
+  },
+  "requirement_id": "REQ-RAP-007",
+  "subject": {
+    "kind": "remote_adapter_claim",
+    "subject_id": "remote-adapter:claim-v1",
+    "schema": "contracts/schemas/remote-adapter-claim-manifest.schema.json",
+    "sha256": "606c4f932c925f34b278147b37c0c7b61ab9b83fc1a100b722ec98f4b90c06e0"
+  },
+  "input_digests": [
+    {
+      "ordinal": 0,
+      "label": "requirements",
+      "path": "normative/requirements.json",
+      "sha256": "35e879083994819e103701994017e42c5ea95c07c037afad7dd5af13538ab465"
+    },
+    {
+      "ordinal": 1,
+      "label": "credential_boundary",
+      "path": "contracts/remote-intelligence-adapter/credential-boundary-evidence.json",
+      "sha256": "bd45d892a7b68d4bf47017a520b3d40b6b7c032eb200f892e3f5831124508103"
+    },
+    {
+      "ordinal": 2,
+      "label": "retention",
+      "path": "contracts/remote-intelligence-adapter/retention-evidence.json",
+      "sha256": "be5ad9fd042b87583d83bd682a19efedcdcb5d8b4e8c99ef97e1bad13cf9d063"
+    },
+    {
+      "ordinal": 3,
+      "label": "fixture_manifest",
+      "path": "contracts/remote-intelligence-adapter/fixture-manifest.json",
+      "sha256": "6c25b07752f8aa8559fbda02c33fe93b1dcf5bea1c96498c86fdd595455f279a"
+    }
+  ],
+  "output_digests": [
+    {
+      "ordinal": 0,
+      "label": "remote_adapter_evidence",
+      "path": "conformance/evidence/remote-adapter-evidence.json",
+      "sha256": "02b81182f76a3eab8f36dba966ef16abd275149b6e9e421f8efffab8835f48e8"
+    },
+    {
+      "ordinal": 1,
+      "label": "recovery_report",
+      "path": "conformance/evidence/remote-adapter-recovery-report.json",
+      "sha256": "c66fcf3d85255655175b0703ad2022738bd613c87de8478ab7822ff3b63b7210"
+    }
+  ],
+  "receipts": [
+    {
+      "ordinal": 0,
+      "receipt_id": "receipt:remote-adapter-profile",
+      "receipt_type": "EvidenceValidationReceipt",
+      "path": "conformance/evidence/remote-adapter-recovery-report.json",
+      "sha256": "c66fcf3d85255655175b0703ad2022738bd613c87de8478ab7822ff3b63b7210"
+    }
+  ],
+  "artifact_digests": [
+    {
+      "ordinal": 0,
+      "label": "profile",
+      "path": "contracts/remote-intelligence-adapter/profile.json",
+      "sha256": "7f73de38e8ae88a14cd20d3ad992ac1ea47fa65397051739e17d53e10efc7fd1"
+    },
+    {
+      "ordinal": 1,
+      "label": "normative_contract",
+      "path": "normative/remote-intelligence-adapter-profile.md",
+      "sha256": "df26629ad4ee9cfae66de7fc7c927e5a1284e378101b8046684c21d659c51cf9"
+    }
+  ],
+  "execution_context": {
+    "runner_id": "mdplace.package-validator",
+    "platform": "platform_neutral",
+    "architecture": "architecture_neutral",
+    "filesystem": "package_fixture",
+    "locale": "C.UTF-8",
+    "timezone": "UTC",
+    "network_access": "denied"
+  },
+  "verdict": "pass",
+  "codes": []
+}

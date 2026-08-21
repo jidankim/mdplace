@@ -1,0 +1,433 @@
+{
+  "$schema": "../schemas/transition-table.schema.json",
+  "schema_id": "mdplace.transition-table/v1",
+  "table_id": "TRANS-RAP-RETRY",
+  "lifecycle": "Remote Intelligence Adapter retry",
+  "version": "1.0.0",
+  "states": [
+    "unavailable",
+    "authorized",
+    "exhausted"
+  ],
+  "commands": [
+    "authorize_remote_retry",
+    "transmit_remote_payload",
+    "exhaust_remote_retry"
+  ],
+  "transitions": [
+    {
+      "transition_id": "TR-RAPRET-001",
+      "command_or_event": "authorize_remote_retry",
+      "from_state": "unavailable",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterTransitionObserved"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "authorized",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPRET-002",
+      "command_or_event": "transmit_remote_payload",
+      "from_state": "unavailable",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "unavailable",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPRET-003",
+      "command_or_event": "exhaust_remote_retry",
+      "from_state": "unavailable",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "unavailable",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPRET-004",
+      "command_or_event": "authorize_remote_retry",
+      "from_state": "authorized",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "authorized",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPRET-005",
+      "command_or_event": "transmit_remote_payload",
+      "from_state": "authorized",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterTransitionObserved"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "unavailable",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPRET-006",
+      "command_or_event": "exhaust_remote_retry",
+      "from_state": "authorized",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterTransitionObserved"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "exhausted",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPRET-007",
+      "command_or_event": "authorize_remote_retry",
+      "from_state": "exhausted",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "exhausted",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPRET-008",
+      "command_or_event": "transmit_remote_payload",
+      "from_state": "exhausted",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "exhausted",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPRET-009",
+      "command_or_event": "exhaust_remote_retry",
+      "from_state": "exhausted",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "mdplace_agent"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterTransitionObserved"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "exhausted",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    }
+  ]
+}

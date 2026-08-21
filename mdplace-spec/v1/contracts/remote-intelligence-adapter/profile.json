@@ -1,0 +1,45 @@
+{
+  "$schema": "../schemas/remote-intelligence-adapter-profile.schema.json",
+  "schema_id": "mdplace.remote-intelligence-adapter-profile/v1",
+  "profile_id": "remote-adapter",
+  "owner": "remote-adapter",
+  "version": "1.0.0",
+  "protocol_ref": "normative/intelligence-adapter-protocol.md",
+  "approved_processing_policy_ref": "contracts/intelligence-adapter/approved-context.json#/policy_binding",
+  "decision": "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093",
+  "locality": "remote",
+  "lifecycle": "isolated_ephemeral_advisory",
+  "provider": {
+    "provider_id": "provider:remote-alpha",
+    "destination_id": "destination:remote-alpha",
+    "endpoint": "https://api.remote-alpha.test/v1/process"
+  },
+  "ceilings": {
+    "input_bytes": 4096,
+    "output_bytes": 3000,
+    "runtime_ms": 800,
+    "cost_microunits": 5000,
+    "attempts": 3,
+    "retries": 1,
+    "fallbacks": 1
+  },
+  "evidence_refs": {
+    "credential_boundary": "contracts/remote-intelligence-adapter/credential-boundary-evidence.json",
+    "retention": "contracts/remote-intelligence-adapter/retention-evidence.json"
+  },
+  "authority": {
+    "semantic": "none",
+    "note_placement": "none",
+    "taxonomy": "none",
+    "projection": "none",
+    "filesystem": "none",
+    "tool": "none",
+    "automation": "none"
+  },
+  "output_schemas": [
+    "contracts/schemas/intelligence-proposal.schema.json",
+    "contracts/schemas/adapter-run-receipt.schema.json"
+  ],
+  "specification_only": true,
+  "network_operation_performed": false
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:remote-adapter-evidence:v1",
+  "title": "mdplace Remote Intelligence Adapter machine evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "evidence_id", "profile_id", "validator_version", "fixture_bindings", "receipt_sha256s", "credential_boundary_evidence_sha256", "retention_evidence_sha256", "fixture_manifest_sha256", "network_operations", "verdict"],
+  "properties": {
+    "$schema": {"const": "../../contracts/schemas/remote-adapter-evidence.schema.json"},
+    "schema_id": {"const": "mdplace.remote-adapter-evidence/v1"},
+    "evidence_id": {"const": "remote-adapter-evidence:v1"},
+    "profile_id": {"const": "remote-adapter"},
+    "validator_version": {"const": "1.2.0"},
+    "fixture_bindings": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/binding"}},
+    "receipt_sha256s": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}},
+    "credential_boundary_evidence_sha256": {"$ref": "#/$defs/digest"},
+    "retention_evidence_sha256": {"$ref": "#/$defs/digest"},
+    "fixture_manifest_sha256": {"$ref": "#/$defs/digest"},
+    "network_operations": {"const": 0},
+    "verdict": {"enum": ["pass", "fail", "unsupported", "inconclusive"]}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "binding": {"type": "object", "additionalProperties": false, "required": ["fixture_id", "path", "fixture_sha256", "receipt_sha256", "verdict"], "properties": {"fixture_id": {"type": "string", "pattern": "^FIX-RAP-PROFILE-[0-9]{3}$"}, "path": {"type": "string", "pattern": "^conformance/scenarios/remote-intelligence-adapter/[a-z0-9][a-z0-9-]*\\.json$"}, "fixture_sha256": {"$ref": "#/$defs/digest"}, "receipt_sha256": {"$ref": "#/$defs/digest"}, "verdict": {"enum": ["pass", "fail", "unsupported", "inconclusive"]}}}
+  }
+}

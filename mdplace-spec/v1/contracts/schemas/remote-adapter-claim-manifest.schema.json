@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:remote-adapter-claim-manifest:v1",
+  "title": "mdplace independent Remote Intelligence Adapter Claim Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "manifest_id", "package_series", "release_version", "validator_id", "validator_version", "rows"],
+  "properties": {
+    "$schema": {"const": "../schemas/remote-adapter-claim-manifest.schema.json"},
+    "schema_id": {"const": "mdplace.remote-adapter-claim-manifest/v1"},
+    "manifest_id": {"const": "remote-adapter-claim:v1"},
+    "package_series": {"const": "mdplace-spec/v1"},
+    "release_version": {"const": "1.0.0"},
+    "validator_id": {"const": "mdplace.package-validator"},
+    "validator_version": {"const": "1.2.0"},
+    "rows": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"$ref": "#/$defs/row"}}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "material": {"type": "object", "additionalProperties": false, "required": ["ordinal", "label", "path", "sha256"], "properties": {"ordinal": {"type": "integer", "minimum": 0}, "label": {"type": "string", "pattern": "^[a-z][a-z0-9_]{1,63}$"}, "path": {"type": "string", "pattern": "^[a-zA-Z0-9][a-zA-Z0-9./-]*$"}, "sha256": {"$ref": "#/$defs/digest"}}},
+    "dependencies": {"type": "object", "additionalProperties": false, "required": ["core", "product_readiness", "local_adapter", "codex_adapter", "placement_automation", "other_profiles"], "properties": {"core": {"const": false}, "product_readiness": {"const": false}, "local_adapter": {"const": false}, "codex_adapter": {"const": false}, "placement_automation": {"const": false}, "other_profiles": {"const": false}}},
+    "row": {"type": "object", "additionalProperties": false, "required": ["id", "owner", "verdict", "evidence_digest", "evidence_material", "dependencies_elevated"], "properties": {"id": {"const": "remote-adapter"}, "owner": {"const": "remote-adapter"}, "verdict": {"enum": ["pass", "fail", "unsupported", "inconclusive"]}, "evidence_digest": {"$ref": "#/$defs/digest"}, "evidence_material": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/material"}}, "dependencies_elevated": {"$ref": "#/$defs/dependencies"}}}
+  }
+}

@@ -24,3 +24,4 @@ import './validator-vault-mutation-gate-cases.mjs';
 import './validator-reference-vault-cases.mjs';
 import './validator-intelligence-adapter-cases.mjs';
 import './validator-local-adapter-cases.mjs';
+import './validator-remote-adapter-cases.mjs';
