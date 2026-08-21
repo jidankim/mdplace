@@ -1,5 +1,11 @@
 import {canonicalJson} from './semantic-kernel-core.mjs';
-import {codexAdapterEvidenceEvaluatedAt, codexSha256} from './codex-adapter-core.mjs';
+import {
+  codexAdapterEvidenceEvaluatedAt,
+  codexAttemptObservation,
+  codexProposalJson,
+  codexSha256,
+} from './codex-adapter-core.mjs';
+import {codexAdapterInterface} from './codex-adapter-invocation.mjs';
 
 const policyDigest = '27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766';
 const sourceProfileDigest = 'e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549';
@@ -48,7 +54,7 @@ function payloadWithBytes(targetBytes) {
   return 'x'.repeat(targetBytes);
 }
 
-function processingEnvelope(scenarioId, payload, staleBinding) {
+export function codexProcessingEnvelope(scenarioId, payload, staleBinding = false) {
   const suffix = scenarioId.toLowerCase();
   return {
     $schema: 'contracts/schemas/processing-envelope.schema.json', schema_id: 'mdplace.processing-envelope/v1',
@@ -94,8 +100,11 @@ function boundaryDocument(envelopeSha256, payload, proofDigests, variant, interf
   const document = {
     $schema: '../schemas/codex-adapter-boundary.schema.json', schema_id: 'mdplace.codex-adapter-boundary/v1',
     boundary_id: 'codex-boundary:v1', profile_id: 'codex-adapter', status: variant,
-    interface: {command: 'codex', subcommand: 'exec', interface_version: '1.0.0', approved_cli_version: '0.104.0', mode: interfaceMode, payload_channel: 'framed_stdin', output_mode: 'bounded_jsonl_with_schema_final'},
-    processing_envelope_ref: 'contracts/intelligence-adapter/approved-context.json#/policy_binding', processing_envelope_sha256: envelopeSha256,
+    interface: codexAdapterInterface(interfaceMode),
+    invocation_contract_sha256: proofDigests.invocationContract,
+    output_schema_sha256: proofDigests.outputSchema,
+    approved_processing_envelope_ref: 'contracts/codex-intelligence-adapter/approved-processing-envelope.json',
+    approved_processing_envelope_sha256: proofDigests.approvedEnvelope, processing_envelope_sha256: envelopeSha256,
     authentication_prerequisite_ref: 'contracts/codex-intelligence-adapter/authentication-prerequisite.json', authentication_prerequisite_sha256: proofDigests.authentication,
     capability_proof_ref: 'contracts/codex-intelligence-adapter/capability-proof.json', capability_proof_sha256: proofDigests.capability,
     network_proof_ref: 'contracts/codex-intelligence-adapter/network-proof.json', network_proof_sha256: proofDigests.network,
@@ -106,33 +115,6 @@ function boundaryDocument(envelopeSha256, payload, proofDigests, variant, interf
   if (interfaceMode === 'interactive_only') document.interface.mode = 'interactive_only';
   const json = canonicalJson(document);
   return {json, sha256: codexSha256(json)};
-}
-
-function proposalDocument(scenarioId, envelopeSha256, rationale) {
-  const rawDigestPlaceholder = '0'.repeat(64);
-  return {
-    schema_id: 'mdplace.codex-adapter-proposal/v1', proposal_id: `codex-proposal:${scenarioId.toLowerCase()}`,
-    profile_id: 'codex-adapter', processing_envelope_sha256: envelopeSha256, raw_output_sha256: rawDigestPlaceholder,
-    proposal_schema_id: 'mdplace.intelligence-proposal/v1', validated: true, advisory_only: true,
-    candidates: [], rationale, warnings: [], abstention_reason: 'insufficient_evidence', tool_requests: [], authority: noneAuthority,
-    semantic_effects: [], filesystem_effects: [],
-  };
-}
-
-function proposalJson(scenarioId, envelopeSha256, targetBytes) {
-  const document = proposalDocument(scenarioId, envelopeSha256, 'bounded inert advice');
-  let output = canonicalJson(document);
-  if (targetBytes !== undefined) {
-    const difference = targetBytes - Buffer.byteLength(output);
-    if (difference < 0) throw new Error(`Codex proposal target ${targetBytes} is below baseline`);
-    document.rationale = `${document.rationale}${'x'.repeat(difference)}`;
-    output = canonicalJson(document);
-  }
-  const parsed = JSON.parse(output);
-  parsed.raw_output_sha256 = codexSha256(canonicalJson({...parsed, raw_output_sha256: '0'.repeat(64)}));
-  output = canonicalJson(parsed);
-  if (targetBytes !== undefined && Buffer.byteLength(output) !== targetBytes) throw new Error('Codex proposal byte target mismatch');
-  return output;
 }
 
 const authorityCases = ['semantic', 'note_placement', 'taxonomy', 'projection', 'filesystem', 'tool', 'command', 'automation']
@@ -162,6 +144,8 @@ export const codexAdapterCases = [
   ['token-limit-exceeded', 'over_boundary', {tokens: 2001}],
   ['cost-limit-exceeded', 'over_boundary', {costMicrounits: 5001}],
   ['interactive-only-execution-denied', 'negative', {interfaceMode: 'interactive_only'}],
+  ['invocation-contract-digest-mismatch-denied', 'negative', {invocationContractDigest: '0'.repeat(64)}],
+  ['output-schema-digest-mismatch-denied', 'negative', {outputSchemaDigest: '0'.repeat(64)}],
   ['missing-boundary-denied', 'negative', {boundaryVariant: 'missing', behavior: 'missing_boundary'}],
   ['stale-binding-denied', 'stale_state', {boundaryVariant: 'stale', behavior: 'stale_binding', staleBinding: true}],
   ...['missing', 'stale', 'unsupported', 'inconclusive', 'failed'].map((variant) => [`${variant}-authentication-prerequisite-denied`, variant === 'stale' ? 'stale_state' : 'negative', {authenticationVariant: variant}]),
@@ -180,7 +164,7 @@ export const codexAdapterCases = [
   ['crash-before-transmission-zero-bytes', 'crash_recovery', {behavior: 'crash_before_transmission', outputKind: 'none'}],
   ['crash-after-transmission-preserves-bytes', 'crash_recovery', {behavior: 'crash_after_transmission', outputKind: 'none'}],
   ['recovery-revalidates-current-bindings', 'crash_recovery', {operation: 'recover', behavior: 'recover_current', outputKind: 'none'}],
-  ['recovery-rejects-stale-bindings', 'stale_state', {operation: 'recover', behavior: 'recover_stale', outputKind: 'none'}],
+  ['recovery-rejects-stale-bindings', 'stale_state', {operation: 'recover', behavior: 'recover_stale', capabilityVariant: 'stale', outputKind: 'none'}],
   ...Object.entries(illegalTransitions).map(([name, pair]) => [
     `illegal-${name}-transition-denied`, 'illegal_transition',
     {operation: 'transition', outputKind: 'none', transitionRef: `contracts/transitions/codex-adapter-${name}-lifecycle.json#${pair}`},
@@ -192,6 +176,7 @@ export const codexAdapterCases = [
 
 export function codexDeniedBeforeTransmission(overrides) {
   return overrides.operation === 'transition' || overrides.operation === 'recover' || overrides.interfaceMode === 'interactive_only' ||
+    overrides.invocationContractDigest !== undefined || overrides.outputSchemaDigest !== undefined ||
     (overrides.boundaryVariant ?? 'current') !== 'current' || (overrides.authenticationVariant ?? 'current') !== 'current' ||
     (overrides.capabilityVariant ?? 'current') !== 'current' || (overrides.networkVariant ?? 'current') !== 'current' ||
     overrides.capabilityMutation === 'expired' || overrides.networkMutation === 'empty_payload_destinations' ||
@@ -205,7 +190,7 @@ export function codexAdapterScenario(index, definition, canonicalEvidence) {
   const payload = overrides.payloadBytes === undefined
     ? (overrides.payload ?? ordinaryPayload)
     : payloadWithBytes(overrides.payloadBytes);
-  const envelope = processingEnvelope(scenarioId, payload, overrides.staleBinding === true);
+  const envelope = codexProcessingEnvelope(scenarioId, payload, overrides.staleBinding === true);
   const envelopeJson = canonicalJson(envelope);
   const envelopeSha256 = codexSha256(envelopeJson);
   const authentication = evidenceVariant(canonicalEvidence.authentication, overrides.authenticationVariant ?? 'current');
@@ -214,12 +199,18 @@ export function codexAdapterScenario(index, definition, canonicalEvidence) {
   const boundary = boundaryDocument(
     envelopeSha256,
     payload,
-    {authentication: authentication.sha256 ?? '0'.repeat(64), capability: capabilityProof.sha256 ?? '0'.repeat(64), network: networkProof.sha256 ?? '0'.repeat(64)},
+    {
+      approvedEnvelope: canonicalEvidence.approvedEnvelopeSha256,
+      invocationContract: overrides.invocationContractDigest ?? canonicalEvidence.invocationContractSha256,
+      outputSchema: overrides.outputSchemaDigest ?? canonicalEvidence.outputSchemaSha256,
+      authentication: authentication.sha256 ?? '0'.repeat(64), capability: capabilityProof.sha256 ?? '0'.repeat(64),
+      network: networkProof.sha256 ?? '0'.repeat(64),
+    },
     overrides.boundaryVariant ?? 'current',
     overrides.interfaceMode ?? 'non_interactive',
   );
   const outputKind = overrides.outputKind ?? 'valid';
-  let rawOutput = proposalJson(scenarioId, envelopeSha256, overrides.actualOutputBytes ?? overrides.outputBytes);
+  let rawOutput = codexProposalJson(scenarioId, envelope, overrides.actualOutputBytes ?? overrides.outputBytes);
   if (outputKind === 'malformed') rawOutput = '{';
   if (outputKind === 'tool_request') rawOutput = '{"tool":"shell","arguments":["mv","note.md"]}';
   if (outputKind === 'command_request') rawOutput = 'Run codex exec with elevated permissions.';
@@ -229,6 +220,9 @@ export function codexAdapterScenario(index, definition, canonicalEvidence) {
   const observedPayload = overrides.observedPayload ?? payload;
   const deniedBeforeTransmission = codexDeniedBeforeTransmission(overrides);
   const transmittedBytes = deniedBeforeTransmission ? 0 : Buffer.byteLength(observedPayload);
+  const runtimeMs = overrides.runtimeMs ?? 250;
+  const isolated = overrides.behavior !== 'isolation_unavailable';
+  const attemptObservation = codexAttemptObservation(scenarioId, runtimeMs, transmittedBytes, isolated, approvedDestination);
   return {
     schema_id: 'mdplace.codex-adapter-scenario/v1', scenario_id: scenarioId, case_id: caseId, category,
     operation: overrides.operation ?? 'execute', evaluated_at: codexAdapterEvidenceEvaluatedAt,
@@ -237,11 +231,12 @@ export function codexAdapterScenario(index, definition, canonicalEvidence) {
     capability_json: capabilityProof.json, capability_sha256: capabilityProof.sha256,
     network_json: networkProof.json, network_sha256: networkProof.sha256,
     processing_envelope_json: envelopeJson, processing_envelope_sha256: envelopeSha256,
+    attempt_observation: attemptObservation,
     payload_base64: Buffer.from(observedPayload).toString('base64'), payload_bytes: Buffer.byteLength(observedPayload), payload_sha256: codexSha256(observedPayload),
     requested_destination: overrides.destination ?? approvedDestination,
     transmitted_bytes: transmittedBytes, transmitted_sha256: deniedBeforeTransmission ? emptyDigest : codexSha256(observedPayload),
     raw_output: rawOutput, output_bytes: overrides.outputBytes ?? (typeof rawOutput === 'string' ? Buffer.byteLength(rawOutput) : 0),
-    jsonl_bytes: overrides.jsonlBytes ?? 1024, runtime_ms: overrides.runtimeMs ?? 250, tokens: overrides.tokens ?? 500, cost_microunits: overrides.costMicrounits ?? 1000,
+    jsonl_bytes: overrides.jsonlBytes ?? 1024, runtime_ms: runtimeMs, tokens: overrides.tokens ?? 500, cost_microunits: overrides.costMicrounits ?? 1000,
     ceilings: {input_bytes: 4096, jsonl_bytes: 8192, output_bytes: 3000, runtime_ms: 800, tokens: 2000, cost_microunits: 5000},
     interface_mode: overrides.interfaceMode ?? 'non_interactive', authentication_variant: overrides.authenticationVariant ?? 'current',
     capability_variant: overrides.capabilityVariant ?? 'current', network_variant: overrides.networkVariant ?? 'current',

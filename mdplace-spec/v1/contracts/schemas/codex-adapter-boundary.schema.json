@@ -11,7 +11,10 @@
     "profile_id",
     "status",
     "interface",
-    "processing_envelope_ref",
+    "invocation_contract_sha256",
+    "output_schema_sha256",
+    "approved_processing_envelope_ref",
+    "approved_processing_envelope_sha256",
     "processing_envelope_sha256",
     "authentication_prerequisite_ref",
     "authentication_prerequisite_sha256",
@@ -63,7 +66,9 @@
         "approved_cli_version",
         "mode",
         "payload_channel",
-        "output_mode"
+        "output_mode",
+        "invocation_contract_ref",
+        "output_schema_ref"
       ],
       "properties": {
         "command": {
@@ -86,11 +91,29 @@
         },
         "output_mode": {
           "const": "bounded_jsonl_with_schema_final"
+        },
+        "invocation_contract_ref": {
+          "const": "contracts/codex-intelligence-adapter/invocation-contract.json"
+        },
+        "output_schema_ref": {
+          "const": "contracts/schemas/codex-adapter-proposal.schema.json"
         }
       }
     },
-    "processing_envelope_ref": {
-      "const": "contracts/intelligence-adapter/approved-context.json#/policy_binding"
+    "invocation_contract_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "output_schema_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "approved_processing_envelope_ref": {
+      "const": "contracts/codex-intelligence-adapter/approved-processing-envelope.json"
+    },
+    "approved_processing_envelope_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
     },
     "processing_envelope_sha256": {
       "type": "string",

@@ -1,226 +1,405 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:mdplace:schema:codex-adapter-receipt:v1",
-  "title": "mdplace deterministic Codex receipt",
+  "title": "mdplace Codex Adapter Run Receipt",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "schema_id",
     "receipt_id",
-    "profile_id",
-    "scenario_id",
-    "outcome",
-    "boundary_sha256",
-    "authentication_prerequisite_sha256",
-    "capability_proof_sha256",
-    "network_proof_sha256",
-    "processing_envelope_sha256",
-    "destination",
+    "receipt_version",
+    "chain_id",
+    "attempt_id",
+    "attempt_class",
+    "attempt_sequence",
+    "authorization_id",
+    "policy_binding",
+    "source_profile_binding",
+    "taxonomy_revision_binding",
+    "envelope_id",
+    "envelope_sha256",
+    "transmission_sha256",
     "transmitted_bytes",
-    "transmitted_sha256",
-    "output_sha256",
-    "proposal_id",
-    "denial",
-    "tool_events_observed",
+    "observed_destination",
+    "effective_capabilities",
+    "retention_artifact_sha256s",
+    "credential_boundary_sha256",
+    "isolation",
+    "budget",
+    "observed_started_at",
+    "observed_completed_at",
+    "provider_request_id",
+    "raw_response_sha256",
+    "proposal_sha256",
+    "outcome",
+    "reason",
     "semantic_effects",
     "filesystem_effects",
-    "authority_effects",
     "tool_invocations",
     "receipt_sha256"
   ],
   "properties": {
     "schema_id": {
-      "const": "mdplace.codex-adapter-receipt/v1"
+      "const": "mdplace.adapter-run-receipt/v1"
     },
     "receipt_id": {
       "type": "string",
-      "pattern": "^codex-receipt:cdx-[0-9]{3}$"
+      "pattern": "^adapter-receipt:[a-z0-9-]{3,64}$"
     },
-    "profile_id": {
-      "const": "codex-adapter"
+    "receipt_version": {
+      "const": "1.0.0"
     },
-    "scenario_id": {
+    "chain_id": {
       "type": "string",
-      "pattern": "^CDX-[0-9]{3}$"
+      "minLength": 1
     },
-    "outcome": {
+    "attempt_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "attempt_class": {
       "enum": [
-        "accepted",
-        "denied",
-        "rejected",
-        "recovery_required",
-        "recovered"
+        "primary",
+        "retry",
+        "fallback"
       ]
     },
-    "boundary_sha256": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "pattern": "^[a-f0-9]{64}$"
+    "attempt_sequence": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2
     },
-    "authentication_prerequisite_sha256": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "pattern": "^[a-f0-9]{64}$"
-    },
-    "capability_proof_sha256": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "pattern": "^[a-f0-9]{64}$"
-    },
-    "network_proof_sha256": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "pattern": "^[a-f0-9]{64}$"
-    },
-    "processing_envelope_sha256": {
+    "authorization_id": {
       "type": "string",
-      "pattern": "^[a-f0-9]{64}$"
+      "minLength": 1
     },
-    "destination": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "format": "uri"
+    "policy_binding": {
+      "$ref": "#/$defs/versionBinding"
+    },
+    "source_profile_binding": {
+      "$ref": "#/$defs/versionBinding"
+    },
+    "taxonomy_revision_binding": {
+      "$ref": "#/$defs/taxonomyRevisionBinding"
+    },
+    "envelope_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "envelope_sha256": {
+      "$ref": "#/$defs/digest"
+    },
+    "transmission_sha256": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/digest"
+        }
+      ]
     },
     "transmitted_bytes": {
       "type": "integer",
       "minimum": 0
     },
-    "transmitted_sha256": {
-      "type": "string",
-      "pattern": "^[a-f0-9]{64}$"
-    },
-    "output_sha256": {
+    "observed_destination": {
       "type": [
         "string",
         "null"
-      ],
-      "pattern": "^[a-f0-9]{64}$"
+      ]
     },
-    "proposal_id": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "pattern": "^codex-proposal:cdx-[0-9]{3}$"
+    "effective_capabilities": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
     },
-    "denial": {
+    "retention_artifact_sha256s": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/digest"
+      }
+    },
+    "credential_boundary_sha256": {
+      "$ref": "#/$defs/digest"
+    },
+    "isolation": {
+      "$ref": "#/$defs/isolation"
+    },
+    "budget": {
+      "$ref": "#/$defs/budget"
+    },
+    "observed_started_at": {
+      "$ref": "#/$defs/timestamp"
+    },
+    "observed_completed_at": {
+      "$ref": "#/$defs/timestamp"
+    },
+    "provider_request_id": {
       "oneOf": [
         {
-          "$ref": "#/$defs/denial"
+          "type": "null"
         },
         {
-          "type": "null"
+          "type": "string",
+          "pattern": "^provider-request:[a-z0-9-]{3,80}$"
         }
       ]
     },
-    "tool_events_observed": {
-      "type": "integer",
-      "minimum": 0
+    "raw_response_sha256": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/digest"
+        }
+      ]
+    },
+    "proposal_sha256": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/digest"
+        }
+      ]
+    },
+    "outcome": {
+      "enum": [
+        "accepted",
+        "denied",
+        "timeout",
+        "retry_scheduled",
+        "retry_exhausted",
+        "fallback_scheduled",
+        "fallback_exhausted",
+        "malformed_output",
+        "budget_exhausted",
+        "isolation_failure",
+        "recovery_required",
+        "recovered"
+      ]
+    },
+    "reason": {
+      "enum": [
+        "adapter.policy_binding_denied",
+        "adapter.source_profile_binding_denied",
+        "adapter.provider_denied",
+        "adapter.purpose_denied",
+        "adapter.destination_denied",
+        "adapter.field_denied",
+        "adapter.artifact_denied",
+        "adapter.redaction_unproven",
+        "adapter.retention_unproven",
+        "adapter.capability_denied",
+        "adapter.credential_boundary_denied",
+        "adapter.input_budget_exhausted",
+        "adapter.isolation_failed",
+        "adapter.canary_failed",
+        "adapter.tool_request_denied",
+        "adapter.secret_request_denied",
+        "adapter.ambient_config_denied",
+        "adapter.filesystem_authority_denied",
+        "adapter.semantic_authority_denied",
+        "adapter.placement_authority_denied",
+        "adapter.timeout",
+        "adapter.output_budget_exhausted",
+        "adapter.cost_budget_exhausted",
+        "adapter.malformed_output",
+        "adapter.proposal_binding_denied",
+        "adapter.cached_proposal_stale",
+        "adapter.retry_scheduled",
+        "adapter.retry_exhausted",
+        "adapter.fallback_scheduled",
+        "adapter.fallback_exhausted",
+        "adapter.recovery_unknown_completion",
+        "adapter.recovery_before_transmission_denied",
+        "adapter.illegal_transition",
+        "adapter.proposal_accepted_as_advice"
+      ]
     },
     "semantic_effects": {
       "type": "array",
-      "maxItems": 0
+      "maxItems": 0,
+      "items": {
+        "type": "string"
+      }
     },
     "filesystem_effects": {
       "type": "array",
-      "maxItems": 0
-    },
-    "authority_effects": {
-      "type": "array",
-      "maxItems": 0
+      "maxItems": 0,
+      "items": {
+        "type": "string"
+      }
     },
     "tool_invocations": {
       "type": "array",
-      "maxItems": 0
+      "maxItems": 0,
+      "items": {
+        "type": "string"
+      }
     },
     "receipt_sha256": {
-      "type": "string",
-      "pattern": "^[a-f0-9]{64}$"
+      "$ref": "#/$defs/digest"
     }
   },
   "$defs": {
-    "denial": {
-      "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "$id": "urn:mdplace:schema:codex-adapter-denial:v1",
-      "title": "mdplace Codex denial evidence",
+    "digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-([0-2][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]\\.[0-9]{3}Z$"
+    },
+    "versionBinding": {
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "schema_id",
-        "denial_id",
-        "profile_id",
-        "scenario_id",
-        "code",
-        "boundary",
-        "transmitted_bytes",
-        "transmitted_sha256",
-        "destination",
-        "semantic_effects",
-        "filesystem_effects",
-        "tool_invocations"
+        "id",
+        "version",
+        "sha256"
       ],
       "properties": {
-        "schema_id": {
-          "const": "mdplace.codex-adapter-denial/v1"
-        },
-        "denial_id": {
+        "id": {
           "type": "string",
-          "pattern": "^codex-denial:cdx-[0-9]{3}$"
+          "minLength": 1
         },
-        "profile_id": {
-          "const": "codex-adapter"
-        },
-        "scenario_id": {
+        "version": {
           "type": "string",
-          "pattern": "^CDX-[0-9]{3}$"
+          "minLength": 1
         },
-        "code": {
+        "sha256": {
+          "$ref": "#/$defs/digest"
+        }
+      }
+    },
+    "taxonomyRevisionBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "revision",
+        "sha256"
+      ],
+      "properties": {
+        "id": {
           "type": "string",
-          "pattern": "^codex\\.[a-z0-9_]+$"
+          "minLength": 1
         },
-        "boundary": {
-          "enum": [
-            "pre_transmission",
-            "post_response_validation",
-            "recovery"
-          ]
-        },
-        "transmitted_bytes": {
+        "revision": {
           "type": "integer",
           "minimum": 0
         },
-        "transmitted_sha256": {
+        "sha256": {
+          "$ref": "#/$defs/digest"
+        }
+      }
+    },
+    "isolation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ephemeral",
+        "fresh_process",
+        "filesystem",
+        "tools",
+        "ambient_configuration",
+        "credential_visibility",
+        "network_scope",
+        "canary_id",
+        "canary_challenge_sha256",
+        "canary_expected_sha256",
+        "canary_observed_sha256",
+        "canary_passed"
+      ],
+      "properties": {
+        "ephemeral": {
+          "type": "boolean"
+        },
+        "fresh_process": {
+          "type": "boolean"
+        },
+        "filesystem": {
+          "enum": [
+            "none",
+            "present"
+          ]
+        },
+        "tools": {
+          "enum": [
+            "none",
+            "present"
+          ]
+        },
+        "ambient_configuration": {
+          "enum": [
+            "unreadable",
+            "readable"
+          ]
+        },
+        "credential_visibility": {
+          "enum": [
+            "none",
+            "visible"
+          ]
+        },
+        "network_scope": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "canary_id": {
           "type": "string",
-          "pattern": "^[a-f0-9]{64}$"
+          "minLength": 1
         },
-        "destination": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "uri"
+        "canary_challenge_sha256": {
+          "$ref": "#/$defs/digest"
         },
-        "semantic_effects": {
-          "type": "array",
-          "maxItems": 0
+        "canary_expected_sha256": {
+          "$ref": "#/$defs/digest"
         },
-        "filesystem_effects": {
-          "type": "array",
-          "maxItems": 0
+        "canary_observed_sha256": {
+          "$ref": "#/$defs/digest"
         },
-        "tool_invocations": {
-          "type": "array",
-          "maxItems": 0
+        "canary_passed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "input_bytes",
+        "output_bytes",
+        "runtime_ms",
+        "cost_microunits"
+      ],
+      "properties": {
+        "input_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "output_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "runtime_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cost_microunits": {
+          "type": "integer",
+          "minimum": 0
         }
       }
     }

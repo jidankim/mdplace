@@ -4,24 +4,20 @@ import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {
   codexAdapterCategories,
   codexAdapterEvidenceDigest,
+  codexAdapterReceiptDigest,
   codexAdapterRequirementIds,
   codexDecisionIds,
   codexDecisionInputs,
+  codexReceiptMatchesScenario,
   codexSha256,
 } from './codex-adapter-core.mjs';
 import {codexAdapterCases} from './codex-adapter-fixtures.mjs';
-import {
-  codexAdapterReceiptDigest,
-  codexReceiptMatchesScenario,
-  observeCodexAdapterScenario,
-} from './codex-adapter-observer.mjs';
+import {observeCodexAdapterScenario} from './codex-adapter-observer.mjs';
 import {readPackageFile} from './safe-path.mjs';
-
 function result(codes) {
   const uniqueCodes = [...new Set(codes)];
   return {id: 'codex-intelligence-adapter-profile', verdict: uniqueCodes.length === 0 ? 'pass' : 'fail', codes: uniqueCodes};
 }
-
 async function readJson(packageRoot, path) {
   const read = await readPackageFile(packageRoot, path);
   if (read.status !== 'present') return {read, document: null};
@@ -31,7 +27,6 @@ async function readJson(packageRoot, path) {
     return {read, document: null};
   }
 }
-
 async function validateDocument(packageRoot, path, schema, codes) {
   const value = await readJson(packageRoot, path);
   if (value.document === null) {
@@ -46,7 +41,6 @@ async function validateDocument(packageRoot, path, schema, codes) {
   }
   return value;
 }
-
 function completeReachableTable(document) {
   const pairs = document.states.flatMap((state) => document.commands.map((command) => `${state}:${command}`));
   const rows = document.transitions.map(({from_state: state, command_or_event: command}) => `${state}:${command}`);
@@ -64,7 +58,6 @@ function completeReachableTable(document) {
   }
   return document.states.every((state) => reachable.has(state));
 }
-
 async function materialCodes(row, packageRoot) {
   const codes = [];
   const material = Array.isArray(row?.evidence_material) ? row.evidence_material : [];
@@ -78,7 +71,6 @@ async function materialCodes(row, packageRoot) {
   if (row.evidence_digest !== codexAdapterEvidenceDigest(material)) codes.push('codex.claim_evidence_digest_mismatch');
   return codes;
 }
-
 export async function codexAdapterClaimCodes(claim, packageRoot) {
   const rows = Array.isArray(claim?.rows) ? claim.rows : [];
   if (rows.length !== 1 || rows[0]?.id !== 'codex-adapter' || rows[0]?.owner !== 'codex-adapter') {
@@ -91,19 +83,26 @@ export async function codexAdapterClaimCodes(claim, packageRoot) {
   }
   return codes;
 }
-
 function exactProfile(profile) {
   return profile?.profile_id === 'codex-adapter' && profile.owner === 'codex-adapter' &&
     profile.interface?.command === 'codex' && profile.interface?.subcommand === 'exec' &&
     profile.interface?.approved_cli_version === '0.104.0' && profile.interface?.mode === 'non_interactive' &&
+    profile.interface?.invocation_contract_ref === 'contracts/codex-intelligence-adapter/invocation-contract.json' &&
+    profile.interface?.output_schema_ref === 'contracts/schemas/codex-adapter-proposal.schema.json' &&
     profile.exact_destination === 'https://codex.openai.test/v1/execute' &&
     isDeepStrictEqual(profile.decision_inputs, codexDecisionInputs) &&
     Object.values(profile.authority ?? {}).every((value) => value === 'none') &&
     profile.specification_only === true && profile.live_codex_behavior_asserted === false && profile.network_operation_performed === false;
 }
-
-function exactProofs(boundary, authentication, capability, network) {
+function exactProofs(boundary, invocation, authentication, capability, network, digests) {
   return boundary?.status === 'current' && boundary.interface?.mode === 'non_interactive' &&
+    boundary.interface?.invocation_contract_ref === 'contracts/codex-intelligence-adapter/invocation-contract.json' &&
+    boundary.interface?.output_schema_ref === 'contracts/schemas/codex-adapter-proposal.schema.json' &&
+    boundary.invocation_contract_sha256 === digests.invocation && boundary.output_schema_sha256 === digests.outputSchema &&
+    invocation?.output?.schema_ref === 'contracts/schemas/codex-adapter-proposal.schema.json' &&
+    invocation.output.schema_sha256 === digests.outputSchema &&
+    boundary.approved_processing_envelope_ref === 'contracts/codex-intelligence-adapter/approved-processing-envelope.json' &&
+    boundary.approved_processing_envelope_sha256 === digests.approvedEnvelope &&
     authentication?.status === 'current' && authentication.satisfied === true && authentication.opaque === true &&
     authentication.secret_observed === false && authentication.claims_established.length === 0 &&
     capability?.status === 'current' && capability.proof_result === 'exact' && capability.inventories.model_visible_tools.length === 0 &&
@@ -111,18 +110,28 @@ function exactProofs(boundary, authentication, capability, network) {
     network?.status === 'current' && network.proof_result === 'exact' &&
     network.allowed_destination === 'https://codex.openai.test/v1/execute' && network.unauthorized_destination_bytes === 0;
 }
-
 function exactVerdicts(document) {
   return isDeepStrictEqual(document?.precedence, ['fail', 'unsupported', 'inconclusive', 'pass']) &&
     isDeepStrictEqual(document?.rows?.map(({verdict}) => verdict), ['pass', 'fail', 'unsupported', 'inconclusive']) &&
     document.rows[0].claim_effect === 'eligible_pass' && document.rows.slice(1).every(({claim_effect: effect}) => effect === 'deny_pass');
 }
-
+function observedDenial(observed) {
+  for (const value of observed.observations) {
+    try {
+      const document = typeof value === 'string' ? JSON.parse(value) : value;
+      if (document?.schema_id === 'mdplace.codex-adapter-denial/v1') return document;
+    } catch {
+      continue;
+    }
+  }
+  return null;
+}
 export async function checkCodexAdapterProfile(packageRoot, conformance, traceability) {
   const codes = [];
   const bindings = [
     ['contracts/codex-intelligence-adapter/profile.json', 'contracts/schemas/codex-intelligence-adapter-profile.schema.json'],
     ['contracts/codex-intelligence-adapter/boundary.json', 'contracts/schemas/codex-adapter-boundary.schema.json'],
+    ['contracts/codex-intelligence-adapter/invocation-contract.json', 'contracts/schemas/codex-invocation-contract.schema.json'],
     ['contracts/codex-intelligence-adapter/authentication-prerequisite.json', 'contracts/schemas/codex-authentication-prerequisite.schema.json'],
     ['contracts/codex-intelligence-adapter/capability-proof.json', 'contracts/schemas/codex-capability-proof.schema.json'],
     ['contracts/codex-intelligence-adapter/network-proof.json', 'contracts/schemas/codex-network-proof.schema.json'],
@@ -134,14 +143,27 @@ export async function checkCodexAdapterProfile(packageRoot, conformance, traceab
   ];
   const documents = await Promise.all(bindings.map(([path, schema]) => validateDocument(packageRoot, path, schema, codes)));
   if (documents.some(({document}) => document === null)) return result(codes);
-  const [profile, boundary, authentication, capability, network, fixtureManifest, claim, verdicts, evidence, recovery] = documents.map(({document}) => document);
+  const [profile, boundary, invocation, authentication, capability, network, fixtureManifest, claim, verdicts, evidence, recovery] = documents.map(({document}) => document);
+  const outputSchema = await readPackageFile(packageRoot, 'contracts/schemas/codex-adapter-proposal.schema.json');
+  const approvedEnvelope = await validateDocument(
+    packageRoot,
+    'contracts/codex-intelligence-adapter/approved-processing-envelope.json',
+    'contracts/schemas/processing-envelope.schema.json',
+    codes,
+  );
+  const protocol = await validateDocument(packageRoot, 'contracts/intelligence-adapter/protocol-rules.json', 'contracts/schemas/intelligence-adapter-protocol-rules.schema.json', codes);
+  if (approvedEnvelope.document === null || outputSchema.status !== 'present') codes.push('codex.profile_boundary_invalid');
   if (!exactProfile(profile)) codes.push('codex.profile_boundary_invalid');
-  if (!exactProofs(boundary, authentication, capability, network)) codes.push('codex.proof_boundary_invalid');
-  if (boundary.authentication_prerequisite_sha256 !== codexSha256(documents[2].read.content) ||
-      boundary.capability_proof_sha256 !== codexSha256(documents[3].read.content) ||
-      boundary.network_proof_sha256 !== codexSha256(documents[4].read.content)) codes.push('codex.boundary_proof_binding_invalid');
+  if (!isDeepStrictEqual(boundary.interface, profile.interface)) codes.push('codex.profile_boundary_invalid');
+  if (!exactProofs(boundary, invocation, authentication, capability, network, {
+    approvedEnvelope: approvedEnvelope.read.status === 'present' ? codexSha256(approvedEnvelope.read.content) : null,
+    invocation: codexSha256(documents[2].read.content),
+    outputSchema: outputSchema.status === 'present' ? codexSha256(outputSchema.content) : null,
+  })) codes.push('codex.proof_boundary_invalid');
+  if (boundary.authentication_prerequisite_sha256 !== codexSha256(documents[3].read.content) ||
+      boundary.capability_proof_sha256 !== codexSha256(documents[4].read.content) ||
+      boundary.network_proof_sha256 !== codexSha256(documents[5].read.content)) codes.push('codex.boundary_proof_binding_invalid');
   if (!exactVerdicts(verdicts)) codes.push('codex.verdict_table_invalid');
-
   const transitionNames = ['capability-proof', 'network-proof', 'authentication-prerequisite', 'proposal-validation', 'denial', 'failure', 'recovery'];
   const transitions = await Promise.all(transitionNames.map((name) => validateDocument(
     packageRoot, `contracts/transitions/codex-adapter-${name}-lifecycle.json`, 'contracts/schemas/transition-table.schema.json', codes,
@@ -171,13 +193,25 @@ export async function checkCodexAdapterProfile(packageRoot, conformance, traceab
     if (observed.receipts.length !== 1) { codes.push('codex.receipt_invalid'); continue; }
     const receipt = JSON.parse(observed.receipts[0]);
     const receiptCode = schemaErrorCode(await validateAgainstSchemaPath(packageRoot, 'contracts/schemas/codex-adapter-receipt.schema.json', receipt));
-    if (receiptCode !== null || !codexReceiptMatchesScenario(receipt, fixture.subject.document) || receipt.receipt_sha256 !== codexAdapterReceiptDigest(receipt)) codes.push('codex.receipt_invalid');
-    if (receipt.denial !== null) {
-      const denialCode = schemaErrorCode(await validateAgainstSchemaPath(packageRoot, 'contracts/schemas/codex-adapter-denial.schema.json', receipt.denial));
-      if (denialCode !== null || receipt.denial.semantic_effects.length !== 0 || receipt.denial.filesystem_effects.length !== 0 || receipt.denial.tool_invocations.length !== 0) codes.push('codex.denial_evidence_invalid');
-      if (receipt.denial.boundary === 'pre_transmission' && (receipt.transmitted_bytes !== 0 || receipt.destination !== null || receipt.transmitted_sha256 !== codexSha256(Buffer.alloc(0)))) codes.push('codex.zero_byte_denial_invalid');
+    const recoveredReceiptMatches = recoveryRecord !== null && observed.codes.length === 0
+      ? receipt.receipt_sha256 === recoveryRecord.target_receipt_sha256
+      : codexReceiptMatchesScenario(receipt, fixture.subject.document);
+    const reasonRule = protocol.document?.receipt_reasons?.find(({code}) => code === receipt.reason);
+    if (receiptCode !== null || !recoveredReceiptMatches || receipt.receipt_sha256 !== codexAdapterReceiptDigest(receipt) ||
+        reasonRule?.outcome !== receipt.outcome) codes.push('codex.receipt_invalid');
+    const denial = observedDenial(observed);
+    if ((observed.codes.length === 0) !== (denial === null)) codes.push('codex.denial_evidence_invalid');
+    if (denial !== null) {
+      const denialCode = schemaErrorCode(await validateAgainstSchemaPath(packageRoot, 'contracts/schemas/codex-adapter-denial.schema.json', denial));
+      if (denialCode !== null || !observed.codes.includes(denial.code) || denial.semantic_effects.length !== 0 || denial.filesystem_effects.length !== 0 || denial.tool_invocations.length !== 0 ||
+          denial.transmitted_bytes !== receipt.transmitted_bytes || denial.destination !== receipt.observed_destination ||
+          denial.transmitted_sha256 !== receipt.transmission_sha256) codes.push('codex.denial_evidence_invalid');
+      if (denial.boundary === 'pre_transmission' && (receipt.transmitted_bytes !== 0 || receipt.observed_destination !== null || receipt.transmission_sha256 !== codexSha256(Buffer.alloc(0)) || denial.transmitted_sha256 !== codexSha256(Buffer.alloc(0)))) codes.push('codex.zero_byte_denial_invalid');
     }
-    records.push({entry, observed, receipt, fixtureSha256: codexSha256(fixtureResult.read.content)});
+    records.push({
+      entry, document: fixture.subject.document, observed, receipt,
+      fixtureSha256: codexSha256(fixtureResult.read.content),
+    });
   }
 
   const expectedBindings = records.map(({entry, observed, receipt, fixtureSha256}) => ({
@@ -186,11 +220,45 @@ export async function checkCodexAdapterProfile(packageRoot, conformance, traceab
   }));
   if (!isDeepStrictEqual(evidence.fixture_bindings, expectedBindings) ||
       !isDeepStrictEqual(evidence.receipt_sha256s, expectedBindings.map(({receipt_sha256}) => receipt_sha256)) ||
-      evidence.boundary_sha256 !== codexSha256(documents[1].read.content) || evidence.authentication_prerequisite_sha256 !== codexSha256(documents[2].read.content) ||
-      evidence.capability_proof_sha256 !== codexSha256(documents[3].read.content) || evidence.network_proof_sha256 !== codexSha256(documents[4].read.content) ||
-      evidence.fixture_manifest_sha256 !== codexSha256(documents[5].read.content) || evidence.network_operations !== 0 || evidence.intake_fixtures !== 0 || evidence.stateful_scenarios !== 0 || evidence.verdict !== 'pass') codes.push('codex.machine_evidence_invalid');
-  if (recovery.claim_manifest_sha256 !== codexSha256(documents[6].read.content) || recovery.evidence_digest !== claim.rows[0].evidence_digest ||
-      recovery.parsed_artifacts_revalidated !== true || recovery.cases.length !== 4 || recovery.network_operations !== 0 || recovery.verdict !== 'pass') codes.push('codex.recovery_evidence_invalid');
+      evidence.approved_processing_envelope_sha256 !== (approvedEnvelope.read.status === 'present' ? codexSha256(approvedEnvelope.read.content) : null) ||
+      evidence.boundary_sha256 !== codexSha256(documents[1].read.content) ||
+      evidence.invocation_contract_sha256 !== codexSha256(documents[2].read.content) ||
+      evidence.output_schema_sha256 !== (outputSchema.status === 'present' ? codexSha256(outputSchema.content) : null) ||
+      evidence.authentication_prerequisite_sha256 !== codexSha256(documents[3].read.content) ||
+      evidence.capability_proof_sha256 !== codexSha256(documents[4].read.content) || evidence.network_proof_sha256 !== codexSha256(documents[5].read.content) ||
+      evidence.fixture_manifest_sha256 !== codexSha256(documents[6].read.content) || evidence.network_operations !== 0 || evidence.intake_fixtures !== 0 || evidence.stateful_scenarios !== 0 || evidence.verdict !== 'pass') codes.push('codex.machine_evidence_invalid');
+  const recoveryBehaviors = new Set(['crash_before_transmission', 'crash_after_transmission', 'recover_current', 'recover_stale']);
+  const recoveryRecords = records.filter(({document}) => recoveryBehaviors.has(document.behavior));
+  const requiredRecoveryBehaviors = ['crash_before_transmission', 'crash_after_transmission', 'recover_current', 'recover_stale'];
+  const recoveryProjectionComplete = requiredRecoveryBehaviors.every((behavior) =>
+    recoveryRecords.filter(({document}) => document.behavior === behavior).length === 1);
+  const expectedRecoveryBindings = recoveryProjectionComplete ? recoveryRecords.map(({entry, document, observed, receipt}) => {
+    const targetBehavior = document.behavior === 'recover_current' ? 'crash_after_transmission' :
+      document.behavior === 'recover_stale' ? 'crash_before_transmission' : document.behavior;
+    const target = recoveryRecords.find(({document: candidate}) => candidate.behavior === targetBehavior);
+    const envelope = JSON.parse(target.document.processing_envelope_json);
+    return {
+      fixture_id: entry.fixture_id,
+      target_fixture_id: target.entry.fixture_id,
+      target_path: `conformance/${target.entry.path}`,
+      target_chain_id: envelope.chain_id,
+      target_attempt_id: envelope.attempt_id,
+      target_attempt_sequence: envelope.attempt_sequence,
+      target_attempt_class: 'primary',
+      target_authorization_id: envelope.authorization_id,
+      target_envelope_id: envelope.envelope_id,
+      target_envelope_sha256: target.document.processing_envelope_sha256,
+      preceding_receipt_sha256s: [],
+      target_receipt_sha256: target.receipt.receipt_sha256,
+      terminal_state: observed.terminal_state,
+      receipt_sha256: receipt.receipt_sha256,
+    };
+  }) : [];
+  if (recovery.claim_manifest_sha256 !== codexSha256(documents[7].read.content) || recovery.evidence_digest !== claim.rows[0].evidence_digest ||
+      recovery.parsed_artifacts_revalidated !== true || recovery.cases.length !== 4 ||
+      !recoveryProjectionComplete ||
+      !isDeepStrictEqual(recovery.cases, expectedRecoveryBindings) ||
+      recovery.network_operations !== 0 || recovery.verdict !== 'pass') codes.push('codex.recovery_evidence_invalid');
 
   const traces = Array.isArray(traceability?.records) ? traceability.records.filter(({requirement_id: id}) => id?.startsWith('REQ-CODEX-')) : [];
   if (traces.length !== codexAdapterRequirementIds.length || !isDeepStrictEqual(traces.map(({requirement_id: id}) => id), codexAdapterRequirementIds) ||

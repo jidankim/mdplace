@@ -10,14 +10,14 @@
   "invocation": {
     "invocation_id": "invocation:codex-adapter-profile",
     "path": "conformance/evidence/invocations/codex-adapter-profile.json",
-    "sha256": "00d656eee749f39d9296f827045554f8bfb7c479455c26cf1d36e359db5d8f65"
+    "sha256": "56a47651fe143330096568a0197af98e33a15d51832e05f7989c23571df8eb25"
   },
   "requirement_id": "REQ-CODEX-006",
   "subject": {
     "kind": "codex_adapter_claim",
     "subject_id": "codex-adapter:claim-v1",
     "schema": "contracts/schemas/codex-adapter-claim-manifest.schema.json",
-    "sha256": "a8e0dc4b6ee8d5dce766c54921200497398da4d624ded40c9d409bf9cca095ae"
+    "sha256": "81c4387c6e713c8e610128bc934cb85ce2d19a884e92af5f4e8bb3c4555d872f"
   },
   "input_digests": [
     {
@@ -30,31 +30,49 @@
       "ordinal": 1,
       "label": "boundary",
       "path": "contracts/codex-intelligence-adapter/boundary.json",
-      "sha256": "ebd492711cb60b22e316d2703d2c22d928ceb63d49022582b1aa2398a5911dc7"
+      "sha256": "cfda1ea195107c08b48d73f8557ad5b83478f655f59310223ce88bfd1f73a000"
     },
     {
       "ordinal": 2,
+      "label": "invocation_contract",
+      "path": "contracts/codex-intelligence-adapter/invocation-contract.json",
+      "sha256": "dcfb34f86d88915b78551d9bb5723e698ec9aad1ca644713f2225e5780f87670"
+    },
+    {
+      "ordinal": 3,
+      "label": "output_schema",
+      "path": "contracts/schemas/codex-adapter-proposal.schema.json",
+      "sha256": "a085da5e720a54de22febe3bfc21c0f2e9e14d29ec336a20468ffc6e3d415c05"
+    },
+    {
+      "ordinal": 4,
+      "label": "approved_processing_envelope",
+      "path": "contracts/codex-intelligence-adapter/approved-processing-envelope.json",
+      "sha256": "c444553f831bfb3a8c13a3e85e436c0a1a8f43041d24abd5caf9d2a7f14436ef"
+    },
+    {
+      "ordinal": 5,
       "label": "authentication",
       "path": "contracts/codex-intelligence-adapter/authentication-prerequisite.json",
       "sha256": "34694252b7eaa71d3da78bcf9447370766b53397a48a20f1159938005938c2b9"
     },
     {
-      "ordinal": 3,
+      "ordinal": 6,
       "label": "capability",
       "path": "contracts/codex-intelligence-adapter/capability-proof.json",
       "sha256": "71923d793b2a081a3349ac74f8049863d482dfbcf853b73a978b8e5bb4387e44"
     },
     {
-      "ordinal": 4,
+      "ordinal": 7,
       "label": "network",
       "path": "contracts/codex-intelligence-adapter/network-proof.json",
       "sha256": "1bba1d77be7e50e44c3503c8aac0384e1fbcc004a62df8ba8bd6ad6ea2400445"
     },
     {
-      "ordinal": 5,
+      "ordinal": 8,
       "label": "fixture_manifest",
       "path": "contracts/codex-intelligence-adapter/fixture-manifest.json",
-      "sha256": "bdc742dd4d1c1399060dfd1657ff8bae8edcf687752814fbf24350fbe31a7a00"
+      "sha256": "0082826486ba990380d556db281555daf8ed049c63205a3d806500d9072fd52e"
     }
   ],
   "output_digests": [
@@ -62,13 +80,13 @@
       "ordinal": 0,
       "label": "codex_adapter_evidence",
       "path": "conformance/evidence/codex-adapter-evidence.json",
-      "sha256": "38f09992700322ccea6374dd452cdb9da5a4e3192e285335b7200b6258701866"
+      "sha256": "cb2b6b71780042e945327b5d623b77b56fb50983e474dab6e06d6fb3babaf919"
     },
     {
       "ordinal": 1,
       "label": "recovery_report",
       "path": "conformance/evidence/codex-adapter-recovery-report.json",
-      "sha256": "d80f48e0df14fe27e3709692075ba6a82d148e92be01944e0ff0c9cb36f61edb"
+      "sha256": "859a5da4ef7ec23001999da3164d9db05a70357f6e8af3388d3f70e04d9cff26"
     }
   ],
   "receipts": [
@@ -77,7 +95,7 @@
       "receipt_id": "receipt:codex-adapter-profile",
       "receipt_type": "EvidenceValidationReceipt",
       "path": "conformance/evidence/codex-adapter-recovery-report.json",
-      "sha256": "d80f48e0df14fe27e3709692075ba6a82d148e92be01944e0ff0c9cb36f61edb"
+      "sha256": "859a5da4ef7ec23001999da3164d9db05a70357f6e8af3388d3f70e04d9cff26"
     }
   ],
   "artifact_digests": [
@@ -85,13 +103,13 @@
       "ordinal": 0,
       "label": "profile",
       "path": "contracts/codex-intelligence-adapter/profile.json",
-      "sha256": "5fe6130f3807b3d75a03ae9f4dff002bd55b904a6ea5924f7f94c946af76fe98"
+      "sha256": "606b3dccce6c93cfd939b559780ff545abfec0adcd534500845e65072c2f91ef"
     },
     {
       "ordinal": 1,
       "label": "normative_contract",
       "path": "normative/codex-intelligence-adapter-profile.md",
-      "sha256": "92beea18078105b17c9d50fa8ab2568cc556b84d9c39a825227b36f6aef1da63"
+      "sha256": "bb11cb45e13645b7a17fccd0e631b1afb9cd005611a9330029fc8b8375e5982e"
     }
   ],
   "execution_context": {

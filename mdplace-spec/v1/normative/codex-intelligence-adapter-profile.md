@@ -11,7 +11,7 @@ The profile identifiers, versions, destinations, bytes, and observations below a
 
 The terms **Codex Intelligence Adapter**, **Intelligence Adapter**, **Processing Envelope**, **Intelligence Proposal**, **Adapter Run Receipt**, **Conformance Profile**, **Claim Manifest**, **Conformance Verdict**, **Conformance Fixture**, and **Traceability Record** have the meanings fixed in the package vocabulary. A conforming artifact MUST use the stable profile and owner identifier `codex-adapter`, the requirement identifiers `REQ-CODEX-001` through `REQ-CODEX-008`, and the fixture namespace `FIX-CODEX-PROFILE-NNN`.
 
-The canonical profile binds the fixture-only interface `codex exec`, interface version `1.0.0`, approved CLI version `0.104.0`, framed standard input, bounded JSONL with a schema-constrained final value, and exact fixture destination `https://codex.openai.test/v1/execute`. These values MUST NOT be interpreted as claims about a currently installed or remotely operated Codex product.
+The canonical profile binds the fixture-only interface `codex exec`, interface version `1.0.0`, approved CLI version `0.104.0`, an exact host-controlled invocation contract, framed standard input, bounded JSONL with a digest-bound schema-constrained final value, and exact fixture destination `https://codex.openai.test/v1/execute`. These values MUST NOT be interpreted as claims about a currently installed or remotely operated Codex product.
 
 ## REQ-CODEX-002: The Codex boundary and lifecycle contracts are closed and complete
 
@@ -30,11 +30,15 @@ For permitted attempts, the receipt MUST expose the exact transmitted byte count
 Before any payload byte is transmitted, the conformance observer MUST prove all of the following from explicit bound inputs:
 
 - the documented interface is non-interactive and its exact command, subcommand, version, payload channel, and output mode match the profile;
+- the exact invocation artifact binds the immutable host-owned prompt argument, captured content only through separately framed one-shot standard input, `--output-schema`, bounded incremental JSONL parsing that rejects command, file-change, MCP, web, and tool events, `--ephemeral`, strict configuration, ignored user configuration and rules, the complete disable set, and no CLI-managed host output file;
+- the process inherits no ambient environment, uses a dedicated minimal `CODEX_HOME` containing only the opaque authentication prerequisite, runs in empty private scratch, and mounts neither an ambient home nor the vault;
 - the opaque saved-login authentication prerequisite is current and satisfied, without observing a secret or treating authentication as proof of any other fact;
 - the effective capabilities and disabled capability inventory are exact, with no model-visible tools, MCP servers, apps, plugins, skills, instruction roots, or host files;
 - the network proof permits only the exact payload destination and separately identifies authentication-only destinations;
 - the requested destination, transmitted field set, payload bytes, payload digest, and Processing Envelope digest match the boundary; and
 - process freshness, scratch isolation, vault invisibility, unreadable ambient configuration, ceilings, and zero authority are proven.
+
+The boundary's `approved_processing_envelope_ref` and `approved_processing_envelope_sha256` bind the normative approval artifact, while `processing_envelope_sha256` separately binds the exact immutable envelope for the attempt.
 
 A missing, stale, ambiguous, unsupported, inconclusive, mismatched, excessive, malformed, failed, or differently bound prerequisite MUST deny the attempt before transmission with zero transmitted bytes. Interactive-only operation, isolation failure, unapproved destination, unapproved payload, and unapproved fallback MUST have the same fail-closed result.
 
@@ -54,10 +58,10 @@ The Codex Claim Manifest MUST contain exactly one row. Its identifier and owner 
 
 Every Codex requirement MUST have one Traceability Record that preserves the accepted decision order `DEC-011`, then `DEC-008`; names its canonical terms and normative anchor; binds all applicable schemas and transition tables; names positive and negative fixtures; and points to machine-readable conformance and recovery evidence.
 
-The validator MUST recompute fixture, receipt, boundary, authentication-prerequisite, capability-proof, network-proof, fixture-manifest, claim-material, invocation, envelope, and recovery digests from package bytes. It MUST validate schema instances and execute the fixtures through the public conformance observer. Absent, stale, tampered, reordered, or unbound evidence MUST prevent a passing Codex claim.
+The validator MUST recompute fixture, receipt, boundary, exact invocation-contract, output-schema, authentication-prerequisite, capability-proof, network-proof, fixture-manifest, claim-material, validator-invocation, envelope, and recovery digests from package bytes. It MUST validate schema instances and execute the fixtures through the public conformance observer. Absent, stale, tampered, reordered, or unbound evidence MUST prevent a passing Codex claim.
 
 ## REQ-CODEX-008: The Codex profile is specification and conformance only
 
 This package defines no production mdplace implementation and performs no live Codex or network operation. It asserts neither availability nor behavior of an installed CLI, remote endpoint, saved login, provider, model, account, entitlement, retention policy, or privacy property. The fixture-only `.test` destinations MUST never be treated as live endpoints.
 
-The profile MUST contain zero Capture Intake fixtures and zero stateful scenarios. Its generator and validator may read and write only Specification Package artifacts. Recovery MUST revalidate the parsed boundary, capability proof, network proof, authentication prerequisite, Processing Envelope, claim binding, and deterministic receipt without retransmission. If current bindings cannot be proven, recovery MUST remain blocked with zero new transmitted bytes.
+The profile MUST contain zero Capture Intake fixtures and zero stateful scenarios. Its generator and validator may read and write only Specification Package artifacts. Recovery MUST revalidate the parsed boundary, exact invocation contract, output schema, capability proof, network proof, authentication prerequisite, Processing Envelope, claim binding, and deterministic receipt without retransmission. If current bindings cannot be proven, recovery MUST remain blocked with zero new transmitted bytes.

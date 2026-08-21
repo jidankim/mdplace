@@ -256,7 +256,7 @@
     },
     {
       "fixture_id": "FIX-CODEX-PROFILE-017",
-      "path": "scenarios/codex-intelligence-adapter/missing-boundary-denied.json",
+      "path": "scenarios/codex-intelligence-adapter/invocation-contract-digest-mismatch-denied.json",
       "category": "negative",
       "requirement_ids": [
         "REQ-CODEX-001",
@@ -271,8 +271,8 @@
     },
     {
       "fixture_id": "FIX-CODEX-PROFILE-018",
-      "path": "scenarios/codex-intelligence-adapter/stale-binding-denied.json",
-      "category": "stale_state",
+      "path": "scenarios/codex-intelligence-adapter/output-schema-digest-mismatch-denied.json",
+      "category": "negative",
       "requirement_ids": [
         "REQ-CODEX-001",
         "REQ-CODEX-002",
@@ -286,7 +286,7 @@
     },
     {
       "fixture_id": "FIX-CODEX-PROFILE-019",
-      "path": "scenarios/codex-intelligence-adapter/missing-authentication-prerequisite-denied.json",
+      "path": "scenarios/codex-intelligence-adapter/missing-boundary-denied.json",
       "category": "negative",
       "requirement_ids": [
         "REQ-CODEX-001",
@@ -301,7 +301,7 @@
     },
     {
       "fixture_id": "FIX-CODEX-PROFILE-020",
-      "path": "scenarios/codex-intelligence-adapter/stale-authentication-prerequisite-denied.json",
+      "path": "scenarios/codex-intelligence-adapter/stale-binding-denied.json",
       "category": "stale_state",
       "requirement_ids": [
         "REQ-CODEX-001",
@@ -316,7 +316,7 @@
     },
     {
       "fixture_id": "FIX-CODEX-PROFILE-021",
-      "path": "scenarios/codex-intelligence-adapter/unsupported-authentication-prerequisite-denied.json",
+      "path": "scenarios/codex-intelligence-adapter/missing-authentication-prerequisite-denied.json",
       "category": "negative",
       "requirement_ids": [
         "REQ-CODEX-001",
@@ -331,8 +331,8 @@
     },
     {
       "fixture_id": "FIX-CODEX-PROFILE-022",
-      "path": "scenarios/codex-intelligence-adapter/inconclusive-authentication-prerequisite-denied.json",
-      "category": "negative",
+      "path": "scenarios/codex-intelligence-adapter/stale-authentication-prerequisite-denied.json",
+      "category": "stale_state",
       "requirement_ids": [
         "REQ-CODEX-001",
         "REQ-CODEX-002",
@@ -346,7 +346,7 @@
     },
     {
       "fixture_id": "FIX-CODEX-PROFILE-023",
-      "path": "scenarios/codex-intelligence-adapter/failed-authentication-prerequisite-denied.json",
+      "path": "scenarios/codex-intelligence-adapter/unsupported-authentication-prerequisite-denied.json",
       "category": "negative",
       "requirement_ids": [
         "REQ-CODEX-001",
@@ -361,7 +361,7 @@
     },
     {
       "fixture_id": "FIX-CODEX-PROFILE-024",
-      "path": "scenarios/codex-intelligence-adapter/missing-capability-proof-denied.json",
+      "path": "scenarios/codex-intelligence-adapter/inconclusive-authentication-prerequisite-denied.json",
       "category": "negative",
       "requirement_ids": [
         "REQ-CODEX-001",
@@ -376,8 +376,8 @@
     },
     {
       "fixture_id": "FIX-CODEX-PROFILE-025",
-      "path": "scenarios/codex-intelligence-adapter/stale-capability-proof-denied.json",
-      "category": "stale_state",
+      "path": "scenarios/codex-intelligence-adapter/failed-authentication-prerequisite-denied.json",
+      "category": "negative",
       "requirement_ids": [
         "REQ-CODEX-001",
         "REQ-CODEX-002",
@@ -391,7 +391,7 @@
     },
     {
       "fixture_id": "FIX-CODEX-PROFILE-026",
-      "path": "scenarios/codex-intelligence-adapter/ambiguous-capability-proof-denied.json",
+      "path": "scenarios/codex-intelligence-adapter/missing-capability-proof-denied.json",
       "category": "negative",
       "requirement_ids": [
         "REQ-CODEX-001",
@@ -406,8 +406,8 @@
     },
     {
       "fixture_id": "FIX-CODEX-PROFILE-027",
-      "path": "scenarios/codex-intelligence-adapter/unsupported-capability-proof-denied.json",
-      "category": "negative",
+      "path": "scenarios/codex-intelligence-adapter/stale-capability-proof-denied.json",
+      "category": "stale_state",
       "requirement_ids": [
         "REQ-CODEX-001",
         "REQ-CODEX-002",
@@ -421,7 +421,7 @@
     },
     {
       "fixture_id": "FIX-CODEX-PROFILE-028",
-      "path": "scenarios/codex-intelligence-adapter/inconclusive-capability-proof-denied.json",
+      "path": "scenarios/codex-intelligence-adapter/ambiguous-capability-proof-denied.json",
       "category": "negative",
       "requirement_ids": [
         "REQ-CODEX-001",
@@ -436,7 +436,7 @@
     },
     {
       "fixture_id": "FIX-CODEX-PROFILE-029",
-      "path": "scenarios/codex-intelligence-adapter/mismatch-capability-proof-denied.json",
+      "path": "scenarios/codex-intelligence-adapter/unsupported-capability-proof-denied.json",
       "category": "negative",
       "requirement_ids": [
         "REQ-CODEX-001",
@@ -451,7 +451,7 @@
     },
     {
       "fixture_id": "FIX-CODEX-PROFILE-030",
-      "path": "scenarios/codex-intelligence-adapter/excessive-capability-proof-denied.json",
+      "path": "scenarios/codex-intelligence-adapter/inconclusive-capability-proof-denied.json",
       "category": "negative",
       "requirement_ids": [
         "REQ-CODEX-001",
@@ -466,7 +466,7 @@
     },
     {
       "fixture_id": "FIX-CODEX-PROFILE-031",
-      "path": "scenarios/codex-intelligence-adapter/missing-network-proof-denied.json",
+      "path": "scenarios/codex-intelligence-adapter/mismatch-capability-proof-denied.json",
       "category": "negative",
       "requirement_ids": [
         "REQ-CODEX-001",
@@ -481,8 +481,8 @@
     },
     {
       "fixture_id": "FIX-CODEX-PROFILE-032",
-      "path": "scenarios/codex-intelligence-adapter/stale-network-proof-denied.json",
-      "category": "stale_state",
+      "path": "scenarios/codex-intelligence-adapter/excessive-capability-proof-denied.json",
+      "category": "negative",
       "requirement_ids": [
         "REQ-CODEX-001",
         "REQ-CODEX-002",
@@ -496,7 +496,7 @@
     },
     {
       "fixture_id": "FIX-CODEX-PROFILE-033",
-      "path": "scenarios/codex-intelligence-adapter/ambiguous-network-proof-denied.json",
+      "path": "scenarios/codex-intelligence-adapter/missing-network-proof-denied.json",
       "category": "negative",
       "requirement_ids": [
         "REQ-CODEX-001",
@@ -511,8 +511,8 @@
     },
     {
       "fixture_id": "FIX-CODEX-PROFILE-034",
-      "path": "scenarios/codex-intelligence-adapter/unsupported-network-proof-denied.json",
-      "category": "negative",
+      "path": "scenarios/codex-intelligence-adapter/stale-network-proof-denied.json",
+      "category": "stale_state",
       "requirement_ids": [
         "REQ-CODEX-001",
         "REQ-CODEX-002",
@@ -526,7 +526,7 @@
     },
     {
       "fixture_id": "FIX-CODEX-PROFILE-035",
-      "path": "scenarios/codex-intelligence-adapter/inconclusive-network-proof-denied.json",
+      "path": "scenarios/codex-intelligence-adapter/ambiguous-network-proof-denied.json",
       "category": "negative",
       "requirement_ids": [
         "REQ-CODEX-001",
@@ -541,7 +541,7 @@
     },
     {
       "fixture_id": "FIX-CODEX-PROFILE-036",
-      "path": "scenarios/codex-intelligence-adapter/mismatch-network-proof-denied.json",
+      "path": "scenarios/codex-intelligence-adapter/unsupported-network-proof-denied.json",
       "category": "negative",
       "requirement_ids": [
         "REQ-CODEX-001",
@@ -556,7 +556,7 @@
     },
     {
       "fixture_id": "FIX-CODEX-PROFILE-037",
-      "path": "scenarios/codex-intelligence-adapter/excessive-network-proof-denied.json",
+      "path": "scenarios/codex-intelligence-adapter/inconclusive-network-proof-denied.json",
       "category": "negative",
       "requirement_ids": [
         "REQ-CODEX-001",
@@ -571,6 +571,36 @@
     },
     {
       "fixture_id": "FIX-CODEX-PROFILE-038",
+      "path": "scenarios/codex-intelligence-adapter/mismatch-network-proof-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ]
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-039",
+      "path": "scenarios/codex-intelligence-adapter/excessive-network-proof-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-CODEX-001",
+        "REQ-CODEX-002",
+        "REQ-CODEX-003",
+        "REQ-CODEX-004",
+        "REQ-CODEX-005",
+        "REQ-CODEX-006",
+        "REQ-CODEX-007",
+        "REQ-CODEX-008"
+      ]
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-040",
       "path": "scenarios/codex-intelligence-adapter/unapproved-destination-denied.json",
       "category": "authority_denial",
       "requirement_ids": [
@@ -585,7 +615,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-039",
+      "fixture_id": "FIX-CODEX-PROFILE-041",
       "path": "scenarios/codex-intelligence-adapter/unapproved-payload-denied.json",
       "category": "authority_denial",
       "requirement_ids": [
@@ -600,7 +630,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-040",
+      "fixture_id": "FIX-CODEX-PROFILE-042",
       "path": "scenarios/codex-intelligence-adapter/unavailable-isolation-denied.json",
       "category": "negative",
       "requirement_ids": [
@@ -615,7 +645,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-041",
+      "fixture_id": "FIX-CODEX-PROFILE-043",
       "path": "scenarios/codex-intelligence-adapter/unapproved-fallback-denied.json",
       "category": "negative",
       "requirement_ids": [
@@ -630,7 +660,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-042",
+      "fixture_id": "FIX-CODEX-PROFILE-044",
       "path": "scenarios/codex-intelligence-adapter/embedded-tool-request-denied.json",
       "category": "authority_denial",
       "requirement_ids": [
@@ -645,7 +675,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-043",
+      "fixture_id": "FIX-CODEX-PROFILE-045",
       "path": "scenarios/codex-intelligence-adapter/command-request-denied.json",
       "category": "authority_denial",
       "requirement_ids": [
@@ -660,7 +690,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-044",
+      "fixture_id": "FIX-CODEX-PROFILE-046",
       "path": "scenarios/codex-intelligence-adapter/secret-request-denied.json",
       "category": "authority_denial",
       "requirement_ids": [
@@ -675,7 +705,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-045",
+      "fixture_id": "FIX-CODEX-PROFILE-047",
       "path": "scenarios/codex-intelligence-adapter/malformed-output-rejected.json",
       "category": "negative",
       "requirement_ids": [
@@ -690,7 +720,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-046",
+      "fixture_id": "FIX-CODEX-PROFILE-048",
       "path": "scenarios/codex-intelligence-adapter/semantic-authority-denied.json",
       "category": "authority_denial",
       "requirement_ids": [
@@ -705,7 +735,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-047",
+      "fixture_id": "FIX-CODEX-PROFILE-049",
       "path": "scenarios/codex-intelligence-adapter/note-placement-authority-denied.json",
       "category": "authority_denial",
       "requirement_ids": [
@@ -720,7 +750,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-048",
+      "fixture_id": "FIX-CODEX-PROFILE-050",
       "path": "scenarios/codex-intelligence-adapter/taxonomy-authority-denied.json",
       "category": "authority_denial",
       "requirement_ids": [
@@ -735,7 +765,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-049",
+      "fixture_id": "FIX-CODEX-PROFILE-051",
       "path": "scenarios/codex-intelligence-adapter/projection-authority-denied.json",
       "category": "authority_denial",
       "requirement_ids": [
@@ -750,7 +780,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-050",
+      "fixture_id": "FIX-CODEX-PROFILE-052",
       "path": "scenarios/codex-intelligence-adapter/filesystem-authority-denied.json",
       "category": "authority_denial",
       "requirement_ids": [
@@ -765,7 +795,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-051",
+      "fixture_id": "FIX-CODEX-PROFILE-053",
       "path": "scenarios/codex-intelligence-adapter/tool-authority-denied.json",
       "category": "authority_denial",
       "requirement_ids": [
@@ -780,7 +810,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-052",
+      "fixture_id": "FIX-CODEX-PROFILE-054",
       "path": "scenarios/codex-intelligence-adapter/command-authority-denied.json",
       "category": "authority_denial",
       "requirement_ids": [
@@ -795,7 +825,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-053",
+      "fixture_id": "FIX-CODEX-PROFILE-055",
       "path": "scenarios/codex-intelligence-adapter/automation-authority-denied.json",
       "category": "authority_denial",
       "requirement_ids": [
@@ -810,7 +840,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-054",
+      "fixture_id": "FIX-CODEX-PROFILE-056",
       "path": "scenarios/codex-intelligence-adapter/authentication-does-not-prove-capability.json",
       "category": "negative",
       "requirement_ids": [
@@ -825,7 +855,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-055",
+      "fixture_id": "FIX-CODEX-PROFILE-057",
       "path": "scenarios/codex-intelligence-adapter/authentication-does-not-prove-network.json",
       "category": "negative",
       "requirement_ids": [
@@ -840,7 +870,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-056",
+      "fixture_id": "FIX-CODEX-PROFILE-058",
       "path": "scenarios/codex-intelligence-adapter/authentication-does-not-prove-residency.json",
       "category": "negative",
       "requirement_ids": [
@@ -855,7 +885,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-057",
+      "fixture_id": "FIX-CODEX-PROFILE-059",
       "path": "scenarios/codex-intelligence-adapter/authentication-does-not-prove-retention.json",
       "category": "negative",
       "requirement_ids": [
@@ -870,7 +900,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-058",
+      "fixture_id": "FIX-CODEX-PROFILE-060",
       "path": "scenarios/codex-intelligence-adapter/authentication-does-not-prove-training.json",
       "category": "negative",
       "requirement_ids": [
@@ -885,7 +915,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-059",
+      "fixture_id": "FIX-CODEX-PROFILE-061",
       "path": "scenarios/codex-intelligence-adapter/authentication-does-not-prove-deletion.json",
       "category": "negative",
       "requirement_ids": [
@@ -900,7 +930,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-060",
+      "fixture_id": "FIX-CODEX-PROFILE-062",
       "path": "scenarios/codex-intelligence-adapter/authentication-does-not-prove-entitlement.json",
       "category": "negative",
       "requirement_ids": [
@@ -915,7 +945,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-061",
+      "fixture_id": "FIX-CODEX-PROFILE-063",
       "path": "scenarios/codex-intelligence-adapter/authentication-does-not-prove-privacy.json",
       "category": "negative",
       "requirement_ids": [
@@ -930,7 +960,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-062",
+      "fixture_id": "FIX-CODEX-PROFILE-064",
       "path": "scenarios/codex-intelligence-adapter/crash-before-transmission-zero-bytes.json",
       "category": "crash_recovery",
       "requirement_ids": [
@@ -945,7 +975,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-063",
+      "fixture_id": "FIX-CODEX-PROFILE-065",
       "path": "scenarios/codex-intelligence-adapter/crash-after-transmission-preserves-bytes.json",
       "category": "crash_recovery",
       "requirement_ids": [
@@ -960,7 +990,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-064",
+      "fixture_id": "FIX-CODEX-PROFILE-066",
       "path": "scenarios/codex-intelligence-adapter/recovery-revalidates-current-bindings.json",
       "category": "crash_recovery",
       "requirement_ids": [
@@ -975,7 +1005,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-065",
+      "fixture_id": "FIX-CODEX-PROFILE-067",
       "path": "scenarios/codex-intelligence-adapter/recovery-rejects-stale-bindings.json",
       "category": "stale_state",
       "requirement_ids": [
@@ -990,7 +1020,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-066",
+      "fixture_id": "FIX-CODEX-PROFILE-068",
       "path": "scenarios/codex-intelligence-adapter/illegal-capability-proof-transition-denied.json",
       "category": "illegal_transition",
       "requirement_ids": [
@@ -1005,7 +1035,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-067",
+      "fixture_id": "FIX-CODEX-PROFILE-069",
       "path": "scenarios/codex-intelligence-adapter/illegal-network-proof-transition-denied.json",
       "category": "illegal_transition",
       "requirement_ids": [
@@ -1020,7 +1050,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-068",
+      "fixture_id": "FIX-CODEX-PROFILE-070",
       "path": "scenarios/codex-intelligence-adapter/illegal-authentication-prerequisite-transition-denied.json",
       "category": "illegal_transition",
       "requirement_ids": [
@@ -1035,7 +1065,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-069",
+      "fixture_id": "FIX-CODEX-PROFILE-071",
       "path": "scenarios/codex-intelligence-adapter/illegal-proposal-validation-transition-denied.json",
       "category": "illegal_transition",
       "requirement_ids": [
@@ -1050,7 +1080,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-070",
+      "fixture_id": "FIX-CODEX-PROFILE-072",
       "path": "scenarios/codex-intelligence-adapter/illegal-denial-transition-denied.json",
       "category": "illegal_transition",
       "requirement_ids": [
@@ -1065,7 +1095,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-071",
+      "fixture_id": "FIX-CODEX-PROFILE-073",
       "path": "scenarios/codex-intelligence-adapter/illegal-failure-transition-denied.json",
       "category": "illegal_transition",
       "requirement_ids": [
@@ -1080,7 +1110,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-072",
+      "fixture_id": "FIX-CODEX-PROFILE-074",
       "path": "scenarios/codex-intelligence-adapter/illegal-recovery-transition-denied.json",
       "category": "illegal_transition",
       "requirement_ids": [
@@ -1095,7 +1125,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-073",
+      "fixture_id": "FIX-CODEX-PROFILE-075",
       "path": "scenarios/codex-intelligence-adapter/expired-current-capability-proof-denied.json",
       "category": "stale_state",
       "requirement_ids": [
@@ -1110,7 +1140,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-074",
+      "fixture_id": "FIX-CODEX-PROFILE-076",
       "path": "scenarios/codex-intelligence-adapter/unobserved-payload-destination-denied.json",
       "category": "negative",
       "requirement_ids": [
@@ -1125,7 +1155,7 @@
       ]
     },
     {
-      "fixture_id": "FIX-CODEX-PROFILE-075",
+      "fixture_id": "FIX-CODEX-PROFILE-077",
       "path": "scenarios/codex-intelligence-adapter/hidden-oversized-output-counter-denied.json",
       "category": "over_boundary",
       "requirement_ids": [

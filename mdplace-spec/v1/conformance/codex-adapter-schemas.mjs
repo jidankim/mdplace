@@ -1,3 +1,7 @@
+import {readFileSync} from 'node:fs';
+
+import {codexInterfaceSchema, codexInvocationContractSchema} from './codex-adapter-invocation.mjs';
+
 const draft = 'https://json-schema.org/draft/2020-12/schema';
 const digest = {type: 'string', pattern: '^[a-f0-9]{64}$'};
 const stringList = {type: 'array', uniqueItems: true, items: {type: 'string'}};
@@ -20,7 +24,7 @@ const profile = {
     schema_id: {const: 'mdplace.codex-intelligence-adapter-profile/v1'},
     profile_id: {const: 'codex-adapter'}, owner: {const: 'codex-adapter'}, version: {const: '1.0.0'},
     protocol_ref: {const: 'normative/intelligence-adapter-protocol.md'},
-    approved_processing_envelope_ref: {const: 'contracts/intelligence-adapter/approved-context.json#/policy_binding'},
+    approved_processing_envelope_ref: {const: 'contracts/codex-intelligence-adapter/approved-processing-envelope.json'},
     decision_inputs: {type: 'array', prefixItems: [
       {const: 'https://github.com/jidankim/mdplace/issues/11#issuecomment-5118839348'},
       {const: 'https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093'},
@@ -30,13 +34,10 @@ const profile = {
     specification_only: {const: true}, live_codex_behavior_asserted: {const: false}, network_operation_performed: {const: false},
   },
   $defs: {
-    interface: {type: 'object', additionalProperties: false, required: ['command', 'subcommand', 'interface_version', 'approved_cli_version', 'mode', 'payload_channel', 'output_mode'], properties: {
-      command: {const: 'codex'}, subcommand: {const: 'exec'}, interface_version: {const: '1.0.0'},
-      approved_cli_version: {const: '0.104.0'}, mode: {const: 'non_interactive'}, payload_channel: {const: 'framed_stdin'},
-      output_mode: {const: 'bounded_jsonl_with_schema_final'},
-    }},
-    evidenceRefs: {type: 'object', additionalProperties: false, required: ['boundary', 'authentication_prerequisite', 'capability_proof', 'network_proof'], properties: {
+    interface: codexInterfaceSchema,
+    evidenceRefs: {type: 'object', additionalProperties: false, required: ['boundary', 'invocation_contract', 'authentication_prerequisite', 'capability_proof', 'network_proof'], properties: {
       boundary: {const: 'contracts/codex-intelligence-adapter/boundary.json'},
+      invocation_contract: {const: 'contracts/codex-intelligence-adapter/invocation-contract.json'},
       authentication_prerequisite: {const: 'contracts/codex-intelligence-adapter/authentication-prerequisite.json'},
       capability_proof: {const: 'contracts/codex-intelligence-adapter/capability-proof.json'},
       network_proof: {const: 'contracts/codex-intelligence-adapter/network-proof.json'},
@@ -50,12 +51,14 @@ const profile = {
 const boundary = {
   $schema: draft, $id: 'urn:mdplace:schema:codex-adapter-boundary:v1', title: 'mdplace Codex boundary',
   type: 'object', additionalProperties: false,
-  required: ['$schema', 'schema_id', 'boundary_id', 'profile_id', 'status', 'interface', 'processing_envelope_ref', 'processing_envelope_sha256', 'authentication_prerequisite_ref', 'authentication_prerequisite_sha256', 'capability_proof_ref', 'capability_proof_sha256', 'network_proof_ref', 'network_proof_sha256', 'exact_destination', 'transmitted_fields', 'payload_sha256', 'payload_bytes', 'isolation', 'observed_at', 'expires_at'],
+  required: ['$schema', 'schema_id', 'boundary_id', 'profile_id', 'status', 'interface', 'invocation_contract_sha256', 'output_schema_sha256', 'approved_processing_envelope_ref', 'approved_processing_envelope_sha256', 'processing_envelope_sha256', 'authentication_prerequisite_ref', 'authentication_prerequisite_sha256', 'capability_proof_ref', 'capability_proof_sha256', 'network_proof_ref', 'network_proof_sha256', 'exact_destination', 'transmitted_fields', 'payload_sha256', 'payload_bytes', 'isolation', 'observed_at', 'expires_at'],
   properties: {
     $schema: {const: '../schemas/codex-adapter-boundary.schema.json'}, schema_id: {const: 'mdplace.codex-adapter-boundary/v1'},
     boundary_id: {const: 'codex-boundary:v1'}, profile_id: {const: 'codex-adapter'}, status,
     interface: profile.$defs.interface,
-    processing_envelope_ref: {const: 'contracts/intelligence-adapter/approved-context.json#/policy_binding'}, processing_envelope_sha256: digest,
+    invocation_contract_sha256: digest, output_schema_sha256: digest,
+    approved_processing_envelope_ref: {const: 'contracts/codex-intelligence-adapter/approved-processing-envelope.json'}, approved_processing_envelope_sha256: digest,
+    processing_envelope_sha256: digest,
     authentication_prerequisite_ref: {const: 'contracts/codex-intelligence-adapter/authentication-prerequisite.json'}, authentication_prerequisite_sha256: digest,
     capability_proof_ref: {const: 'contracts/codex-intelligence-adapter/capability-proof.json'}, capability_proof_sha256: digest,
     network_proof_ref: {const: 'contracts/codex-intelligence-adapter/network-proof.json'}, network_proof_sha256: digest,
@@ -92,7 +95,7 @@ const capability = {
     proof_id: {const: 'codex-capability-proof:v1'}, profile_id: {const: 'codex-adapter'}, status,
     cli_version: {const: '0.104.0'}, deny_set_sha256: digest,
     enabled_non_capability_features: {type: 'array', items: {enum: ['jsonl_output', 'schema_constrained_final']}, minItems: 2, maxItems: 2, uniqueItems: true},
-    disabled_capability_features: {type: 'array', minItems: 8, uniqueItems: true, items: {enum: ['shell', 'unified_exec', 'browser', 'computer_use', 'image_generation', 'mcp', 'plugins', 'skills', 'hooks', 'multi_agent', 'web_search', 'workspace_dependencies']}},
+    disabled_capability_features: {type: 'array', minItems: 12, maxItems: 12, uniqueItems: true, items: {enum: ['shell', 'unified_exec', 'browser', 'computer_use', 'image_generation', 'mcp', 'plugins', 'skills', 'hooks', 'multi_agent', 'web_search', 'workspace_dependencies']}},
     inventories: {type: 'object', additionalProperties: false, required: ['model_visible_tools', 'mcp_servers', 'apps', 'plugins', 'skills', 'instruction_roots', 'host_files'], properties: Object.fromEntries(
       ['model_visible_tools', 'mcp_servers', 'apps', 'plugins', 'skills', 'instruction_roots', 'host_files'].map((key) => [key, {type: 'array', maxItems: 0}]),
     )},
@@ -117,16 +120,9 @@ const network = {
 };
 
 const proposal = {
-  $schema: draft, $id: 'urn:mdplace:schema:codex-adapter-proposal:v1', title: 'mdplace inert Codex proposal',
-  type: 'object', additionalProperties: false,
-  required: ['schema_id', 'proposal_id', 'profile_id', 'processing_envelope_sha256', 'raw_output_sha256', 'proposal_schema_id', 'validated', 'advisory_only', 'candidates', 'rationale', 'warnings', 'abstention_reason', 'tool_requests', 'authority', 'semantic_effects', 'filesystem_effects'],
-  properties: {
-    schema_id: {const: 'mdplace.codex-adapter-proposal/v1'}, proposal_id: {type: 'string', pattern: '^codex-proposal:cdx-[0-9]{3}$'},
-    profile_id: {const: 'codex-adapter'}, processing_envelope_sha256: digest, raw_output_sha256: digest,
-    proposal_schema_id: {const: 'mdplace.intelligence-proposal/v1'}, validated: {const: true}, advisory_only: {const: true},
-    candidates: {type: 'array', maxItems: 0}, rationale: {type: 'string'}, warnings: {type: 'array', maxItems: 0}, abstention_reason: {const: 'insufficient_evidence'},
-    tool_requests: {type: 'array', maxItems: 0}, authority: noneAuthority, semantic_effects: {type: 'array', maxItems: 0}, filesystem_effects: {type: 'array', maxItems: 0},
-  },
+  ...JSON.parse(readFileSync(new URL('../contracts/schemas/intelligence-proposal.schema.json', import.meta.url), 'utf8')),
+  $id: 'urn:mdplace:schema:codex-adapter-proposal:v1',
+  title: 'mdplace Codex Intelligence Proposal',
 };
 
 const denial = {
@@ -143,27 +139,36 @@ const denial = {
 };
 
 const receipt = {
-  $schema: draft, $id: 'urn:mdplace:schema:codex-adapter-receipt:v1', title: 'mdplace deterministic Codex receipt',
+  ...JSON.parse(readFileSync(new URL('../contracts/schemas/adapter-run-receipt.schema.json', import.meta.url), 'utf8')),
+  $id: 'urn:mdplace:schema:codex-adapter-receipt:v1',
+  title: 'mdplace Codex Adapter Run Receipt',
+};
+
+const attemptObservation = {
   type: 'object', additionalProperties: false,
-  required: ['schema_id', 'receipt_id', 'profile_id', 'scenario_id', 'outcome', 'boundary_sha256', 'authentication_prerequisite_sha256', 'capability_proof_sha256', 'network_proof_sha256', 'processing_envelope_sha256', 'destination', 'transmitted_bytes', 'transmitted_sha256', 'output_sha256', 'proposal_id', 'denial', 'tool_events_observed', 'semantic_effects', 'filesystem_effects', 'authority_effects', 'tool_invocations', 'receipt_sha256'],
+  required: ['observed_started_at', 'observed_completed_at', 'provider_request_id', 'isolation'],
   properties: {
-    schema_id: {const: 'mdplace.codex-adapter-receipt/v1'}, receipt_id: {type: 'string', pattern: '^codex-receipt:cdx-[0-9]{3}$'},
-    profile_id: {const: 'codex-adapter'}, scenario_id: {type: 'string', pattern: '^CDX-[0-9]{3}$'},
-    outcome: {enum: ['accepted', 'denied', 'rejected', 'recovery_required', 'recovered']},
-    boundary_sha256: {type: ['string', 'null'], pattern: '^[a-f0-9]{64}$'}, authentication_prerequisite_sha256: {type: ['string', 'null'], pattern: '^[a-f0-9]{64}$'},
-    capability_proof_sha256: {type: ['string', 'null'], pattern: '^[a-f0-9]{64}$'}, network_proof_sha256: {type: ['string', 'null'], pattern: '^[a-f0-9]{64}$'}, processing_envelope_sha256: digest,
-    destination: {type: ['string', 'null'], format: 'uri'}, transmitted_bytes: {type: 'integer', minimum: 0}, transmitted_sha256: digest,
-    output_sha256: {type: ['string', 'null'], pattern: '^[a-f0-9]{64}$'}, proposal_id: {type: ['string', 'null'], pattern: '^codex-proposal:cdx-[0-9]{3}$'},
-    denial: {oneOf: [{$ref: '#/$defs/denial'}, {type: 'null'}]}, tool_events_observed: {type: 'integer', minimum: 0},
-    semantic_effects: {type: 'array', maxItems: 0}, filesystem_effects: {type: 'array', maxItems: 0}, authority_effects: {type: 'array', maxItems: 0}, tool_invocations: {type: 'array', maxItems: 0}, receipt_sha256: digest,
+    observed_started_at: {type: 'string', format: 'date-time'}, observed_completed_at: {type: 'string', format: 'date-time'},
+    provider_request_id: {type: ['string', 'null'], pattern: '^provider-request:cdx-[0-9]{3}$'},
+    isolation: {type: 'object', additionalProperties: false,
+      required: ['ephemeral', 'fresh_process', 'filesystem', 'tools', 'ambient_configuration', 'credential_visibility', 'network_scope', 'effective_capabilities', 'canary'],
+      properties: {
+        ephemeral: {type: 'boolean'}, fresh_process: {type: 'boolean'}, filesystem: {enum: ['none', 'present']}, tools: {enum: ['none', 'present']},
+        ambient_configuration: {enum: ['unreadable', 'readable']}, credential_visibility: {enum: ['none', 'visible']},
+        network_scope: stringList, effective_capabilities: stringList,
+        canary: {type: 'object', additionalProperties: false, required: ['canary_id', 'challenge', 'expected', 'observed', 'passed'], properties: {
+          canary_id: {type: 'string', pattern: '^canary:cdx-[0-9]{3}$'}, challenge: {type: 'string', minLength: 1},
+          expected: {type: 'string', minLength: 1}, observed: {type: 'string', minLength: 1}, passed: {type: 'boolean'},
+        }},
+      },
+    },
   },
-  $defs: {denial},
 };
 
 const scenario = {
   $schema: draft, $id: 'urn:mdplace:schema:codex-adapter-scenario:v1', title: 'mdplace Codex conformance scenario',
   type: 'object', additionalProperties: false,
-  required: ['schema_id', 'scenario_id', 'case_id', 'category', 'operation', 'evaluated_at', 'boundary_json', 'boundary_sha256', 'authentication_json', 'authentication_sha256', 'capability_json', 'capability_sha256', 'network_json', 'network_sha256', 'processing_envelope_json', 'processing_envelope_sha256', 'payload_base64', 'payload_bytes', 'payload_sha256', 'requested_destination', 'transmitted_bytes', 'transmitted_sha256', 'raw_output', 'output_bytes', 'jsonl_bytes', 'runtime_ms', 'tokens', 'cost_microunits', 'ceilings', 'interface_mode', 'authentication_variant', 'capability_variant', 'network_variant', 'behavior', 'output_kind', 'claimed_authority', 'claimed_auth_fact', 'transition_ref'],
+  required: ['schema_id', 'scenario_id', 'case_id', 'category', 'operation', 'evaluated_at', 'boundary_json', 'boundary_sha256', 'authentication_json', 'authentication_sha256', 'capability_json', 'capability_sha256', 'network_json', 'network_sha256', 'processing_envelope_json', 'processing_envelope_sha256', 'attempt_observation', 'payload_base64', 'payload_bytes', 'payload_sha256', 'requested_destination', 'transmitted_bytes', 'transmitted_sha256', 'raw_output', 'output_bytes', 'jsonl_bytes', 'runtime_ms', 'tokens', 'cost_microunits', 'ceilings', 'interface_mode', 'authentication_variant', 'capability_variant', 'network_variant', 'behavior', 'output_kind', 'claimed_authority', 'claimed_auth_fact', 'transition_ref'],
   properties: {
     schema_id: {const: 'mdplace.codex-adapter-scenario/v1'}, scenario_id: {type: 'string', pattern: '^CDX-[0-9]{3}$'},
     case_id: {type: 'string', pattern: '^[a-z][a-z0-9-]{2,96}$'}, category: {enum: ['positive', 'negative', 'exact_boundary', 'over_boundary', 'stale_state', 'authority_denial', 'illegal_transition', 'crash_recovery']},
@@ -172,8 +177,9 @@ const scenario = {
     authentication_json: {type: ['string', 'null']}, authentication_sha256: {type: ['string', 'null'], pattern: '^[a-f0-9]{64}$'},
     capability_json: {type: ['string', 'null']}, capability_sha256: {type: ['string', 'null'], pattern: '^[a-f0-9]{64}$'},
     network_json: {type: ['string', 'null']}, network_sha256: {type: ['string', 'null'], pattern: '^[a-f0-9]{64}$'},
-    processing_envelope_json: {type: 'string', minLength: 2}, processing_envelope_sha256: digest,
-    payload_base64: {type: 'string'}, payload_bytes: {type: 'integer', minimum: 0}, payload_sha256: digest,
+    processing_envelope_json: {type: 'string', minLength: 2}, processing_envelope_sha256: digest, attempt_observation: attemptObservation,
+    payload_base64: {type: 'string', format: 'canonical-base64'},
+    payload_bytes: {type: 'integer', minimum: 0}, payload_sha256: digest,
     requested_destination: {type: 'string', format: 'uri'}, transmitted_bytes: {type: 'integer', minimum: 0}, transmitted_sha256: digest,
     raw_output: {type: ['string', 'null']}, output_bytes: {type: 'integer', minimum: 0}, jsonl_bytes: {type: 'integer', minimum: 0}, runtime_ms: {type: 'integer', minimum: 0}, tokens: {type: 'integer', minimum: 0}, cost_microunits: {type: 'integer', minimum: 0},
     ceilings: profile.$defs.ceilings, interface_mode: {enum: ['non_interactive', 'interactive_only']}, authentication_variant: status, capability_variant: status, network_variant: status,
@@ -200,7 +206,7 @@ const fixtureManifest = {
   properties: {
     $schema: {const: '../schemas/codex-adapter-fixture-manifest.schema.json'}, schema_id: {const: 'mdplace.codex-adapter-fixture-manifest/v1'}, manifest_id: {const: 'codex-adapter-fixtures:v1'}, profile_id: {const: 'codex-adapter'},
     requirements: {type: 'array', minItems: 8, maxItems: 8, uniqueItems: true, items: {type: 'string', pattern: '^REQ-CODEX-[0-9]{3}$'}},
-    fixtures: {type: 'array', minItems: 1, items: {$ref: '#/$defs/fixture'}}, intake_fixtures: {const: 0}, stateful_scenarios: {const: 0},
+    fixtures: {type: 'array', minItems: 77, maxItems: 77, items: {$ref: '#/$defs/fixture'}}, intake_fixtures: {const: 0}, stateful_scenarios: {const: 0},
   },
   $defs: {fixture: {type: 'object', additionalProperties: false, required: ['fixture_id', 'path', 'category', 'requirement_ids'], properties: {
     fixture_id: {type: 'string', pattern: '^FIX-CODEX-PROFILE-[0-9]{3}$'}, path: {type: 'string', pattern: '^scenarios/codex-intelligence-adapter/[a-z][a-z0-9-]+\\.json$'},
@@ -210,11 +216,12 @@ const fixtureManifest = {
 
 const evidence = {
   $schema: draft, $id: 'urn:mdplace:schema:codex-adapter-evidence:v1', title: 'mdplace Codex machine evidence',
-  type: 'object', additionalProperties: false, required: ['$schema', 'schema_id', 'evidence_id', 'profile_id', 'validator_version', 'fixture_bindings', 'receipt_sha256s', 'boundary_sha256', 'authentication_prerequisite_sha256', 'capability_proof_sha256', 'network_proof_sha256', 'fixture_manifest_sha256', 'network_operations', 'intake_fixtures', 'stateful_scenarios', 'verdict'],
+  type: 'object', additionalProperties: false, required: ['$schema', 'schema_id', 'evidence_id', 'profile_id', 'validator_version', 'fixture_bindings', 'receipt_sha256s', 'approved_processing_envelope_sha256', 'boundary_sha256', 'invocation_contract_sha256', 'output_schema_sha256', 'authentication_prerequisite_sha256', 'capability_proof_sha256', 'network_proof_sha256', 'fixture_manifest_sha256', 'network_operations', 'intake_fixtures', 'stateful_scenarios', 'verdict'],
   properties: {
     $schema: {const: '../../contracts/schemas/codex-adapter-evidence.schema.json'}, schema_id: {const: 'mdplace.codex-adapter-evidence/v1'}, evidence_id: {const: 'codex-adapter-evidence:v1'}, profile_id: {const: 'codex-adapter'}, validator_version: {const: '1.2.0'},
-    fixture_bindings: {type: 'array', minItems: 1, items: {$ref: '#/$defs/binding'}}, receipt_sha256s: {type: 'array', minItems: 1, items: digest},
-    boundary_sha256: digest, authentication_prerequisite_sha256: digest, capability_proof_sha256: digest, network_proof_sha256: digest, fixture_manifest_sha256: digest,
+    fixture_bindings: {type: 'array', minItems: 77, maxItems: 77, items: {$ref: '#/$defs/binding'}}, receipt_sha256s: {type: 'array', minItems: 77, maxItems: 77, items: digest},
+    approved_processing_envelope_sha256: digest, boundary_sha256: digest, invocation_contract_sha256: digest, output_schema_sha256: digest,
+    authentication_prerequisite_sha256: digest, capability_proof_sha256: digest, network_proof_sha256: digest, fixture_manifest_sha256: digest,
     network_operations: {const: 0}, intake_fixtures: {const: 0}, stateful_scenarios: {const: 0}, verdict: {const: 'pass'},
   },
   $defs: {binding: {type: 'object', additionalProperties: false, required: ['fixture_id', 'path', 'fixture_sha256', 'receipt_sha256', 'verdict'], properties: {
@@ -229,8 +236,8 @@ const recovery = {
     $schema: {const: '../../contracts/schemas/codex-adapter-recovery-report.schema.json'}, schema_id: {const: 'mdplace.codex-adapter-recovery-report/v1'}, report_id: {const: 'codex-adapter-recovery:v1'}, profile_id: {const: 'codex-adapter'}, claim_manifest_sha256: digest, evidence_digest: digest, parsed_artifacts_revalidated: {const: true},
     cases: {type: 'array', minItems: 4, maxItems: 4, items: {$ref: '#/$defs/case'}}, network_operations: {const: 0}, verdict: {const: 'pass'},
   },
-  $defs: {case: {type: 'object', additionalProperties: false, required: ['fixture_id', 'boundary_revalidated', 'capability_revalidated', 'network_revalidated', 'authentication_revalidated', 'processing_envelope_revalidated', 'terminal_state', 'receipt_sha256'], properties: {
-    fixture_id: {type: 'string', pattern: '^FIX-CODEX-PROFILE-[0-9]{3}$'}, boundary_revalidated: {type: 'boolean'}, capability_revalidated: {type: 'boolean'}, network_revalidated: {type: 'boolean'}, authentication_revalidated: {type: 'boolean'}, processing_envelope_revalidated: {type: 'boolean'}, terminal_state: {enum: ['recovery_required', 'recovered']}, receipt_sha256: digest,
+  $defs: {case: {type: 'object', additionalProperties: false, required: ['fixture_id', 'target_fixture_id', 'target_path', 'target_chain_id', 'target_attempt_id', 'target_attempt_sequence', 'target_attempt_class', 'target_authorization_id', 'target_envelope_id', 'target_envelope_sha256', 'preceding_receipt_sha256s', 'target_receipt_sha256', 'terminal_state', 'receipt_sha256'], properties: {
+    fixture_id: {type: 'string', pattern: '^FIX-CODEX-PROFILE-[0-9]{3}$'}, target_fixture_id: {type: 'string', pattern: '^FIX-CODEX-PROFILE-[0-9]{3}$'}, target_path: {type: 'string', pattern: '^conformance/scenarios/codex-intelligence-adapter/[a-z][a-z0-9-]+\\.json$'}, target_chain_id: {type: 'string', pattern: '^adapter-chain:cdx-[0-9]{3}$'}, target_attempt_id: {type: 'string', pattern: '^adapter-attempt:cdx-[0-9]{3}$'}, target_attempt_sequence: {const: 0}, target_attempt_class: {const: 'primary'}, target_authorization_id: {const: 'adapter-authorization:remote-primary'}, target_envelope_id: {type: 'string', pattern: '^envelope:cdx-[0-9]{3}$'}, target_envelope_sha256: digest, preceding_receipt_sha256s: {type: 'array', maxItems: 0, items: digest}, target_receipt_sha256: digest, terminal_state: {enum: ['recovery_required', 'recovered']}, receipt_sha256: digest,
   }}},
 };
 
@@ -244,7 +251,7 @@ const claim = {
   $defs: {
     material: {type: 'object', additionalProperties: false, required: ['ordinal', 'label', 'path', 'sha256'], properties: {ordinal: {type: 'integer', minimum: 0}, label: {type: 'string', pattern: '^codex_material_[0-9]{3}$'}, path: {type: 'string', minLength: 1}, sha256: digest}},
     dependencies: {type: 'object', additionalProperties: false, required: ['core', 'product_readiness', 'local_adapter', 'remote_adapter', 'placement_automation', 'other_profiles'], properties: Object.fromEntries(['core', 'product_readiness', 'local_adapter', 'remote_adapter', 'placement_automation', 'other_profiles'].map((key) => [key, {const: false}]))},
-    row: {type: 'object', additionalProperties: false, required: ['id', 'owner', 'verdict', 'evidence_digest', 'evidence_material', 'dependencies_elevated'], properties: {id: {const: 'codex-adapter'}, owner: {const: 'codex-adapter'}, verdict: {enum: ['pass', 'fail', 'unsupported', 'inconclusive']}, evidence_digest: digest, evidence_material: {type: 'array', minItems: 1, items: {$ref: '#/$defs/material'}}, dependencies_elevated: {$ref: '#/$defs/dependencies'}}},
+    row: {type: 'object', additionalProperties: false, required: ['id', 'owner', 'verdict', 'evidence_digest', 'evidence_material', 'dependencies_elevated'], properties: {id: {const: 'codex-adapter'}, owner: {const: 'codex-adapter'}, verdict: {enum: ['pass', 'fail', 'unsupported', 'inconclusive']}, evidence_digest: digest, evidence_material: {type: 'array', minItems: 90, maxItems: 90, items: {$ref: '#/$defs/material'}}, dependencies_elevated: {$ref: '#/$defs/dependencies'}}},
   },
 };
 
@@ -260,6 +267,7 @@ const verdict = {
 
 export const codexAdapterSchemas = [
   ['contracts/schemas/codex-intelligence-adapter-profile.schema.json', profile],
+  ['contracts/schemas/codex-invocation-contract.schema.json', codexInvocationContractSchema],
   ['contracts/schemas/codex-adapter-boundary.schema.json', boundary],
   ['contracts/schemas/codex-authentication-prerequisite.schema.json', authentication],
   ['contracts/schemas/codex-capability-proof.schema.json', capability],

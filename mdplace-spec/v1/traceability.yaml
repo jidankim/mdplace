@@ -3030,6 +3030,7 @@
         "normative/codex-intelligence-adapter-profile.md#req-codex-001-canonical-codex-intelligence-adapter-vocabulary-and-stable-identifiers-are-normative"
       ],
       "schema_or_transition_refs": [
+        "contracts/schemas/codex-invocation-contract.schema.json",
         "contracts/schemas/codex-adapter-boundary.schema.json",
         "contracts/schemas/codex-capability-proof.schema.json",
         "contracts/schemas/codex-network-proof.schema.json",
@@ -3054,7 +3055,7 @@
         "FIX-CODEX-PROFILE-007",
         "FIX-CODEX-PROFILE-008",
         "FIX-CODEX-PROFILE-009",
-        "FIX-CODEX-PROFILE-064"
+        "FIX-CODEX-PROFILE-066"
       ],
       "negative_fixture_ids": [
         "FIX-CODEX-PROFILE-010",
@@ -3111,8 +3112,8 @@
         "FIX-CODEX-PROFILE-061",
         "FIX-CODEX-PROFILE-062",
         "FIX-CODEX-PROFILE-063",
+        "FIX-CODEX-PROFILE-064",
         "FIX-CODEX-PROFILE-065",
-        "FIX-CODEX-PROFILE-066",
         "FIX-CODEX-PROFILE-067",
         "FIX-CODEX-PROFILE-068",
         "FIX-CODEX-PROFILE-069",
@@ -3121,7 +3122,9 @@
         "FIX-CODEX-PROFILE-072",
         "FIX-CODEX-PROFILE-073",
         "FIX-CODEX-PROFILE-074",
-        "FIX-CODEX-PROFILE-075"
+        "FIX-CODEX-PROFILE-075",
+        "FIX-CODEX-PROFILE-076",
+        "FIX-CODEX-PROFILE-077"
       ],
       "acceptance_gate": "Codex Intelligence Adapter profile gate 1 is satisfied by closed observable conformance evidence.",
       "scope": "codex-intelligence-adapter",
@@ -3146,6 +3149,7 @@
         "normative/codex-intelligence-adapter-profile.md#req-codex-002-the-codex-boundary-and-lifecycle-contracts-are-closed-and-complete"
       ],
       "schema_or_transition_refs": [
+        "contracts/schemas/codex-invocation-contract.schema.json",
         "contracts/schemas/codex-adapter-boundary.schema.json",
         "contracts/schemas/codex-capability-proof.schema.json",
         "contracts/schemas/codex-network-proof.schema.json",
@@ -3170,7 +3174,7 @@
         "FIX-CODEX-PROFILE-007",
         "FIX-CODEX-PROFILE-008",
         "FIX-CODEX-PROFILE-009",
-        "FIX-CODEX-PROFILE-064"
+        "FIX-CODEX-PROFILE-066"
       ],
       "negative_fixture_ids": [
         "FIX-CODEX-PROFILE-010",
@@ -3227,8 +3231,8 @@
         "FIX-CODEX-PROFILE-061",
         "FIX-CODEX-PROFILE-062",
         "FIX-CODEX-PROFILE-063",
+        "FIX-CODEX-PROFILE-064",
         "FIX-CODEX-PROFILE-065",
-        "FIX-CODEX-PROFILE-066",
         "FIX-CODEX-PROFILE-067",
         "FIX-CODEX-PROFILE-068",
         "FIX-CODEX-PROFILE-069",
@@ -3237,7 +3241,9 @@
         "FIX-CODEX-PROFILE-072",
         "FIX-CODEX-PROFILE-073",
         "FIX-CODEX-PROFILE-074",
-        "FIX-CODEX-PROFILE-075"
+        "FIX-CODEX-PROFILE-075",
+        "FIX-CODEX-PROFILE-076",
+        "FIX-CODEX-PROFILE-077"
       ],
       "acceptance_gate": "Codex Intelligence Adapter profile gate 2 is satisfied by closed observable conformance evidence.",
       "scope": "codex-intelligence-adapter",
@@ -3261,6 +3267,7 @@
         "normative/codex-intelligence-adapter-profile.md#req-codex-003-fixtures-observe-exact-boundaries-denials-inert-proposals-receipts-and-recovery"
       ],
       "schema_or_transition_refs": [
+        "contracts/schemas/codex-invocation-contract.schema.json",
         "contracts/schemas/codex-adapter-boundary.schema.json",
         "contracts/schemas/codex-capability-proof.schema.json",
         "contracts/schemas/codex-network-proof.schema.json",
@@ -3285,7 +3292,7 @@
         "FIX-CODEX-PROFILE-007",
         "FIX-CODEX-PROFILE-008",
         "FIX-CODEX-PROFILE-009",
-        "FIX-CODEX-PROFILE-064"
+        "FIX-CODEX-PROFILE-066"
       ],
       "negative_fixture_ids": [
         "FIX-CODEX-PROFILE-010",
@@ -3342,8 +3349,8 @@
         "FIX-CODEX-PROFILE-061",
         "FIX-CODEX-PROFILE-062",
         "FIX-CODEX-PROFILE-063",
+        "FIX-CODEX-PROFILE-064",
         "FIX-CODEX-PROFILE-065",
-        "FIX-CODEX-PROFILE-066",
         "FIX-CODEX-PROFILE-067",
         "FIX-CODEX-PROFILE-068",
         "FIX-CODEX-PROFILE-069",
@@ -3352,7 +3359,9 @@
         "FIX-CODEX-PROFILE-072",
         "FIX-CODEX-PROFILE-073",
         "FIX-CODEX-PROFILE-074",
-        "FIX-CODEX-PROFILE-075"
+        "FIX-CODEX-PROFILE-075",
+        "FIX-CODEX-PROFILE-076",
+        "FIX-CODEX-PROFILE-077"
       ],
       "acceptance_gate": "Codex Intelligence Adapter profile gate 3 is satisfied by closed observable conformance evidence.",
       "scope": "codex-intelligence-adapter",
@@ -3376,6 +3385,7 @@
         "normative/codex-intelligence-adapter-profile.md#req-codex-004-capability-network-authentication-destination-and-processing-envelope-proof-precede-transmission"
       ],
       "schema_or_transition_refs": [
+        "contracts/schemas/codex-invocation-contract.schema.json",
         "contracts/schemas/codex-adapter-boundary.schema.json",
         "contracts/schemas/codex-capability-proof.schema.json",
         "contracts/schemas/codex-network-proof.schema.json",
@@ -3400,7 +3410,7 @@
         "FIX-CODEX-PROFILE-007",
         "FIX-CODEX-PROFILE-008",
         "FIX-CODEX-PROFILE-009",
-        "FIX-CODEX-PROFILE-064"
+        "FIX-CODEX-PROFILE-066"
       ],
       "negative_fixture_ids": [
         "FIX-CODEX-PROFILE-010",
@@ -3457,8 +3467,8 @@
         "FIX-CODEX-PROFILE-061",
         "FIX-CODEX-PROFILE-062",
         "FIX-CODEX-PROFILE-063",
+        "FIX-CODEX-PROFILE-064",
         "FIX-CODEX-PROFILE-065",
-        "FIX-CODEX-PROFILE-066",
         "FIX-CODEX-PROFILE-067",
         "FIX-CODEX-PROFILE-068",
         "FIX-CODEX-PROFILE-069",
@@ -3467,7 +3477,9 @@
         "FIX-CODEX-PROFILE-072",
         "FIX-CODEX-PROFILE-073",
         "FIX-CODEX-PROFILE-074",
-        "FIX-CODEX-PROFILE-075"
+        "FIX-CODEX-PROFILE-075",
+        "FIX-CODEX-PROFILE-076",
+        "FIX-CODEX-PROFILE-077"
       ],
       "acceptance_gate": "Codex Intelligence Adapter profile gate 4 is satisfied by closed observable conformance evidence.",
       "scope": "codex-intelligence-adapter",
@@ -3493,6 +3505,7 @@
         "normative/codex-intelligence-adapter-profile.md#req-codex-005-codex-output-remains-inert-advice-with-zero-tool-or-semantic-authority"
       ],
       "schema_or_transition_refs": [
+        "contracts/schemas/codex-invocation-contract.schema.json",
         "contracts/schemas/codex-adapter-boundary.schema.json",
         "contracts/schemas/codex-capability-proof.schema.json",
         "contracts/schemas/codex-network-proof.schema.json",
@@ -3517,7 +3530,7 @@
         "FIX-CODEX-PROFILE-007",
         "FIX-CODEX-PROFILE-008",
         "FIX-CODEX-PROFILE-009",
-        "FIX-CODEX-PROFILE-064"
+        "FIX-CODEX-PROFILE-066"
       ],
       "negative_fixture_ids": [
         "FIX-CODEX-PROFILE-010",
@@ -3574,8 +3587,8 @@
         "FIX-CODEX-PROFILE-061",
         "FIX-CODEX-PROFILE-062",
         "FIX-CODEX-PROFILE-063",
+        "FIX-CODEX-PROFILE-064",
         "FIX-CODEX-PROFILE-065",
-        "FIX-CODEX-PROFILE-066",
         "FIX-CODEX-PROFILE-067",
         "FIX-CODEX-PROFILE-068",
         "FIX-CODEX-PROFILE-069",
@@ -3584,7 +3597,9 @@
         "FIX-CODEX-PROFILE-072",
         "FIX-CODEX-PROFILE-073",
         "FIX-CODEX-PROFILE-074",
-        "FIX-CODEX-PROFILE-075"
+        "FIX-CODEX-PROFILE-075",
+        "FIX-CODEX-PROFILE-076",
+        "FIX-CODEX-PROFILE-077"
       ],
       "acceptance_gate": "Codex Intelligence Adapter profile gate 5 is satisfied by closed observable conformance evidence.",
       "scope": "codex-intelligence-adapter",
@@ -3608,6 +3623,7 @@
         "normative/codex-intelligence-adapter-profile.md#req-codex-006-one-isolated-claim-row-derives-a-non-elevating-four-state-verdict"
       ],
       "schema_or_transition_refs": [
+        "contracts/schemas/codex-invocation-contract.schema.json",
         "contracts/schemas/codex-adapter-boundary.schema.json",
         "contracts/schemas/codex-capability-proof.schema.json",
         "contracts/schemas/codex-network-proof.schema.json",
@@ -3632,7 +3648,7 @@
         "FIX-CODEX-PROFILE-007",
         "FIX-CODEX-PROFILE-008",
         "FIX-CODEX-PROFILE-009",
-        "FIX-CODEX-PROFILE-064"
+        "FIX-CODEX-PROFILE-066"
       ],
       "negative_fixture_ids": [
         "FIX-CODEX-PROFILE-010",
@@ -3689,8 +3705,8 @@
         "FIX-CODEX-PROFILE-061",
         "FIX-CODEX-PROFILE-062",
         "FIX-CODEX-PROFILE-063",
+        "FIX-CODEX-PROFILE-064",
         "FIX-CODEX-PROFILE-065",
-        "FIX-CODEX-PROFILE-066",
         "FIX-CODEX-PROFILE-067",
         "FIX-CODEX-PROFILE-068",
         "FIX-CODEX-PROFILE-069",
@@ -3699,7 +3715,9 @@
         "FIX-CODEX-PROFILE-072",
         "FIX-CODEX-PROFILE-073",
         "FIX-CODEX-PROFILE-074",
-        "FIX-CODEX-PROFILE-075"
+        "FIX-CODEX-PROFILE-075",
+        "FIX-CODEX-PROFILE-076",
+        "FIX-CODEX-PROFILE-077"
       ],
       "acceptance_gate": "Codex Intelligence Adapter profile gate 6 is satisfied by closed observable conformance evidence.",
       "scope": "codex-intelligence-adapter",
@@ -3723,6 +3741,7 @@
         "normative/codex-intelligence-adapter-profile.md#req-codex-007-validator-assertions-bind-every-artifact-to-ordered-accepted-decisions-and-machine-evidence"
       ],
       "schema_or_transition_refs": [
+        "contracts/schemas/codex-invocation-contract.schema.json",
         "contracts/schemas/codex-adapter-boundary.schema.json",
         "contracts/schemas/codex-capability-proof.schema.json",
         "contracts/schemas/codex-network-proof.schema.json",
@@ -3747,7 +3766,7 @@
         "FIX-CODEX-PROFILE-007",
         "FIX-CODEX-PROFILE-008",
         "FIX-CODEX-PROFILE-009",
-        "FIX-CODEX-PROFILE-064"
+        "FIX-CODEX-PROFILE-066"
       ],
       "negative_fixture_ids": [
         "FIX-CODEX-PROFILE-010",
@@ -3804,8 +3823,8 @@
         "FIX-CODEX-PROFILE-061",
         "FIX-CODEX-PROFILE-062",
         "FIX-CODEX-PROFILE-063",
+        "FIX-CODEX-PROFILE-064",
         "FIX-CODEX-PROFILE-065",
-        "FIX-CODEX-PROFILE-066",
         "FIX-CODEX-PROFILE-067",
         "FIX-CODEX-PROFILE-068",
         "FIX-CODEX-PROFILE-069",
@@ -3814,7 +3833,9 @@
         "FIX-CODEX-PROFILE-072",
         "FIX-CODEX-PROFILE-073",
         "FIX-CODEX-PROFILE-074",
-        "FIX-CODEX-PROFILE-075"
+        "FIX-CODEX-PROFILE-075",
+        "FIX-CODEX-PROFILE-076",
+        "FIX-CODEX-PROFILE-077"
       ],
       "acceptance_gate": "Codex Intelligence Adapter profile gate 7 is satisfied by closed observable conformance evidence.",
       "scope": "codex-intelligence-adapter",
@@ -3839,6 +3860,7 @@
         "normative/codex-intelligence-adapter-profile.md#req-codex-008-the-codex-profile-is-specification-and-conformance-only"
       ],
       "schema_or_transition_refs": [
+        "contracts/schemas/codex-invocation-contract.schema.json",
         "contracts/schemas/codex-adapter-boundary.schema.json",
         "contracts/schemas/codex-capability-proof.schema.json",
         "contracts/schemas/codex-network-proof.schema.json",
@@ -3863,7 +3885,7 @@
         "FIX-CODEX-PROFILE-007",
         "FIX-CODEX-PROFILE-008",
         "FIX-CODEX-PROFILE-009",
-        "FIX-CODEX-PROFILE-064"
+        "FIX-CODEX-PROFILE-066"
       ],
       "negative_fixture_ids": [
         "FIX-CODEX-PROFILE-010",
@@ -3920,8 +3942,8 @@
         "FIX-CODEX-PROFILE-061",
         "FIX-CODEX-PROFILE-062",
         "FIX-CODEX-PROFILE-063",
+        "FIX-CODEX-PROFILE-064",
         "FIX-CODEX-PROFILE-065",
-        "FIX-CODEX-PROFILE-066",
         "FIX-CODEX-PROFILE-067",
         "FIX-CODEX-PROFILE-068",
         "FIX-CODEX-PROFILE-069",
@@ -3930,7 +3952,9 @@
         "FIX-CODEX-PROFILE-072",
         "FIX-CODEX-PROFILE-073",
         "FIX-CODEX-PROFILE-074",
-        "FIX-CODEX-PROFILE-075"
+        "FIX-CODEX-PROFILE-075",
+        "FIX-CODEX-PROFILE-076",
+        "FIX-CODEX-PROFILE-077"
       ],
       "acceptance_gate": "Codex Intelligence Adapter profile gate 8 is satisfied by closed observable conformance evidence.",
       "scope": "codex-intelligence-adapter",

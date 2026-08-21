@@ -1,5 +1,6 @@
 import {isDeepStrictEqual} from 'node:util';
 
+import {canonicalBase64Bytes} from './canonical-base64.mjs';
 import {evaluatePattern} from './pattern-evaluation.mjs';
 import {readPackageFile} from './safe-path.mjs';
 
@@ -147,6 +148,7 @@ function validateNode(schema, value, rootSchema, path, errors, state) {
   if (typeof value === 'string') {
     if (schema.minLength !== undefined && [...value].length < schema.minLength) addError(errors, path, 'minLength');
     if (schema.maxLength !== undefined && [...value].length > schema.maxLength) addError(errors, path, 'maxLength');
+    if (schema.format === 'canonical-base64' && canonicalBase64Bytes(value) === null) addError(errors, path, 'format');
     if (schema.pattern !== undefined) {
       if (typeof schema.pattern !== 'string') addError(errors, path, 'invalidSchema');
       else if (schema.pattern.length > maxPatternLength || value.length > maxPatternInputLength) {

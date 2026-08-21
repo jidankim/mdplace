@@ -32,17 +32,17 @@ export function adapterIsolationReceipt(isolation) {
   };
 }
 
-export function adapterReceiptTiming(attempt, budget) {
+export function adapterReceiptTiming(attempt, budget, observedCompletedAt = null) {
   const observedStartedAt = attempt.double.observed_started_at;
   return {
     observed_started_at: observedStartedAt,
-    observed_completed_at: new Date(Date.parse(observedStartedAt) + budget.runtime_ms).toISOString(),
+    observed_completed_at: observedCompletedAt ?? new Date(Date.parse(observedStartedAt) + budget.runtime_ms).toISOString(),
   };
 }
 
-export function createAdapterReceipt({attempt, transmission, isolation, budget, rawOutput, proposal, outcome, reason}) {
+export function createAdapterReceipt({attempt, transmission, isolation, budget, rawOutput, proposal, outcome, reason, observedCompletedAt = null}) {
   const envelope = attempt.envelope;
-  const timing = adapterReceiptTiming(attempt, budget);
+  const timing = adapterReceiptTiming(attempt, budget, observedCompletedAt);
   const body = {
     schema_id: 'mdplace.adapter-run-receipt/v1',
     receipt_id: `adapter-receipt:${envelope.attempt_id.slice('adapter-attempt:'.length)}`,

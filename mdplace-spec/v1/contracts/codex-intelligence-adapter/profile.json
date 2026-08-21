@@ -5,7 +5,7 @@
   "owner": "codex-adapter",
   "version": "1.0.0",
   "protocol_ref": "normative/intelligence-adapter-protocol.md",
-  "approved_processing_envelope_ref": "contracts/intelligence-adapter/approved-context.json#/policy_binding",
+  "approved_processing_envelope_ref": "contracts/codex-intelligence-adapter/approved-processing-envelope.json",
   "decision_inputs": [
     "https://github.com/jidankim/mdplace/issues/11#issuecomment-5118839348",
     "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
@@ -17,11 +17,14 @@
     "approved_cli_version": "0.104.0",
     "mode": "non_interactive",
     "payload_channel": "framed_stdin",
-    "output_mode": "bounded_jsonl_with_schema_final"
+    "output_mode": "bounded_jsonl_with_schema_final",
+    "invocation_contract_ref": "contracts/codex-intelligence-adapter/invocation-contract.json",
+    "output_schema_ref": "contracts/schemas/codex-adapter-proposal.schema.json"
   },
   "exact_destination": "https://codex.openai.test/v1/execute",
   "evidence_refs": {
     "boundary": "contracts/codex-intelligence-adapter/boundary.json",
+    "invocation_contract": "contracts/codex-intelligence-adapter/invocation-contract.json",
     "authentication_prerequisite": "contracts/codex-intelligence-adapter/authentication-prerequisite.json",
     "capability_proof": "contracts/codex-intelligence-adapter/capability-proof.json",
     "network_proof": "contracts/codex-intelligence-adapter/network-proof.json"

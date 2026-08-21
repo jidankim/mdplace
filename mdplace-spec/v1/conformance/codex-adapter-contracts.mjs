@@ -1,4 +1,7 @@
 import {codexDecisionInputs} from './codex-adapter-core.mjs';
+import {codexAdapterInterface, codexInvocationContract} from './codex-adapter-invocation.mjs';
+
+export {codexInvocationContract};
 
 export const codexAdapterProfile = {
   $schema: '../schemas/codex-intelligence-adapter-profile.schema.json',
@@ -7,20 +10,13 @@ export const codexAdapterProfile = {
   owner: 'codex-adapter',
   version: '1.0.0',
   protocol_ref: 'normative/intelligence-adapter-protocol.md',
-  approved_processing_envelope_ref: 'contracts/intelligence-adapter/approved-context.json#/policy_binding',
+  approved_processing_envelope_ref: 'contracts/codex-intelligence-adapter/approved-processing-envelope.json',
   decision_inputs: codexDecisionInputs,
-  interface: {
-    command: 'codex',
-    subcommand: 'exec',
-    interface_version: '1.0.0',
-    approved_cli_version: '0.104.0',
-    mode: 'non_interactive',
-    payload_channel: 'framed_stdin',
-    output_mode: 'bounded_jsonl_with_schema_final',
-  },
+  interface: codexAdapterInterface(),
   exact_destination: 'https://codex.openai.test/v1/execute',
   evidence_refs: {
     boundary: 'contracts/codex-intelligence-adapter/boundary.json',
+    invocation_contract: 'contracts/codex-intelligence-adapter/invocation-contract.json',
     authentication_prerequisite: 'contracts/codex-intelligence-adapter/authentication-prerequisite.json',
     capability_proof: 'contracts/codex-intelligence-adapter/capability-proof.json',
     network_proof: 'contracts/codex-intelligence-adapter/network-proof.json',
@@ -40,6 +36,33 @@ export const codexAdapterProfile = {
   specification_only: true,
   live_codex_behavior_asserted: false,
   network_operation_performed: false,
+};
+
+export const codexApprovedProcessingEnvelope = {
+  $schema: 'contracts/schemas/processing-envelope.schema.json', schema_id: 'mdplace.processing-envelope/v1',
+  envelope_id: 'envelope:cdx-000', chain_id: 'adapter-chain:cdx-000', attempt_id: 'adapter-attempt:cdx-000',
+  attempt_sequence: 0, authorization_id: 'adapter-authorization:remote-primary',
+  bindings: {
+    vault_id: 'vault:fixture-vault',
+    policy: {id: 'policy:core-processing', version: '1.0.0', sha256: '27a755ff5a6d91ce1f925c31cbc094bd25f70b54793dee4a9a4a56e8d3d07766'},
+    source_profile: {id: 'source-profile:web-clipper', version: '1.0.0', sha256: 'e8653b33e417207545e8e87e0e53443506e0cace32270ca4df5f10dc0bdde549'},
+    taxonomy_revision: {id: 'taxonomy-revision:fixture-001', revision: 1, sha256: '6e77aeb5337715429270fd9c18cd01d388033efade5ce207b834516b2f96b1e6'},
+    source_note_id: 'file:01J00000000000000000000000', source_note_version_sha256: 'b'.repeat(64),
+    adapter_id: 'adapter:codex', provider_id: 'provider:codex', model_id: 'model:codex-fixture', model_version: '2026-08-01',
+  },
+  purpose_id: 'purpose:placement',
+  destination: {destination_id: 'destination:codex-fixture', endpoint: 'https://codex.openai.test/v1/execute', locality: 'remote'},
+  transmitted_fields: [{field_id: 'field:source-content', data_class: 'data:source-content', segment_id: 'segment:cdx-000', redaction_receipt_sha256: '4a1b52bf2f36e1bc834b20df223c921abb8ea01bb0d673bb08da5d4e6bfda807'}],
+  transmitted_artifacts: ['artifact:intelligence-proposal'],
+  redactions: [{rule_id: 'redaction:remove-secrets', receipt_sha256: '4a1b52bf2f36e1bc834b20df223c921abb8ea01bb0d673bb08da5d4e6bfda807', status: 'applied'}],
+  capabilities: ['capability:produce-proposal'],
+  retention_facts: [{retention_fact_id: 'retention:codex-fixture', status: 'unknown_acknowledged', max_days: 0, data_use: 'provider_training_unknown', region: 'unsupported', subprocessors: []}],
+  retention_artifacts: ['artifact:intelligence-proposal'],
+  credential_boundary: {credential_ref: 'credential-ref:codex-login', store: 'os_credential_store', authentication_method: 'local_process', provider_id: 'provider:codex', purpose_id: 'purpose:placement', adapter_visibility: 'none'},
+  ceilings: {input_bytes: 4096, output_bytes: 3000, runtime_ms: 800, cost_microunits: 5000},
+  contracts: {adapter_contract_version: '1.0.0', prompt_contract_version: '1.0.0', proposal_schema_id: 'mdplace.intelligence-proposal/v1', proposal_schema_version: '1.0.0'},
+  payload_segments: [{segment_id: 'segment:cdx-000', field_id: 'field:source-content', utf8: '', byte_length: 0, sha256: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'}],
+  cached_proposal_binding: null,
 };
 
 const requirementDefinitions = [

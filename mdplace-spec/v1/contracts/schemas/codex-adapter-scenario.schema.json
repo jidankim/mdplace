@@ -21,6 +21,7 @@
     "network_sha256",
     "processing_envelope_json",
     "processing_envelope_sha256",
+    "attempt_observation",
     "payload_base64",
     "payload_bytes",
     "payload_sha256",
@@ -138,8 +139,129 @@
       "type": "string",
       "pattern": "^[a-f0-9]{64}$"
     },
+    "attempt_observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observed_started_at",
+        "observed_completed_at",
+        "provider_request_id",
+        "isolation"
+      ],
+      "properties": {
+        "observed_started_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "observed_completed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "provider_request_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^provider-request:cdx-[0-9]{3}$"
+        },
+        "isolation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ephemeral",
+            "fresh_process",
+            "filesystem",
+            "tools",
+            "ambient_configuration",
+            "credential_visibility",
+            "network_scope",
+            "effective_capabilities",
+            "canary"
+          ],
+          "properties": {
+            "ephemeral": {
+              "type": "boolean"
+            },
+            "fresh_process": {
+              "type": "boolean"
+            },
+            "filesystem": {
+              "enum": [
+                "none",
+                "present"
+              ]
+            },
+            "tools": {
+              "enum": [
+                "none",
+                "present"
+              ]
+            },
+            "ambient_configuration": {
+              "enum": [
+                "unreadable",
+                "readable"
+              ]
+            },
+            "credential_visibility": {
+              "enum": [
+                "none",
+                "visible"
+              ]
+            },
+            "network_scope": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string"
+              }
+            },
+            "effective_capabilities": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string"
+              }
+            },
+            "canary": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "canary_id",
+                "challenge",
+                "expected",
+                "observed",
+                "passed"
+              ],
+              "properties": {
+                "canary_id": {
+                  "type": "string",
+                  "pattern": "^canary:cdx-[0-9]{3}$"
+                },
+                "challenge": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "expected": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "observed": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "passed": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "payload_base64": {
-      "type": "string"
+      "type": "string",
+      "format": "canonical-base64"
     },
     "payload_bytes": {
       "type": "integer",

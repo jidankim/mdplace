@@ -3,10 +3,12 @@ import {dirname, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 import {
+  codexApprovedProcessingEnvelope,
   codexAdapterProfile,
   codexAdapterRequirements,
   codexAdapterTransitionTables,
   codexAdapterVerdicts,
+  codexInvocationContract,
 } from './codex-adapter-contracts.mjs';
 import {
   codexAdapterEvidenceDigest,
@@ -46,7 +48,13 @@ async function fileDigest(path) {
 
 async function writeSchemasAndContracts() {
   for (const [path, schema] of codexAdapterSchemas) await writeJson(path, schema);
+  const outputSchemaSha256 = await fileDigest('contracts/schemas/codex-adapter-proposal.schema.json');
+  await writeJson(
+    'contracts/codex-intelligence-adapter/invocation-contract.json',
+    codexInvocationContract(outputSchemaSha256),
+  );
   await writeJson('contracts/codex-intelligence-adapter/profile.json', codexAdapterProfile);
+  await writeJson('contracts/codex-intelligence-adapter/approved-processing-envelope.json', codexApprovedProcessingEnvelope);
   await writeJson('contracts/codex-intelligence-adapter/authentication-prerequisite.json', codexAuthenticationPrerequisite);
   await writeJson('contracts/codex-intelligence-adapter/capability-proof.json', codexCapabilityProof);
   await writeJson('contracts/codex-intelligence-adapter/network-proof.json', codexNetworkProof);
@@ -54,25 +62,40 @@ async function writeSchemasAndContracts() {
   for (const {path, document} of codexAdapterTransitionTables()) await writeJson(path, document);
 }
 
-function recoveryRecords(entries) {
-  const records = new Map();
-  for (const entry of entries) {
-    const definition = codexAdapterCases[Number(entry.fixture_id.slice(-3)) - 1];
-    const behavior = definition[2].behavior;
-    if (!['crash_before_transmission', 'crash_after_transmission', 'recover_current', 'recover_stale'].includes(behavior)) continue;
-    const current = behavior === 'recover_current';
-    records.set(entry.fixture_id, {
-      fixture_id: entry.fixture_id,
-      boundary_revalidated: current,
-      capability_revalidated: current,
-      network_revalidated: current,
-      authentication_revalidated: current,
-      processing_envelope_revalidated: current,
-      terminal_state: current ? 'recovered' : 'recovery_required',
-      receipt_sha256: '0'.repeat(64),
-    });
-  }
-  return records;
+function fixtureDocument(entry, scenario, expected) {
+  return {
+    $schema: '../../../contracts/schemas/conformance-fixture.schema.json', schema_id: 'mdplace.conformance-fixture/v1',
+    fixture_id: entry.fixture_id, category: entry.category, requirement_ids: codexAdapterRequirementIds,
+    subject: {kind: 'codex_intelligence_adapter', schema: 'contracts/schemas/codex-adapter-scenario.schema.json', document: scenario},
+    expected,
+  };
+}
+
+function recoveryTargetBehavior(behavior) {
+  if (behavior === 'recover_current') return 'crash_after_transmission';
+  if (behavior === 'recover_stale') return 'crash_before_transmission';
+  return behavior;
+}
+
+function recoveryRecord(entry, scenario, targetEntry, targetFixture) {
+  const envelope = JSON.parse(targetFixture.subject.document.processing_envelope_json);
+  const targetReceipt = JSON.parse(targetFixture.expected.receipts[0]);
+  return {
+    fixture_id: entry.fixture_id,
+    target_fixture_id: targetEntry.fixture_id,
+    target_path: `conformance/${targetEntry.path}`,
+    target_chain_id: envelope.chain_id,
+    target_attempt_id: envelope.attempt_id,
+    target_attempt_sequence: envelope.attempt_sequence,
+    target_attempt_class: 'primary',
+    target_authorization_id: envelope.authorization_id,
+    target_envelope_id: envelope.envelope_id,
+    target_envelope_sha256: targetFixture.subject.document.processing_envelope_sha256,
+    preceding_receipt_sha256s: [],
+    target_receipt_sha256: targetReceipt.receipt_sha256,
+    terminal_state: scenario.behavior === 'recover_current' ? 'recovered' : 'recovery_required',
+    receipt_sha256: '0'.repeat(64),
+  };
 }
 
 async function writeFixtures() {
@@ -80,30 +103,42 @@ async function writeFixtures() {
     fixture_id: `FIX-CODEX-PROFILE-${String(index + 1).padStart(3, '0')}`,
     path: relativeFixturePath(caseId), category, requirement_ids: codexAdapterRequirementIds,
   }));
-  const records = recoveryRecords(entries);
-  const evidence = {authentication: codexAuthenticationPrerequisite, capability: codexCapabilityProof, network: codexNetworkProof};
-  const fixtures = await Promise.all(codexAdapterCases.map(async (definition, index) => {
-    const scenario = codexAdapterScenario(index, definition, evidence);
-    const expected = await observeCodexAdapterScenario(
-      {kind: 'codex_intelligence_adapter', document: scenario}, packageRoot,
-      records.get(entries[index].fixture_id) ?? null,
-    );
-    const receipt = JSON.parse(expected.receipts[0]);
-    const record = records.get(entries[index].fixture_id);
-    if (record !== undefined) record.receipt_sha256 = receipt.receipt_sha256;
-    return {
-      $schema: '../../../contracts/schemas/conformance-fixture.schema.json', schema_id: 'mdplace.conformance-fixture/v1',
-      fixture_id: entries[index].fixture_id, category: entries[index].category, requirement_ids: codexAdapterRequirementIds,
-      subject: {kind: 'codex_intelligence_adapter', schema: 'contracts/schemas/codex-adapter-scenario.schema.json', document: scenario},
-      expected,
-    };
-  }));
   await writeJson('contracts/codex-intelligence-adapter/fixture-manifest.json', {
     $schema: '../schemas/codex-adapter-fixture-manifest.schema.json', schema_id: 'mdplace.codex-adapter-fixture-manifest/v1',
     manifest_id: 'codex-adapter-fixtures:v1', profile_id: 'codex-adapter', requirements: codexAdapterRequirementIds,
     fixtures: entries, intake_fixtures: 0, stateful_scenarios: 0,
   });
-  for (const [index, fixture] of fixtures.entries()) await writeJson(packageFixturePath(codexAdapterCases[index][0]), fixture);
+  const evidence = {
+    approvedEnvelopeSha256: await fileDigest('contracts/codex-intelligence-adapter/approved-processing-envelope.json'),
+    invocationContractSha256: await fileDigest('contracts/codex-intelligence-adapter/invocation-contract.json'),
+    outputSchemaSha256: await fileDigest('contracts/schemas/codex-adapter-proposal.schema.json'),
+    authentication: codexAuthenticationPrerequisite, capability: codexCapabilityProof, network: codexNetworkProof,
+  };
+  const scenarios = codexAdapterCases.map((definition, index) => codexAdapterScenario(index, definition, evidence));
+  const fixtures = new Array(scenarios.length);
+  for (const [index, scenario] of scenarios.entries()) {
+    if (scenario.operation === 'recover') continue;
+    const expected = await observeCodexAdapterScenario({kind: 'codex_intelligence_adapter', document: scenario}, packageRoot);
+    fixtures[index] = fixtureDocument(entries[index], scenario, expected);
+    await writeJson(packageFixturePath(codexAdapterCases[index][0]), fixtures[index]);
+  }
+  const records = new Map();
+  for (const [index, scenario] of scenarios.entries()) {
+    if (!['crash_before_transmission', 'crash_after_transmission', 'recover_current', 'recover_stale'].includes(scenario.behavior)) continue;
+    const targetIndex = scenarios.findIndex(({behavior}) => behavior === recoveryTargetBehavior(scenario.behavior));
+    records.set(entries[index].fixture_id, recoveryRecord(entries[index], scenario, entries[targetIndex], fixtures[targetIndex]));
+  }
+  for (const [index, scenario] of scenarios.entries()) {
+    if (scenario.operation !== 'recover') continue;
+    const record = records.get(entries[index].fixture_id);
+    const expected = await observeCodexAdapterScenario({kind: 'codex_intelligence_adapter', document: scenario}, packageRoot, record);
+    fixtures[index] = fixtureDocument(entries[index], scenario, expected);
+    await writeJson(packageFixturePath(codexAdapterCases[index][0]), fixtures[index]);
+  }
+  for (const [index, entry] of entries.entries()) {
+    const record = records.get(entry.fixture_id);
+    if (record !== undefined) record.receipt_sha256 = JSON.parse(fixtures[index].expected.receipts[0]).receipt_sha256;
+  }
 
   const firstBoundary = JSON.parse(fixtures[0].subject.document.boundary_json);
   firstBoundary.authentication_prerequisite_sha256 = await fileDigest('contracts/codex-intelligence-adapter/authentication-prerequisite.json');
@@ -126,7 +161,10 @@ async function writeMachineEvidence(entries, fixtures) {
     $schema: '../../contracts/schemas/codex-adapter-evidence.schema.json', schema_id: 'mdplace.codex-adapter-evidence/v1',
     evidence_id: 'codex-adapter-evidence:v1', profile_id: 'codex-adapter', validator_version: '1.2.0',
     fixture_bindings: fixtureBindings, receipt_sha256s: fixtureBindings.map(({receipt_sha256}) => receipt_sha256),
+    approved_processing_envelope_sha256: await fileDigest('contracts/codex-intelligence-adapter/approved-processing-envelope.json'),
     boundary_sha256: await fileDigest('contracts/codex-intelligence-adapter/boundary.json'),
+    invocation_contract_sha256: await fileDigest('contracts/codex-intelligence-adapter/invocation-contract.json'),
+    output_schema_sha256: await fileDigest('contracts/schemas/codex-adapter-proposal.schema.json'),
     authentication_prerequisite_sha256: await fileDigest('contracts/codex-intelligence-adapter/authentication-prerequisite.json'),
     capability_proof_sha256: await fileDigest('contracts/codex-intelligence-adapter/capability-proof.json'),
     network_proof_sha256: await fileDigest('contracts/codex-intelligence-adapter/network-proof.json'),
@@ -170,7 +208,8 @@ function traceRecord(requirement, positiveIds, negativeIds) {
     requirement_id: requirement.id, decision_ids: codexDecisionIds, canonical_terms: requirement.canonical_terms,
     normative_anchors: [requirement.normative_anchor],
     schema_or_transition_refs: [
-      'contracts/schemas/codex-adapter-boundary.schema.json', 'contracts/schemas/codex-capability-proof.schema.json',
+      'contracts/schemas/codex-invocation-contract.schema.json', 'contracts/schemas/codex-adapter-boundary.schema.json',
+      'contracts/schemas/codex-capability-proof.schema.json',
       'contracts/schemas/codex-network-proof.schema.json', 'contracts/schemas/codex-adapter-proposal.schema.json',
       'contracts/schemas/codex-adapter-denial.schema.json', 'contracts/schemas/codex-adapter-receipt.schema.json',
       'contracts/transitions/codex-adapter-capability-proof-lifecycle.json', 'contracts/transitions/codex-adapter-network-proof-lifecycle.json',
@@ -219,6 +258,9 @@ async function writeClaimEnvelope() {
   const subject = {kind: 'codex_adapter_claim', subject_id: 'codex-adapter:claim-v1', schema: 'contracts/schemas/codex-adapter-claim-manifest.schema.json', sha256: await fileDigest(claimPath)};
   const inputs = await Promise.all([
     ['requirements', 'normative/requirements.json'], ['boundary', 'contracts/codex-intelligence-adapter/boundary.json'],
+    ['invocation_contract', 'contracts/codex-intelligence-adapter/invocation-contract.json'],
+    ['output_schema', 'contracts/schemas/codex-adapter-proposal.schema.json'],
+    ['approved_processing_envelope', 'contracts/codex-intelligence-adapter/approved-processing-envelope.json'],
     ['authentication', 'contracts/codex-intelligence-adapter/authentication-prerequisite.json'], ['capability', 'contracts/codex-intelligence-adapter/capability-proof.json'],
     ['network', 'contracts/codex-intelligence-adapter/network-proof.json'], ['fixture_manifest', 'contracts/codex-intelligence-adapter/fixture-manifest.json'],
   ].map(async ([label, path], ordinal) => ({ordinal, label, path, sha256: await fileDigest(path)})));

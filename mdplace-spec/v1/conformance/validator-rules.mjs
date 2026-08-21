@@ -124,6 +124,7 @@ const authorityByCommand = new Map([
 ]);
 
 const conformanceExecutables = new Set([
+  'conformance/canonical-base64.mjs',
   'conformance/digest-bindings.mjs',
   'conformance/evidence-claim-validation.mjs',
   'conformance/evidence-core.mjs',

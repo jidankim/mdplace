@@ -61,11 +61,17 @@
       "additionalProperties": false,
       "required": [
         "fixture_id",
-        "boundary_revalidated",
-        "capability_revalidated",
-        "network_revalidated",
-        "authentication_revalidated",
-        "processing_envelope_revalidated",
+        "target_fixture_id",
+        "target_path",
+        "target_chain_id",
+        "target_attempt_id",
+        "target_attempt_sequence",
+        "target_attempt_class",
+        "target_authorization_id",
+        "target_envelope_id",
+        "target_envelope_sha256",
+        "preceding_receipt_sha256s",
+        "target_receipt_sha256",
         "terminal_state",
         "receipt_sha256"
       ],
@@ -74,20 +80,50 @@
           "type": "string",
           "pattern": "^FIX-CODEX-PROFILE-[0-9]{3}$"
         },
-        "boundary_revalidated": {
-          "type": "boolean"
+        "target_fixture_id": {
+          "type": "string",
+          "pattern": "^FIX-CODEX-PROFILE-[0-9]{3}$"
         },
-        "capability_revalidated": {
-          "type": "boolean"
+        "target_path": {
+          "type": "string",
+          "pattern": "^conformance/scenarios/codex-intelligence-adapter/[a-z][a-z0-9-]+\\.json$"
         },
-        "network_revalidated": {
-          "type": "boolean"
+        "target_chain_id": {
+          "type": "string",
+          "pattern": "^adapter-chain:cdx-[0-9]{3}$"
         },
-        "authentication_revalidated": {
-          "type": "boolean"
+        "target_attempt_id": {
+          "type": "string",
+          "pattern": "^adapter-attempt:cdx-[0-9]{3}$"
         },
-        "processing_envelope_revalidated": {
-          "type": "boolean"
+        "target_attempt_sequence": {
+          "const": 0
+        },
+        "target_attempt_class": {
+          "const": "primary"
+        },
+        "target_authorization_id": {
+          "const": "adapter-authorization:remote-primary"
+        },
+        "target_envelope_id": {
+          "type": "string",
+          "pattern": "^envelope:cdx-[0-9]{3}$"
+        },
+        "target_envelope_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "preceding_receipt_sha256s": {
+          "type": "array",
+          "maxItems": 0,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "target_receipt_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
         },
         "terminal_state": {
           "enum": [

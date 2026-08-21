@@ -67,7 +67,8 @@
     },
     "disabled_capability_features": {
       "type": "array",
-      "minItems": 8,
+      "minItems": 12,
+      "maxItems": 12,
       "uniqueItems": true,
       "items": {
         "enum": [
