@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:local-intelligence-adapter-profile:v1",
+  "title": "mdplace Local Intelligence Adapter profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "profile_id", "owner", "version", "protocol_ref", "approved_processing_policy_ref", "decision", "locality", "lifecycle", "execution_scope", "capabilities", "authority", "output_schemas", "specification_only"],
+  "properties": {
+    "$schema": {"const": "../schemas/local-intelligence-adapter-profile.schema.json"},
+    "schema_id": {"const": "mdplace.local-intelligence-adapter-profile/v1"},
+    "profile_id": {"const": "local-adapter"},
+    "owner": {"const": "local-adapter"},
+    "version": {"const": "1.0.0"},
+    "protocol_ref": {"const": "normative/intelligence-adapter-protocol.md"},
+    "approved_processing_policy_ref": {"const": "contracts/intelligence-adapter/approved-context.json#/policy_binding"},
+    "decision": {"const": "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"},
+    "locality": {"const": "local"},
+    "lifecycle": {"const": "isolated_ephemeral_advisory"},
+    "execution_scope": {"$ref": "#/$defs/executionScope"},
+    "capabilities": {"type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true, "items": {"enum": ["emit_schema_validated_proposal", "emit_schema_validated_receipt"]}},
+    "authority": {"$ref": "#/$defs/authority"},
+    "output_schemas": {"type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true, "items": {"enum": ["contracts/schemas/intelligence-proposal.schema.json", "contracts/schemas/adapter-run-receipt.schema.json"]}},
+    "specification_only": {"const": true}
+  },
+  "$defs": {
+    "executionScope": {
+      "type": "object", "additionalProperties": false,
+      "required": ["endpoint", "network_access", "filesystem_access", "ambient_configuration", "tools", "credentials"],
+      "properties": {"endpoint": {"const": "local://isolated-child"}, "network_access": {"const": "denied"}, "filesystem_access": {"const": "none"}, "ambient_configuration": {"const": "unreadable"}, "tools": {"const": "none"}, "credentials": {"const": "none"}}
+    },
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["semantic", "note_placement", "taxonomy", "projection", "filesystem", "network", "tool", "automation"],
+      "properties": {"semantic": {"const": "none"}, "note_placement": {"const": "none"}, "taxonomy": {"const": "none"}, "projection": {"const": "none"}, "filesystem": {"const": "none"}, "network": {"const": "none"}, "tool": {"const": "none"}, "automation": {"const": "none"}}
+    }
+  }
+}

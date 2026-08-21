@@ -1,0 +1,38 @@
+{
+  "$schema": "../schemas/local-adapter-verdict-table.schema.json",
+  "schema_id": "mdplace.local-adapter-verdict-table/v1",
+  "table_id": "VERDICT-LOCAL-ADAPTER-V1",
+  "profile_id": "local-adapter",
+  "precedence": [
+    "fail",
+    "unsupported",
+    "inconclusive",
+    "pass"
+  ],
+  "rows": [
+    {
+      "verdict": "pass",
+      "meaning": "Every required Local Intelligence Adapter fact and digest is current and passing.",
+      "required_fact_effect": "satisfied",
+      "claim_effect": "eligible_pass"
+    },
+    {
+      "verdict": "fail",
+      "meaning": "Observed behavior contradicts the closed profile or a bound artifact is invalid.",
+      "required_fact_effect": "non_pass",
+      "claim_effect": "deny_pass"
+    },
+    {
+      "verdict": "unsupported",
+      "meaning": "A required Local Intelligence Adapter capability cannot be evaluated.",
+      "required_fact_effect": "non_pass",
+      "claim_effect": "deny_pass"
+    },
+    {
+      "verdict": "inconclusive",
+      "meaning": "Available Local Intelligence Adapter evidence cannot determine a required fact.",
+      "required_fact_effect": "non_pass",
+      "claim_effect": "deny_pass"
+    }
+  ]
+}

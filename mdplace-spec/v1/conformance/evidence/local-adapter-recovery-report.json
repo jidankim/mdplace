@@ -1,0 +1,51 @@
+{
+  "$schema": "../../contracts/schemas/local-adapter-recovery-report.schema.json",
+  "schema_id": "mdplace.local-adapter-recovery-report/v1",
+  "report_id": "local-adapter-recovery:v1",
+  "profile_id": "local-adapter",
+  "claim_manifest_sha256": "9be283dbcc57b6c452512d6a7be06fa90b3a89415397cefd99be85d84ba731b1",
+  "evidence_digest": "d2b961ed2fc151bcf9bff79484b8713a334af141eedd2010ea6ac64114fb3422",
+  "parsed_artifacts_revalidated": true,
+  "cases": [
+    {
+      "fixture_id": "FIX-LIA-PROFILE-045",
+      "attempt_id": "adapter-attempt:lia-045",
+      "attempt_sequence": 0,
+      "crash_boundary": "after_receipt",
+      "claim_manifest_sha256": "9be283dbcc57b6c452512d6a7be06fa90b3a89415397cefd99be85d84ba731b1",
+      "evidence_digest": "d2b961ed2fc151bcf9bff79484b8713a334af141eedd2010ea6ac64114fb3422",
+      "attempt_revalidated": true,
+      "claim_digest_revalidated": true,
+      "parsed_evidence_revalidated": true,
+      "terminal_state": "recovered",
+      "receipt_sha256": "afa5c449b5b5e5d34fa012610f676b768b2375da9fbafbc763e15b8eea69d05e"
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-046",
+      "attempt_id": "adapter-attempt:lia-046",
+      "attempt_sequence": 0,
+      "crash_boundary": "after_receipt",
+      "claim_manifest_sha256": "9be283dbcc57b6c452512d6a7be06fa90b3a89415397cefd99be85d84ba731b1",
+      "evidence_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+      "attempt_revalidated": true,
+      "claim_digest_revalidated": true,
+      "parsed_evidence_revalidated": false,
+      "terminal_state": "recovery_required",
+      "receipt_sha256": "f7e09e34935206062356f1792507ff86902e85dbfa28b90b3ad1eeb250775c4c"
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-047",
+      "attempt_id": "adapter-attempt:lia-047",
+      "attempt_sequence": 0,
+      "crash_boundary": "after_receipt",
+      "claim_manifest_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "evidence_digest": "d2b961ed2fc151bcf9bff79484b8713a334af141eedd2010ea6ac64114fb3422",
+      "attempt_revalidated": true,
+      "claim_digest_revalidated": false,
+      "parsed_evidence_revalidated": true,
+      "terminal_state": "recovery_required",
+      "receipt_sha256": "26d17b1b05b945cb45d7594d7d27565d1f5917f9216d8624933f427756caade0"
+    }
+  ],
+  "verdict": "pass"
+}

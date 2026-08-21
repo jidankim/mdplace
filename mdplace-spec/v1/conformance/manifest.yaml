@@ -6180,6 +6180,1410 @@
       }
     },
     {
+      "fixture_id": "FIX-LIA-PROFILE-001",
+      "path": "scenarios/local-intelligence-adapter/valid-inert-proposal.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-002",
+      "path": "scenarios/local-intelligence-adapter/valid-abstention.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-003",
+      "path": "scenarios/local-intelligence-adapter/exact-input-ceiling.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-004",
+      "path": "scenarios/local-intelligence-adapter/exact-output-ceiling.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-005",
+      "path": "scenarios/local-intelligence-adapter/exact-runtime-ceiling.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-006",
+      "path": "scenarios/local-intelligence-adapter/exact-attempt-ceiling.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-007",
+      "path": "scenarios/local-intelligence-adapter/hostile-instructions-remain-inert.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-008",
+      "path": "scenarios/local-intelligence-adapter/embedded-tool-call-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-009",
+      "path": "scenarios/local-intelligence-adapter/secret-request-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-010",
+      "path": "scenarios/local-intelligence-adapter/ambient-configuration-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-011",
+      "path": "scenarios/local-intelligence-adapter/semantic-authority-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-012",
+      "path": "scenarios/local-intelligence-adapter/note-placement-authority-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-013",
+      "path": "scenarios/local-intelligence-adapter/taxonomy-authority-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-014",
+      "path": "scenarios/local-intelligence-adapter/projection-authority-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-015",
+      "path": "scenarios/local-intelligence-adapter/filesystem-authority-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-016",
+      "path": "scenarios/local-intelligence-adapter/network-authority-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-017",
+      "path": "scenarios/local-intelligence-adapter/tool-authority-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-018",
+      "path": "scenarios/local-intelligence-adapter/automation-authority-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-019",
+      "path": "scenarios/local-intelligence-adapter/malformed-output-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-020",
+      "path": "scenarios/local-intelligence-adapter/input-budget-exhausted.json",
+      "category": "over_boundary",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-021",
+      "path": "scenarios/local-intelligence-adapter/output-budget-exhausted.json",
+      "category": "over_boundary",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-022",
+      "path": "scenarios/local-intelligence-adapter/runtime-budget-exhausted.json",
+      "category": "over_boundary",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-023",
+      "path": "scenarios/local-intelligence-adapter/attempt-budget-exhausted.json",
+      "category": "over_boundary",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-024",
+      "path": "scenarios/local-intelligence-adapter/stale-policy-binding-denied.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-025",
+      "path": "scenarios/local-intelligence-adapter/missing-capability-evidence-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-026",
+      "path": "scenarios/local-intelligence-adapter/stale-capability-evidence-denied.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-027",
+      "path": "scenarios/local-intelligence-adapter/malformed-capability-evidence-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-028",
+      "path": "scenarios/local-intelligence-adapter/unsupported-capability-evidence-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-029",
+      "path": "scenarios/local-intelligence-adapter/inconclusive-capability-evidence-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-030",
+      "path": "scenarios/local-intelligence-adapter/missing-isolation-evidence-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-031",
+      "path": "scenarios/local-intelligence-adapter/stale-isolation-evidence-denied.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-032",
+      "path": "scenarios/local-intelligence-adapter/malformed-isolation-evidence-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-033",
+      "path": "scenarios/local-intelligence-adapter/unsupported-isolation-evidence-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-034",
+      "path": "scenarios/local-intelligence-adapter/inconclusive-isolation-evidence-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-035",
+      "path": "scenarios/local-intelligence-adapter/isolation-canary-failed-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-036",
+      "path": "scenarios/local-intelligence-adapter/interruption-recorded.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-037",
+      "path": "scenarios/local-intelligence-adapter/cancellation-recorded.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-038",
+      "path": "scenarios/local-intelligence-adapter/cancel-and-resume-new-attempt.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-039",
+      "path": "scenarios/local-intelligence-adapter/repeated-interruption-recorded.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-040",
+      "path": "scenarios/local-intelligence-adapter/hung-execution-bounded.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-041",
+      "path": "scenarios/local-intelligence-adapter/flaky-execution-bounded.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-042",
+      "path": "scenarios/local-intelligence-adapter/misleading-success-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-043",
+      "path": "scenarios/local-intelligence-adapter/crash-before-receipt-requires-recovery.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-044",
+      "path": "scenarios/local-intelligence-adapter/crash-after-receipt-requires-recovery.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-045",
+      "path": "scenarios/local-intelligence-adapter/recovery-revalidates-current-digests.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "pass",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-046",
+      "path": "scenarios/local-intelligence-adapter/recovery-rejects-stale-evidence-digest.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-047",
+      "path": "scenarios/local-intelligence-adapter/recovery-rejects-stale-claim-digest.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": false
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-048",
+      "path": "scenarios/local-intelligence-adapter/illegal-capability-transition-denied.json",
+      "category": "illegal_transition",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": true
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-049",
+      "path": "scenarios/local-intelligence-adapter/illegal-isolation-transition-denied.json",
+      "category": "illegal_transition",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": true
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-050",
+      "path": "scenarios/local-intelligence-adapter/illegal-verdict-transition-denied.json",
+      "category": "illegal_transition",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": true
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-051",
+      "path": "scenarios/local-intelligence-adapter/illegal-failure-transition-denied.json",
+      "category": "illegal_transition",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": true
+      }
+    },
+    {
+      "fixture_id": "FIX-LIA-PROFILE-052",
+      "path": "scenarios/local-intelligence-adapter/illegal-recovery-transition-denied.json",
+      "category": "illegal_transition",
+      "requirement_ids": [
+        "REQ-LIA-001",
+        "REQ-LIA-002",
+        "REQ-LIA-003",
+        "REQ-LIA-004",
+        "REQ-LIA-005",
+        "REQ-LIA-006",
+        "REQ-LIA-007",
+        "REQ-LIA-008",
+        "REQ-LIA-009",
+        "REQ-LIA-010"
+      ],
+      "expected_verdict": "fail",
+      "observable_assertions": {
+        "inputs": true,
+        "outputs": true,
+        "operations": true,
+        "receipts": true,
+        "filesystem_effects": true,
+        "terminal_state": true,
+        "illegal_transition": true
+      }
+    },
+    {
       "fixture_id": "FIX-IAP-POS-001",
       "path": "scenarios/intelligence-adapter/remote-valid-proposal-advice.json",
       "category": "positive",

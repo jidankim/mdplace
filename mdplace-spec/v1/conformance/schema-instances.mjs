@@ -74,6 +74,21 @@ export async function checkSchemaInstances(packageRoot, conformance) {
     ['contracts/transitions/intelligence-adapter-recovery-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
     ['conformance/evidence/intelligence-adapter-evidence.json', 'contracts/schemas/intelligence-adapter-evidence.schema.json'],
     ['conformance/evidence/intelligence-adapter-recovery-report.json', 'contracts/schemas/intelligence-adapter-recovery-report.schema.json'],
+    ['contracts/local-intelligence-adapter/profile.json', 'contracts/schemas/local-intelligence-adapter-profile.schema.json'],
+    ['contracts/local-intelligence-adapter/capability-evidence.json', 'contracts/schemas/local-adapter-capability-evidence.schema.json'],
+    ['contracts/local-intelligence-adapter/isolation-evidence.json', 'contracts/schemas/local-adapter-isolation-evidence.schema.json'],
+    ['contracts/local-intelligence-adapter/fixture-manifest.json', 'contracts/schemas/local-adapter-fixture-manifest.schema.json'],
+    ['contracts/local-intelligence-adapter/claim-manifest.json', 'contracts/schemas/local-adapter-claim-manifest.schema.json'],
+    ['contracts/verdicts/local-adapter-verdicts.json', 'contracts/schemas/local-adapter-verdict-table.schema.json'],
+    ['contracts/transitions/local-adapter-capability-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
+    ['contracts/transitions/local-adapter-isolation-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
+    ['contracts/transitions/local-adapter-verdict-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
+    ['contracts/transitions/local-adapter-failure-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
+    ['contracts/transitions/local-adapter-recovery-lifecycle.json', 'contracts/schemas/transition-table.schema.json'],
+    ['conformance/evidence/local-adapter-evidence.json', 'contracts/schemas/local-adapter-evidence.schema.json'],
+    ['conformance/evidence/local-adapter-recovery-report.json', 'contracts/schemas/local-adapter-recovery-report.schema.json'],
+    ['conformance/evidence/invocations/local-adapter-profile.json', 'contracts/schemas/validator-invocation.schema.json'],
+    ['conformance/evidence/envelopes/local-adapter-profile.json', 'contracts/schemas/evidence-envelope.schema.json'],
   ];
   const fixtureEntries = Array.isArray(conformance?.fixtures) ? conformance.fixtures : [];
   for (const entry of fixtureEntries) {

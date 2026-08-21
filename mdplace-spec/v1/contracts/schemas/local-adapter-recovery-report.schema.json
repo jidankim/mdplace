@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:local-adapter-recovery-report:v1",
+  "title": "mdplace Local Intelligence Adapter recovery report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "report_id", "profile_id", "claim_manifest_sha256", "evidence_digest", "parsed_artifacts_revalidated", "cases", "verdict"],
+  "properties": {
+    "$schema": {"const": "../../contracts/schemas/local-adapter-recovery-report.schema.json"},
+    "schema_id": {"const": "mdplace.local-adapter-recovery-report/v1"},
+    "report_id": {"const": "local-adapter-recovery:v1"},
+    "profile_id": {"const": "local-adapter"},
+    "claim_manifest_sha256": {"$ref": "#/$defs/digest"},
+    "evidence_digest": {"$ref": "#/$defs/digest"},
+    "parsed_artifacts_revalidated": {"const": true},
+    "cases": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"$ref": "#/$defs/case"}},
+    "verdict": {"enum": ["pass", "fail", "unsupported", "inconclusive"]}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fixture_id", "attempt_id", "attempt_sequence", "crash_boundary", "claim_manifest_sha256", "evidence_digest", "attempt_revalidated", "claim_digest_revalidated", "parsed_evidence_revalidated", "terminal_state", "receipt_sha256"],
+      "properties": {
+        "fixture_id": {"type": "string", "pattern": "^FIX-LIA-PROFILE-[0-9]{3}$"},
+        "attempt_id": {"type": "string", "pattern": "^adapter-attempt:[a-z0-9-]{3,64}$"},
+        "attempt_sequence": {"type": "integer", "minimum": 0, "maximum": 2},
+        "crash_boundary": {"enum": ["before_receipt", "after_receipt"]},
+        "claim_manifest_sha256": {"$ref": "#/$defs/digest"},
+        "evidence_digest": {"$ref": "#/$defs/digest"},
+        "attempt_revalidated": {"type": "boolean"},
+        "claim_digest_revalidated": {"type": "boolean"},
+        "parsed_evidence_revalidated": {"type": "boolean"},
+        "terminal_state": {"enum": ["validated", "recovered", "recovery_required", "denied", "interrupted", "cancelled"]},
+        "receipt_sha256": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}

@@ -24,7 +24,8 @@
         {"$ref": "#/$defs/processingPolicySubject"},
         {"$ref": "#/$defs/vaultMutationGateSubject"},
         {"$ref": "#/$defs/referenceVaultSubject"},
-        {"$ref": "#/$defs/intelligenceAdapterSubject"}
+        {"$ref": "#/$defs/intelligenceAdapterSubject"},
+        {"$ref": "#/$defs/localIntelligenceAdapterSubject"}
       ]
     },
     "expected": {"$ref": "#/$defs/expected"}
@@ -296,6 +297,16 @@
         "document": {"description": "Closed stateless Intelligence Adapter protocol scenario validated against subject.schema before observation."}
       }
     },
+    "localIntelligenceAdapterSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "schema", "document"],
+      "properties": {
+        "kind": {"const": "local_intelligence_adapter"},
+        "schema": {"const": "contracts/schemas/local-adapter-scenario.schema.json"},
+        "document": {"description": "Closed observable Local Intelligence Adapter profile scenario."}
+      }
+    },
     "expected": {
       "type": "object",
       "additionalProperties": false,
@@ -303,6 +314,7 @@
       "properties": {
         "verdict": {"enum": ["pass", "fail"]},
         "codes": {"$ref": "#/$defs/stringList"},
+        "inputs": {"$ref": "#/$defs/stringList"},
         "outputs": {"$ref": "#/$defs/stringList"},
         "operations": {"$ref": "#/$defs/stringList"},
         "receipts": {"$ref": "#/$defs/stringList"},
