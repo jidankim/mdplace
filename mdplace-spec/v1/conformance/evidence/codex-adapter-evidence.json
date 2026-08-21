@@ -1,0 +1,639 @@
+{
+  "$schema": "../../contracts/schemas/codex-adapter-evidence.schema.json",
+  "schema_id": "mdplace.codex-adapter-evidence/v1",
+  "evidence_id": "codex-adapter-evidence:v1",
+  "profile_id": "codex-adapter",
+  "validator_version": "1.2.0",
+  "fixture_bindings": [
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-001",
+      "path": "conformance/scenarios/codex-intelligence-adapter/valid-noninteractive-proposal.json",
+      "fixture_sha256": "c8a8cd9c75394b38548e289cfca62e1fbabf54d2ff21213d0d171996dde57b3d",
+      "receipt_sha256": "95330a9c20e2a29a18e0c0625d62304a6250aa19012de6a7d7afc4fa469843ad",
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-002",
+      "path": "conformance/scenarios/codex-intelligence-adapter/valid-abstention-remains-advice.json",
+      "fixture_sha256": "d1738d755fe70bbf9ddaf90f97b04b0bd62867d37ff3ed1cccdb79ab68dedb5b",
+      "receipt_sha256": "a2e7410fafb969ce9c00321e79ba5c0570ea803f6818bbe9c94133cad6baad3b",
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-003",
+      "path": "conformance/scenarios/codex-intelligence-adapter/hostile-input-remains-inert.json",
+      "fixture_sha256": "14a96ae0fb86cb47f8c12aea664b02486e472107a80e17357671fe6b7364eec1",
+      "receipt_sha256": "06f65874670de2c12489ad4b15dde0b0ed4051aea79cd2137b8eed29d1e4e2fd",
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-004",
+      "path": "conformance/scenarios/codex-intelligence-adapter/exact-input-ceiling.json",
+      "fixture_sha256": "8cb0389320cdd163fa5e3489001e6a036e58ec3177b1e93e6e0bfde762784b7b",
+      "receipt_sha256": "1c5b4605772cb1c4c130be459d6c1d4c52bb39b90a6937d0699b46ebbf886e8f",
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-005",
+      "path": "conformance/scenarios/codex-intelligence-adapter/exact-jsonl-ceiling.json",
+      "fixture_sha256": "08d4a165f3341130df44d8cfdfa462f81e293816b713b82403a9d9c9886ebca4",
+      "receipt_sha256": "5e12e43ba7086c6004c43d8fe69c7065bc4f973826c5cdf9f7b0739701baa37b",
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-006",
+      "path": "conformance/scenarios/codex-intelligence-adapter/exact-output-ceiling.json",
+      "fixture_sha256": "ffadc1bd135570a1513d10b52b333025107759f6c72192117f00316f2159b033",
+      "receipt_sha256": "0a1c73621845fbfa73a3daca8c49ab93e75bc7b49730757fa7347e866de2452a",
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-007",
+      "path": "conformance/scenarios/codex-intelligence-adapter/exact-runtime-ceiling.json",
+      "fixture_sha256": "58e1522f5ec7a33d08975d2076bb6a8c7af662c22be16361a8284f560e3d00e6",
+      "receipt_sha256": "4f6922b5774104228388bc854dba55dbb5b2cf562fc816870129c32e622be2a2",
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-008",
+      "path": "conformance/scenarios/codex-intelligence-adapter/exact-token-ceiling.json",
+      "fixture_sha256": "7f0e501d2ee1e276452262b0068c37983cc94c88c14da1aa5f0d95794743c87c",
+      "receipt_sha256": "0d01c2c3953ddc8f5335697cbae342f02968a6e482e3b49ac7097988ce1efd75",
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-009",
+      "path": "conformance/scenarios/codex-intelligence-adapter/exact-cost-ceiling.json",
+      "fixture_sha256": "993143c286c156fc8224aa41d07c884fe7d3231a07af1cf3d3adb6041874a73a",
+      "receipt_sha256": "2df2d6b7b51cef2fc86b613ee6eec1bf10fa45831b6f996da33b43415eea6d9d",
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-010",
+      "path": "conformance/scenarios/codex-intelligence-adapter/input-limit-exceeded.json",
+      "fixture_sha256": "fdccf4a1bafbb9aaebc473b3ec662dfec5f4dea4cc460a2aed8fcdacec674de0",
+      "receipt_sha256": "a4cc759f6dc2d9c042ebd5ebd6e32c9fe8d6dcc113565e4e413866dba16b2263",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-011",
+      "path": "conformance/scenarios/codex-intelligence-adapter/jsonl-limit-exceeded.json",
+      "fixture_sha256": "a5bac3542a7da86560101aee1fb68866bbe06271417b7130770476339ce45248",
+      "receipt_sha256": "8041a244e095d6e6b8057e702e8014c70cb8d8207adf29521dfdb77c40cc6ac6",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-012",
+      "path": "conformance/scenarios/codex-intelligence-adapter/output-limit-exceeded.json",
+      "fixture_sha256": "5c8a506ffacae617ada1cd1f8ecb91683c2cd668c5067d17881525baf674ac0c",
+      "receipt_sha256": "0abcbc3cacf1290c988ede268fa3614a3f874e2a78169b57262af123b3b22f74",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-013",
+      "path": "conformance/scenarios/codex-intelligence-adapter/runtime-limit-exceeded.json",
+      "fixture_sha256": "92e592682e61a206fa380635765b14b0348f0b5b30f609b353242f7d05e628c9",
+      "receipt_sha256": "d7cc7472756d6d76153f7de05f83d0a0d80ca46484f6a11392343040aea1b191",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-014",
+      "path": "conformance/scenarios/codex-intelligence-adapter/token-limit-exceeded.json",
+      "fixture_sha256": "0bbe6f57c9891bf50351fc8a125585312e3cefe92f148e187ed90c4904dba985",
+      "receipt_sha256": "47a53e0f88958a15666d7c4910d4839d66c37572d97c401e1186a012a7bd5162",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-015",
+      "path": "conformance/scenarios/codex-intelligence-adapter/cost-limit-exceeded.json",
+      "fixture_sha256": "c16df1e7a7fa7cfb42969d719e2dda61ef00b6d4fed88c37e42ae224f6e12d0e",
+      "receipt_sha256": "de05d13191884bd2ceca198b889f11d9ff64325862bcdecc5da5726d7b8a89f1",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-016",
+      "path": "conformance/scenarios/codex-intelligence-adapter/interactive-only-execution-denied.json",
+      "fixture_sha256": "3df50368ae0e6d44c7d78dd5acab1dc59ff6155aa2b4898ea17dd0a6d810eba1",
+      "receipt_sha256": "afb1bf2c1bb6dba01f56dd2d51f7147cd52bdf574f991d39e9548031c744d5e1",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-017",
+      "path": "conformance/scenarios/codex-intelligence-adapter/invocation-contract-digest-mismatch-denied.json",
+      "fixture_sha256": "9066b41d9be39adabb99c6eca3c6acf283d469f4d7a46de430eff7f1ec1403d7",
+      "receipt_sha256": "2f52c6f8ec18209fc714c623edba65b02a61c8eda31d474b1c10fc3f608ccc2d",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-018",
+      "path": "conformance/scenarios/codex-intelligence-adapter/output-schema-digest-mismatch-denied.json",
+      "fixture_sha256": "047bb99b3808711e779d93966206fad88a1203b1ead8c463361e0b2630cf05b0",
+      "receipt_sha256": "8326b675c5756b327a5897dacaa6fe852b1cd681685be46a488d74c17b13ad4d",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-019",
+      "path": "conformance/scenarios/codex-intelligence-adapter/missing-boundary-denied.json",
+      "fixture_sha256": "c87cd37f428c14d657957a3ebf16cf84c2d0ec6219eb15652b586eb278bdc56c",
+      "receipt_sha256": "aac6e904f7349bcdb4dea8f3f2d183b7c53c94afca063b40d33c1ae41fd8a0fe",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-020",
+      "path": "conformance/scenarios/codex-intelligence-adapter/stale-binding-denied.json",
+      "fixture_sha256": "6ca4fae3b1865153e0ce82149cce1e39d0e347ea2468b05ddf3f0f93efec70a2",
+      "receipt_sha256": "92688d5333adeb44c46b12b1dc5f45618a50dbf5466dab4e815929c338f3b815",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-021",
+      "path": "conformance/scenarios/codex-intelligence-adapter/missing-authentication-prerequisite-denied.json",
+      "fixture_sha256": "2c50a6937649ecfc6a3b57b67aea23c681a3b38bc75579ba924400a68773109c",
+      "receipt_sha256": "67d6fb2c374f650b432d888190a4ff8ba9fcfab86ae48fab15cde00d9baa9052",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-022",
+      "path": "conformance/scenarios/codex-intelligence-adapter/stale-authentication-prerequisite-denied.json",
+      "fixture_sha256": "997a814677ae93db6e51dafea63fa47368fa4e2b8bb92810e6e3ce399faebbde",
+      "receipt_sha256": "71d385ea20c8b28cdfba7862897c0ae345dcb322c9bdb4b13403a49dca31beed",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-023",
+      "path": "conformance/scenarios/codex-intelligence-adapter/unsupported-authentication-prerequisite-denied.json",
+      "fixture_sha256": "0a0094267e6ce9d7e7f5d2cdccdc11f89188cf0ce26f114f38dc43ef878015bc",
+      "receipt_sha256": "e0dae784727521c5da6a1db5b007533d7c34773f7d75a21646d8e9884e2161b5",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-024",
+      "path": "conformance/scenarios/codex-intelligence-adapter/inconclusive-authentication-prerequisite-denied.json",
+      "fixture_sha256": "979910bd43d3bff504d0fca6705195587bf612653f9802a6fbc7ce5eef01804f",
+      "receipt_sha256": "55302733139527b2ea8beafad7bc013463fcc5cc808a1bc3215955529d3612d2",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-025",
+      "path": "conformance/scenarios/codex-intelligence-adapter/failed-authentication-prerequisite-denied.json",
+      "fixture_sha256": "95a762e765134726fe1026f5aacdb57bebe4b5f6f0c5c7f62764432c089c885c",
+      "receipt_sha256": "effc02efe9526a8d46e4c142306bdfa021fdade0fdc2de04dc4c022d4a4a3b60",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-026",
+      "path": "conformance/scenarios/codex-intelligence-adapter/missing-capability-proof-denied.json",
+      "fixture_sha256": "bbb0a6bad162e4fa4f69050f778d5498c1342cfe70ebe4a30ad7760c7e03cdb5",
+      "receipt_sha256": "0183a68d738b71dfbc4cb27e0df0e491200bd037014b971698b0a1b215a954bf",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-027",
+      "path": "conformance/scenarios/codex-intelligence-adapter/stale-capability-proof-denied.json",
+      "fixture_sha256": "ff4c5a99f219b99e55bccd1117d16fde01c357e4cfb6919122e2fc33af643a06",
+      "receipt_sha256": "7d85f431a911b1eb4baf797690ea4d1fb2e5ffeba71b9e113a3be10c7a06cd4d",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-028",
+      "path": "conformance/scenarios/codex-intelligence-adapter/ambiguous-capability-proof-denied.json",
+      "fixture_sha256": "f36b38df2292bb6523f034ab00dea81e5e01bdfc73ff24717a2521cc4af9263d",
+      "receipt_sha256": "d8e5130e82d3e7e41751bbc84309bde934714d664167fb7d4575c551b4692a3a",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-029",
+      "path": "conformance/scenarios/codex-intelligence-adapter/unsupported-capability-proof-denied.json",
+      "fixture_sha256": "6d6d7fb320ca69327dfa3f70610027d73d3877ebb89462e9b006d7c244b84b22",
+      "receipt_sha256": "51d6a8482b22dc11c49ff82bd3133038ec1618e31ec804cc819a081ea0164132",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-030",
+      "path": "conformance/scenarios/codex-intelligence-adapter/inconclusive-capability-proof-denied.json",
+      "fixture_sha256": "b4bb740b36c505a48e92d0c0a819b0a5f879bad4e589dec7dace90771f487ac8",
+      "receipt_sha256": "1dac08f0157ff94abacbf59911ff8cbb8d1494d3292d48ebb20b2ab1e746603d",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-031",
+      "path": "conformance/scenarios/codex-intelligence-adapter/mismatch-capability-proof-denied.json",
+      "fixture_sha256": "328e52364727965d9d87a35c0df5d7297cbf219c7735335ec762913bdb836608",
+      "receipt_sha256": "57cbc19dc4e3147595cf1f34c299aec72a8661f9b924ef355c23cc51bc506b67",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-032",
+      "path": "conformance/scenarios/codex-intelligence-adapter/excessive-capability-proof-denied.json",
+      "fixture_sha256": "a625f346af955382026e020a8a70a7c3668b95bca31c9c5f6da995e1c3221877",
+      "receipt_sha256": "a49a9e5eaf1bb70b82721176505351f860b24f5806d05d2a1439a26b60c23d0e",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-033",
+      "path": "conformance/scenarios/codex-intelligence-adapter/missing-network-proof-denied.json",
+      "fixture_sha256": "752a522ff648b13833c86e43c968d95c3d8b2f679cca567049862ff0ad34ebc6",
+      "receipt_sha256": "5c823b29d716ca1b0081ce4055d209b45005b740bd6c5c6b935ff3faeeca9061",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-034",
+      "path": "conformance/scenarios/codex-intelligence-adapter/stale-network-proof-denied.json",
+      "fixture_sha256": "4abcd98fca4232ed062c7d7a871152f051cb50ef69f471ff0e1d6ee1fce44268",
+      "receipt_sha256": "1fbc14d23e30cbc867269fc4ac0cede8ad953edd44d35c77f1a59f8ae2827bd1",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-035",
+      "path": "conformance/scenarios/codex-intelligence-adapter/ambiguous-network-proof-denied.json",
+      "fixture_sha256": "5304e41997bf9c685faf907c7bfcca3cdb7591ebf311769a0c6e491053316482",
+      "receipt_sha256": "3402dd132ef7ec076b75433972d93d14673c9740339ba53d64eae4d8edc0b65f",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-036",
+      "path": "conformance/scenarios/codex-intelligence-adapter/unsupported-network-proof-denied.json",
+      "fixture_sha256": "0546cfa3fc8e5d13306630ef7176f10de72b55fd6e795a39393f85ef66c651a3",
+      "receipt_sha256": "be2fcb9092b04c9f9e87569f57f71258d1850574a2abcd6725cfd85ea5ada201",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-037",
+      "path": "conformance/scenarios/codex-intelligence-adapter/inconclusive-network-proof-denied.json",
+      "fixture_sha256": "20c062125546449a51af9a4b11b6566ded85ceb3c937b85c7844f607f3e490dc",
+      "receipt_sha256": "088de0a591b687ef95bcf3a5c976ff4bddfb66c5ad9f09dbd7ae176779aec417",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-038",
+      "path": "conformance/scenarios/codex-intelligence-adapter/mismatch-network-proof-denied.json",
+      "fixture_sha256": "3248d77129d2d20b7bbfa14ac2d888c9b6ef655d53b8452a69fd3d10f82a4c7a",
+      "receipt_sha256": "c7f072df51602a0dc34d8a90301ae6d6f8c46756b6f8b0bbf1f024012a08d2d2",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-039",
+      "path": "conformance/scenarios/codex-intelligence-adapter/excessive-network-proof-denied.json",
+      "fixture_sha256": "324cc998d318ad7f668a4cb25f7f1a4a62fd6f626646c16015e65fab3e8048f3",
+      "receipt_sha256": "047ed53837fa2c9a33893368bfbfbc12db6a167e60b5a43862f20ef81fc996ed",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-040",
+      "path": "conformance/scenarios/codex-intelligence-adapter/unapproved-destination-denied.json",
+      "fixture_sha256": "2272be5ab25606838cf5e3eac09db508d70255f396f988424553d713019a50bd",
+      "receipt_sha256": "5e7e9c7b53d7eb64103b4e18399a6491c062fffe6d41785a171907185278d865",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-041",
+      "path": "conformance/scenarios/codex-intelligence-adapter/unapproved-payload-denied.json",
+      "fixture_sha256": "67c17900e037ca67cbd48f6cdef758253bfbcbb2c4f1997de6379b3941de65f8",
+      "receipt_sha256": "b0c76162495f803c7a9ae0cad811f1e9d217a4a522ee611512202d90731454cb",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-042",
+      "path": "conformance/scenarios/codex-intelligence-adapter/unavailable-isolation-denied.json",
+      "fixture_sha256": "fb0de86906dc7434685a66c71aaf720cebd6e9f30c72320e1d06383bd8ac8606",
+      "receipt_sha256": "f5b5da6f51190bbbea72d710e903382339df45a383ebe19f4318b582b38d6c96",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-043",
+      "path": "conformance/scenarios/codex-intelligence-adapter/unapproved-fallback-denied.json",
+      "fixture_sha256": "8500e29689c32069f6d4e4bad09d2eb8a80fb7825f9cc1f713cacc81eae8fbf8",
+      "receipt_sha256": "d7685e691a8ab548ef336ccc2f7ec3cb7db77dbaa3fcb117e289fda1b6668a61",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-044",
+      "path": "conformance/scenarios/codex-intelligence-adapter/embedded-tool-request-denied.json",
+      "fixture_sha256": "0d1179650e79c7c9a8dcb3585ce17c6da5c7b9e7e387a0b75578e0be6d189a2d",
+      "receipt_sha256": "b02f694a62469e3ce0286b4ea400161a7814349e6fa61cca09a97a04eea6b03c",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-045",
+      "path": "conformance/scenarios/codex-intelligence-adapter/command-request-denied.json",
+      "fixture_sha256": "b466518f5d76e87501f4258f2279bd009058a0f04559039f93cf62d43cecff5b",
+      "receipt_sha256": "b6493d787523c29ecd75c9c6b3596265c6198f48b03f9c44cbb5405cf6c17cae",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-046",
+      "path": "conformance/scenarios/codex-intelligence-adapter/secret-request-denied.json",
+      "fixture_sha256": "699647f336785f84310f50f08a460e3acc0f74542a751160bdad1a21bf6e3ce2",
+      "receipt_sha256": "a285c8580341e9de34620ca3bc81f526c0c685937d5a85fc6b1412b22a8603b0",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-047",
+      "path": "conformance/scenarios/codex-intelligence-adapter/malformed-output-rejected.json",
+      "fixture_sha256": "4879206c5eb858fd4846dfde01d2991e96f6995e3b85b883326c238cf980f118",
+      "receipt_sha256": "72c0ab742bf40545492df052f0df09d35a872e745a9f7e302613736ee5e48d8a",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-048",
+      "path": "conformance/scenarios/codex-intelligence-adapter/semantic-authority-denied.json",
+      "fixture_sha256": "d4359307614b391ee7cef6560d4f7aec1bd568eabc776a5d8133d44608f36b6e",
+      "receipt_sha256": "6adf4e6a947cc42e9cb669253fab7fbedcec8555c10e9fbd33b3330967f1d02b",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-049",
+      "path": "conformance/scenarios/codex-intelligence-adapter/note-placement-authority-denied.json",
+      "fixture_sha256": "2c7ac7510e132fd49d8137c5463690e48b0c6bccd574ae157d4a5634b09cb3df",
+      "receipt_sha256": "66413b7a5debca9f2b022362050dd99c729581cb50b95703a80f88a6f6634fc2",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-050",
+      "path": "conformance/scenarios/codex-intelligence-adapter/taxonomy-authority-denied.json",
+      "fixture_sha256": "05e5c719678e6737e51772e3d849f6458f21b461de9047c28464f37430709072",
+      "receipt_sha256": "2e2a04634bf209e97edec94da589aa2b2ec52e874f42a49c26a966eecc0f9fe3",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-051",
+      "path": "conformance/scenarios/codex-intelligence-adapter/projection-authority-denied.json",
+      "fixture_sha256": "dc123952774f8ff533a4d8d654a114893a90c0753a3613b6e80b08d0ba4ddb09",
+      "receipt_sha256": "e8d22b02ee9e12dce31ac83c69d57a2cadb80d222ebd1ef5c8e1f51a329b490d",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-052",
+      "path": "conformance/scenarios/codex-intelligence-adapter/filesystem-authority-denied.json",
+      "fixture_sha256": "6289e0032bc5d11317681e490fe82d91e9b7f5438c4fe65974285d361fbb9ff2",
+      "receipt_sha256": "eebcdaa9c9d97020c743e88f86b9ba9b7538ff1b1b8ba214519a13bd4118aca1",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-053",
+      "path": "conformance/scenarios/codex-intelligence-adapter/tool-authority-denied.json",
+      "fixture_sha256": "bd9d2aa040bb6c956d47b89f2851a19b26ec1af478bece77ee51b5b3d8f85d31",
+      "receipt_sha256": "8108a31566994ccad8f42a88398d30a3595bc08b6e26b2cd0f2b98f88c7133b7",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-054",
+      "path": "conformance/scenarios/codex-intelligence-adapter/command-authority-denied.json",
+      "fixture_sha256": "bb322fa37b025edcd59eae7b0fa75e5017f4f6042e669c7953313e3ee848f1fb",
+      "receipt_sha256": "4ee5faf29ec3e7d67b50c6887fc0d5a61b624e1a61fcaa75c4e797b5b7d60acd",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-055",
+      "path": "conformance/scenarios/codex-intelligence-adapter/automation-authority-denied.json",
+      "fixture_sha256": "0f8630fc8269ddb00843f0f92e049f9ec78e5af40f074f730f670e5240993924",
+      "receipt_sha256": "3e52f9d977f790155fe985ca52497d4a384c3d268fc03bdfb1f6a0004dbadd98",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-056",
+      "path": "conformance/scenarios/codex-intelligence-adapter/authentication-does-not-prove-capability.json",
+      "fixture_sha256": "4aad9459de7e9abd83e1e318323cc32037aaf5910f8ec831f5b4926317d786d4",
+      "receipt_sha256": "859988f825c45737accc3631f916b48176f5f5634ffb86153f310735bb653b7a",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-057",
+      "path": "conformance/scenarios/codex-intelligence-adapter/authentication-does-not-prove-network.json",
+      "fixture_sha256": "ef826f8c07402be406351a10a195ae91f0fc5b5b3659b5d91821dc19883ee6fc",
+      "receipt_sha256": "7e5f969c302feae7a10cb52d391415dd40ecba0ff70cef1cedd5b5791c594054",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-058",
+      "path": "conformance/scenarios/codex-intelligence-adapter/authentication-does-not-prove-residency.json",
+      "fixture_sha256": "cb878038b49427f110b2cce0eb34f8683cbbb1e4c041bcb2c88f1253d7100724",
+      "receipt_sha256": "b33d0388c26db9117ff755ce757ab24bc366b4e8b95c61d9a2d458cfec674ebf",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-059",
+      "path": "conformance/scenarios/codex-intelligence-adapter/authentication-does-not-prove-retention.json",
+      "fixture_sha256": "5612b29c5650261815d1f4a7282cebb009db38f468f35057b79b4925feb92244",
+      "receipt_sha256": "02194d5c3f71642c879b76f2f1f2a29507373fabeff8a3a328553d3f9590614f",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-060",
+      "path": "conformance/scenarios/codex-intelligence-adapter/authentication-does-not-prove-training.json",
+      "fixture_sha256": "e32edd7d6acf66fd01b0071a8fd3d263ce99645e1db9fcadb6249ba1ba36f7d0",
+      "receipt_sha256": "1bd0ca6a37725dec11560aad64c59e378ed421477638944a6e29ce31413e9be6",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-061",
+      "path": "conformance/scenarios/codex-intelligence-adapter/authentication-does-not-prove-deletion.json",
+      "fixture_sha256": "5303a48430035d67eb8cb16e6257469fbf9fce73b2b7655bea9e7a29e803e8c7",
+      "receipt_sha256": "d08432cbd72407e94da8bbb357da01bb8538a8e982cb67692665931eaa74b27f",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-062",
+      "path": "conformance/scenarios/codex-intelligence-adapter/authentication-does-not-prove-entitlement.json",
+      "fixture_sha256": "190489c8c8e56fd6f20b00b08ef1852cce4beb46e0268f0a42c7fa394542d481",
+      "receipt_sha256": "09270febfa9284ad2d87869d9a4c3c7b52f1fc6e7ca7034f55c87af295043d7b",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-063",
+      "path": "conformance/scenarios/codex-intelligence-adapter/authentication-does-not-prove-privacy.json",
+      "fixture_sha256": "7fc34c8d036452898ad6f14db380d7bfaa6e4448b8c05b4155d7529c491d1a29",
+      "receipt_sha256": "adc7b735ce92af59e964d1a1ece9e6be8daa677390c01bff3c5fcf5aab8ce8b4",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-064",
+      "path": "conformance/scenarios/codex-intelligence-adapter/crash-before-transmission-zero-bytes.json",
+      "fixture_sha256": "0560aeb8e1d0f48ec95a4a67c3d29f78c1c8e7aede9ee3ba40117fafdf50cb3c",
+      "receipt_sha256": "934cd05a4d53344b950152239b4299de1b42c3a4effe25bb5a61ce61bd9fd870",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-065",
+      "path": "conformance/scenarios/codex-intelligence-adapter/crash-after-transmission-preserves-bytes.json",
+      "fixture_sha256": "cbc23018232b3644e097509dc5adac949ad2c9da1eaea2582b84adc5093171a3",
+      "receipt_sha256": "1fa7316d9ee26dab5a506781e0f653f4d3f971d73f9fc413a13f39c51d4c0575",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-066",
+      "path": "conformance/scenarios/codex-intelligence-adapter/recovery-revalidates-current-bindings.json",
+      "fixture_sha256": "e69e650dadec7071a7db2f1e9f00dc168d2080e8123ca21b2366e9c924cbf246",
+      "receipt_sha256": "1fa7316d9ee26dab5a506781e0f653f4d3f971d73f9fc413a13f39c51d4c0575",
+      "verdict": "pass"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-067",
+      "path": "conformance/scenarios/codex-intelligence-adapter/recovery-rejects-stale-bindings.json",
+      "fixture_sha256": "0a5a8502fcf3ff27f44ecd7ea34e3220b332ad999b2f6d97b9da27127ebc597b",
+      "receipt_sha256": "53fc562ec06fcc055d8c8e470c61585ceaf24d64a308c4da48d5d2a109f82adf",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-068",
+      "path": "conformance/scenarios/codex-intelligence-adapter/illegal-capability-proof-transition-denied.json",
+      "fixture_sha256": "ef1c50d52555b4fea677d54960747171177f68a684d89cdebeed4628f4905f6d",
+      "receipt_sha256": "59d77253f055ceb70155825826bc75bd1e6790fe5e122516471869bf663e4a1c",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-069",
+      "path": "conformance/scenarios/codex-intelligence-adapter/illegal-network-proof-transition-denied.json",
+      "fixture_sha256": "d86bc8907e9199abc21cc180e59a65bd5a473d842c7bcc4a643efdadf8df59a6",
+      "receipt_sha256": "9733f0dbca830c6c0bc87bd04c521c1d2eff6fb7132fac50a71df33b53277e28",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-070",
+      "path": "conformance/scenarios/codex-intelligence-adapter/illegal-authentication-prerequisite-transition-denied.json",
+      "fixture_sha256": "f9d4fa33cfdef2bccd600faa3f23c6ed92b7c98eb17656d88407959c92f02785",
+      "receipt_sha256": "3cd11befc53b02193cb25defafe028b856e474547262fa57d0c4a6297b7d5fb7",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-071",
+      "path": "conformance/scenarios/codex-intelligence-adapter/illegal-proposal-validation-transition-denied.json",
+      "fixture_sha256": "d57caab9a0e4b677493a12e8d8b24e0cf3c91d5135f6f74dfc8a7577257814bb",
+      "receipt_sha256": "e7d2121473e39cf5d1a8de7688c94599561c2a7d2b9f5fa8fb1d7236d1ca81dc",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-072",
+      "path": "conformance/scenarios/codex-intelligence-adapter/illegal-denial-transition-denied.json",
+      "fixture_sha256": "42f7c6bc2f6b98af99f8a966de67d75081ccc66664477e2dc7ab403ffa721063",
+      "receipt_sha256": "6614b5f36fe5107155d693b8576c5e8e5ac58cb019ebdbaa011d86ca1502da54",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-073",
+      "path": "conformance/scenarios/codex-intelligence-adapter/illegal-failure-transition-denied.json",
+      "fixture_sha256": "60923395ba4ea336e14a53f5de310697794561af62610139c30a23c9149a8c6e",
+      "receipt_sha256": "93e8fc20c8446f4e1284ec0211c14e61b31689f9d466a8e18639a68022071831",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-074",
+      "path": "conformance/scenarios/codex-intelligence-adapter/illegal-recovery-transition-denied.json",
+      "fixture_sha256": "a1a65c317c99d3551d62e182eb2001de382c564f424bb5c410db4fc202fbc954",
+      "receipt_sha256": "f3f8a75bd34a877560508f7d63b9c4ebdbf016170faa638653353f2db171697d",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-075",
+      "path": "conformance/scenarios/codex-intelligence-adapter/expired-current-capability-proof-denied.json",
+      "fixture_sha256": "e34291f47081f340efb0fbd8ed1b94082a8737366fa180e9195c4b77975447ea",
+      "receipt_sha256": "5865341636769b58970e52fbd4b4de5b9600900260cc829e5848577345823662",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-076",
+      "path": "conformance/scenarios/codex-intelligence-adapter/unobserved-payload-destination-denied.json",
+      "fixture_sha256": "b41b6a6c261758f92065a5af8515f83094523b94101466e82b446fb52add7779",
+      "receipt_sha256": "081867fc790b7b9c6d86200cfc7231faf4d7fcc4a8ba25885d299f0477877246",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-077",
+      "path": "conformance/scenarios/codex-intelligence-adapter/hidden-oversized-output-counter-denied.json",
+      "fixture_sha256": "b18c7760a71f82f12c5423676adc7b569bfe32917636f68ab51dde9c9a4178c2",
+      "receipt_sha256": "7917304bd3e4a17f24d8f7eeaade40a4d5e81e03bbf542c0f84c866419451984",
+      "verdict": "fail"
+    }
+  ],
+  "receipt_sha256s": [
+    "95330a9c20e2a29a18e0c0625d62304a6250aa19012de6a7d7afc4fa469843ad",
+    "a2e7410fafb969ce9c00321e79ba5c0570ea803f6818bbe9c94133cad6baad3b",
+    "06f65874670de2c12489ad4b15dde0b0ed4051aea79cd2137b8eed29d1e4e2fd",
+    "1c5b4605772cb1c4c130be459d6c1d4c52bb39b90a6937d0699b46ebbf886e8f",
+    "5e12e43ba7086c6004c43d8fe69c7065bc4f973826c5cdf9f7b0739701baa37b",
+    "0a1c73621845fbfa73a3daca8c49ab93e75bc7b49730757fa7347e866de2452a",
+    "4f6922b5774104228388bc854dba55dbb5b2cf562fc816870129c32e622be2a2",
+    "0d01c2c3953ddc8f5335697cbae342f02968a6e482e3b49ac7097988ce1efd75",
+    "2df2d6b7b51cef2fc86b613ee6eec1bf10fa45831b6f996da33b43415eea6d9d",
+    "a4cc759f6dc2d9c042ebd5ebd6e32c9fe8d6dcc113565e4e413866dba16b2263",
+    "8041a244e095d6e6b8057e702e8014c70cb8d8207adf29521dfdb77c40cc6ac6",
+    "0abcbc3cacf1290c988ede268fa3614a3f874e2a78169b57262af123b3b22f74",
+    "d7cc7472756d6d76153f7de05f83d0a0d80ca46484f6a11392343040aea1b191",
+    "47a53e0f88958a15666d7c4910d4839d66c37572d97c401e1186a012a7bd5162",
+    "de05d13191884bd2ceca198b889f11d9ff64325862bcdecc5da5726d7b8a89f1",
+    "afb1bf2c1bb6dba01f56dd2d51f7147cd52bdf574f991d39e9548031c744d5e1",
+    "2f52c6f8ec18209fc714c623edba65b02a61c8eda31d474b1c10fc3f608ccc2d",
+    "8326b675c5756b327a5897dacaa6fe852b1cd681685be46a488d74c17b13ad4d",
+    "aac6e904f7349bcdb4dea8f3f2d183b7c53c94afca063b40d33c1ae41fd8a0fe",
+    "92688d5333adeb44c46b12b1dc5f45618a50dbf5466dab4e815929c338f3b815",
+    "67d6fb2c374f650b432d888190a4ff8ba9fcfab86ae48fab15cde00d9baa9052",
+    "71d385ea20c8b28cdfba7862897c0ae345dcb322c9bdb4b13403a49dca31beed",
+    "e0dae784727521c5da6a1db5b007533d7c34773f7d75a21646d8e9884e2161b5",
+    "55302733139527b2ea8beafad7bc013463fcc5cc808a1bc3215955529d3612d2",
+    "effc02efe9526a8d46e4c142306bdfa021fdade0fdc2de04dc4c022d4a4a3b60",
+    "0183a68d738b71dfbc4cb27e0df0e491200bd037014b971698b0a1b215a954bf",
+    "7d85f431a911b1eb4baf797690ea4d1fb2e5ffeba71b9e113a3be10c7a06cd4d",
+    "d8e5130e82d3e7e41751bbc84309bde934714d664167fb7d4575c551b4692a3a",
+    "51d6a8482b22dc11c49ff82bd3133038ec1618e31ec804cc819a081ea0164132",
+    "1dac08f0157ff94abacbf59911ff8cbb8d1494d3292d48ebb20b2ab1e746603d",
+    "57cbc19dc4e3147595cf1f34c299aec72a8661f9b924ef355c23cc51bc506b67",
+    "a49a9e5eaf1bb70b82721176505351f860b24f5806d05d2a1439a26b60c23d0e",
+    "5c823b29d716ca1b0081ce4055d209b45005b740bd6c5c6b935ff3faeeca9061",
+    "1fbc14d23e30cbc867269fc4ac0cede8ad953edd44d35c77f1a59f8ae2827bd1",
+    "3402dd132ef7ec076b75433972d93d14673c9740339ba53d64eae4d8edc0b65f",
+    "be2fcb9092b04c9f9e87569f57f71258d1850574a2abcd6725cfd85ea5ada201",
+    "088de0a591b687ef95bcf3a5c976ff4bddfb66c5ad9f09dbd7ae176779aec417",
+    "c7f072df51602a0dc34d8a90301ae6d6f8c46756b6f8b0bbf1f024012a08d2d2",
+    "047ed53837fa2c9a33893368bfbfbc12db6a167e60b5a43862f20ef81fc996ed",
+    "5e7e9c7b53d7eb64103b4e18399a6491c062fffe6d41785a171907185278d865",
+    "b0c76162495f803c7a9ae0cad811f1e9d217a4a522ee611512202d90731454cb",
+    "f5b5da6f51190bbbea72d710e903382339df45a383ebe19f4318b582b38d6c96",
+    "d7685e691a8ab548ef336ccc2f7ec3cb7db77dbaa3fcb117e289fda1b6668a61",
+    "b02f694a62469e3ce0286b4ea400161a7814349e6fa61cca09a97a04eea6b03c",
+    "b6493d787523c29ecd75c9c6b3596265c6198f48b03f9c44cbb5405cf6c17cae",
+    "a285c8580341e9de34620ca3bc81f526c0c685937d5a85fc6b1412b22a8603b0",
+    "72c0ab742bf40545492df052f0df09d35a872e745a9f7e302613736ee5e48d8a",
+    "6adf4e6a947cc42e9cb669253fab7fbedcec8555c10e9fbd33b3330967f1d02b",
+    "66413b7a5debca9f2b022362050dd99c729581cb50b95703a80f88a6f6634fc2",
+    "2e2a04634bf209e97edec94da589aa2b2ec52e874f42a49c26a966eecc0f9fe3",
+    "e8d22b02ee9e12dce31ac83c69d57a2cadb80d222ebd1ef5c8e1f51a329b490d",
+    "eebcdaa9c9d97020c743e88f86b9ba9b7538ff1b1b8ba214519a13bd4118aca1",
+    "8108a31566994ccad8f42a88398d30a3595bc08b6e26b2cd0f2b98f88c7133b7",
+    "4ee5faf29ec3e7d67b50c6887fc0d5a61b624e1a61fcaa75c4e797b5b7d60acd",
+    "3e52f9d977f790155fe985ca52497d4a384c3d268fc03bdfb1f6a0004dbadd98",
+    "859988f825c45737accc3631f916b48176f5f5634ffb86153f310735bb653b7a",
+    "7e5f969c302feae7a10cb52d391415dd40ecba0ff70cef1cedd5b5791c594054",
+    "b33d0388c26db9117ff755ce757ab24bc366b4e8b95c61d9a2d458cfec674ebf",
+    "02194d5c3f71642c879b76f2f1f2a29507373fabeff8a3a328553d3f9590614f",
+    "1bd0ca6a37725dec11560aad64c59e378ed421477638944a6e29ce31413e9be6",
+    "d08432cbd72407e94da8bbb357da01bb8538a8e982cb67692665931eaa74b27f",
+    "09270febfa9284ad2d87869d9a4c3c7b52f1fc6e7ca7034f55c87af295043d7b",
+    "adc7b735ce92af59e964d1a1ece9e6be8daa677390c01bff3c5fcf5aab8ce8b4",
+    "934cd05a4d53344b950152239b4299de1b42c3a4effe25bb5a61ce61bd9fd870",
+    "1fa7316d9ee26dab5a506781e0f653f4d3f971d73f9fc413a13f39c51d4c0575",
+    "1fa7316d9ee26dab5a506781e0f653f4d3f971d73f9fc413a13f39c51d4c0575",
+    "53fc562ec06fcc055d8c8e470c61585ceaf24d64a308c4da48d5d2a109f82adf",
+    "59d77253f055ceb70155825826bc75bd1e6790fe5e122516471869bf663e4a1c",
+    "9733f0dbca830c6c0bc87bd04c521c1d2eff6fb7132fac50a71df33b53277e28",
+    "3cd11befc53b02193cb25defafe028b856e474547262fa57d0c4a6297b7d5fb7",
+    "e7d2121473e39cf5d1a8de7688c94599561c2a7d2b9f5fa8fb1d7236d1ca81dc",
+    "6614b5f36fe5107155d693b8576c5e8e5ac58cb019ebdbaa011d86ca1502da54",
+    "93e8fc20c8446f4e1284ec0211c14e61b31689f9d466a8e18639a68022071831",
+    "f3f8a75bd34a877560508f7d63b9c4ebdbf016170faa638653353f2db171697d",
+    "5865341636769b58970e52fbd4b4de5b9600900260cc829e5848577345823662",
+    "081867fc790b7b9c6d86200cfc7231faf4d7fcc4a8ba25885d299f0477877246",
+    "7917304bd3e4a17f24d8f7eeaade40a4d5e81e03bbf542c0f84c866419451984"
+  ],
+  "approved_processing_envelope_sha256": "c444553f831bfb3a8c13a3e85e436c0a1a8f43041d24abd5caf9d2a7f14436ef",
+  "boundary_sha256": "cfda1ea195107c08b48d73f8557ad5b83478f655f59310223ce88bfd1f73a000",
+  "invocation_contract_sha256": "dcfb34f86d88915b78551d9bb5723e698ec9aad1ca644713f2225e5780f87670",
+  "output_schema_sha256": "a085da5e720a54de22febe3bfc21c0f2e9e14d29ec336a20468ffc6e3d415c05",
+  "authentication_prerequisite_sha256": "34694252b7eaa71d3da78bcf9447370766b53397a48a20f1159938005938c2b9",
+  "capability_proof_sha256": "71923d793b2a081a3349ac74f8049863d482dfbcf853b73a978b8e5bb4387e44",
+  "network_proof_sha256": "1bba1d77be7e50e44c3503c8aac0384e1fbcc004a62df8ba8bd6ad6ea2400445",
+  "fixture_manifest_sha256": "0082826486ba990380d556db281555daf8ed049c63205a3d806500d9072fd52e",
+  "network_operations": 0,
+  "intake_fixtures": 0,
+  "stateful_scenarios": 0,
+  "verdict": "pass"
+}

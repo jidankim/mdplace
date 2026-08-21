@@ -24,6 +24,7 @@ const subjectSchemas = [
   'contracts/schemas/verdict-table.schema.json',
   'contracts/schemas/local-adapter-claim-manifest.schema.json',
   'contracts/schemas/remote-adapter-claim-manifest.schema.json',
+  'contracts/schemas/codex-adapter-claim-manifest.schema.json',
 ];
 
 function result(codes) {

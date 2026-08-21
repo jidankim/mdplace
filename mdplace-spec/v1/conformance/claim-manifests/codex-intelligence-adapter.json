@@ -8,10 +8,29 @@
   "release_version": "1.0.0",
   "validator_id": "mdplace.package-validator",
   "validator_version": "1.2.0",
-  "subject": {"kind": "conformance_fixture", "subject_id": "fixture:claim-profile-codex-adapter", "sha256": "24194f9eb7a5111d13259261d10e174d03640e2a02e83e6a7358ad5ed5f987a6"},
-  "requirement_id": "REQ-VAL-004",
-  "evidence_requirements": [{"evidence_kind": "codex_adapter_conformance", "mandatory": true}],
-  "evidence_bindings": [{"evidence_kind": "codex_adapter_conformance", "mandatory": true, "availability": "unsupported", "applicability": "applicable", "evidence_ref": null, "evidence_digest": null, "verdict": "unsupported"}],
+  "subject": {
+    "kind": "codex_adapter_claim",
+    "subject_id": "codex-adapter:claim-v1",
+    "sha256": "81c4387c6e713c8e610128bc934cb85ce2d19a884e92af5f4e8bb3c4555d872f"
+  },
+  "requirement_id": "REQ-CODEX-006",
+  "evidence_requirements": [
+    {
+      "evidence_kind": "codex_adapter_conformance",
+      "mandatory": true
+    }
+  ],
+  "evidence_bindings": [
+    {
+      "evidence_kind": "codex_adapter_conformance",
+      "mandatory": true,
+      "availability": "present",
+      "applicability": "applicable",
+      "evidence_ref": "conformance/evidence/envelopes/codex-adapter-profile.json",
+      "evidence_digest": "f9e6d3632813f4e625c7c103016928bbcbb64b75e2eac338e40aeba3a0c40c44",
+      "verdict": "pass"
+    }
+  ],
   "applicability": "applicable",
-  "verdict": "unsupported"
+  "verdict": "pass"
 }

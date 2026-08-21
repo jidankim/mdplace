@@ -15,6 +15,7 @@ import {localAdapterRecoveryRecord} from './local-adapter-evidence-validation.mj
 import {observeLocalAdapterScenario} from './local-adapter-observer.mjs';
 import {observeRemoteAdapterScenario} from './remote-adapter-observer.mjs';
 import {remoteAdapterRecoveryRecord} from './remote-adapter-recovery-authoring.mjs';
+import {codexAdapterRecoveryRecord, observeCodexAdapterScenario} from './codex-adapter-observer.mjs';
 import {authorityMatches, manifestFields, packageArtifactPathAllowed, transitionFields} from './validator-rules.mjs';
 
 const operationBySchema = new Map([
@@ -201,6 +202,12 @@ export async function observeFixture(fixture, packageRoot, options = {}) {
         ? await remoteAdapterRecoveryRecord(fixture.fixture_id, packageRoot)
         : null;
       return observeRemoteAdapterScenario(fixture.subject, packageRoot, recoveryRecord);
+    }
+    case 'codex_intelligence_adapter': {
+      const recoveryRecord = fixture.subject.document.operation === 'recover'
+        ? await codexAdapterRecoveryRecord(fixture.fixture_id, packageRoot)
+        : null;
+      return observeCodexAdapterScenario(fixture.subject, packageRoot, recoveryRecord);
     }
     default:
       return {

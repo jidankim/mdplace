@@ -29,8 +29,8 @@
         "transition_attempt_schema": {"const": "contracts/schemas/evidence-transition-attempt.schema.json"},
         "subject_schemas": {
           "type": "array",
-          "minItems": 8,
-          "maxItems": 8,
+          "minItems": 9,
+          "maxItems": 9,
           "uniqueItems": true,
           "items": {"type": "string", "pattern": "^contracts/schemas/[a-z][a-z0-9-]*\\.schema\\.json$"}
         },

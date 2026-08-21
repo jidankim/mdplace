@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:codex-capability-proof:v1",
+  "title": "mdplace Codex capability proof",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_id",
+    "proof_id",
+    "profile_id",
+    "status",
+    "cli_version",
+    "deny_set_sha256",
+    "enabled_non_capability_features",
+    "disabled_capability_features",
+    "inventories",
+    "effective_capabilities",
+    "proof_result",
+    "observed_at",
+    "expires_at"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "../schemas/codex-capability-proof.schema.json"
+    },
+    "schema_id": {
+      "const": "mdplace.codex-capability-proof/v1"
+    },
+    "proof_id": {
+      "const": "codex-capability-proof:v1"
+    },
+    "profile_id": {
+      "const": "codex-adapter"
+    },
+    "status": {
+      "enum": [
+        "current",
+        "missing",
+        "stale",
+        "ambiguous",
+        "unsupported",
+        "inconclusive",
+        "mismatch",
+        "excessive",
+        "failed"
+      ]
+    },
+    "cli_version": {
+      "const": "0.104.0"
+    },
+    "deny_set_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "enabled_non_capability_features": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "jsonl_output",
+          "schema_constrained_final"
+        ]
+      },
+      "minItems": 2,
+      "maxItems": 2,
+      "uniqueItems": true
+    },
+    "disabled_capability_features": {
+      "type": "array",
+      "minItems": 12,
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "shell",
+          "unified_exec",
+          "browser",
+          "computer_use",
+          "image_generation",
+          "mcp",
+          "plugins",
+          "skills",
+          "hooks",
+          "multi_agent",
+          "web_search",
+          "workspace_dependencies"
+        ]
+      }
+    },
+    "inventories": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model_visible_tools",
+        "mcp_servers",
+        "apps",
+        "plugins",
+        "skills",
+        "instruction_roots",
+        "host_files"
+      ],
+      "properties": {
+        "model_visible_tools": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "mcp_servers": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "apps": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "plugins": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "skills": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "instruction_roots": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "host_files": {
+          "type": "array",
+          "maxItems": 0
+        }
+      }
+    },
+    "effective_capabilities": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": "emit_jsonl"
+        },
+        {
+          "const": "emit_schema_validated_proposal"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "proof_result": {
+      "const": "exact"
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

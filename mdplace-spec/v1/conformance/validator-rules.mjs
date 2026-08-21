@@ -1,5 +1,6 @@
 import {localAdapterExecutablePaths} from './local-adapter-artifact-rules.mjs';
 import {remoteAdapterExecutablePaths} from './remote-adapter-artifact-rules.mjs';
+import {codexAdapterExecutablePaths} from './codex-adapter-artifact-rules.mjs';
 export const manifestFields = new Set([
   '$schema',
   'schema_id',
@@ -123,6 +124,7 @@ const authorityByCommand = new Map([
 ]);
 
 const conformanceExecutables = new Set([
+  'conformance/canonical-base64.mjs',
   'conformance/digest-bindings.mjs',
   'conformance/evidence-claim-validation.mjs',
   'conformance/evidence-core.mjs',
@@ -251,6 +253,7 @@ export function packageArtifactPathAllowed(path) {
   if (/^normative\/[a-z0-9][a-z0-9./-]*\.(?:md|json|yaml)$/.test(path)) return true;
   if (/^contracts\/[a-z0-9][a-z0-9./-]*\.json$/.test(path)) return true;
   if (path.endsWith('.mjs')) return conformanceExecutables.has(path) ||
-    localAdapterExecutablePaths.has(path) || remoteAdapterExecutablePaths.has(path);
+    localAdapterExecutablePaths.has(path) || remoteAdapterExecutablePaths.has(path) ||
+    codexAdapterExecutablePaths.has(path);
   return /^conformance\/[A-Za-z0-9][A-Za-z0-9./-]*\.(?:md|json|yaml|txt)$/.test(path);
 }

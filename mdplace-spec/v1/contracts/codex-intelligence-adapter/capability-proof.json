@@ -1,0 +1,43 @@
+{
+  "$schema": "../schemas/codex-capability-proof.schema.json",
+  "schema_id": "mdplace.codex-capability-proof/v1",
+  "proof_id": "codex-capability-proof:v1",
+  "profile_id": "codex-adapter",
+  "status": "current",
+  "cli_version": "0.104.0",
+  "deny_set_sha256": "1b9beaa90620fc5d942cf4f3f4e32466f4178b66ae0679d5b479eb723a11456f",
+  "enabled_non_capability_features": [
+    "jsonl_output",
+    "schema_constrained_final"
+  ],
+  "disabled_capability_features": [
+    "shell",
+    "unified_exec",
+    "browser",
+    "computer_use",
+    "image_generation",
+    "mcp",
+    "plugins",
+    "skills",
+    "hooks",
+    "multi_agent",
+    "web_search",
+    "workspace_dependencies"
+  ],
+  "inventories": {
+    "model_visible_tools": [],
+    "mcp_servers": [],
+    "apps": [],
+    "plugins": [],
+    "skills": [],
+    "instruction_roots": [],
+    "host_files": []
+  },
+  "effective_capabilities": [
+    "emit_jsonl",
+    "emit_schema_validated_proposal"
+  ],
+  "proof_result": "exact",
+  "observed_at": "2026-08-23T00:00:00.000Z",
+  "expires_at": "2026-09-23T00:00:00.000Z"
+}
