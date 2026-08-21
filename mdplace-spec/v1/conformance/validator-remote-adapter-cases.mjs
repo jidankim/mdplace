@@ -584,6 +584,21 @@ test('packaged recovery records cannot redefine current claim bindings', async (
     .includes('remote.claim_verdict_invalid'));
 });
 
+test('recovery report cases must preserve the exact fixture order', async (t) => {
+  const packageRoot = await copyCommittedPackage();
+  t.after(() => rm(resolve(packageRoot, '../..'), {recursive: true, force: true}));
+  const evidence = JSON.parse(await readFile(resolve(
+    packageRoot,
+    'conformance/evidence/remote-adapter-evidence.json',
+  ), 'utf8'));
+  const recoveryPath = resolve(packageRoot, 'conformance/evidence/remote-adapter-recovery-report.json');
+  const recovery = JSON.parse(await readFile(recoveryPath, 'utf8'));
+  recovery.cases.reverse();
+  await writeFile(recoveryPath, `${JSON.stringify(recovery, null, 2)}\n`);
+
+  assert.equal(await deriveRemoteAdapterVerdict(evidence, packageRoot), 'fail');
+});
+
 test('Remote Intelligence Adapter claim fails closed when bound fixture bytes change', async (t) => {
   const check = await remoteCheckAfterMutation(t, async (packageRoot) => {
     const path = resolve(

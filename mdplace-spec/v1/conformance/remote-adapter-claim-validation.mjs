@@ -189,6 +189,14 @@ export async function deriveRemoteAdapterVerdict(
     currentClaimBinding = await currentRemoteClaimBinding(packageRoot);
     if (recoveryReport.claim_manifest_sha256 !== currentClaimBinding.claim_manifest_sha256 ||
         recoveryReport.evidence_digest !== currentClaimBinding.evidence_digest) return 'fail';
+    const expectedRecoveryFixtureIds = remoteAdapterCases.flatMap(([, , overrides], index) =>
+      overrides.operation === 'recover'
+        ? [`FIX-RAP-PROFILE-${String(index + 1).padStart(3, '0')}`]
+        : []);
+    if (!isDeepStrictEqual(
+      recoveryReport.cases.map(({fixture_id: fixtureId}) => fixtureId),
+      expectedRecoveryFixtureIds,
+    )) return 'fail';
   }
   for (const [index, binding] of bindings.entries()) {
     const fixtureRead = await readPackageFile(packageRoot, binding.path);
