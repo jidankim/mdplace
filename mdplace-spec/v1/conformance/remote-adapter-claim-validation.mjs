@@ -10,6 +10,10 @@ import {
   observeRemoteAdapterScenario,
   remoteAdapterReceiptDigest,
 } from './remote-adapter-observer.mjs';
+import {
+  authoredRemoteRecoveryRecord,
+  currentRemoteClaimBinding,
+} from './remote-adapter-recovery-authoring.mjs';
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {readPackageFile} from './safe-path.mjs';
 
@@ -165,6 +169,7 @@ export async function deriveRemoteAdapterVerdict(
     expectedBindings,
   )) return 'fail';
   let recoveryReport = null;
+  let currentClaimBinding = null;
   if (validateObservations) {
     const recoveryRead = await readPackageFile(
       packageRoot,
@@ -181,6 +186,9 @@ export async function deriveRemoteAdapterVerdict(
       'contracts/schemas/remote-adapter-recovery-report.schema.json',
       recoveryReport,
     )) return 'fail';
+    currentClaimBinding = await currentRemoteClaimBinding(packageRoot);
+    if (recoveryReport.claim_manifest_sha256 !== currentClaimBinding.claim_manifest_sha256 ||
+        recoveryReport.evidence_digest !== currentClaimBinding.evidence_digest) return 'fail';
   }
   for (const [index, binding] of bindings.entries()) {
     const fixtureRead = await readPackageFile(packageRoot, binding.path);
@@ -210,9 +218,26 @@ export async function deriveRemoteAdapterVerdict(
         receipt.receipt_sha256 !== remoteAdapterReceiptDigest(receipt) ||
         !receiptMatchesFixture(receipt, fixture)) return 'fail';
     if (validateObservations) {
-      const recoveryRecord = fixture.subject.document.operation === 'recover'
-        ? recoveryReport.cases.find(({fixture_id: fixtureId}) => fixtureId === fixture.fixture_id) ?? null
-        : null;
+      let recoveryRecord = null;
+      if (fixture.subject.document.operation === 'recover') {
+        recoveryRecord = authoredRemoteRecoveryRecord(
+          fixture.fixture_id,
+          fixture.subject.document,
+          currentClaimBinding,
+        );
+        const expectedCurrent = fixture.subject.document.behavior === 'recover_current';
+        const reportRecord = recoveryReport.cases.find(
+          ({fixture_id: fixtureId}) => fixtureId === fixture.fixture_id,
+        );
+        if (!isDeepStrictEqual(reportRecord, {
+          ...recoveryRecord,
+          attempts_revalidated: true,
+          claim_digest_revalidated: expectedCurrent,
+          parsed_evidence_revalidated: true,
+          terminal_state: expectedCurrent ? 'recovered' : 'recovery_required',
+          receipt_sha256: receipt.receipt_sha256,
+        })) return 'fail';
+      }
       const observed = await observeRemoteAdapterScenario(fixture.subject, packageRoot, recoveryRecord);
       if (!isDeepStrictEqual(observed, fixture.expected)) return 'fail';
     }

@@ -540,6 +540,50 @@ test('fixture oracle relabeling cannot override independent scenario observation
   }
 });
 
+test('packaged recovery records cannot redefine current claim bindings', async (t) => {
+  const packageRoot = await copyCommittedPackage();
+  t.after(() => rm(resolve(packageRoot, '../..'), {recursive: true, force: true}));
+  const claimPath = resolve(packageRoot, 'contracts/remote-intelligence-adapter/claim-manifest.json');
+  const evidencePath = resolve(packageRoot, 'conformance/evidence/remote-adapter-evidence.json');
+  const recoveryPath = resolve(packageRoot, 'conformance/evidence/remote-adapter-recovery-report.json');
+  const fixtureRelative =
+    'conformance/scenarios/remote-intelligence-adapter/recovery-revalidates-current-digests.json';
+  const fixturePath = resolve(packageRoot, fixtureRelative);
+  const claim = JSON.parse(await readFile(claimPath, 'utf8'));
+  const evidence = JSON.parse(await readFile(evidencePath, 'utf8'));
+  const recovery = JSON.parse(await readFile(recoveryPath, 'utf8'));
+  const fixture = JSON.parse(await readFile(fixturePath, 'utf8'));
+  const record = recovery.cases.find(({fixture_id: fixtureId}) => fixtureId === fixture.fixture_id);
+
+  record.claim_manifest_sha256 = '0'.repeat(64);
+  record.claim_digest_revalidated = false;
+  record.terminal_state = 'recovery_required';
+  fixture.expected = await observeRemoteAdapterScenario(fixture.subject, packageRoot, record);
+  const receipt = JSON.parse(fixture.expected.receipts[0]);
+  record.receipt_sha256 = receipt.receipt_sha256;
+  await writeFile(recoveryPath, `${JSON.stringify(recovery, null, 2)}\n`);
+  const fixtureBytes = `${JSON.stringify(fixture, null, 2)}\n`;
+  await writeFile(fixturePath, fixtureBytes);
+  const binding = evidence.fixture_bindings.find(
+    ({fixture_id: fixtureId}) => fixtureId === fixture.fixture_id,
+  );
+  binding.fixture_sha256 = remoteSha256(fixtureBytes);
+  binding.receipt_sha256 = receipt.receipt_sha256;
+  binding.verdict = fixture.expected.verdict;
+  evidence.receipt_sha256s[evidence.fixture_bindings.indexOf(binding)] = receipt.receipt_sha256;
+  const evidenceBytes = `${JSON.stringify(evidence, null, 2)}\n`;
+  await writeFile(evidencePath, evidenceBytes);
+  claim.rows[0].evidence_material.find(({path}) => path === fixtureRelative).sha256 =
+    remoteSha256(fixtureBytes);
+  claim.rows[0].evidence_material.find(
+    ({path}) => path === 'conformance/evidence/remote-adapter-evidence.json',
+  ).sha256 = remoteSha256(evidenceBytes);
+  claim.rows[0].evidence_digest = remoteAdapterEvidenceDigest(claim.rows[0].evidence_material);
+
+  assert.ok((await remoteAdapterClaimCodes(claim, packageRoot))
+    .includes('remote.claim_verdict_invalid'));
+});
+
 test('Remote Intelligence Adapter claim fails closed when bound fixture bytes change', async (t) => {
   const check = await remoteCheckAfterMutation(t, async (packageRoot) => {
     const path = resolve(
