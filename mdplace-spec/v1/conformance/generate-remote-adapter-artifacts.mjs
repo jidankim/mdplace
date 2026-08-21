@@ -241,6 +241,7 @@ function traceRecord(requirement, positiveIds, negativeIds) {
       'contracts/schemas/remote-adapter-profile-receipt.schema.json',
       'contracts/schemas/remote-adapter-credential-boundary-evidence.schema.json',
       'contracts/schemas/remote-adapter-retention-evidence.schema.json',
+      'contracts/schemas/remote-adapter-provider-disclosure.schema.json',
       'contracts/transitions/remote-adapter-permitted-egress-lifecycle.json',
       'contracts/transitions/remote-adapter-denial-lifecycle.json',
       'contracts/transitions/remote-adapter-failure-lifecycle.json',

@@ -18,15 +18,16 @@ export async function readRemoteProviderDisclosure(packageRoot, path) {
   }
 }
 
-export async function remoteRetentionDisclosureMatches(packageRoot, retention) {
+export async function remoteRetentionDisclosureStatus(packageRoot, retention) {
   const disclosedFacts = Array.isArray(retention?.facts)
     ? retention.facts.filter(({status}) => status === 'disclosed')
     : [];
-  if (disclosedFacts.length === 0) return false;
-  const matches = await Promise.all(disclosedFacts.map(async (fact) => {
-    if (typeof fact.evidence_ref !== 'string' || typeof fact.evidence_sha256 !== 'string') return false;
+  if (disclosedFacts.length === 0) return 'invalid';
+  const statuses = await Promise.all(disclosedFacts.map(async (fact) => {
+    if (typeof fact.evidence_ref !== 'string' || typeof fact.evidence_sha256 !== 'string') return 'invalid';
     const disclosure = await readRemoteProviderDisclosure(packageRoot, fact.evidence_ref);
-    return disclosure.document !== null &&
+    if (disclosure.read.status === 'absent') return 'missing';
+    const matches = disclosure.document !== null &&
       remoteSha256(disclosure.read.content) === fact.evidence_sha256 &&
       disclosure.document.provider_id === retention.provider_id &&
       disclosure.document.destination === retention.destination &&
@@ -37,6 +38,12 @@ export async function remoteRetentionDisclosureMatches(packageRoot, retention) {
         status: fact.status,
         value: fact.value,
       });
+    return matches ? 'present' : 'invalid';
   }));
-  return matches.every(Boolean);
+  if (statuses.some((status) => status === 'missing')) return 'missing';
+  return statuses.every((status) => status === 'present') ? 'present' : 'invalid';
+}
+
+export async function remoteRetentionDisclosureMatches(packageRoot, retention) {
+  return await remoteRetentionDisclosureStatus(packageRoot, retention) === 'present';
 }

@@ -371,6 +371,26 @@ test('Remote Intelligence Adapter claim verdict is derived from mandatory eviden
   const wrongFixtureDigestEvidence = structuredClone(evidence);
   wrongFixtureDigestEvidence.fixture_bindings[0].fixture_sha256 = '0'.repeat(64);
   assert.equal(await deriveRemoteAdapterVerdict(wrongFixtureDigestEvidence, packageRoot), 'fail');
+  const retentionPath = resolve(
+    packageRoot,
+    'contracts/remote-intelligence-adapter/retention-evidence.json',
+  );
+  const retention = JSON.parse(await readFile(retentionPath, 'utf8'));
+  retention.facts.find(({dimension}) => dimension === 'retention').value = 'maximum 90 days';
+  const contradictoryRetentionBytes = `${JSON.stringify(retention, null, 2)}\n`;
+  await writeFile(retentionPath, contradictoryRetentionBytes);
+  assert.equal(await deriveRemoteAdapterVerdict({
+    ...evidence,
+    retention_evidence_sha256: remoteSha256(contradictoryRetentionBytes),
+  }, packageRoot, {validateObservations: false}), 'fail');
+  await unlink(resolve(
+    packageRoot,
+    retention.facts.find(({dimension}) => dimension === 'retention').evidence_ref,
+  ));
+  assert.equal(await deriveRemoteAdapterVerdict({
+    ...evidence,
+    retention_evidence_sha256: remoteSha256(contradictoryRetentionBytes),
+  }, packageRoot, {validateObservations: false}), 'unsupported');
   assert.equal(await deriveRemoteAdapterVerdict({
     ...evidence,
     receipt_sha256s: evidence.receipt_sha256s.slice(1),

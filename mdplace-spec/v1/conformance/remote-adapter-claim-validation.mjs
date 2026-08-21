@@ -14,6 +14,7 @@ import {
   authoredRemoteRecoveryRecord,
   currentRemoteClaimBinding,
 } from './remote-adapter-recovery-authoring.mjs';
+import {remoteRetentionDisclosureStatus} from './remote-adapter-retention-validation.mjs';
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {readPackageFile} from './safe-path.mjs';
 
@@ -161,6 +162,9 @@ export async function deriveRemoteAdapterVerdict(
   ]);
   if ([credential, retention, fixtureManifest].some(({status}) => status === 'missing')) return 'unsupported';
   if ([credential, retention, fixtureManifest].some(({status}) => status !== 'present')) return 'fail';
+  const disclosureStatus = await remoteRetentionDisclosureStatus(packageRoot, retention.document);
+  if (disclosureStatus === 'missing') return 'unsupported';
+  if (disclosureStatus !== 'present') return 'fail';
   if (!isDeepStrictEqual(
     fixtureManifest.document.fixtures.map(({fixture_id: fixtureId, path}) => ({
       fixture_id: fixtureId,
