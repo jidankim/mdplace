@@ -34,8 +34,18 @@ async function parseBound(raw, digest, schemaPath, missingCode, digestCode, malf
   }
 }
 
-function proofStatusCode(kind, variant, document) {
-  if (variant === 'current' && document?.status === 'current') return null;
+function validAt(document, evaluatedAt) {
+  const evaluated = Date.parse(evaluatedAt);
+  const observed = Date.parse(document?.observed_at);
+  const expires = Date.parse(document?.expires_at);
+  return Number.isFinite(evaluated) && Number.isFinite(observed) && Number.isFinite(expires) &&
+    observed <= evaluated && evaluated < expires;
+}
+
+function proofStatusCode(kind, variant, document, evaluatedAt) {
+  if (variant === 'current' && document?.status === 'current') {
+    return validAt(document, evaluatedAt) ? null : `codex.${proofCodePrefixes[kind]}_stale`;
+  }
   const status = variant === 'current' ? document?.status ?? 'missing' : variant;
   return `codex.${proofCodePrefixes[kind]}_${status}`;
 }
@@ -75,19 +85,21 @@ function boundaryBindingCode(document, bindings) {
   if (document.interface_mode !== 'non_interactive') return 'codex.interactive_only_execution';
   if (bindings.boundary.code !== null) return bindings.boundary.code;
   if (boundary.status !== 'current') return `codex.boundary_${boundary.status}`;
+  if (!validAt(boundary, document.evaluated_at)) return 'codex.boundary_stale';
   for (const [kind, result, variant, digestField] of [
     ['authentication', bindings.authentication, document.authentication_variant, 'authentication_prerequisite_sha256'],
     ['capability', bindings.capability, document.capability_variant, 'capability_proof_sha256'],
     ['network', bindings.network, document.network_variant, 'network_proof_sha256'],
   ]) {
     if (result.code !== null) return result.code;
-    const statusCode = proofStatusCode(kind, variant, result.document);
+    const statusCode = proofStatusCode(kind, variant, result.document, document.evaluated_at);
     if (statusCode !== null) return statusCode;
     if (boundary[digestField] !== document[`${kind === 'authentication' ? 'authentication' : kind}_sha256`]) return `codex.${proofCodePrefixes[kind]}_binding_mismatch`;
   }
   if (bindings.authentication.document.satisfied !== true || bindings.authentication.document.claims_established.length !== 0) return 'codex.authentication_prerequisite_failed';
   if (bindings.capability.document.proof_result !== 'exact') return 'codex.capability_proof_inconclusive';
-  if (bindings.network.document.proof_result !== 'exact' || bindings.network.document.allowed_destination !== approvedDestination) return 'codex.network_proof_inconclusive';
+  if (bindings.network.document.proof_result !== 'exact' || bindings.network.document.allowed_destination !== approvedDestination ||
+      !isDeepStrictEqual(bindings.network.document.observed_payload_destinations, [approvedDestination])) return 'codex.network_proof_inconclusive';
   if (boundary.isolation.fresh_process !== true || boundary.isolation.scratch_only !== true || boundary.isolation.vault_visible !== false || boundary.isolation.tools.length !== 0) return 'codex.isolation_unavailable';
   return null;
 }
@@ -167,19 +179,18 @@ async function evaluationCode(document, packageRoot, recoveryRecord) {
   if (document.payload_bytes > document.ceilings.input_bytes) return {code: 'codex.input_limit_exceeded', preTransmission: true};
   const bindings = await parseScenarioBindings(document, packageRoot);
   let code = boundaryBindingCode(document, bindings);
+  let preTransmission = code !== null;
   if (code === null) code = await envelopeCode(document, bindings.boundary.document, packageRoot);
-  if (code === null && document.behavior === 'isolation_unavailable') code = 'codex.isolation_unavailable';
-  if (code === null && document.behavior === 'unsupported_fallback') code = 'codex.unapproved_fallback';
-  if (code === null && document.behavior === 'unapproved_payload') code = 'codex.unapproved_payload';
+  if (code !== null) preTransmission = true;
+  if (code === null && document.behavior === 'isolation_unavailable') { code = 'codex.isolation_unavailable'; preTransmission = true; }
+  if (code === null && document.behavior === 'unsupported_fallback') { code = 'codex.unapproved_fallback'; preTransmission = true; }
+  if (code === null && document.behavior === 'unapproved_payload') { code = 'codex.unapproved_payload'; preTransmission = true; }
   if (code === null && document.claimed_auth_fact !== null) code = `codex.authentication_does_not_prove_${document.claimed_auth_fact}`;
   if (code === null) {
     const limit = resourceCode(document);
     if (limit !== null) code = `codex.${limit}`;
   }
-  if (code === null && document.behavior === 'crash_before_transmission') code = 'codex.crash_before_transmission';
-  const preTransmission = code !== null && (
-    document.transmitted_bytes === 0 || code === 'codex.input_limit_exceeded' || code === 'codex.crash_before_transmission'
-  );
+  if (code === null && document.behavior === 'crash_before_transmission') { code = 'codex.crash_before_transmission'; preTransmission = true; }
   if (code === null && document.transmitted_bytes !== document.payload_bytes) code = 'codex.transmitted_bytes_mismatch';
   if (code === null && document.transmitted_sha256 !== document.payload_sha256) code = 'codex.transmitted_digest_mismatch';
   if (code === null && document.behavior === 'crash_after_transmission') code = 'codex.crash_after_transmission';

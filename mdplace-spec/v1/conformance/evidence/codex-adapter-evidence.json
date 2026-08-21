@@ -508,6 +508,20 @@
       "fixture_sha256": "5f6d572f2fd1920d6a913165e7cc5b1af2ea5651aadd5fa007f7be762c149104",
       "receipt_sha256": "8658a37d2ef6dd9be223c3c96ebdec340d66cf762b08fd0652ca8fefa25dd97c",
       "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-073",
+      "path": "conformance/scenarios/codex-intelligence-adapter/expired-current-capability-proof-denied.json",
+      "fixture_sha256": "7e3f8883f6ad70e6fa93603a7680de3565dfc3f381d31943582d7f5d83d2b2a2",
+      "receipt_sha256": "1ef287efdc59ce5c573b655085a8c6796cb23332966e2b4ce84e49feda85238b",
+      "verdict": "fail"
+    },
+    {
+      "fixture_id": "FIX-CODEX-PROFILE-074",
+      "path": "conformance/scenarios/codex-intelligence-adapter/unobserved-payload-destination-denied.json",
+      "fixture_sha256": "ed0ed4099367bb060ae371e618c9b0764369a2ad0737e40f07abcb507bfe2fc5",
+      "receipt_sha256": "dff47c2ea27453c34c981cb94a7fb7f96272673cca1fbc927661f309ce3a35ab",
+      "verdict": "fail"
     }
   ],
   "receipt_sha256s": [
@@ -582,13 +596,15 @@
     "5d8dc487170ca1add99d10d03d967aebc91f6ac50a8b8aeb6e9a174c1fe65548",
     "2fb59fde6aaac17465e353af27709d80c0055eceb79def3b204601eec2686071",
     "a1b838d01c422a30a3ed1548fc1549a58bfa35b8a3ba77a6e00289b80439159d",
-    "8658a37d2ef6dd9be223c3c96ebdec340d66cf762b08fd0652ca8fefa25dd97c"
+    "8658a37d2ef6dd9be223c3c96ebdec340d66cf762b08fd0652ca8fefa25dd97c",
+    "1ef287efdc59ce5c573b655085a8c6796cb23332966e2b4ce84e49feda85238b",
+    "dff47c2ea27453c34c981cb94a7fb7f96272673cca1fbc927661f309ce3a35ab"
   ],
   "boundary_sha256": "ebd492711cb60b22e316d2703d2c22d928ceb63d49022582b1aa2398a5911dc7",
   "authentication_prerequisite_sha256": "34694252b7eaa71d3da78bcf9447370766b53397a48a20f1159938005938c2b9",
   "capability_proof_sha256": "71923d793b2a081a3349ac74f8049863d482dfbcf853b73a978b8e5bb4387e44",
   "network_proof_sha256": "1bba1d77be7e50e44c3503c8aac0384e1fbcc004a62df8ba8bd6ad6ea2400445",
-  "fixture_manifest_sha256": "838d1aaf08f84385c1418c56406316c94a3a6de03dfc32d0c2b053689fd8356a",
+  "fixture_manifest_sha256": "cfab1bab2c269080a2b01a2bf6dc22d18b5fb488d04d429fdf3838f7970070dd",
   "network_operations": 0,
   "intake_fixtures": 0,
   "stateful_scenarios": 0,

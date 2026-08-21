@@ -110,7 +110,7 @@ const network = {
     proof_id: {const: 'codex-network-proof:v1'}, profile_id: {const: 'codex-adapter'}, status,
     boundary_id: {const: 'network-boundary:codex-fixture-v1'}, allowed_destination: {const: 'https://codex.openai.test/v1/execute'},
     authentication_only_destinations: {type: 'array', prefixItems: [{const: 'https://auth.openai.test/login'}], minItems: 1, maxItems: 1},
-    observed_payload_destinations: {type: 'array', maxItems: 1, items: {const: 'https://codex.openai.test/v1/execute'}},
+    observed_payload_destinations: {type: 'array', minItems: 1, maxItems: 1, items: {const: 'https://codex.openai.test/v1/execute'}},
     unauthorized_destination_bytes: {const: 0}, proof_result: {const: 'exact'},
     observed_at: {type: 'string', format: 'date-time'}, expires_at: {type: 'string', format: 'date-time'},
   },

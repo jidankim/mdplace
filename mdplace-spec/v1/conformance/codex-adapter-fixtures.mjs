@@ -78,11 +78,13 @@ function processingEnvelope(scenarioId, payload, staleBinding) {
   };
 }
 
-function evidenceVariant(document, variant) {
+function evidenceVariant(document, variant, mutation) {
   if (variant === 'missing') return {json: null, sha256: null};
   const value = structuredClone(document);
   value.status = variant;
   if (variant === 'failed' && Object.hasOwn(value, 'satisfied')) value.satisfied = false;
+  if (mutation === 'expired') value.expires_at = '2000-01-01T00:00:00.000Z';
+  if (mutation === 'empty_payload_destinations') value.observed_payload_destinations = [];
   const json = canonicalJson(value);
   return {json, sha256: codexSha256(json)};
 }
@@ -183,12 +185,15 @@ export const codexAdapterCases = [
     `illegal-${name}-transition-denied`, 'illegal_transition',
     {operation: 'transition', outputKind: 'none', transitionRef: `contracts/transitions/codex-adapter-${name}-lifecycle.json#${pair}`},
   ]),
+  ['expired-current-capability-proof-denied', 'stale_state', {capabilityMutation: 'expired'}],
+  ['unobserved-payload-destination-denied', 'negative', {networkMutation: 'empty_payload_destinations'}],
 ];
 
 export function codexDeniedBeforeTransmission(overrides) {
   return overrides.operation === 'transition' || overrides.operation === 'recover' || overrides.interfaceMode === 'interactive_only' ||
     (overrides.boundaryVariant ?? 'current') !== 'current' || (overrides.authenticationVariant ?? 'current') !== 'current' ||
     (overrides.capabilityVariant ?? 'current') !== 'current' || (overrides.networkVariant ?? 'current') !== 'current' ||
+    overrides.capabilityMutation === 'expired' || overrides.networkMutation === 'empty_payload_destinations' ||
     ['missing_boundary', 'stale_binding', 'unapproved_destination', 'unapproved_payload', 'isolation_unavailable', 'unsupported_fallback', 'crash_before_transmission'].includes(overrides.behavior) ||
     (overrides.payloadBytes ?? Buffer.byteLength(overrides.payload ?? ordinaryPayload)) > 4096;
 }
@@ -203,8 +208,8 @@ export function codexAdapterScenario(index, definition, canonicalEvidence) {
   const envelopeJson = canonicalJson(envelope);
   const envelopeSha256 = codexSha256(envelopeJson);
   const authentication = evidenceVariant(canonicalEvidence.authentication, overrides.authenticationVariant ?? 'current');
-  const capabilityProof = evidenceVariant(canonicalEvidence.capability, overrides.capabilityVariant ?? 'current');
-  const networkProof = evidenceVariant(canonicalEvidence.network, overrides.networkVariant ?? 'current');
+  const capabilityProof = evidenceVariant(canonicalEvidence.capability, overrides.capabilityVariant ?? 'current', overrides.capabilityMutation);
+  const networkProof = evidenceVariant(canonicalEvidence.network, overrides.networkVariant ?? 'current', overrides.networkMutation);
   const boundary = boundaryDocument(
     envelopeSha256,
     payload,

@@ -11,7 +11,7 @@
       "id": "codex-adapter",
       "owner": "codex-adapter",
       "verdict": "pass",
-      "evidence_digest": "88e4c7c547a938a4050e105784f467c4ca2d70acb6aeea3ee54dbceeb94d8ae8",
+      "evidence_digest": "3ae60c035974e78bd1b37e1811a350112e69c4afcb12cbfb430ebc81764b1599",
       "evidence_material": [
         {
           "ordinal": 0,
@@ -53,7 +53,7 @@
           "ordinal": 6,
           "label": "codex_material_007",
           "path": "contracts/codex-intelligence-adapter/fixture-manifest.json",
-          "sha256": "838d1aaf08f84385c1418c56406316c94a3a6de03dfc32d0c2b053689fd8356a"
+          "sha256": "cfab1bab2c269080a2b01a2bf6dc22d18b5fb488d04d429fdf3838f7970070dd"
         },
         {
           "ordinal": 7,
@@ -65,7 +65,7 @@
           "ordinal": 8,
           "label": "codex_material_009",
           "path": "conformance/evidence/codex-adapter-evidence.json",
-          "sha256": "e57ac1c31f4b8c089061c338ff46748aaf802d842f02b5f35ec1ea80154705f1"
+          "sha256": "228146d632c7fc19b1788f72a2257f970b7653c81489b6dcfa05b7dd14969c5e"
         },
         {
           "ordinal": 9,
@@ -498,6 +498,18 @@
           "label": "codex_material_081",
           "path": "conformance/scenarios/codex-intelligence-adapter/illegal-recovery-transition-denied.json",
           "sha256": "5f6d572f2fd1920d6a913165e7cc5b1af2ea5651aadd5fa007f7be762c149104"
+        },
+        {
+          "ordinal": 81,
+          "label": "codex_material_082",
+          "path": "conformance/scenarios/codex-intelligence-adapter/expired-current-capability-proof-denied.json",
+          "sha256": "7e3f8883f6ad70e6fa93603a7680de3565dfc3f381d31943582d7f5d83d2b2a2"
+        },
+        {
+          "ordinal": 82,
+          "label": "codex_material_083",
+          "path": "conformance/scenarios/codex-intelligence-adapter/unobserved-payload-destination-denied.json",
+          "sha256": "ed0ed4099367bb060ae371e618c9b0764369a2ad0737e40f07abcb507bfe2fc5"
         }
       ],
       "dependencies_elevated": {

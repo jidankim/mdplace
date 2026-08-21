@@ -10,14 +10,14 @@
   "invocation": {
     "invocation_id": "invocation:codex-adapter-profile",
     "path": "conformance/evidence/invocations/codex-adapter-profile.json",
-    "sha256": "0cdc8bf4376b3ec5e3597c3c9d52406d7f02c766d0d919a0b21a12e126e6c1e4"
+    "sha256": "8f7d8d8ee40be82e9d4b475bf92aaea5e0a32928ae6b2985d142ded104dc9cfb"
   },
   "requirement_id": "REQ-CODEX-006",
   "subject": {
     "kind": "codex_adapter_claim",
     "subject_id": "codex-adapter:claim-v1",
     "schema": "contracts/schemas/codex-adapter-claim-manifest.schema.json",
-    "sha256": "7baf923c5145b1a7308afa649431f8052c010a79067926fe47897da8f3203da3"
+    "sha256": "de873c92604712cfa65e0bd48457fa53224570dd86a5219157d075ff7994b747"
   },
   "input_digests": [
     {
@@ -54,7 +54,7 @@
       "ordinal": 5,
       "label": "fixture_manifest",
       "path": "contracts/codex-intelligence-adapter/fixture-manifest.json",
-      "sha256": "838d1aaf08f84385c1418c56406316c94a3a6de03dfc32d0c2b053689fd8356a"
+      "sha256": "cfab1bab2c269080a2b01a2bf6dc22d18b5fb488d04d429fdf3838f7970070dd"
     }
   ],
   "output_digests": [
@@ -62,13 +62,13 @@
       "ordinal": 0,
       "label": "codex_adapter_evidence",
       "path": "conformance/evidence/codex-adapter-evidence.json",
-      "sha256": "e57ac1c31f4b8c089061c338ff46748aaf802d842f02b5f35ec1ea80154705f1"
+      "sha256": "228146d632c7fc19b1788f72a2257f970b7653c81489b6dcfa05b7dd14969c5e"
     },
     {
       "ordinal": 1,
       "label": "recovery_report",
       "path": "conformance/evidence/codex-adapter-recovery-report.json",
-      "sha256": "c55189aa0934bac6aa4f925c7bb5c95bd5e7ade9cdbabfeb452d6ff740d902ca"
+      "sha256": "e3df941781c06450b7ff5c895311bf63cb276bb01504526f1b779167f14b2081"
     }
   ],
   "receipts": [
@@ -77,7 +77,7 @@
       "receipt_id": "receipt:codex-adapter-profile",
       "receipt_type": "EvidenceValidationReceipt",
       "path": "conformance/evidence/codex-adapter-recovery-report.json",
-      "sha256": "c55189aa0934bac6aa4f925c7bb5c95bd5e7ade9cdbabfeb452d6ff740d902ca"
+      "sha256": "e3df941781c06450b7ff5c895311bf63cb276bb01504526f1b779167f14b2081"
     }
   ],
   "artifact_digests": [
