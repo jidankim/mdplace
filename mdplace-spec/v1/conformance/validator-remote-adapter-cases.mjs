@@ -342,10 +342,19 @@ test('Remote Intelligence Adapter claim verdict is derived from mandatory eviden
   ), 'utf8'));
   const evidencePath = resolve(packageRoot, 'conformance/evidence/remote-adapter-evidence.json');
   const evidence = JSON.parse(await readFile(evidencePath, 'utf8'));
-  assert.equal(deriveRemoteAdapterVerdict(evidence), 'pass');
-  assert.equal(deriveRemoteAdapterVerdict({...evidence, network_operations: 1}), 'fail');
-  assert.equal(deriveRemoteAdapterVerdict({...evidence, fixture_bindings: []}), 'unsupported');
-  assert.equal(deriveRemoteAdapterVerdict({...evidence, receipt_sha256s: evidence.receipt_sha256s.slice(1)}),
+  assert.equal(await deriveRemoteAdapterVerdict(evidence, packageRoot), 'pass');
+  assert.equal(await deriveRemoteAdapterVerdict({...evidence, network_operations: 1}, packageRoot), 'fail');
+  assert.equal(await deriveRemoteAdapterVerdict({...evidence, fixture_bindings: []}, packageRoot), 'unsupported');
+  const missingNetworkEvidence = structuredClone(evidence);
+  delete missingNetworkEvidence.network_operations;
+  assert.equal(await deriveRemoteAdapterVerdict(missingNetworkEvidence, packageRoot), 'unsupported');
+  const wrongFixtureDigestEvidence = structuredClone(evidence);
+  wrongFixtureDigestEvidence.fixture_bindings[0].fixture_sha256 = '0'.repeat(64);
+  assert.equal(await deriveRemoteAdapterVerdict(wrongFixtureDigestEvidence, packageRoot), 'fail');
+  assert.equal(await deriveRemoteAdapterVerdict({
+    ...evidence,
+    receipt_sha256s: evidence.receipt_sha256s.slice(1),
+  }, packageRoot),
     'inconclusive');
   for (const verdict of ['fail', 'unsupported', 'inconclusive']) {
     const mutated = structuredClone(claim);
@@ -391,6 +400,27 @@ test('coordinated verdict labels cannot override independently derived evidence'
     writeFile(genericPath, `${JSON.stringify(generic, null, 2)}\n`),
     writeFile(envelopePath, `${JSON.stringify(envelope, null, 2)}\n`),
   ]);
+
+  assert.ok((await remoteAdapterClaimCodes(claim, packageRoot))
+    .includes('remote.claim_verdict_invalid'));
+});
+
+test('valid-format wrong mandatory digests cannot earn a passing claim', async (t) => {
+  const packageRoot = await copyCommittedPackage();
+  t.after(() => rm(resolve(packageRoot, '../..'), {recursive: true, force: true}));
+  const claimPath = resolve(packageRoot, 'contracts/remote-intelligence-adapter/claim-manifest.json');
+  const evidencePath = resolve(packageRoot, 'conformance/evidence/remote-adapter-evidence.json');
+  const claim = JSON.parse(await readFile(claimPath, 'utf8'));
+  const evidence = JSON.parse(await readFile(evidencePath, 'utf8'));
+
+  evidence.fixture_bindings[0].fixture_sha256 = '0'.repeat(64);
+  const evidenceBytes = `${JSON.stringify(evidence, null, 2)}\n`;
+  await writeFile(evidencePath, evidenceBytes);
+  const materialEntry = claim.rows[0].evidence_material.find(
+    ({path}) => path === 'conformance/evidence/remote-adapter-evidence.json',
+  );
+  materialEntry.sha256 = remoteSha256(evidenceBytes);
+  claim.rows[0].evidence_digest = remoteAdapterEvidenceDigest(claim.rows[0].evidence_material);
 
   assert.ok((await remoteAdapterClaimCodes(claim, packageRoot))
     .includes('remote.claim_verdict_invalid'));

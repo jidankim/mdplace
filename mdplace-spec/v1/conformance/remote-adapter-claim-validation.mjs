@@ -6,6 +6,8 @@ import {
   remoteSha256,
 } from './remote-adapter-core.mjs';
 import {remoteAdapterCases} from './remote-adapter-fixtures.mjs';
+import {remoteAdapterReceiptDigest} from './remote-adapter-observer.mjs';
+import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {readPackageFile} from './safe-path.mjs';
 
 const dependencyBoundary = {
@@ -18,7 +20,31 @@ const dependencyBoundary = {
 };
 const digestPattern = /^[a-f0-9]{64}$/;
 
-export function deriveRemoteAdapterVerdict(evidence) {
+async function schemaIsValid(packageRoot, schema, document) {
+  try {
+    return schemaErrorCode(await validateAgainstSchemaPath(packageRoot, schema, document)) === null;
+  } catch {
+    return false;
+  }
+}
+
+async function readMandatoryDocument(packageRoot, path, digest, schema) {
+  const read = await readPackageFile(packageRoot, path);
+  if (read.status !== 'present') return {status: 'missing', document: null};
+  if (remoteSha256(read.content) !== digest) return {status: 'invalid', document: null};
+  let document;
+  try {
+    document = JSON.parse(read.content.toString('utf8'));
+  } catch {
+    return {status: 'invalid', document: null};
+  }
+  return {
+    status: await schemaIsValid(packageRoot, schema, document) ? 'present' : 'invalid',
+    document,
+  };
+}
+
+export async function deriveRemoteAdapterVerdict(evidence, packageRoot) {
   if (evidence === null || typeof evidence !== 'object' || Array.isArray(evidence)) return 'unsupported';
   const bindings = evidence.fixture_bindings;
   const receipts = evidence.receipt_sha256s;
@@ -27,6 +53,10 @@ export function deriveRemoteAdapterVerdict(evidence) {
     evidence.retention_evidence_sha256,
     evidence.fixture_manifest_sha256,
   ];
+  if (!Array.isArray(bindings) || bindings.length === 0 || !Array.isArray(receipts) || receipts.length === 0 ||
+      evidence.network_operations === undefined || mandatoryDigests.some((digest) => digest === undefined)) {
+    return 'unsupported';
+  }
   const invalidBinding = (binding) => binding === null || typeof binding !== 'object' ||
     Array.isArray(binding) || typeof binding.fixture_id !== 'string' || typeof binding.path !== 'string' ||
     !digestPattern.test(binding.fixture_sha256) || !digestPattern.test(binding.receipt_sha256) ||
@@ -37,10 +67,71 @@ export function deriveRemoteAdapterVerdict(evidence) {
       (Array.isArray(bindings) && !bindings.some(invalidBinding) &&
         (new Set(bindings.map(({fixture_id: id}) => id)).size !== bindings.length ||
           new Set(bindings.map(({path}) => path)).size !== bindings.length))) return 'fail';
-  if (!Array.isArray(bindings) || bindings.length === 0 || !Array.isArray(receipts) ||
-      mandatoryDigests.some((digest) => digest === undefined)) return 'unsupported';
-  if (bindings.length !== remoteAdapterCases.length || receipts.length !== bindings.length ||
-      !isDeepStrictEqual(receipts, bindings.map(({receipt_sha256: digest}) => digest))) return 'inconclusive';
+  if (bindings.length !== remoteAdapterCases.length || receipts.length !== bindings.length) return 'inconclusive';
+  if (!isDeepStrictEqual(receipts, bindings.map(({receipt_sha256: digest}) => digest))) return 'fail';
+  const expectedBindings = remoteAdapterCases.map(([caseId], index) => ({
+    fixture_id: `FIX-RAP-PROFILE-${String(index + 1).padStart(3, '0')}`,
+    path: `conformance/scenarios/remote-intelligence-adapter/${caseId}.json`,
+  }));
+  if (!isDeepStrictEqual(
+    bindings.map(({fixture_id: fixtureId, path}) => ({fixture_id: fixtureId, path})),
+    expectedBindings,
+  )) return 'fail';
+  if (!await schemaIsValid(
+    packageRoot,
+    'contracts/schemas/remote-adapter-evidence.schema.json',
+    evidence,
+  )) return 'fail';
+  const [credential, retention, fixtureManifest] = await Promise.all([
+    readMandatoryDocument(
+      packageRoot,
+      'contracts/remote-intelligence-adapter/credential-boundary-evidence.json',
+      evidence.credential_boundary_evidence_sha256,
+      'contracts/schemas/remote-adapter-credential-boundary-evidence.schema.json',
+    ),
+    readMandatoryDocument(
+      packageRoot,
+      'contracts/remote-intelligence-adapter/retention-evidence.json',
+      evidence.retention_evidence_sha256,
+      'contracts/schemas/remote-adapter-retention-evidence.schema.json',
+    ),
+    readMandatoryDocument(
+      packageRoot,
+      'contracts/remote-intelligence-adapter/fixture-manifest.json',
+      evidence.fixture_manifest_sha256,
+      'contracts/schemas/remote-adapter-fixture-manifest.schema.json',
+    ),
+  ]);
+  if ([credential, retention, fixtureManifest].some(({status}) => status === 'missing')) return 'unsupported';
+  if ([credential, retention, fixtureManifest].some(({status}) => status !== 'present')) return 'fail';
+  if (!isDeepStrictEqual(
+    fixtureManifest.document.fixtures.map(({fixture_id: fixtureId, path}) => ({
+      fixture_id: fixtureId,
+      path: `conformance/${path}`,
+    })),
+    expectedBindings,
+  )) return 'fail';
+  for (const [index, binding] of bindings.entries()) {
+    const fixtureRead = await readPackageFile(packageRoot, binding.path);
+    if (fixtureRead.status !== 'present') return 'unsupported';
+    if (remoteSha256(fixtureRead.content) !== binding.fixture_sha256) return 'fail';
+    let fixture;
+    let receipt;
+    try {
+      fixture = JSON.parse(fixtureRead.content.toString('utf8'));
+      receipt = JSON.parse(fixture.expected.receipts[0]);
+    } catch {
+      return 'fail';
+    }
+    if (!await schemaIsValid(packageRoot, 'contracts/schemas/conformance-fixture.schema.json', fixture) ||
+        !await schemaIsValid(
+          packageRoot,
+          'contracts/schemas/remote-adapter-scenario.schema.json',
+          fixture.subject?.document,
+        ) || fixture.fixture_id !== expectedBindings[index].fixture_id ||
+        fixture.expected?.verdict !== binding.verdict || receipt.receipt_sha256 !== binding.receipt_sha256 ||
+        receipt.receipt_sha256 !== remoteAdapterReceiptDigest(receipt)) return 'fail';
+  }
   return 'pass';
 }
 
@@ -92,7 +183,7 @@ export async function remoteAdapterClaimCodes(claim, packageRoot) {
   const genericBinding = genericClaim?.evidence_bindings?.find(
     ({evidence_kind: kind}) => kind === 'remote_adapter_conformance',
   );
-  const derivedVerdict = deriveRemoteAdapterVerdict(evidence);
+  const derivedVerdict = await deriveRemoteAdapterVerdict(evidence, packageRoot);
   if (evidence === null || genericClaim === null || envelope === null ||
       evidence.verdict !== derivedVerdict || row.verdict !== derivedVerdict ||
       genericClaim.verdict !== derivedVerdict || genericBinding?.verdict !== derivedVerdict ||

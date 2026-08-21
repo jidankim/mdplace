@@ -162,8 +162,9 @@ async function writeMachineEvidence(entries, fixtures) {
     retention_evidence_sha256: await fileDigest('contracts/remote-intelligence-adapter/retention-evidence.json'),
     fixture_manifest_sha256: await fileDigest('contracts/remote-intelligence-adapter/fixture-manifest.json'),
     network_operations: 0,
+    verdict: 'pass',
   };
-  machineEvidence.verdict = deriveRemoteAdapterVerdict(machineEvidence);
+  machineEvidence.verdict = await deriveRemoteAdapterVerdict(machineEvidence, packageRoot);
   await writeJson('conformance/evidence/remote-adapter-evidence.json', machineEvidence);
   const paths = [...remoteAdapterEvidencePaths, ...entries.map(({path}) => `conformance/${path}`)];
   const material = await Promise.all(paths.map(async (path, ordinal) => ({
