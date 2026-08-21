@@ -1,0 +1,95 @@
+{
+  "$schema": "../../../contracts/schemas/conformance-fixture.schema.json",
+  "schema_id": "mdplace.conformance-fixture/v1",
+  "fixture_id": "FIX-RAP-PROFILE-013",
+  "category": "negative",
+  "requirement_ids": [
+    "REQ-RAP-001",
+    "REQ-RAP-002",
+    "REQ-RAP-003",
+    "REQ-RAP-004",
+    "REQ-RAP-005",
+    "REQ-RAP-006",
+    "REQ-RAP-007",
+    "REQ-RAP-008",
+    "REQ-RAP-009",
+    "REQ-RAP-010"
+  ],
+  "subject": {
+    "kind": "remote_intelligence_adapter",
+    "schema": "contracts/schemas/remote-adapter-scenario.schema.json",
+    "document": {
+      "schema_id": "mdplace.remote-adapter-scenario/v1",
+      "scenario_id": "RAP-013",
+      "case_id": "malformed-processing-envelope-denied",
+      "operation": "execute",
+      "evaluated_at": "2026-08-23T00:00:00.000Z",
+      "processing_envelope_json": "{",
+      "processing_envelope_sha256": "021fb596db81e6d02bf3d2586ee3981fe519f275c0ac9ca76bbcf2ebb4097d96",
+      "authorized_attempts": [],
+      "credential_evidence_json": "{\"$schema\":\"../schemas/remote-adapter-credential-boundary-evidence.schema.json\",\"adapter_visibility\":\"none\",\"ambient_configuration\":\"unreadable\",\"authentication_method\":\"api_key_reference\",\"boundary_id\":\"credential-boundary:remote-alpha\",\"claims_established\":[],\"environment_values\":\"unreadable\",\"evidence_id\":\"remote-credential-boundary:v1\",\"expires_at\":\"2026-09-21T00:00:00.000Z\",\"observed_at\":\"2026-08-22T00:00:00.000Z\",\"prerequisite\":\"satisfied\",\"profile_id\":\"remote-adapter\",\"profile_sha256\":\"244d8d72abdb592de9c492d4ead65ac4c94bcce34e49ec50ad014416b974e11d\",\"provider_id\":\"provider:remote-alpha\",\"schema_id\":\"mdplace.remote-adapter-credential-boundary-evidence/v1\",\"secret_access\":\"none\",\"status\":\"current\",\"store\":\"os_credential_store\"}",
+      "credential_evidence_sha256": "a4a762168a1f516468f4f51bf6e5018e0398bcbf3f8720eb9fafad5363d998b1",
+      "retention_evidence_json": "{\"$schema\":\"../schemas/remote-adapter-retention-evidence.schema.json\",\"destination\":\"https://api.remote-alpha.test/v1/process\",\"evidence_id\":\"remote-retention-evidence:v1\",\"expires_at\":\"2026-09-21T00:00:00.000Z\",\"facts\":[{\"dimension\":\"residency\",\"evidence_ref\":null,\"evidence_sha256\":null,\"status\":\"unsupported\",\"value\":null},{\"dimension\":\"retention\",\"evidence_ref\":\"conformance/inputs/remote-adapter-provider-disclosure.json\",\"evidence_sha256\":\"5d6b551ea748b8ec8409f9b6213307b4e0594ececa9e702d97ad6970b27e743e\",\"status\":\"disclosed\",\"value\":\"maximum 30 days\"},{\"dimension\":\"training\",\"evidence_ref\":null,\"evidence_sha256\":null,\"status\":\"inconclusive\",\"value\":null},{\"dimension\":\"deletion\",\"evidence_ref\":null,\"evidence_sha256\":null,\"status\":\"unsupported\",\"value\":null},{\"dimension\":\"entitlement\",\"evidence_ref\":null,\"evidence_sha256\":null,\"status\":\"unsupported\",\"value\":null},{\"dimension\":\"privacy_behavior\",\"evidence_ref\":null,\"evidence_sha256\":null,\"status\":\"inconclusive\",\"value\":null}],\"observed_at\":\"2026-08-22T00:00:00.000Z\",\"profile_id\":\"remote-adapter\",\"profile_sha256\":\"244d8d72abdb592de9c492d4ead65ac4c94bcce34e49ec50ad014416b974e11d\",\"provider_id\":\"provider:remote-alpha\",\"schema_id\":\"mdplace.remote-adapter-retention-evidence/v1\",\"status\":\"current\"}",
+      "retention_evidence_sha256": "5729837975b92ba3f13002cba888a653c4a58ab64f08c369f36a29c1375e9368",
+      "attempt_observations_json": "[{\"attempt_id\":\"adapter-attempt:rap-013-0\",\"attempt_kind\":\"denial\",\"attempt_sequence\":0,\"boundary\":\"pre_egress_denial\",\"destination\":null,\"payload_base64\":\"\",\"provider_request_id\":null,\"transmitted_bytes\":0,\"transmitted_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}]",
+      "attempt_observations_sha256": "e5337c03c15295346837aac9287de849f9c3116be4d454cbcc21a88da2fc4cad",
+      "requested_provider": "provider:remote-alpha",
+      "requested_destination": "https://api.remote-alpha.test/v1/process",
+      "input_bytes": 1,
+      "output_bytes": 512,
+      "runtime_ms": 250,
+      "cost_microunits": 1000,
+      "attempts": 1,
+      "retries": 0,
+      "fallbacks": 0,
+      "ceilings": {
+        "input_bytes": 4096,
+        "output_bytes": 3000,
+        "runtime_ms": 800,
+        "cost_microunits": 5000,
+        "attempts": 3,
+        "retries": 1,
+        "fallbacks": 1
+      },
+      "behavior": "malformed",
+      "claimed_authority": "none",
+      "provider_fact_claim": null,
+      "transition_ref": null
+    }
+  },
+  "expected": {
+    "verdict": "fail",
+    "codes": [
+      "remote.processing_envelope_malformed"
+    ],
+    "inputs": [
+      "envelope-sha256:021fb596db81e6d02bf3d2586ee3981fe519f275c0ac9ca76bbcf2ebb4097d96",
+      "credential-boundary-sha256:a4a762168a1f516468f4f51bf6e5018e0398bcbf3f8720eb9fafad5363d998b1",
+      "retention-evidence-sha256:5729837975b92ba3f13002cba888a653c4a58ab64f08c369f36a29c1375e9368",
+      "attempt-observations-sha256:e5337c03c15295346837aac9287de849f9c3116be4d454cbcc21a88da2fc4cad"
+    ],
+    "outputs": [
+      "Remote Intelligence Adapter profile observation denied"
+    ],
+    "operations": [
+      "parse Remote Intelligence Adapter scenario",
+      "apply default-deny precedence",
+      "verify exact transmitted bytes and destination",
+      "record Remote Intelligence Adapter profile receipt"
+    ],
+    "receipts": [
+      "{\"attempts\":[{\"attempt_id\":\"adapter-attempt:rap-013-0\",\"attempt_kind\":\"denial\",\"attempt_sequence\":0,\"boundary\":\"pre_egress_denial\",\"destination\":null,\"provider_request_id\":null,\"transmitted_bytes\":0,\"transmitted_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}],\"credential_boundary_sha256\":\"a4a762168a1f516468f4f51bf6e5018e0398bcbf3f8720eb9fafad5363d998b1\",\"filesystem_effects\":[],\"outcome\":\"denied\",\"profile_id\":\"remote-adapter\",\"provider_fact_statuses\":{\"deletion\":\"unsupported\",\"entitlement\":\"unsupported\",\"privacy_behavior\":\"inconclusive\",\"residency\":\"unsupported\",\"retention\":\"disclosed\",\"training\":\"inconclusive\"},\"reason\":\"remote.processing_envelope_malformed\",\"receipt_id\":\"remote-adapter-receipt:rap-013\",\"receipt_sha256\":\"782bfd614126b350c6d7485413a7eee7429fefa34e17c622b86c925d17f2f9c3\",\"retention_evidence_sha256\":\"5729837975b92ba3f13002cba888a653c4a58ab64f08c369f36a29c1375e9368\",\"scenario_id\":\"RAP-013\",\"schema_id\":\"mdplace.remote-adapter-profile-receipt/v1\",\"semantic_effects\":[],\"tool_invocations\":[]}"
+    ],
+    "filesystem_effects": [
+      "none"
+    ],
+    "network_effects": [
+      "none"
+    ],
+    "observations": [
+      "[{\"attempt_id\":\"adapter-attempt:rap-013-0\",\"attempt_kind\":\"denial\",\"attempt_sequence\":0,\"boundary\":\"pre_egress_denial\",\"destination\":null,\"payload_base64\":\"\",\"provider_request_id\":null,\"transmitted_bytes\":0,\"transmitted_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}]"
+    ],
+    "terminal_state": "denied",
+    "illegal_transition": false
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:remote-adapter-profile-receipt:v1",
+  "title": "mdplace Remote Intelligence Adapter profile receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_id", "receipt_id", "scenario_id", "profile_id", "outcome", "reason", "attempts", "credential_boundary_sha256", "retention_evidence_sha256", "provider_fact_statuses", "semantic_effects", "filesystem_effects", "tool_invocations", "receipt_sha256"],
+  "properties": {
+    "schema_id": {"const": "mdplace.remote-adapter-profile-receipt/v1"},
+    "receipt_id": {"type": "string", "pattern": "^remote-adapter-receipt:rap-[0-9]{3}$"},
+    "scenario_id": {"type": "string", "pattern": "^RAP-[0-9]{3}$"},
+    "profile_id": {"const": "remote-adapter"},
+    "outcome": {"enum": ["permitted", "denied", "recovery_required", "recovered"]},
+    "reason": {"type": "string", "pattern": "^remote\\.[a-z0-9_]+$"},
+    "attempts": {"type": "array", "minItems": 1, "maxItems": 3, "items": {"$ref": "#/$defs/attempt"}},
+    "credential_boundary_sha256": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
+    "retention_evidence_sha256": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
+    "provider_fact_statuses": {"$ref": "#/$defs/facts"},
+    "semantic_effects": {"type": "array", "maxItems": 0},
+    "filesystem_effects": {"type": "array", "maxItems": 0},
+    "tool_invocations": {"type": "array", "maxItems": 0},
+    "receipt_sha256": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "attempt": {"type": "object", "additionalProperties": false, "required": ["attempt_id", "attempt_sequence", "attempt_kind", "destination", "transmitted_bytes", "transmitted_sha256", "boundary", "provider_request_id"], "properties": {"attempt_id": {"type": "string", "pattern": "^adapter-attempt:rap-[0-9]{3}-[0-9]+$"}, "attempt_sequence": {"type": "integer", "minimum": 0, "maximum": 2}, "attempt_kind": {"enum": ["initial", "retry", "fallback", "denial"]}, "destination": {"type": ["string", "null"], "format": "uri"}, "transmitted_bytes": {"type": "integer", "minimum": 0, "maximum": 4096}, "transmitted_sha256": {"$ref": "#/$defs/digest"}, "boundary": {"enum": ["egress_complete", "pre_egress_denial", "egress_completion_unknown"]}, "provider_request_id": {"type": ["string", "null"], "pattern": "^provider-request:rap-[0-9]{3}-[0-9]+$"}}},
+    "facts": {"type": "object", "additionalProperties": false, "required": ["residency", "retention", "training", "deletion", "entitlement", "privacy_behavior"], "properties": {"residency": {"enum": ["disclosed", "unsupported", "inconclusive"]}, "retention": {"enum": ["disclosed", "unsupported", "inconclusive"]}, "training": {"enum": ["disclosed", "unsupported", "inconclusive"]}, "deletion": {"enum": ["disclosed", "unsupported", "inconclusive"]}, "entitlement": {"enum": ["disclosed", "unsupported", "inconclusive"]}, "privacy_behavior": {"enum": ["disclosed", "unsupported", "inconclusive"]}}}
+  }
+}

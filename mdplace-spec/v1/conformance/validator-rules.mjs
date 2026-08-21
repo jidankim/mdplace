@@ -1,4 +1,5 @@
 import {localAdapterExecutablePaths} from './local-adapter-artifact-rules.mjs';
+import {remoteAdapterExecutablePaths} from './remote-adapter-artifact-rules.mjs';
 export const manifestFields = new Set([
   '$schema',
   'schema_id',
@@ -114,6 +115,11 @@ const authorityByCommand = new Map([
   ['deny_adapter_recovery', {roles: ['foreground_recovery'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}],
   ...['mark_capability_stale', 'record_pass', 'record_fail', 'record_unsupported', 'record_inconclusive']
     .map((command) => [command, {roles: ['conformance_validator'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}]),
+  ...['authorize_remote_egress', 'transmit_remote_payload', 'deny_remote_egress', 'record_remote_failure',
+    'authorize_remote_retry', 'exhaust_remote_retry', 'authorize_remote_fallback', 'exhaust_remote_fallback']
+    .map((command) => [command, {roles: ['mdplace_agent'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}]),
+  ...['inspect_remote_recovery', 'recover_remote_receipt', 'deny_remote_recovery']
+    .map((command) => [command, {roles: ['foreground_recovery'], quorum: 1, distinct_actors: false, delegation: 'forbidden'}]),
 ]);
 
 const conformanceExecutables = new Set([
@@ -244,6 +250,7 @@ export function packageArtifactPathAllowed(path) {
   if (/^(?:package-manifest|traceability|claims-and-evidence)\.yaml$/.test(path)) return true;
   if (/^normative\/[a-z0-9][a-z0-9./-]*\.(?:md|json|yaml)$/.test(path)) return true;
   if (/^contracts\/[a-z0-9][a-z0-9./-]*\.json$/.test(path)) return true;
-  if (path.endsWith('.mjs')) return conformanceExecutables.has(path) || localAdapterExecutablePaths.has(path);
+  if (path.endsWith('.mjs')) return conformanceExecutables.has(path) ||
+    localAdapterExecutablePaths.has(path) || remoteAdapterExecutablePaths.has(path);
   return /^conformance\/[A-Za-z0-9][A-Za-z0-9./-]*\.(?:md|json|yaml|txt)$/.test(path);
 }

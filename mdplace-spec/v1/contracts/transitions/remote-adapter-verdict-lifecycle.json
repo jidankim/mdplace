@@ -1,0 +1,1173 @@
+{
+  "$schema": "../schemas/transition-table.schema.json",
+  "schema_id": "mdplace.transition-table/v1",
+  "table_id": "TRANS-RAP-VERDICT",
+  "lifecycle": "Remote Intelligence Adapter verdict",
+  "version": "1.0.0",
+  "states": [
+    "pending",
+    "pass",
+    "fail",
+    "unsupported",
+    "inconclusive"
+  ],
+  "commands": [
+    "record_pass",
+    "record_fail",
+    "record_unsupported",
+    "record_inconclusive",
+    "mark_stale"
+  ],
+  "transitions": [
+    {
+      "transition_id": "TR-RAPVER-001",
+      "command_or_event": "record_pass",
+      "from_state": "pending",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterTransitionObserved"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "pass",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPVER-002",
+      "command_or_event": "record_fail",
+      "from_state": "pending",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterTransitionObserved"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "fail",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPVER-003",
+      "command_or_event": "record_unsupported",
+      "from_state": "pending",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterTransitionObserved"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "unsupported",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPVER-004",
+      "command_or_event": "record_inconclusive",
+      "from_state": "pending",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterTransitionObserved"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "inconclusive",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPVER-005",
+      "command_or_event": "mark_stale",
+      "from_state": "pending",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "pending",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPVER-006",
+      "command_or_event": "record_pass",
+      "from_state": "pass",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "pass",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPVER-007",
+      "command_or_event": "record_fail",
+      "from_state": "pass",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "pass",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPVER-008",
+      "command_or_event": "record_unsupported",
+      "from_state": "pass",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "pass",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPVER-009",
+      "command_or_event": "record_inconclusive",
+      "from_state": "pass",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "pass",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPVER-010",
+      "command_or_event": "mark_stale",
+      "from_state": "pass",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterTransitionObserved"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "inconclusive",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPVER-011",
+      "command_or_event": "record_pass",
+      "from_state": "fail",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "fail",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPVER-012",
+      "command_or_event": "record_fail",
+      "from_state": "fail",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "fail",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPVER-013",
+      "command_or_event": "record_unsupported",
+      "from_state": "fail",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "fail",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPVER-014",
+      "command_or_event": "record_inconclusive",
+      "from_state": "fail",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "fail",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPVER-015",
+      "command_or_event": "mark_stale",
+      "from_state": "fail",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterTransitionObserved"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "fail",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPVER-016",
+      "command_or_event": "record_pass",
+      "from_state": "unsupported",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "unsupported",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPVER-017",
+      "command_or_event": "record_fail",
+      "from_state": "unsupported",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "unsupported",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPVER-018",
+      "command_or_event": "record_unsupported",
+      "from_state": "unsupported",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "unsupported",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPVER-019",
+      "command_or_event": "record_inconclusive",
+      "from_state": "unsupported",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "unsupported",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPVER-020",
+      "command_or_event": "mark_stale",
+      "from_state": "unsupported",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterTransitionObserved"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "unsupported",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPVER-021",
+      "command_or_event": "record_pass",
+      "from_state": "inconclusive",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "inconclusive",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPVER-022",
+      "command_or_event": "record_fail",
+      "from_state": "inconclusive",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "inconclusive",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPVER-023",
+      "command_or_event": "record_unsupported",
+      "from_state": "inconclusive",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "inconclusive",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPVER-024",
+      "command_or_event": "record_inconclusive",
+      "from_state": "inconclusive",
+      "allowed": false,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterDenied"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "inconclusive",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    },
+    {
+      "transition_id": "TR-RAPVER-025",
+      "command_or_event": "mark_stale",
+      "from_state": "inconclusive",
+      "allowed": true,
+      "actor_authority": {
+        "roles": [
+          "conformance_validator"
+        ],
+        "quorum": 1,
+        "distinct_actors": false,
+        "delegation": "forbidden"
+      },
+      "preconditions": [
+        "exact Remote Intelligence Adapter profile and evidence bindings are current"
+      ],
+      "base_references": [
+        "profile_sha256",
+        "credential_boundary_evidence_sha256",
+        "retention_evidence_sha256"
+      ],
+      "emitted_records": [
+        "RemoteAdapterTransitionObserved"
+      ],
+      "filesystem_effects": [
+        "none"
+      ],
+      "idempotency": {
+        "key_fields": [
+          "scenario_id"
+        ],
+        "retry_result": "return the digest-identical receipt"
+      },
+      "terminal_state": "inconclusive",
+      "failure_result": {
+        "code": "remote.illegal_transition",
+        "state_effect": "unchanged",
+        "emitted_records": [
+          "RemoteAdapterDenied"
+        ],
+        "filesystem_effects": [
+          "none"
+        ]
+      },
+      "recovery": "Revalidate exact parsed evidence and the Claim Manifest before another transition."
+    }
+  ]
+}

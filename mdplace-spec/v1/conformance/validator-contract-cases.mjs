@@ -17,8 +17,8 @@ test('CLI validates every committed conformance fixture', () => {
   assert.equal(result.status, 0, result.stderr || result.stdout);
   const report = JSON.parse(result.stdout);
 
-  // Then the whole required category matrix is covered by 384 passing fixture results.
-  assert.equal(report.fixture_results.length, 384);
+  // Then the whole required category matrix is covered by 441 passing fixture results.
+  assert.equal(report.fixture_results.length, 441);
   assert.ok(report.fixture_results.every(({verdict}) => verdict === 'pass'));
   assert.deepEqual(report.checks.map(({id}) => id), [
     'package-manifest',
@@ -42,6 +42,13 @@ test('CLI validates every committed conformance fixture', () => {
     'local-adapter-lifecycle-3',
     'local-adapter-lifecycle-4',
     'local-adapter-lifecycle-5',
+    'remote-adapter-lifecycle-1',
+    'remote-adapter-lifecycle-2',
+    'remote-adapter-lifecycle-3',
+    'remote-adapter-lifecycle-4',
+    'remote-adapter-lifecycle-5',
+    'remote-adapter-lifecycle-6',
+    'remote-adapter-lifecycle-7',
     'contract-schemas',
     'schema-instances',
     'validator-evidence-contract',
@@ -53,6 +60,7 @@ test('CLI validates every committed conformance fixture', () => {
     'reference-vault-contract',
     'intelligence-adapter-protocol',
     'local-intelligence-adapter-profile',
+    'remote-intelligence-adapter-profile',
     'traceability',
     'conformance-manifest',
   ]);

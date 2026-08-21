@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:remote-intelligence-adapter-profile:v1",
+  "title": "mdplace Remote Intelligence Adapter profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_id", "profile_id", "owner", "version", "protocol_ref", "approved_processing_policy_ref", "decision", "locality", "lifecycle", "provider", "adapter_chain", "ceilings", "evidence_refs", "authority", "output_schemas", "specification_only", "network_operation_performed"],
+  "properties": {
+    "$schema": {"const": "../schemas/remote-intelligence-adapter-profile.schema.json"},
+    "schema_id": {"const": "mdplace.remote-intelligence-adapter-profile/v1"},
+    "profile_id": {"const": "remote-adapter"},
+    "owner": {"const": "remote-adapter"},
+    "version": {"const": "1.0.0"},
+    "protocol_ref": {"const": "normative/intelligence-adapter-protocol.md"},
+    "approved_processing_policy_ref": {"const": "contracts/intelligence-adapter/approved-context.json#/policy_binding"},
+    "decision": {"const": "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"},
+    "locality": {"const": "remote"},
+    "lifecycle": {"const": "isolated_ephemeral_advisory"},
+    "provider": {"$ref": "#/$defs/provider"},
+    "adapter_chain": {"type": "array", "minItems": 2, "maxItems": 2, "prefixItems": [{"$ref": "#/$defs/primaryAdapter"}, {"$ref": "#/$defs/fallbackAdapter"}], "items": false},
+    "ceilings": {"$ref": "#/$defs/ceilings"},
+    "evidence_refs": {"$ref": "#/$defs/evidenceRefs"},
+    "authority": {"$ref": "#/$defs/authority"},
+    "output_schemas": {"type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true, "prefixItems": [{"const": "contracts/schemas/intelligence-proposal.schema.json"}, {"const": "contracts/schemas/adapter-run-receipt.schema.json"}], "items": false},
+    "specification_only": {"const": true},
+    "network_operation_performed": {"const": false}
+  },
+  "$defs": {
+    "provider": {"type": "object", "additionalProperties": false, "required": ["provider_id", "destination_id", "endpoint"], "properties": {"provider_id": {"const": "provider:remote-alpha"}, "destination_id": {"const": "destination:remote-alpha"}, "endpoint": {"const": "https://api.remote-alpha.test/v1/process"}}},
+    "primaryAdapter": {"type": "object", "additionalProperties": false, "required": ["ordinal", "role", "adapter_id", "provider_id", "model_id", "model_version", "endpoint"], "properties": {"ordinal": {"const": 0}, "role": {"const": "primary"}, "adapter_id": {"const": "adapter:remote-alpha"}, "provider_id": {"const": "provider:remote-alpha"}, "model_id": {"const": "model:remote-alpha"}, "model_version": {"const": "2026-08-01"}, "endpoint": {"const": "https://api.remote-alpha.test/v1/process"}}},
+    "fallbackAdapter": {"type": "object", "additionalProperties": false, "required": ["ordinal", "role", "adapter_id", "provider_id", "model_id", "model_version", "endpoint"], "properties": {"ordinal": {"const": 1}, "role": {"const": "fallback"}, "adapter_id": {"const": "adapter:remote-alpha-fallback"}, "provider_id": {"const": "provider:remote-alpha"}, "model_id": {"const": "model:remote-alpha-fallback"}, "model_version": {"const": "2026-08-15"}, "endpoint": {"const": "https://api.remote-alpha.test/v1/process"}}},
+    "ceilings": {"type": "object", "additionalProperties": false, "required": ["input_bytes", "output_bytes", "runtime_ms", "cost_microunits", "attempts", "retries", "fallbacks"], "properties": {"input_bytes": {"const": 4096}, "output_bytes": {"const": 3000}, "runtime_ms": {"const": 800}, "cost_microunits": {"const": 5000}, "attempts": {"const": 3}, "retries": {"const": 1}, "fallbacks": {"const": 1}}},
+    "evidenceRefs": {"type": "object", "additionalProperties": false, "required": ["credential_boundary", "retention"], "properties": {"credential_boundary": {"const": "contracts/remote-intelligence-adapter/credential-boundary-evidence.json"}, "retention": {"const": "contracts/remote-intelligence-adapter/retention-evidence.json"}}},
+    "authority": {"type": "object", "additionalProperties": false, "required": ["semantic", "note_placement", "taxonomy", "projection", "filesystem", "tool", "automation"], "properties": {"semantic": {"const": "none"}, "note_placement": {"const": "none"}, "taxonomy": {"const": "none"}, "projection": {"const": "none"}, "filesystem": {"const": "none"}, "tool": {"const": "none"}, "automation": {"const": "none"}}}
+  }
+}

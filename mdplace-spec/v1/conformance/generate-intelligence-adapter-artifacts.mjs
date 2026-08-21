@@ -665,6 +665,10 @@ async function synchronizeValidatorEvidence() {
   const staleFixture = await readJsonFile('conformance/scenarios/evidence-stale-recovery-pass.json');
   await synchronizeDeclaredDigests(staleFixture.subject.document);
   await writeJsonFile('conformance/scenarios/evidence-stale-recovery-pass.json', staleFixture);
+
+  const unsupportedFixture = await readJsonFile('conformance/scenarios/evidence-unsupported-recovery.json');
+  await synchronizeDeclaredDigests(unsupportedFixture.subject.document);
+  await writeJsonFile('conformance/scenarios/evidence-unsupported-recovery.json', unsupportedFixture);
 }
 
 function artifactAuthority(path) {

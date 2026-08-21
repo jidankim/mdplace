@@ -1,0 +1,989 @@
+{
+  "$schema": "../schemas/remote-adapter-fixture-manifest.schema.json",
+  "schema_id": "mdplace.remote-adapter-fixture-manifest/v1",
+  "manifest_id": "remote-adapter-fixtures:v1",
+  "profile_id": "remote-adapter",
+  "requirements": [
+    "REQ-RAP-001",
+    "REQ-RAP-002",
+    "REQ-RAP-003",
+    "REQ-RAP-004",
+    "REQ-RAP-005",
+    "REQ-RAP-006",
+    "REQ-RAP-007",
+    "REQ-RAP-008",
+    "REQ-RAP-009",
+    "REQ-RAP-010"
+  ],
+  "fixtures": [
+    {
+      "fixture_id": "FIX-RAP-PROFILE-001",
+      "path": "scenarios/remote-intelligence-adapter/permitted-primary-exact-bytes.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-002",
+      "path": "scenarios/remote-intelligence-adapter/permitted-retry-exact-bytes.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-003",
+      "path": "scenarios/remote-intelligence-adapter/permitted-fallback-exact-bytes.json",
+      "category": "positive",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-004",
+      "path": "scenarios/remote-intelligence-adapter/exact-input-ceiling.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-005",
+      "path": "scenarios/remote-intelligence-adapter/exact-output-ceiling.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-006",
+      "path": "scenarios/remote-intelligence-adapter/exact-runtime-ceiling.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-007",
+      "path": "scenarios/remote-intelligence-adapter/exact-cost-ceiling.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-008",
+      "path": "scenarios/remote-intelligence-adapter/exact-attempt-ceiling.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-009",
+      "path": "scenarios/remote-intelligence-adapter/exact-retry-ceiling.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-010",
+      "path": "scenarios/remote-intelligence-adapter/exact-fallback-ceiling.json",
+      "category": "exact_boundary",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-011",
+      "path": "scenarios/remote-intelligence-adapter/missing-processing-envelope-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-012",
+      "path": "scenarios/remote-intelligence-adapter/stale-policy-binding-denied.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-013",
+      "path": "scenarios/remote-intelligence-adapter/malformed-processing-envelope-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-014",
+      "path": "scenarios/remote-intelligence-adapter/unsupported-provider-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-015",
+      "path": "scenarios/remote-intelligence-adapter/unauthorized-provider-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-016",
+      "path": "scenarios/remote-intelligence-adapter/input-budget-exhausted.json",
+      "category": "over_boundary",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-017",
+      "path": "scenarios/remote-intelligence-adapter/output-budget-exhausted.json",
+      "category": "over_boundary",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-018",
+      "path": "scenarios/remote-intelligence-adapter/runtime-budget-exhausted.json",
+      "category": "over_boundary",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-019",
+      "path": "scenarios/remote-intelligence-adapter/cost-budget-exhausted.json",
+      "category": "over_boundary",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-020",
+      "path": "scenarios/remote-intelligence-adapter/unapproved-destination-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-021",
+      "path": "scenarios/remote-intelligence-adapter/forbidden-retry-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-022",
+      "path": "scenarios/remote-intelligence-adapter/forbidden-fallback-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-023",
+      "path": "scenarios/remote-intelligence-adapter/failed-credential-boundary-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-024",
+      "path": "scenarios/remote-intelligence-adapter/missing-credential-boundary-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-025",
+      "path": "scenarios/remote-intelligence-adapter/stale-credential-boundary-denied.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-026",
+      "path": "scenarios/remote-intelligence-adapter/malformed-credential-boundary-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-027",
+      "path": "scenarios/remote-intelligence-adapter/unsupported-credential-boundary-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-028",
+      "path": "scenarios/remote-intelligence-adapter/missing-retention-evidence-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-029",
+      "path": "scenarios/remote-intelligence-adapter/stale-retention-evidence-denied.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-030",
+      "path": "scenarios/remote-intelligence-adapter/malformed-retention-evidence-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-031",
+      "path": "scenarios/remote-intelligence-adapter/unsupported-retention-evidence-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-032",
+      "path": "scenarios/remote-intelligence-adapter/inconclusive-retention-evidence-denied.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-033",
+      "path": "scenarios/remote-intelligence-adapter/authentication-does-not-establish-residency.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-034",
+      "path": "scenarios/remote-intelligence-adapter/transport-does-not-establish-training.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-035",
+      "path": "scenarios/remote-intelligence-adapter/provider-output-does-not-establish-deletion.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-036",
+      "path": "scenarios/remote-intelligence-adapter/retry-does-not-establish-entitlement.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-037",
+      "path": "scenarios/remote-intelligence-adapter/fallback-does-not-establish-privacy-behavior.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-038",
+      "path": "scenarios/remote-intelligence-adapter/absence-of-contrary-evidence-does-not-establish-training.json",
+      "category": "negative",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-039",
+      "path": "scenarios/remote-intelligence-adapter/semantic-authority-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-040",
+      "path": "scenarios/remote-intelligence-adapter/note-placement-authority-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-041",
+      "path": "scenarios/remote-intelligence-adapter/taxonomy-authority-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-042",
+      "path": "scenarios/remote-intelligence-adapter/projection-authority-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-043",
+      "path": "scenarios/remote-intelligence-adapter/filesystem-authority-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-044",
+      "path": "scenarios/remote-intelligence-adapter/tool-authority-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-045",
+      "path": "scenarios/remote-intelligence-adapter/automation-authority-denied.json",
+      "category": "authority_denial",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-046",
+      "path": "scenarios/remote-intelligence-adapter/crash-before-egress-zero-byte-recovery.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-047",
+      "path": "scenarios/remote-intelligence-adapter/crash-after-egress-preserves-attempt.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-048",
+      "path": "scenarios/remote-intelligence-adapter/recovery-revalidates-current-digests.json",
+      "category": "crash_recovery",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-049",
+      "path": "scenarios/remote-intelligence-adapter/recovery-rejects-stale-claim-digest.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-050",
+      "path": "scenarios/remote-intelligence-adapter/recovery-rejects-stale-evidence-digest.json",
+      "category": "stale_state",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-051",
+      "path": "scenarios/remote-intelligence-adapter/illegal-permitted-egress-transition-denied.json",
+      "category": "illegal_transition",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-052",
+      "path": "scenarios/remote-intelligence-adapter/illegal-denial-transition-denied.json",
+      "category": "illegal_transition",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-053",
+      "path": "scenarios/remote-intelligence-adapter/illegal-failure-transition-denied.json",
+      "category": "illegal_transition",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-054",
+      "path": "scenarios/remote-intelligence-adapter/illegal-retry-transition-denied.json",
+      "category": "illegal_transition",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-055",
+      "path": "scenarios/remote-intelligence-adapter/illegal-fallback-transition-denied.json",
+      "category": "illegal_transition",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-056",
+      "path": "scenarios/remote-intelligence-adapter/illegal-recovery-transition-denied.json",
+      "category": "illegal_transition",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    },
+    {
+      "fixture_id": "FIX-RAP-PROFILE-057",
+      "path": "scenarios/remote-intelligence-adapter/illegal-verdict-transition-denied.json",
+      "category": "illegal_transition",
+      "requirement_ids": [
+        "REQ-RAP-001",
+        "REQ-RAP-002",
+        "REQ-RAP-003",
+        "REQ-RAP-004",
+        "REQ-RAP-005",
+        "REQ-RAP-006",
+        "REQ-RAP-007",
+        "REQ-RAP-008",
+        "REQ-RAP-009",
+        "REQ-RAP-010"
+      ]
+    }
+  ]
+}

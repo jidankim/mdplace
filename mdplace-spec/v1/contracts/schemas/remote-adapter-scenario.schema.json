@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mdplace:schema:remote-adapter-scenario:v1",
+  "title": "mdplace Remote Intelligence Adapter conformance scenario",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_id", "scenario_id", "case_id", "operation", "evaluated_at", "processing_envelope_json", "processing_envelope_sha256", "authorized_attempts", "credential_evidence_json", "credential_evidence_sha256", "retention_evidence_json", "retention_evidence_sha256", "attempt_observations_json", "attempt_observations_sha256", "requested_provider", "requested_destination", "input_bytes", "output_bytes", "runtime_ms", "cost_microunits", "attempts", "retries", "fallbacks", "ceilings", "behavior", "claimed_authority", "provider_fact_claim", "transition_ref"],
+  "properties": {
+    "schema_id": {"const": "mdplace.remote-adapter-scenario/v1"},
+    "scenario_id": {"type": "string", "pattern": "^RAP-[0-9]{3}$"},
+    "case_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{2,96}$"},
+    "operation": {"enum": ["execute", "retry", "fallback", "recover", "transition"]},
+    "evaluated_at": {"const": "2026-08-23T00:00:00.000Z"},
+    "processing_envelope_json": {"type": ["string", "null"]},
+    "processing_envelope_sha256": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
+    "authorized_attempts": {"type": "array", "maxItems": 3, "items": {"$ref": "#/$defs/authorizedAttempt"}},
+    "credential_evidence_json": {"type": ["string", "null"]},
+    "credential_evidence_sha256": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
+    "retention_evidence_json": {"type": ["string", "null"]},
+    "retention_evidence_sha256": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
+    "attempt_observations_json": {"type": "string", "minLength": 2},
+    "attempt_observations_sha256": {"$ref": "#/$defs/digest"},
+    "requested_provider": {"type": "string", "pattern": "^provider:[a-z0-9-]+$"},
+    "requested_destination": {"type": "string", "format": "uri"},
+    "input_bytes": {"type": "integer", "minimum": 0},
+    "output_bytes": {"type": "integer", "minimum": 0},
+    "runtime_ms": {"type": "integer", "minimum": 0},
+    "cost_microunits": {"type": "integer", "minimum": 0},
+    "attempts": {"type": "integer", "minimum": 0},
+    "retries": {"type": "integer", "minimum": 0},
+    "fallbacks": {"type": "integer", "minimum": 0},
+    "ceilings": {"$ref": "#/$defs/ceilings"},
+    "behavior": {"enum": ["complete", "missing", "stale", "malformed", "unsupported", "unauthorized", "over_budget", "failed_boundary", "forbidden_retry", "forbidden_fallback", "crash_before_egress", "crash_after_egress", "recover_current", "recover_stale_claim", "recover_stale_evidence"]},
+    "claimed_authority": {"enum": ["none", "semantic", "note_placement", "taxonomy", "projection", "filesystem", "tool", "automation"]},
+    "provider_fact_claim": {"type": ["string", "null"], "enum": [null, "residency", "retention", "training", "deletion", "entitlement", "privacy_behavior"]},
+    "transition_ref": {"type": ["string", "null"], "pattern": "^contracts/transitions/remote-adapter-[a-z-]{1,32}-lifecycle\\.json#[a-z_]{1,32}:[a-z_]{1,32}$"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "authorizedAttempt": {"type": "object", "additionalProperties": false, "required": ["attempt_id", "attempt_sequence", "attempt_kind", "authorization_id", "processing_envelope_json", "processing_envelope_sha256"], "properties": {"attempt_id": {"type": "string", "pattern": "^adapter-attempt:rap-[0-9]{3}-[0-9]+$"}, "attempt_sequence": {"type": "integer", "minimum": 0, "maximum": 2}, "attempt_kind": {"enum": ["initial", "retry", "fallback"]}, "authorization_id": {"enum": ["adapter-authorization:remote-primary", "adapter-authorization:remote-retry", "adapter-authorization:remote-fallback"]}, "processing_envelope_json": {"type": "string", "minLength": 2}, "processing_envelope_sha256": {"$ref": "#/$defs/digest"}}},
+    "ceilings": {"type": "object", "additionalProperties": false, "required": ["input_bytes", "output_bytes", "runtime_ms", "cost_microunits", "attempts", "retries", "fallbacks"], "properties": {"input_bytes": {"const": 4096}, "output_bytes": {"const": 3000}, "runtime_ms": {"const": 800}, "cost_microunits": {"const": 5000}, "attempts": {"const": 3}, "retries": {"const": 1}, "fallbacks": {"const": 1}}}
+  }
+}

@@ -25,7 +25,8 @@
         {"$ref": "#/$defs/vaultMutationGateSubject"},
         {"$ref": "#/$defs/referenceVaultSubject"},
         {"$ref": "#/$defs/intelligenceAdapterSubject"},
-        {"$ref": "#/$defs/localIntelligenceAdapterSubject"}
+        {"$ref": "#/$defs/localIntelligenceAdapterSubject"},
+        {"$ref": "#/$defs/remoteIntelligenceAdapterSubject"}
       ]
     },
     "expected": {"$ref": "#/$defs/expected"}
@@ -305,6 +306,16 @@
         "kind": {"const": "local_intelligence_adapter"},
         "schema": {"const": "contracts/schemas/local-adapter-scenario.schema.json"},
         "document": {"description": "Closed observable Local Intelligence Adapter profile scenario."}
+      }
+    },
+    "remoteIntelligenceAdapterSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "schema", "document"],
+      "properties": {
+        "kind": {"const": "remote_intelligence_adapter"},
+        "schema": {"const": "contracts/schemas/remote-adapter-scenario.schema.json"},
+        "document": {"description": "Closed observable Remote Intelligence Adapter profile scenario."}
       }
     },
     "expected": {

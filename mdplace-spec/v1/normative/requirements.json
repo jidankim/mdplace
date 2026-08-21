@@ -1231,6 +1231,158 @@
       "scope": "reference-vault-generator"
     },
     {
+      "id": "REQ-RAP-001",
+      "title": "Canonical Remote Intelligence Adapter vocabulary and stable identifiers are normative",
+      "normative_anchor": "normative/remote-intelligence-adapter-profile.md#req-rap-001-canonical-remote-intelligence-adapter-vocabulary-and-stable-identifiers-are-normative",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Remote Intelligence Adapter",
+        "Intelligence Adapter",
+        "Processing Policy",
+        "Conformance Profile"
+      ],
+      "acceptance_gate": "Remote Intelligence Adapter profile gate 1 is satisfied by closed observable conformance evidence.",
+      "scope": "remote-intelligence-adapter"
+    },
+    {
+      "id": "REQ-RAP-002",
+      "title": "The profile claim and all lifecycle tables are closed",
+      "normative_anchor": "normative/remote-intelligence-adapter-profile.md#req-rap-002-the-profile-claim-and-all-lifecycle-tables-are-closed",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Claim Manifest",
+        "Conformance Verdict",
+        "Intelligence Adapter Attempt"
+      ],
+      "acceptance_gate": "Remote Intelligence Adapter profile gate 2 is satisfied by closed observable conformance evidence.",
+      "scope": "remote-intelligence-adapter"
+    },
+    {
+      "id": "REQ-RAP-003",
+      "title": "Fixtures observe the public remote profile boundary",
+      "normative_anchor": "normative/remote-intelligence-adapter-profile.md#req-rap-003-fixtures-observe-the-public-remote-profile-boundary",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Conformance Fixture",
+        "Processing Envelope",
+        "Adapter Run Receipt"
+      ],
+      "acceptance_gate": "Remote Intelligence Adapter profile gate 3 is satisfied by closed observable conformance evidence.",
+      "scope": "remote-intelligence-adapter"
+    },
+    {
+      "id": "REQ-RAP-004",
+      "title": "Permitted egress and every pre-egress denial are byte exact",
+      "normative_anchor": "normative/remote-intelligence-adapter-profile.md#req-rap-004-permitted-egress-and-every-pre-egress-denial-are-byte-exact",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Intelligence Adapter Attempt",
+        "Processing Envelope",
+        "Adapter Run Receipt"
+      ],
+      "acceptance_gate": "Remote Intelligence Adapter profile gate 4 is satisfied by closed observable conformance evidence.",
+      "scope": "remote-intelligence-adapter"
+    },
+    {
+      "id": "REQ-RAP-005",
+      "title": "Credential evidence proves only the normative prerequisite boundary",
+      "normative_anchor": "normative/remote-intelligence-adapter-profile.md#req-rap-005-credential-evidence-proves-only-the-normative-prerequisite-boundary",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Processing Policy",
+        "Processing Envelope",
+        "Remote Intelligence Adapter"
+      ],
+      "acceptance_gate": "Remote Intelligence Adapter profile gate 5 is satisfied by closed observable conformance evidence.",
+      "scope": "remote-intelligence-adapter"
+    },
+    {
+      "id": "REQ-RAP-006",
+      "title": "Provider facts remain disclosed, unsupported, or inconclusive",
+      "normative_anchor": "normative/remote-intelligence-adapter-profile.md#req-rap-006-provider-facts-remain-disclosed-unsupported-or-inconclusive",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Processing Policy",
+        "Conformance Verdict",
+        "Remote Intelligence Adapter"
+      ],
+      "acceptance_gate": "Remote Intelligence Adapter profile gate 6 is satisfied by closed observable conformance evidence.",
+      "scope": "remote-intelligence-adapter"
+    },
+    {
+      "id": "REQ-RAP-007",
+      "title": "The independent verdict derives from one exact evidence digest",
+      "normative_anchor": "normative/remote-intelligence-adapter-profile.md#req-rap-007-the-independent-verdict-derives-from-one-exact-evidence-digest",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Claim Manifest",
+        "Conformance Profile",
+        "Conformance Verdict"
+      ],
+      "acceptance_gate": "Remote Intelligence Adapter profile gate 7 is satisfied by closed observable conformance evidence.",
+      "scope": "remote-intelligence-adapter"
+    },
+    {
+      "id": "REQ-RAP-008",
+      "title": "The Remote Intelligence Adapter is advisory-only",
+      "normative_anchor": "normative/remote-intelligence-adapter-profile.md#req-rap-008-the-remote-intelligence-adapter-is-advisory-only",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Remote Intelligence Adapter",
+        "Intelligence Proposal",
+        "Semantic Kernel",
+        "Vault Mutation Gate"
+      ],
+      "acceptance_gate": "Remote Intelligence Adapter profile gate 8 is satisfied by closed observable conformance evidence.",
+      "scope": "remote-intelligence-adapter"
+    },
+    {
+      "id": "REQ-RAP-009",
+      "title": "Traceability preserves the accepted decision input",
+      "normative_anchor": "normative/remote-intelligence-adapter-profile.md#req-rap-009-traceability-preserves-the-accepted-decision-input",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Traceability Record",
+        "Conformance Fixture"
+      ],
+      "acceptance_gate": "Remote Intelligence Adapter profile gate 9 is satisfied by closed observable conformance evidence.",
+      "scope": "remote-intelligence-adapter"
+    },
+    {
+      "id": "REQ-RAP-010",
+      "title": "The profile is specification and conformance only",
+      "normative_anchor": "normative/remote-intelligence-adapter-profile.md#req-rap-010-the-profile-is-specification-and-conformance-only",
+      "decision_urls": [
+        "https://github.com/jidankim/mdplace/issues/8#issuecomment-5100984093"
+      ],
+      "canonical_terms": [
+        "Specification Package",
+        "Conformance Profile",
+        "Semantic Kernel",
+        "Vault Mutation Gate"
+      ],
+      "acceptance_gate": "Remote Intelligence Adapter profile gate 10 is satisfied by closed observable conformance evidence.",
+      "scope": "remote-intelligence-adapter"
+    },
+    {
       "id": "REQ-LIA-001",
       "title": "Canonical Local Intelligence Adapter vocabulary and stable identifiers are normative",
       "normative_anchor": "normative/local-intelligence-adapter-profile.md#req-lia-001-canonical-local-intelligence-adapter-vocabulary-and-stable-identifiers-are-normative",

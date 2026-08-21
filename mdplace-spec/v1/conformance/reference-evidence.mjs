@@ -8,6 +8,8 @@ export function isReferenceEvidence(path) {
     path === 'conformance/evidence/intelligence-adapter-recovery-report.json' ||
     path === 'conformance/evidence/local-adapter-evidence.json' ||
     path === 'conformance/evidence/local-adapter-recovery-report.json' ||
+    path === 'conformance/evidence/remote-adapter-evidence.json' ||
+    path === 'conformance/evidence/remote-adapter-recovery-report.json' ||
     path === 'conformance/evidence/semantic-kernel-recovery-report.json' ||
     path === 'conformance/evidence/control-plane-recovery-report.json' ||
     path === 'conformance/evidence/control-plane-doctor-report.json' ||

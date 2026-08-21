@@ -1,0 +1,14 @@
+{
+  "$schema": "../../contracts/schemas/remote-adapter-provider-disclosure.schema.json",
+  "schema_id": "mdplace.remote-adapter-provider-disclosure/v1",
+  "disclosure_id": "remote-provider-disclosure:remote-alpha:v1",
+  "provider_id": "provider:remote-alpha",
+  "destination": "https://api.remote-alpha.test/v1/process",
+  "fact": {
+    "dimension": "retention",
+    "status": "disclosed",
+    "value": "maximum 30 days"
+  },
+  "observed_at": "2026-08-22T00:00:00.000Z",
+  "expires_at": "2026-09-21T00:00:00.000Z"
+}
