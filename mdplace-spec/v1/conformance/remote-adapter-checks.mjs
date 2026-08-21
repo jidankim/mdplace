@@ -60,12 +60,27 @@ function completeReachableTable(document) {
   return document.states.every((state) => reachable.has(state));
 }
 
-function exactEvidence(profile, credential, retention) {
+async function exactEvidence(packageRoot, profile, credential, retention) {
   const evaluatedAt = Date.parse(remoteAdapterEvidenceEvaluatedAt);
   const current = (document) => document?.status === 'current' &&
     Date.parse(document.observed_at) <= evaluatedAt && Date.parse(document.expires_at) > evaluatedAt;
   const dimensions = ['residency', 'retention', 'training', 'deletion', 'entitlement', 'privacy_behavior'];
   const facts = retention?.facts ?? [];
+  const expectedStatuses = {
+    residency: 'unsupported',
+    retention: 'disclosed',
+    training: 'inconclusive',
+    deletion: 'unsupported',
+    entitlement: 'unsupported',
+    privacy_behavior: 'inconclusive',
+  };
+  const disclosedEvidenceMatches = (await Promise.all(facts
+    .filter(({status}) => status === 'disclosed')
+    .map(async ({evidence_ref: path, evidence_sha256: digest}) => {
+      if (typeof path !== 'string' || typeof digest !== 'string') return false;
+      const read = await readPackageFile(packageRoot, path);
+      return read.status === 'present' && remoteSha256(read.content) === digest;
+    }))).every(Boolean);
   return profile?.profile_id === 'remote-adapter' && profile.owner === 'remote-adapter' &&
     profile.locality === 'remote' && profile.specification_only === true &&
     profile.network_operation_performed === false && Object.values(profile.authority ?? {}).every((value) => value === 'none') &&
@@ -73,6 +88,7 @@ function exactEvidence(profile, credential, retention) {
     credential.secret_access === 'none' && credential.ambient_configuration === 'unreadable' &&
     credential.environment_values === 'unreadable' && credential.claims_established.length === 0 &&
     current(retention) && isDeepStrictEqual(facts.map(({dimension}) => dimension).sort(), [...dimensions].sort()) &&
+    facts.every(({dimension, status}) => expectedStatuses[dimension] === status) && disclosedEvidenceMatches &&
     facts.filter(({status}) => status === 'disclosed').every(({value, evidence_ref: ref, evidence_sha256: digest}) =>
       typeof value === 'string' && typeof ref === 'string' && /^[a-f0-9]{64}$/.test(digest)) &&
     facts.filter(({status}) => status !== 'disclosed').every(({value, evidence_ref: ref, evidence_sha256: digest}) =>
@@ -102,7 +118,7 @@ export async function checkRemoteAdapterProfile(packageRoot, conformance, tracea
   if (documents.some(({document}) => document === null)) return result(codes);
   const [profile, credential, retention, fixtureManifest, claim, verdicts, evidence, recovery] =
     documents.map(({document}) => document);
-  if (!exactEvidence(profile, credential, retention)) codes.push('remote.profile_boundary_invalid');
+  if (!await exactEvidence(packageRoot, profile, credential, retention)) codes.push('remote.profile_boundary_invalid');
   if (credential.profile_sha256 !== remoteSha256(documents[0].read.content) ||
       retention.profile_sha256 !== remoteSha256(documents[0].read.content)) {
     codes.push('remote.profile_evidence_binding_invalid');

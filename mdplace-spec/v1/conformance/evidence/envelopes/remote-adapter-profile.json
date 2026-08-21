@@ -10,14 +10,14 @@
   "invocation": {
     "invocation_id": "invocation:remote-adapter-profile",
     "path": "conformance/evidence/invocations/remote-adapter-profile.json",
-    "sha256": "1d2d8c65668f671b365a6754685b5b8cacb5924c1de86a1958b4a7e97181bac5"
+    "sha256": "17529cb90e479e7d123bb8a501b533ca60b7423421caa824a4ba2a4038541433"
   },
   "requirement_id": "REQ-RAP-007",
   "subject": {
     "kind": "remote_adapter_claim",
     "subject_id": "remote-adapter:claim-v1",
     "schema": "contracts/schemas/remote-adapter-claim-manifest.schema.json",
-    "sha256": "606c4f932c925f34b278147b37c0c7b61ab9b83fc1a100b722ec98f4b90c06e0"
+    "sha256": "21b75f9c3b07a2151e425cab710d7199e601a88cff5bc60a56c0c966cac71b56"
   },
   "input_digests": [
     {
@@ -36,7 +36,7 @@
       "ordinal": 2,
       "label": "retention",
       "path": "contracts/remote-intelligence-adapter/retention-evidence.json",
-      "sha256": "be5ad9fd042b87583d83bd682a19efedcdcb5d8b4e8c99ef97e1bad13cf9d063"
+      "sha256": "3269abee9ef70c1c97892240a54ca8f3d50c7dcac00bcd611b6ceed2243f935d"
     },
     {
       "ordinal": 3,
@@ -50,13 +50,13 @@
       "ordinal": 0,
       "label": "remote_adapter_evidence",
       "path": "conformance/evidence/remote-adapter-evidence.json",
-      "sha256": "02b81182f76a3eab8f36dba966ef16abd275149b6e9e421f8efffab8835f48e8"
+      "sha256": "27546e03780d61b45ef3f3941122934478d28db042837656dfc19120fae63a86"
     },
     {
       "ordinal": 1,
       "label": "recovery_report",
       "path": "conformance/evidence/remote-adapter-recovery-report.json",
-      "sha256": "c66fcf3d85255655175b0703ad2022738bd613c87de8478ab7822ff3b63b7210"
+      "sha256": "ff1d96118a60e1d7cb4f0c45cf97e39c6c896dac3ef8dfe607b6d0c76f18f7db"
     }
   ],
   "receipts": [
@@ -65,7 +65,7 @@
       "receipt_id": "receipt:remote-adapter-profile",
       "receipt_type": "EvidenceValidationReceipt",
       "path": "conformance/evidence/remote-adapter-recovery-report.json",
-      "sha256": "c66fcf3d85255655175b0703ad2022738bd613c87de8478ab7822ff3b63b7210"
+      "sha256": "ff1d96118a60e1d7cb4f0c45cf97e39c6c896dac3ef8dfe607b6d0c76f18f7db"
     }
   ],
   "artifact_digests": [

@@ -4,6 +4,10 @@ import {readFile, rm, writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import test from 'node:test';
 
+import {remoteAdapterClaimCodes} from './remote-adapter-claim-validation.mjs';
+import {remoteSha256} from './remote-adapter-core.mjs';
+import {observeRemoteAdapterScenario} from './remote-adapter-observer.mjs';
+import {canonicalJson} from './semantic-kernel-core.mjs';
 import {copyCommittedPackage, runPreparedPackage} from './validator-test-support.mjs';
 
 async function remoteCheckAfterMutation(t, mutate) {
@@ -32,7 +36,7 @@ test('committed package proves the independent Remote Intelligence Adapter profi
 });
 
 test('Remote Intelligence Adapter generation leaves complete package evidence current', async (t) => {
-  // Given the committed package after Remote Adapter artifact generation.
+  // Given the committed package after Remote Intelligence Adapter artifact generation.
   const packageRoot = await copyCommittedPackage();
   t.after(() => rm(resolve(packageRoot, '../..'), {recursive: true, force: true}));
 
@@ -59,13 +63,115 @@ test('permitted Remote Intelligence Adapter attempts bind every exact byte to th
       `conformance/scenarios/remote-intelligence-adapter/${caseId}.json`,
     ), 'utf8'));
     const observations = JSON.parse(fixture.subject.document.attempt_observations_json);
-    for (const observation of observations) {
+    const authorized = fixture.subject.document.authorized_attempts;
+    assert.equal(authorized.length, observations.length, caseId);
+    for (const [index, observation] of observations.entries()) {
       const bytes = Buffer.from(observation.payload_base64, 'base64');
+      assert.equal(bytes.toString('utf8'), authorized[index].processing_envelope_json, caseId);
+      assert.equal(observation.attempt_id, authorized[index].attempt_id, caseId);
+      assert.equal(observation.attempt_sequence, index, caseId);
+      assert.equal(observation.attempt_kind, authorized[index].attempt_kind, caseId);
       assert.equal(observation.destination, 'https://api.remote-alpha.test/v1/process');
       assert.equal(observation.transmitted_bytes, bytes.length);
       assert.equal(observation.transmitted_sha256, createHash('sha256').update(bytes).digest('hex'));
       assert.equal(observation.boundary, 'egress_complete');
+      const envelope = JSON.parse(authorized[index].processing_envelope_json);
+      assert.deepEqual(envelope.ceilings, {
+        input_bytes: 4096,
+        output_bytes: 3000,
+        runtime_ms: 800,
+        cost_microunits: 5000,
+      });
+      assert.equal(envelope.retention_facts[0].status, 'unknown_acknowledged');
+      assert.equal(envelope.retention_facts[0].region, 'unsupported');
     }
+  }
+});
+
+test('self-consistent bytes are denied when they differ from the authorized Processing Envelope', async (t) => {
+  const packageRoot = await copyCommittedPackage();
+  t.after(() => rm(resolve(packageRoot, '../..'), {recursive: true, force: true}));
+  const fixture = JSON.parse(await readFile(resolve(
+    packageRoot,
+    'conformance/scenarios/remote-intelligence-adapter/permitted-primary-exact-bytes.json',
+  ), 'utf8'));
+  const scenario = structuredClone(fixture.subject.document);
+  const observations = JSON.parse(scenario.attempt_observations_json);
+  const payload = canonicalJson({not: 'the authorized Processing Envelope'});
+  observations[0].payload_base64 = Buffer.from(payload).toString('base64');
+  observations[0].transmitted_bytes = Buffer.byteLength(payload);
+  observations[0].transmitted_sha256 = remoteSha256(payload);
+  scenario.attempt_observations_json = canonicalJson(observations);
+  scenario.attempt_observations_sha256 = remoteSha256(scenario.attempt_observations_json);
+
+  const observed = await observeRemoteAdapterScenario(
+    {kind: 'remote_intelligence_adapter', document: scenario},
+    packageRoot,
+  );
+
+  assert.ok(observed.codes.includes('remote.transmitted_payload_mismatch'));
+  assert.equal(observed.verdict, 'fail');
+});
+
+test('attempt topology binds distinct initial, retry, and fallback authorizations', async (t) => {
+  const packageRoot = await copyCommittedPackage();
+  t.after(() => rm(resolve(packageRoot, '../..'), {recursive: true, force: true}));
+  const cases = new Map([
+    ['permitted-primary-exact-bytes', ['initial']],
+    ['permitted-retry-exact-bytes', ['initial', 'retry']],
+    ['permitted-fallback-exact-bytes', ['initial', 'fallback']],
+    ['exact-attempt-ceiling', ['initial', 'retry', 'fallback']],
+  ]);
+  for (const [caseId, expectedKinds] of cases) {
+    const fixture = JSON.parse(await readFile(resolve(
+      packageRoot,
+      `conformance/scenarios/remote-intelligence-adapter/${caseId}.json`,
+    ), 'utf8'));
+    const observations = JSON.parse(fixture.subject.document.attempt_observations_json);
+    assert.deepEqual(observations.map(({attempt_kind: kind}) => kind), expectedKinds, caseId);
+    assert.equal(new Set(observations.map(({attempt_id: id}) => id)).size, observations.length, caseId);
+    assert.deepEqual(observations.map(({attempt_sequence: sequence}) => sequence),
+      expectedKinds.map((_, index) => index), caseId);
+    assert.deepEqual(fixture.subject.document.authorized_attempts.map(({authorization_id: id}) => id),
+      expectedKinds.map((kind) => `adapter-authorization:remote-${kind === 'initial' ? 'primary' : kind}`), caseId);
+  }
+});
+
+test('duplicate Remote Intelligence Adapter attempt identity is denied', async (t) => {
+  const packageRoot = await copyCommittedPackage();
+  t.after(() => rm(resolve(packageRoot, '../..'), {recursive: true, force: true}));
+  const fixture = JSON.parse(await readFile(resolve(
+    packageRoot,
+    'conformance/scenarios/remote-intelligence-adapter/permitted-retry-exact-bytes.json',
+  ), 'utf8'));
+  const scenario = structuredClone(fixture.subject.document);
+  const observations = JSON.parse(scenario.attempt_observations_json);
+  observations[1].attempt_id = observations[0].attempt_id;
+  scenario.attempt_observations_json = canonicalJson(observations);
+  scenario.attempt_observations_sha256 = remoteSha256(scenario.attempt_observations_json);
+
+  const observed = await observeRemoteAdapterScenario(
+    {kind: 'remote_intelligence_adapter', document: scenario},
+    packageRoot,
+  );
+
+  assert.ok(observed.codes.includes('remote.attempt_topology_invalid'));
+  assert.equal(observed.verdict, 'fail');
+});
+
+test('every illegal-transition fixture targets a real denied table cell', async (t) => {
+  const packageRoot = await copyCommittedPackage();
+  t.after(() => rm(resolve(packageRoot, '../..'), {recursive: true, force: true}));
+  for (const name of ['permitted-egress', 'denial', 'failure', 'retry', 'fallback', 'recovery', 'verdict']) {
+    const fixture = JSON.parse(await readFile(resolve(
+      packageRoot,
+      `conformance/scenarios/remote-intelligence-adapter/illegal-${name}-transition-denied.json`,
+    ), 'utf8'));
+    const [path, pair] = fixture.subject.document.transition_ref.split('#');
+    const table = JSON.parse(await readFile(resolve(packageRoot, path), 'utf8'));
+    const row = table.transitions.find(({from_state: state, command_or_event: command}) =>
+      `${state}:${command}` === pair);
+    assert.equal(row?.allowed, false, `${name}:${pair}`);
   }
 });
 
@@ -137,6 +243,44 @@ test('authentication and transport cannot promote unproven provider facts', asyn
     assert.ok(fixture.expected.codes.includes('remote.provider_fact_unproven'), caseId);
     assert.equal(fixture.expected.verdict, 'fail', caseId);
   }
+});
+
+test('disclosed retention facts resolve to packaged evidence while other facts remain unproven', async (t) => {
+  const packageRoot = await copyCommittedPackage();
+  t.after(() => rm(resolve(packageRoot, '../..'), {recursive: true, force: true}));
+  const evidence = JSON.parse(await readFile(resolve(
+    packageRoot,
+    'contracts/remote-intelligence-adapter/retention-evidence.json',
+  ), 'utf8'));
+  const disclosed = evidence.facts.filter(({status}) => status === 'disclosed');
+  assert.deepEqual(disclosed.map(({dimension}) => dimension), ['retention']);
+  const artifact = await readFile(resolve(packageRoot, disclosed[0].evidence_ref));
+  assert.equal(remoteSha256(artifact), disclosed[0].evidence_sha256);
+  assert.ok(evidence.facts.filter(({dimension}) => dimension !== 'retention')
+    .every(({status}) => ['unsupported', 'inconclusive'].includes(status)));
+});
+
+test('Remote Intelligence Adapter claim verdict is derived from mandatory evidence', async (t) => {
+  const packageRoot = await copyCommittedPackage();
+  t.after(() => rm(resolve(packageRoot, '../..'), {recursive: true, force: true}));
+  const claim = JSON.parse(await readFile(resolve(
+    packageRoot,
+    'contracts/remote-intelligence-adapter/claim-manifest.json',
+  ), 'utf8'));
+  for (const verdict of ['fail', 'unsupported', 'inconclusive']) {
+    const mutated = structuredClone(claim);
+    mutated.rows[0].verdict = verdict;
+    assert.ok((await remoteAdapterClaimCodes(mutated, packageRoot))
+      .includes('remote.claim_verdict_invalid'), verdict);
+  }
+
+  const genericPath = resolve(packageRoot, 'conformance/claim-manifests/remote-intelligence-adapter.json');
+  const generic = JSON.parse(await readFile(genericPath, 'utf8'));
+  generic.verdict = 'unsupported';
+  generic.evidence_bindings[0].verdict = 'unsupported';
+  await writeFile(genericPath, `${JSON.stringify(generic, null, 2)}\n`);
+  assert.ok((await remoteAdapterClaimCodes(claim, packageRoot))
+    .includes('remote.claim_verdict_invalid'));
 });
 
 test('Remote Intelligence Adapter claim fails closed when bound fixture bytes change', async (t) => {

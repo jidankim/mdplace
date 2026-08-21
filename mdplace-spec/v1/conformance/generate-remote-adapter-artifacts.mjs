@@ -24,6 +24,8 @@ import {
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const relativeFixturePath = (caseId) => `scenarios/remote-intelligence-adapter/${caseId}.json`;
 const packageFixturePath = (caseId) => `conformance/${relativeFixturePath(caseId)}`;
+const providerDisclosurePath = 'conformance/evidence/remote-adapter-provider-disclosure.txt';
+const providerDisclosure = 'Fixture provider disclosure: request content is retained for no more than 30 days.\n';
 
 async function readJson(path) {
   return JSON.parse(await readFile(resolve(packageRoot, path), 'utf8'));
@@ -62,7 +64,7 @@ async function writeProfileEvidence() {
     observed_at: '2026-08-22T00:00:00.000Z',
     expires_at: '2026-09-21T00:00:00.000Z',
   });
-  const disclosure = 'Fixture provider disclosure: request content retained for no more than 30 days.';
+  await writeFile(resolve(packageRoot, providerDisclosurePath), providerDisclosure);
   await writeJson('contracts/remote-intelligence-adapter/retention-evidence.json', {
     $schema: '../schemas/remote-adapter-retention-evidence.schema.json',
     schema_id: 'mdplace.remote-adapter-retention-evidence/v1',
@@ -74,7 +76,7 @@ async function writeProfileEvidence() {
     destination: 'https://api.remote-alpha.test/v1/process',
     facts: [
       {dimension: 'residency', status: 'unsupported', value: null, evidence_ref: null, evidence_sha256: null},
-      {dimension: 'retention', status: 'disclosed', value: 'maximum 30 days', evidence_ref: 'artifact:provider-disclosure-remote-alpha-v1', evidence_sha256: remoteSha256(disclosure)},
+      {dimension: 'retention', status: 'disclosed', value: 'maximum 30 days', evidence_ref: providerDisclosurePath, evidence_sha256: remoteSha256(providerDisclosure)},
       {dimension: 'training', status: 'inconclusive', value: null, evidence_ref: null, evidence_sha256: null},
       {dimension: 'deletion', status: 'unsupported', value: null, evidence_ref: null, evidence_sha256: null},
       {dimension: 'entitlement', status: 'unsupported', value: null, evidence_ref: null, evidence_sha256: null},

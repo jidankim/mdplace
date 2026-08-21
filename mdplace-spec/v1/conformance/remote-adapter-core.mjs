@@ -21,6 +21,7 @@ export const remoteAdapterCategories = [
 export const remoteAdapterEvidencePaths = [
   'contracts/remote-intelligence-adapter/profile.json',
   'contracts/remote-intelligence-adapter/credential-boundary-evidence.json',
+  'conformance/evidence/remote-adapter-provider-disclosure.txt',
   'contracts/remote-intelligence-adapter/retention-evidence.json',
   'contracts/remote-intelligence-adapter/fixture-manifest.json',
   'conformance/evidence/remote-adapter-evidence.json',

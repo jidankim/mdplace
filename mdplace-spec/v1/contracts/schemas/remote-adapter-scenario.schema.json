@@ -4,7 +4,7 @@
   "title": "mdplace Remote Intelligence Adapter conformance scenario",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_id", "scenario_id", "case_id", "operation", "evaluated_at", "processing_envelope_json", "processing_envelope_sha256", "credential_evidence_json", "credential_evidence_sha256", "retention_evidence_json", "retention_evidence_sha256", "attempt_observations_json", "attempt_observations_sha256", "requested_provider", "requested_destination", "input_bytes", "output_bytes", "runtime_ms", "cost_microunits", "attempts", "retries", "fallbacks", "ceilings", "behavior", "claimed_authority", "provider_fact_claim", "transition_ref"],
+  "required": ["schema_id", "scenario_id", "case_id", "operation", "evaluated_at", "processing_envelope_json", "processing_envelope_sha256", "authorized_attempts", "credential_evidence_json", "credential_evidence_sha256", "retention_evidence_json", "retention_evidence_sha256", "attempt_observations_json", "attempt_observations_sha256", "requested_provider", "requested_destination", "input_bytes", "output_bytes", "runtime_ms", "cost_microunits", "attempts", "retries", "fallbacks", "ceilings", "behavior", "claimed_authority", "provider_fact_claim", "transition_ref"],
   "properties": {
     "schema_id": {"const": "mdplace.remote-adapter-scenario/v1"},
     "scenario_id": {"type": "string", "pattern": "^RAP-[0-9]{3}$"},
@@ -13,6 +13,7 @@
     "evaluated_at": {"const": "2026-08-23T00:00:00.000Z"},
     "processing_envelope_json": {"type": ["string", "null"]},
     "processing_envelope_sha256": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
+    "authorized_attempts": {"type": "array", "maxItems": 3, "items": {"$ref": "#/$defs/authorizedAttempt"}},
     "credential_evidence_json": {"type": ["string", "null"]},
     "credential_evidence_sha256": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
     "retention_evidence_json": {"type": ["string", "null"]},
@@ -36,6 +37,7 @@
   },
   "$defs": {
     "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "authorizedAttempt": {"type": "object", "additionalProperties": false, "required": ["attempt_id", "attempt_sequence", "attempt_kind", "authorization_id", "processing_envelope_json", "processing_envelope_sha256"], "properties": {"attempt_id": {"type": "string", "pattern": "^adapter-attempt:rap-[0-9]{3}-[0-9]+$"}, "attempt_sequence": {"type": "integer", "minimum": 0, "maximum": 2}, "attempt_kind": {"enum": ["initial", "retry", "fallback"]}, "authorization_id": {"enum": ["adapter-authorization:remote-primary", "adapter-authorization:remote-retry", "adapter-authorization:remote-fallback"]}, "processing_envelope_json": {"type": "string", "minLength": 2}, "processing_envelope_sha256": {"$ref": "#/$defs/digest"}}},
     "ceilings": {"type": "object", "additionalProperties": false, "required": ["input_bytes", "output_bytes", "runtime_ms", "cost_microunits", "attempts", "retries", "fallbacks"], "properties": {"input_bytes": {"const": 4096}, "output_bytes": {"const": 3000}, "runtime_ms": {"const": 800}, "cost_microunits": {"const": 5000}, "attempts": {"const": 3}, "retries": {"const": 1}, "fallbacks": {"const": 1}}}
   }
 }

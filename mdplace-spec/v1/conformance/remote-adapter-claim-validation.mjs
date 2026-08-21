@@ -17,6 +17,16 @@ const dependencyBoundary = {
   other_profiles: false,
 };
 
+async function readJson(packageRoot, path) {
+  const read = await readPackageFile(packageRoot, path);
+  if (read.status !== 'present') return null;
+  try {
+    return JSON.parse(read.content.toString('utf8'));
+  } catch {
+    return null;
+  }
+}
+
 export async function remoteAdapterClaimCodes(claim, packageRoot) {
   const codes = [];
   const row = Array.isArray(claim?.rows) && claim.rows.length === 1 ? claim.rows[0] : null;
@@ -47,6 +57,18 @@ export async function remoteAdapterClaimCodes(claim, packageRoot) {
   if (row.evidence_digest !== remoteAdapterEvidenceDigest(material)) {
     codes.push('remote.claim_evidence_digest_mismatch');
   }
-  if (codes.length > 0 && row.verdict === 'pass') codes.push('remote.claim_verdict_invalid');
+  const [evidence, genericClaim, envelope] = await Promise.all([
+    readJson(packageRoot, 'conformance/evidence/remote-adapter-evidence.json'),
+    readJson(packageRoot, 'conformance/claim-manifests/remote-intelligence-adapter.json'),
+    readJson(packageRoot, 'conformance/evidence/envelopes/remote-adapter-profile.json'),
+  ]);
+  const genericBinding = genericClaim?.evidence_bindings?.find(
+    ({evidence_kind: kind}) => kind === 'remote_adapter_conformance',
+  );
+  if (evidence === null || genericClaim === null || envelope === null ||
+      row.verdict !== evidence.verdict || genericClaim.verdict !== row.verdict ||
+      genericBinding?.verdict !== row.verdict || envelope.verdict !== row.verdict || codes.length > 0) {
+    codes.push('remote.claim_verdict_invalid');
+  }
   return codes;
 }

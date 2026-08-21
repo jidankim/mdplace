@@ -22,11 +22,18 @@ function envelopeFor(baseEnvelope, scenarioId, sequence, kind, targetBytes, stal
   envelope.chain_id = `adapter-chain:${suffix}`;
   envelope.attempt_id = `adapter-attempt:${suffix}-${sequence}`;
   envelope.attempt_sequence = sequence;
-  envelope.authorization_id = kind === 'retry'
-    ? 'adapter-authorization:remote-retry'
-    : 'adapter-authorization:remote-primary';
+  envelope.authorization_id = `adapter-authorization:remote-${kind === 'initial' ? 'primary' : kind}`;
   envelope.destination.endpoint = approvedDestination;
   envelope.bindings.policy.sha256 = stalePolicy ? '0'.repeat(64) : policyDigest;
+  envelope.ceilings = {input_bytes: 4096, output_bytes: 3000, runtime_ms: 800, cost_microunits: 5000};
+  envelope.retention_facts = [{
+    retention_fact_id: 'retention:remote-alpha',
+    status: 'unknown_acknowledged',
+    max_days: 30,
+    data_use: 'provider_training_unknown',
+    region: 'unsupported',
+    subprocessors: [],
+  }];
   const segment = envelope.payload_segments.at(-1);
   if (targetBytes !== undefined) {
     let padding = segment.utf8;
@@ -46,7 +53,7 @@ function attemptObservation(scenarioId, sequence, kind, payload, denied, unknown
   const suffix = scenarioId.toLowerCase();
   const bytes = denied ? Buffer.alloc(0) : Buffer.from(payload, 'utf8');
   return {
-    attempt_id: `remote-attempt:${suffix}-${sequence}`,
+    attempt_id: `adapter-attempt:${suffix}-${sequence}`,
     attempt_sequence: sequence,
     attempt_kind: denied ? 'denial' : kind,
     destination: denied ? null : approvedDestination,
@@ -63,7 +70,15 @@ function attemptObservation(scenarioId, sequence, kind, payload, denied, unknown
 const authorityCases = ['semantic', 'note_placement', 'taxonomy', 'projection', 'filesystem', 'tool', 'automation']
   .map((authority) => [`${authority.replace('_', '-')}-authority-denied`, 'authority_denial', {claimedAuthority: authority}]);
 
-const transitionNames = ['permitted-egress', 'denial', 'failure', 'retry', 'fallback', 'recovery', 'verdict'];
+const illegalTransitionPairs = {
+  'permitted-egress': 'pending:transmit_remote_payload',
+  denial: 'denied:authorize_remote_egress',
+  failure: 'ready:record_remote_failure',
+  retry: 'unavailable:transmit_remote_payload',
+  fallback: 'unavailable:transmit_remote_payload',
+  recovery: 'interrupted:recover_remote_receipt',
+  verdict: 'pass:record_pass',
+};
 
 export const remoteAdapterCases = [
   ['permitted-primary-exact-bytes', 'positive', {}],
@@ -110,12 +125,18 @@ export const remoteAdapterCases = [
   ['recovery-revalidates-current-digests', 'crash_recovery', {operation: 'recover', behavior: 'recover_current'}],
   ['recovery-rejects-stale-claim-digest', 'stale_state', {operation: 'recover', behavior: 'recover_stale_claim'}],
   ['recovery-rejects-stale-evidence-digest', 'stale_state', {operation: 'recover', behavior: 'recover_stale_evidence'}],
-  ...transitionNames.map((name) => [
+  ...Object.entries(illegalTransitionPairs).map(([name, pair]) => [
     `illegal-${name}-transition-denied`,
     'illegal_transition',
-    {operation: 'transition', transitionRef: `contracts/transitions/remote-adapter-${name}-lifecycle.json#${name === 'verdict' ? 'pass:record_pass' : `${name === 'recovery' ? 'recovered' : 'pending'}:transmit_remote_payload`}`},
+    {operation: 'transition', transitionRef: `contracts/transitions/remote-adapter-${name}-lifecycle.json#${pair}`},
   ]),
 ];
+
+function attemptKind(overrides, sequence) {
+  if (sequence === 0) return 'initial';
+  if (sequence <= (overrides.retries ?? 0)) return 'retry';
+  return 'fallback';
+}
 
 export function remoteAdapterScenario(index, definition, evidence, baseEnvelope) {
   const [caseId, , overrides] = definition;
@@ -137,11 +158,22 @@ export function remoteAdapterScenario(index, definition, evidence, baseEnvelope)
   const envelopeSha256 = firstEnvelope === null ? null : remoteSha256(firstEnvelope);
   const credential = boundJson(evidence.credential, overrides.credentialVariant ?? 'current');
   const retention = boundJson(evidence.retention, overrides.retentionVariant ?? 'current');
+  const authorizedAttempts = [];
   const observations = Array.from({length: isDeniedBeforeEgress ? 1 : attempts}, (_, sequence) => {
-    const kind = sequence === 0 ? 'initial' : overrides.operation === 'fallback' ? 'fallback' : 'retry';
+    const kind = attemptKind(overrides, sequence);
     const payload = sequence === 0
       ? firstEnvelope ?? ''
       : envelopeFor(baseEnvelope, scenarioId, sequence, kind, undefined, false);
+    if (!isDeniedBeforeEgress) {
+      authorizedAttempts.push({
+        attempt_id: `adapter-attempt:${scenarioId.toLowerCase()}-${sequence}`,
+        attempt_sequence: sequence,
+        attempt_kind: kind,
+        authorization_id: `adapter-authorization:remote-${kind === 'initial' ? 'primary' : kind}`,
+        processing_envelope_json: payload,
+        processing_envelope_sha256: remoteSha256(payload),
+      });
+    }
     return attemptObservation(
       scenarioId,
       sequence,
@@ -160,6 +192,7 @@ export function remoteAdapterScenario(index, definition, evidence, baseEnvelope)
     evaluated_at: remoteAdapterEvidenceEvaluatedAt,
     processing_envelope_json: firstEnvelope,
     processing_envelope_sha256: envelopeSha256,
+    authorized_attempts: authorizedAttempts,
     credential_evidence_json: credential.json,
     credential_evidence_sha256: credential.sha256,
     retention_evidence_json: retention.json,

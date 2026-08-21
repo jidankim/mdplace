@@ -75,10 +75,27 @@ async function recoveryCodes(packageRoot, scenario, record) {
   return codes;
 }
 
-function observationCodes(observations, denyBeforeEgress, scenario) {
+async function observationCodes(observations, denyBeforeEgress, scenario, packageRoot) {
   if (!Array.isArray(observations) || observations.length === 0) return ['remote.attempt_observation_invalid'];
   const codes = [];
-  for (const observation of observations) {
+  const authorized = Array.isArray(scenario.authorized_attempts) ? scenario.authorized_attempts : [];
+  const expectedKinds = [
+    'initial',
+    ...Array.from({length: scenario.retries}, () => 'retry'),
+    ...Array.from({length: scenario.fallbacks}, () => 'fallback'),
+  ];
+  if (denyBeforeEgress) {
+    if (authorized.length !== 0) codes.push('remote.attempt_authorization_invalid');
+  } else if (authorized.length !== observations.length ||
+      !isDeepStrictEqual(expectedKinds, observations.map(({attempt_kind: kind}) => kind)) ||
+      scenario.retries + scenario.fallbacks !== scenario.attempts - 1 ||
+      authorized[0]?.processing_envelope_json !== scenario.processing_envelope_json ||
+      authorized[0]?.processing_envelope_sha256 !== scenario.processing_envelope_sha256) {
+    codes.push('remote.attempt_topology_invalid');
+  }
+  const attemptIds = observations.map(({attempt_id: id}) => id);
+  if (new Set(attemptIds).size !== attemptIds.length) codes.push('remote.attempt_topology_invalid');
+  for (const [index, observation] of observations.entries()) {
     let payload;
     try {
       payload = Buffer.from(observation.payload_base64, 'base64');
@@ -89,14 +106,56 @@ function observationCodes(observations, denyBeforeEgress, scenario) {
     const exact = observation.transmitted_bytes === payload.length &&
       observation.transmitted_sha256 === remoteSha256(payload);
     if (!exact) codes.push('remote.transmitted_bytes_mismatch');
+    const expectedAttemptId = `adapter-attempt:${scenario.scenario_id.toLowerCase()}-${index}`;
+    if (observation.attempt_id !== expectedAttemptId || observation.attempt_sequence !== index) {
+      codes.push('remote.attempt_topology_invalid');
+    }
     if (denyBeforeEgress) {
       if (payload.length !== 0 || observation.destination !== null ||
           observation.boundary !== 'pre_egress_denial' || observation.provider_request_id !== null) {
         codes.push('remote.zero_byte_denial_invalid');
       }
-    } else if (observation.destination !== approvedDestination || payload.length === 0 ||
-        !['egress_complete', 'egress_completion_unknown'].includes(observation.boundary)) {
-      codes.push('remote.permitted_egress_invalid');
+    } else {
+      if (observation.destination !== approvedDestination || payload.length === 0 ||
+          !['egress_complete', 'egress_completion_unknown'].includes(observation.boundary)) {
+        codes.push('remote.permitted_egress_invalid');
+      }
+      const binding = authorized[index];
+      const expectedAuthorization = `adapter-authorization:remote-${observation.attempt_kind === 'initial' ? 'primary' : observation.attempt_kind}`;
+      if (binding?.attempt_id !== observation.attempt_id || binding?.attempt_sequence !== index ||
+          binding?.attempt_kind !== observation.attempt_kind || binding?.authorization_id !== expectedAuthorization ||
+          binding?.processing_envelope_sha256 !== remoteSha256(binding?.processing_envelope_json ?? '') ||
+          payload.toString('utf8') !== binding?.processing_envelope_json) {
+        codes.push('remote.transmitted_payload_mismatch');
+        continue;
+      }
+      let boundEnvelope;
+      try {
+        boundEnvelope = JSON.parse(binding.processing_envelope_json);
+      } catch {
+        codes.push('remote.attempt_authorization_invalid');
+        continue;
+      }
+      if (await schemaCode(packageRoot, 'contracts/schemas/processing-envelope.schema.json', boundEnvelope) !== null ||
+          boundEnvelope.attempt_id !== observation.attempt_id || boundEnvelope.attempt_sequence !== index ||
+          boundEnvelope.authorization_id !== binding.authorization_id ||
+          boundEnvelope.bindings?.provider_id !== approvedProvider ||
+          boundEnvelope.destination?.endpoint !== approvedDestination ||
+          !isDeepStrictEqual(boundEnvelope.ceilings, {
+            input_bytes: 4096,
+            output_bytes: 3000,
+            runtime_ms: 800,
+            cost_microunits: 5000,
+          }) || !isDeepStrictEqual(boundEnvelope.retention_facts, [{
+            retention_fact_id: 'retention:remote-alpha',
+            status: 'unknown_acknowledged',
+            max_days: 30,
+            data_use: 'provider_training_unknown',
+            region: 'unsupported',
+            subprocessors: [],
+          }])) {
+        codes.push('remote.attempt_authorization_invalid');
+      }
     }
   }
   if (observations.length !== (denyBeforeEgress ? 1 : scenario.attempts)) {
@@ -185,7 +244,7 @@ export async function observeRemoteAdapterScenario(subject, packageRoot, recover
     'remote.recovery_evidence_digest_mismatch',
   ].includes(code));
   if (attempts.status !== 'parsed') codes.push('remote.attempt_observation_invalid');
-  else codes.push(...observationCodes(attempts.document, denyBeforeEgress, scenario));
+  else codes.push(...await observationCodes(attempts.document, denyBeforeEgress, scenario, packageRoot));
   const uniqueCodes = [...new Set(codes)];
   const recoverySucceeded = scenario.operation === 'recover' && uniqueCodes.length === 0;
   const outcome = recoverySucceeded
@@ -209,7 +268,7 @@ export async function observeRemoteAdapterScenario(subject, packageRoot, recover
     semantic_effects: [], filesystem_effects: [], tool_invocations: [],
   };
   receipt.receipt_sha256 = remoteAdapterReceiptDigest(receipt);
-  operations.push('verify exact transmitted bytes and destination', 'record Remote Adapter profile receipt');
+  operations.push('verify exact transmitted bytes and destination', 'record Remote Intelligence Adapter profile receipt');
   return {
     verdict: uniqueCodes.length === 0 ? 'pass' : 'fail',
     codes: uniqueCodes,
