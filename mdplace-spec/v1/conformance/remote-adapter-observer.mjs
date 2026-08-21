@@ -4,6 +4,7 @@ import {canonicalJson} from './semantic-kernel-core.mjs';
 import {schemaErrorCode, validateAgainstSchemaPath} from './json-schema.mjs';
 import {readPackageFile} from './safe-path.mjs';
 import {remoteAdapterEvidenceEvaluatedAt, remoteSha256} from './remote-adapter-core.mjs';
+import {remoteRetentionDisclosureMatches} from './remote-adapter-retention-validation.mjs';
 
 const approvedProvider = 'provider:remote-alpha';
 const approvedDestination = 'https://api.remote-alpha.test/v1/process';
@@ -255,9 +256,12 @@ export async function observeRemoteAdapterScenario(subject, packageRoot, recover
       'contracts/schemas/remote-adapter-retention-evidence.schema.json',
       retention.document,
     );
-    if (retention.status !== 'parsed' || retentionCode !== null || !currentEvidence(retention.document) ||
-        new Set(retention.document?.facts?.map(({dimension}) => dimension)).size !== dimensions.length) {
+    const retentionValid = retention.status === 'parsed' && retentionCode === null && currentEvidence(retention.document) &&
+      new Set(retention.document?.facts?.map(({dimension}) => dimension)).size === dimensions.length;
+    if (!retentionValid) {
       codes.push('remote.retention_evidence_invalid');
+    } else if (!await remoteRetentionDisclosureMatches(packageRoot, retention.document)) {
+      codes.push('remote.retention_disclosure_mismatch');
     }
     if (scenario.claimed_authority !== 'none') codes.push('remote.authority_denied');
     const statuses = factStatuses(retention.document);

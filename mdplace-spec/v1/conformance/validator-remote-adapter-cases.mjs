@@ -336,6 +336,23 @@ test('disclosed retention facts resolve to packaged evidence while other facts r
     .every(({status}) => ['unsupported', 'inconclusive'].includes(status)));
 });
 
+test('public validator rejects a retention claim that contradicts its disclosure', async (t) => {
+  const check = await remoteCheckAfterMutation(t, async (packageRoot) => {
+    const evidencePath = resolve(
+      packageRoot,
+      'contracts/remote-intelligence-adapter/retention-evidence.json',
+    );
+    const evidence = JSON.parse(await readFile(evidencePath, 'utf8'));
+    evidence.facts.find(({dimension}) => dimension === 'retention').value = 'maximum 90 days';
+    await writeFile(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`);
+  });
+
+  assert.ok(
+    check.codes.includes('remote.retention_disclosure_mismatch'),
+    `contradictory retention claim was not rejected at the disclosure boundary: ${JSON.stringify(check)}`,
+  );
+});
+
 test('Remote Intelligence Adapter claim verdict is derived from mandatory evidence', async (t) => {
   const packageRoot = await copyCommittedPackage();
   t.after(() => rm(resolve(packageRoot, '../..'), {recursive: true, force: true}));

@@ -10,6 +10,7 @@ import {
 } from './remote-adapter-core.mjs';
 import {remoteAdapterCases} from './remote-adapter-fixtures.mjs';
 import {observeRemoteAdapterScenario, remoteAdapterReceiptDigest} from './remote-adapter-observer.mjs';
+import {remoteRetentionDisclosureMatches} from './remote-adapter-retention-validation.mjs';
 import {readPackageFile} from './safe-path.mjs';
 
 function result(codes) {
@@ -82,14 +83,8 @@ async function exactEvidence(packageRoot, profile, credential, retention) {
     entitlement: 'unsupported',
     privacy_behavior: 'inconclusive',
   };
-  const disclosedEvidenceMatches = (await Promise.all(facts
-    .filter(({status}) => status === 'disclosed')
-    .map(async ({evidence_ref: path, evidence_sha256: digest}) => {
-      if (typeof path !== 'string' || typeof digest !== 'string') return false;
-      const read = await readPackageFile(packageRoot, path);
-      return read.status === 'present' && remoteSha256(read.content) === digest;
-    }))).every(Boolean);
-  return profile?.profile_id === 'remote-adapter' && profile.owner === 'remote-adapter' &&
+  const disclosureMatches = await remoteRetentionDisclosureMatches(packageRoot, retention);
+  const valid = profile?.profile_id === 'remote-adapter' && profile.owner === 'remote-adapter' &&
     profile.locality === 'remote' && profile.specification_only === true &&
     exactAdapterChain &&
     profile.network_operation_performed === false && Object.values(profile.authority ?? {}).every((value) => value === 'none') &&
@@ -97,11 +92,12 @@ async function exactEvidence(packageRoot, profile, credential, retention) {
     credential.secret_access === 'none' && credential.ambient_configuration === 'unreadable' &&
     credential.environment_values === 'unreadable' && credential.claims_established.length === 0 &&
     current(retention) && isDeepStrictEqual(facts.map(({dimension}) => dimension).sort(), [...dimensions].sort()) &&
-    facts.every(({dimension, status}) => expectedStatuses[dimension] === status) && disclosedEvidenceMatches &&
+    facts.every(({dimension, status}) => expectedStatuses[dimension] === status) && disclosureMatches &&
     facts.filter(({status}) => status === 'disclosed').every(({value, evidence_ref: ref, evidence_sha256: digest}) =>
       typeof value === 'string' && typeof ref === 'string' && /^[a-f0-9]{64}$/.test(digest)) &&
     facts.filter(({status}) => status !== 'disclosed').every(({value, evidence_ref: ref, evidence_sha256: digest}) =>
       value === null && ref === null && digest === null);
+  return {valid, disclosureMatches};
 }
 
 function exactVerdicts(document) {
@@ -127,7 +123,9 @@ export async function checkRemoteAdapterProfile(packageRoot, conformance, tracea
   if (documents.some(({document}) => document === null)) return result(codes);
   const [profile, credential, retention, fixtureManifest, claim, verdicts, evidence, recovery] =
     documents.map(({document}) => document);
-  if (!await exactEvidence(packageRoot, profile, credential, retention)) codes.push('remote.profile_boundary_invalid');
+  const profileEvidence = await exactEvidence(packageRoot, profile, credential, retention);
+  if (!profileEvidence.valid) codes.push('remote.profile_boundary_invalid');
+  if (!profileEvidence.disclosureMatches) codes.push('remote.retention_disclosure_mismatch');
   if (credential.profile_sha256 !== remoteSha256(documents[0].read.content) ||
       retention.profile_sha256 !== remoteSha256(documents[0].read.content)) {
     codes.push('remote.profile_evidence_binding_invalid');

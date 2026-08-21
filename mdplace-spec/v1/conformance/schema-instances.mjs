@@ -91,6 +91,7 @@ export async function checkSchemaInstances(packageRoot, conformance) {
     ['conformance/evidence/envelopes/local-adapter-profile.json', 'contracts/schemas/evidence-envelope.schema.json'],
     ['contracts/remote-intelligence-adapter/profile.json', 'contracts/schemas/remote-intelligence-adapter-profile.schema.json'],
     ['contracts/remote-intelligence-adapter/credential-boundary-evidence.json', 'contracts/schemas/remote-adapter-credential-boundary-evidence.schema.json'],
+    ['conformance/inputs/remote-adapter-provider-disclosure.json', 'contracts/schemas/remote-adapter-provider-disclosure.schema.json'],
     ['contracts/remote-intelligence-adapter/retention-evidence.json', 'contracts/schemas/remote-adapter-retention-evidence.schema.json'],
     ['contracts/remote-intelligence-adapter/fixture-manifest.json', 'contracts/schemas/remote-adapter-fixture-manifest.schema.json'],
     ['contracts/remote-intelligence-adapter/claim-manifest.json', 'contracts/schemas/remote-adapter-claim-manifest.schema.json'],

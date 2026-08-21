@@ -17,6 +17,7 @@ import {
 import {remoteAdapterCases, remoteAdapterScenario} from './remote-adapter-fixtures.mjs';
 import {deriveRemoteAdapterVerdict} from './remote-adapter-claim-validation.mjs';
 import {observeRemoteAdapterScenario} from './remote-adapter-observer.mjs';
+import {readRemoteProviderDisclosure} from './remote-adapter-retention-validation.mjs';
 import {
   authoredRemoteRecoveryRecord,
   currentRemoteClaimBinding,
@@ -25,8 +26,7 @@ import {
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const relativeFixturePath = (caseId) => `scenarios/remote-intelligence-adapter/${caseId}.json`;
 const packageFixturePath = (caseId) => `conformance/${relativeFixturePath(caseId)}`;
-const providerDisclosurePath = 'conformance/evidence/remote-adapter-provider-disclosure.txt';
-const providerDisclosure = 'Fixture provider disclosure: request content is retained for no more than 30 days.\n';
+const providerDisclosurePath = 'conformance/inputs/remote-adapter-provider-disclosure.json';
 
 async function readJson(path) {
   return JSON.parse(await readFile(resolve(packageRoot, path), 'utf8'));
@@ -43,6 +43,8 @@ async function fileDigest(path) {
 }
 
 async function writeProfileEvidence() {
+  const disclosure = await readRemoteProviderDisclosure(packageRoot, providerDisclosurePath);
+  if (disclosure.document === null) throw new Error('remote provider disclosure input is missing or invalid');
   await writeJson('contracts/remote-intelligence-adapter/profile.json', remoteAdapterProfile);
   const profileSha256 = await fileDigest('contracts/remote-intelligence-adapter/profile.json');
   await writeJson('contracts/remote-intelligence-adapter/credential-boundary-evidence.json', {
@@ -65,7 +67,6 @@ async function writeProfileEvidence() {
     observed_at: '2026-08-22T00:00:00.000Z',
     expires_at: '2026-09-21T00:00:00.000Z',
   });
-  await writeFile(resolve(packageRoot, providerDisclosurePath), providerDisclosure);
   await writeJson('contracts/remote-intelligence-adapter/retention-evidence.json', {
     $schema: '../schemas/remote-adapter-retention-evidence.schema.json',
     schema_id: 'mdplace.remote-adapter-retention-evidence/v1',
@@ -73,18 +74,18 @@ async function writeProfileEvidence() {
     evidence_id: 'remote-retention-evidence:v1',
     status: 'current',
     profile_sha256: profileSha256,
-    provider_id: 'provider:remote-alpha',
-    destination: 'https://api.remote-alpha.test/v1/process',
+    provider_id: disclosure.document.provider_id,
+    destination: disclosure.document.destination,
     facts: [
       {dimension: 'residency', status: 'unsupported', value: null, evidence_ref: null, evidence_sha256: null},
-      {dimension: 'retention', status: 'disclosed', value: 'maximum 30 days', evidence_ref: providerDisclosurePath, evidence_sha256: remoteSha256(providerDisclosure)},
+      {...disclosure.document.fact, evidence_ref: providerDisclosurePath, evidence_sha256: remoteSha256(disclosure.read.content)},
       {dimension: 'training', status: 'inconclusive', value: null, evidence_ref: null, evidence_sha256: null},
       {dimension: 'deletion', status: 'unsupported', value: null, evidence_ref: null, evidence_sha256: null},
       {dimension: 'entitlement', status: 'unsupported', value: null, evidence_ref: null, evidence_sha256: null},
       {dimension: 'privacy_behavior', status: 'inconclusive', value: null, evidence_ref: null, evidence_sha256: null},
     ],
-    observed_at: '2026-08-22T00:00:00.000Z',
-    expires_at: '2026-09-21T00:00:00.000Z',
+    observed_at: disclosure.document.observed_at,
+    expires_at: disclosure.document.expires_at,
   });
   await writeJson('contracts/verdicts/remote-adapter-verdicts.json', remoteAdapterVerdicts);
   for (const {path, document} of remoteAdapterTransitionTables()) await writeJson(path, document);

@@ -8,5 +8,6 @@ export const remoteAdapterExecutablePaths = new Set([
   'conformance/remote-adapter-fixtures.mjs',
   'conformance/remote-adapter-observer.mjs',
   'conformance/remote-adapter-recovery-authoring.mjs',
+  'conformance/remote-adapter-retention-validation.mjs',
   'conformance/validator-remote-adapter-cases.mjs',
 ]);
